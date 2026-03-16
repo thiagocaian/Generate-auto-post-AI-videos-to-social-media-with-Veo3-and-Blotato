@@ -2,24 +2,25 @@
 
 import { useState } from "react";
 
+// ✅ Prompts dos vídeos ficam em inglês (necessário para a IA gerar corretamente)
 const GOODMIX_PROMPTS = [
   {
-    label: "Gut Cleanse — Morning ritual",
+    label: "Gut Cleanse — Ritual matinal",
     prompt:
       "Cinematic close-up of hands mixing a spoonful of natural green superfood powder into a glass of clear water at golden hour. Bubbles dissolve slowly. Text overlay: 'Start your gut reset today.' Clean white kitchen background. Warm, vibrant colors. 9:16 vertical format. Aspirational wellness aesthetic.",
   },
   {
-    label: "Gut Reset — Before & After energy",
+    label: "Gut Reset — Antes & Depois",
     prompt:
       "Split-screen vertical ad: left side shows a tired person slumped at a desk in dim light, right side shows the same person energized and smiling after taking goodMix Gut Reset superfood blend. Australian summer light, natural tones. Bold text: 'Reset your gut. Reset your life.' 9:16 format.",
   },
   {
-    label: "Gut Repair — Nature ingredients",
+    label: "Gut Repair — Ingredientes naturais",
     prompt:
       "Macro slow-motion video of natural superfoods — chia seeds, flaxseed, dried fruits — falling into a wooden bowl. Rich earthy colors. Voiceover text overlay: '288 servings of gut-healing power.' Australian health food brand aesthetic. Deep green and cream palette. 9:16 vertical.",
   },
   {
-    label: "Bundle hero — All 3 products",
+    label: "Bundle — Os 3 produtos juntos",
     prompt:
       "Elegant product reveal: three goodMix superfood jars — Gut Cleanse, Gut Reset, Gut Repair — arranged on a marble surface with fresh herbs and morning sunlight streaming in. Camera slowly pushes in. Text: 'The complete gut health system.' Forest green branding. 9:16 vertical format.",
   },
@@ -55,28 +56,29 @@ export default function VideoPage() {
   async function handleGenerate() {
     setStatus("generating");
     setLog([]);
-    addLog("🎬 Submitting prompt to Veo3...");
+    addLog("🎬 Enviando prompt para geração de vídeo com IA...");
 
     try {
       const res = await fetch("/api/generate-video", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, aspectRatio: "9:16", durationSeconds: 8 }),
+        body: JSON.stringify({ prompt, aspectRatio: "9:16", durationSeconds: 5 }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        addLog(`❌ Error: ${data.error}`);
+        addLog(`❌ Erro na geração: ${data.error}`);
         setStatus("error");
         return;
       }
 
-      addLog(`✅ Video generated: ${data.videoUrl}`);
+      addLog(`✅ Vídeo gerado com sucesso!`);
+      addLog(`🔗 URL: ${data.videoUrl}`);
       setVideoUrl(data.videoUrl);
       setStatus("idle");
     } catch {
-      addLog("❌ Network error generating video.");
+      addLog("❌ Erro de rede ao gerar vídeo. Verifique sua conexão.");
       setStatus("error");
     }
   }
@@ -84,7 +86,7 @@ export default function VideoPage() {
   async function handlePost() {
     if (!videoUrl) return;
     setStatus("posting");
-    addLog(`📤 Posting to ${selectedPlatforms.join(", ")}...`);
+    addLog(`📤 Publicando nas plataformas: ${selectedPlatforms.join(", ")}...`);
 
     try {
       const res = await fetch("/api/post-social", {
@@ -101,13 +103,13 @@ export default function VideoPage() {
       const data = await res.json();
 
       data.successes?.forEach((s: { platform: string }) =>
-        addLog(`✅ Posted to ${s.platform}`)
+        addLog(`✅ Publicado com sucesso no ${s.platform}!`)
       );
-      data.failures?.forEach((f: string) => addLog(`❌ ${f}`));
+      data.failures?.forEach((f: string) => addLog(`❌ Falha: ${f}`));
 
       setStatus("done");
     } catch {
-      addLog("❌ Network error posting video.");
+      addLog("❌ Erro de rede ao publicar o vídeo. Tente novamente.");
       setStatus("error");
     }
   }
@@ -115,26 +117,29 @@ export default function VideoPage() {
   async function handleGenerateAndPost() {
     setStatus("generating");
     setLog([]);
-    addLog("🎬 Submitting prompt to Veo3...");
+    addLog("🎬 Iniciando geração de vídeo com IA (Kling v2)...");
+    addLog("⏳ Isso pode levar entre 1 e 3 minutos, aguarde...");
 
     try {
       const genRes = await fetch("/api/generate-video", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, aspectRatio: "9:16", durationSeconds: 8 }),
+        body: JSON.stringify({ prompt, aspectRatio: "9:16", durationSeconds: 5 }),
       });
 
       const genData = await genRes.json();
       if (!genRes.ok) {
-        addLog(`❌ Generation error: ${genData.error}`);
+        addLog(`❌ Falha na geração: ${genData.error}`);
         setStatus("error");
         return;
       }
 
       const generatedUrl = genData.videoUrl;
       setVideoUrl(generatedUrl);
-      addLog(`✅ Video ready. Now posting...`);
+      addLog(`✅ Vídeo gerado! Iniciando publicação...`);
       setStatus("posting");
+
+      addLog(`📤 Enviando para as plataformas selecionadas...`);
 
       const postRes = await fetch("/api/post-social", {
         method: "POST",
@@ -149,24 +154,24 @@ export default function VideoPage() {
 
       const postData = await postRes.json();
       postData.successes?.forEach((s: { platform: string }) =>
-        addLog(`✅ Posted to ${s.platform}`)
+        addLog(`✅ Publicado com sucesso no ${s.platform}!`)
       );
-      postData.failures?.forEach((f: string) => addLog(`❌ ${f}`));
+      postData.failures?.forEach((f: string) => addLog(`❌ Falha: ${f}`));
       setStatus("done");
     } catch {
-      addLog("❌ Unexpected error.");
+      addLog("❌ Erro inesperado. Verifique os logs do servidor.");
       setStatus("error");
     }
   }
 
   return (
     <main className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Cabeçalho */}
       <div className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <a href="/dashboard" className="text-gray-400 hover:text-gray-600 text-sm">← Dashboard</a>
+          <a href="/dashboard" className="text-gray-400 hover:text-gray-600 text-sm">← Painel</a>
           <span className="text-gray-300">/</span>
-          <span className="text-sm font-medium">AI Video Campaign</span>
+          <span className="text-sm font-medium">Campanha de Vídeo com IA</span>
         </div>
         <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
           goodMix Superfoods
@@ -174,11 +179,13 @@ export default function VideoPage() {
       </div>
 
       <div className="max-w-5xl mx-auto px-8 py-10 grid md:grid-cols-2 gap-8">
-        {/* Left — Config */}
+        {/* Esquerda — Configuração */}
         <div className="flex flex-col gap-6">
-          {/* Prompt selector */}
+
+          {/* Seletor de prompt */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <h2 className="font-semibold text-gray-900 mb-4">🎬 Video Prompt</h2>
+            <h2 className="font-semibold text-gray-900 mb-1">🎬 Prompt do Vídeo</h2>
+            <p className="text-xs text-gray-400 mb-4">O prompt fica em inglês para a IA gerar melhor. Escolha um ou escreva o seu:</p>
             <div className="flex flex-col gap-2 mb-4">
               {GOODMIX_PROMPTS.map((p) => (
                 <button
@@ -199,13 +206,14 @@ export default function VideoPage() {
               onChange={(e) => setPrompt(e.target.value)}
               rows={5}
               className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:border-indigo-400"
-              placeholder="Or write your own Veo3 prompt..."
+              placeholder="Ou escreva seu próprio prompt em inglês..."
             />
           </div>
 
-          {/* Caption */}
+          {/* Legenda */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <h2 className="font-semibold text-gray-900 mb-3">📝 Social Caption</h2>
+            <h2 className="font-semibold text-gray-900 mb-1">📝 Legenda para as Redes</h2>
+            <p className="text-xs text-gray-400 mb-3">Texto que será publicado junto com o vídeo:</p>
             <textarea
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
@@ -214,9 +222,10 @@ export default function VideoPage() {
             />
           </div>
 
-          {/* Platforms */}
+          {/* Plataformas */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <h2 className="font-semibold text-gray-900 mb-3">📲 Platforms</h2>
+            <h2 className="font-semibold text-gray-900 mb-1">📲 Plataformas</h2>
+            <p className="text-xs text-gray-400 mb-3">Selecione onde deseja publicar:</p>
             <div className="flex flex-wrap gap-2">
               {PLATFORMS.map((p) => (
                 <button
@@ -234,7 +243,7 @@ export default function VideoPage() {
             </div>
           </div>
 
-          {/* Actions */}
+          {/* Ações */}
           <div className="flex flex-col gap-3">
             <button
               onClick={handleGenerateAndPost}
@@ -242,10 +251,10 @@ export default function VideoPage() {
               className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors"
             >
               {status === "generating"
-                ? "⏳ Generating video..."
+                ? "⏳ Gerando vídeo com IA..."
                 : status === "posting"
-                ? "📤 Posting..."
-                : "🚀 Generate & Post"}
+                ? "📤 Publicando nas redes..."
+                : "🚀 Gerar e Publicar"}
             </button>
             <div className="flex gap-3">
               <button
@@ -253,30 +262,31 @@ export default function VideoPage() {
                 disabled={status !== "idle" && status !== "done" && status !== "error"}
                 className="flex-1 border border-gray-300 rounded-xl py-3 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 transition-colors"
               >
-                🎬 Generate only
+                🎬 Só gerar vídeo
               </button>
               <button
                 onClick={handlePost}
                 disabled={!videoUrl || (status !== "idle" && status !== "done" && status !== "error")}
                 className="flex-1 border border-gray-300 rounded-xl py-3 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 transition-colors"
               >
-                📤 Post only
+                📤 Só publicar
               </button>
             </div>
           </div>
         </div>
 
-        {/* Right — Preview & Logs */}
+        {/* Direita — Preview e Logs */}
         <div className="flex flex-col gap-6">
-          {/* Video preview */}
+
+          {/* Preview do vídeo */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <h2 className="font-semibold text-gray-900 mb-3">📺 Preview</h2>
+            <h2 className="font-semibold text-gray-900 mb-3">📺 Pré-visualização</h2>
             {videoUrl ? (
               <video src={videoUrl} controls className="w-full rounded-xl" />
             ) : (
               <div className="h-64 bg-gray-50 rounded-xl flex flex-col items-center justify-center text-gray-400 border border-dashed border-gray-200">
                 <span className="text-4xl mb-2">🎬</span>
-                <span className="text-sm">Video will appear here after generation</span>
+                <span className="text-sm">O vídeo aparecerá aqui após a geração</span>
               </div>
             )}
             {videoUrl && (
@@ -289,24 +299,24 @@ export default function VideoPage() {
             )}
           </div>
 
-          {/* Activity log */}
+          {/* Log de atividade */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6 flex-1">
-            <h2 className="font-semibold text-gray-900 mb-3">📋 Activity Log</h2>
+            <h2 className="font-semibold text-gray-900 mb-3">📋 Log de Atividade</h2>
             <div className="bg-gray-900 rounded-xl p-4 h-48 overflow-y-auto font-mono text-xs text-green-400 flex flex-col gap-1">
               {log.length === 0 ? (
-                <span className="text-gray-600">Waiting for action...</span>
+                <span className="text-gray-600">Aguardando ação...</span>
               ) : (
                 log.map((line, i) => <div key={i}>{line}</div>)
               )}
             </div>
           </div>
 
-          {/* Status badge */}
+          {/* Badge de sucesso */}
           {status === "done" && (
             <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
               <div className="text-2xl mb-1">🎉</div>
-              <p className="text-green-700 font-semibold text-sm">Campaign published successfully!</p>
-              <p className="text-green-600 text-xs mt-1">Your goodMix video is live on @Cytron TikTok 🎵</p>
+              <p className="text-green-700 font-semibold text-sm">Campanha publicada com sucesso!</p>
+              <p className="text-green-600 text-xs mt-1">Seu vídeo goodMix está no ar no @Cytron TikTok 🎵</p>
             </div>
           )}
         </div>
