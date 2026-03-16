@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "DataAI — Análise de dados com inteligência artificial",
-  description: "Transforme seus dados em decisões inteligentes com IA. Conecte fontes, faça perguntas em português e obtenha insights em segundos.",
+  title: "DataAI — AI-powered data analysis",
+  description: "Turn your data into intelligent decisions with AI. Connect sources, ask questions in plain English, and get insights in seconds.",
 };
 
 export default function RootLayout({

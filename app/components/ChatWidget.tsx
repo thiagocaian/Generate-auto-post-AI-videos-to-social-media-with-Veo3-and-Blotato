@@ -12,7 +12,7 @@ export default function ChatWidget() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Olá! Sou seu assistente de análise de dados. Como posso ajudar você hoje?",
+      content: "Hi! I'm your data analysis assistant. How can I help you today?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -43,12 +43,12 @@ export default function ChatWidget() {
       const data = await res.json();
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: data.reply ?? "Erro ao obter resposta." },
+        { role: "assistant", content: data.reply ?? "Failed to get a response." },
       ]);
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Erro de conexão. Tente novamente." },
+        { role: "assistant", content: "Connection error. Please try again." },
       ]);
     } finally {
       setLoading(false);
@@ -61,7 +61,7 @@ export default function ChatWidget() {
       <button
         onClick={() => setOpen((v) => !v)}
         className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 transition-colors"
-        aria-label="Abrir chat"
+        aria-label="Open chat"
       >
         {open ? (
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -79,8 +79,8 @@ export default function ChatWidget() {
         <div className="fixed bottom-24 right-6 z-50 flex w-80 flex-col rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
           {/* Header */}
           <div className="bg-indigo-600 px-4 py-3 text-white">
-            <p className="font-semibold text-sm">Assistente de Dados</p>
-            <p className="text-xs text-indigo-200">Powered by IA</p>
+            <p className="font-semibold text-sm">Data Assistant</p>
+            <p className="text-xs text-indigo-200">Powered by AI</p>
           </div>
 
           {/* Mensagens */}
@@ -120,7 +120,7 @@ export default function ChatWidget() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              placeholder="Escreva sua dúvida..."
+              placeholder="Ask a question..."
               className="flex-1 rounded-full border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:border-indigo-400"
             />
             <button
