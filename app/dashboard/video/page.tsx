@@ -1,28 +1,50 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
-// ✅ Prompts dos vídeos ficam em inglês (necessário para a IA gerar corretamente)
-const GOODMIX_PROMPTS = [
+// 🖼️ Imagens reais dos produtos goodMix (do site oficial)
+const GOODMIX_PRODUCTS = [
   {
-    label: "Gut Cleanse — Ritual matinal",
+    id: "gut-cleanse",
+    label: "Gut Cleanse",
+    subtitle: "211 servings · Ritual matinal",
+    imageUrl: "https://www.goodmix.com.au/cdn/shop/files/gut_cleanse_new.png?v=1767569796&width=1024",
+    // Prompt de MOVIMENTO — a IA anima a foto real do produto
     prompt:
-      "Cinematic close-up of hands mixing a spoonful of natural green superfood powder into a glass of clear water at golden hour. Bubbles dissolve slowly. Text overlay: 'Start your gut reset today.' Clean white kitchen background. Warm, vibrant colors. 9:16 vertical format. Aspirational wellness aesthetic.",
+      "The goodMix Gut Cleanse product slowly rotates on a clean marble surface. Warm golden morning light streams in from the left. Camera gently pushes in. Ingredients — green powder, chia seeds — float gracefully around the product. Text fades in: 'Start your gut reset today.' Calm, premium wellness aesthetic. 9:16 vertical.",
+    caption:
+      "🌿 Start your morning right with goodMix Gut Cleanse. 211 servings of gut-healing superfoods. 💚 Link in bio! #GutHealth #GutCleanse #goodMix #WellnessRoutine #Superfoods #HealthyLiving #TikTokMadeMeBuyIt",
   },
   {
-    label: "Gut Reset — Antes & Depois",
+    id: "gut-reset",
+    label: "Gut Reset",
+    subtitle: "199 servings · Transformação",
+    imageUrl: "https://www.goodmix.com.au/cdn/shop/files/gut_reset_new.png?v=1767569926&width=1024",
     prompt:
-      "Split-screen vertical ad: left side shows a tired person slumped at a desk in dim light, right side shows the same person energized and smiling after taking goodMix Gut Reset superfood blend. Australian summer light, natural tones. Bold text: 'Reset your gut. Reset your life.' 9:16 format.",
+      "The goodMix Gut Reset product sits on a natural wooden table. Camera orbits slowly around it, revealing all sides. Soft Australian daylight. A spoonful of natural powder pours into water in the foreground. Text appears: 'Reset your gut. Reset your life.' Forest green tones. 9:16 vertical. Premium health brand aesthetic.",
+    caption:
+      "✨ Reset your gut, reset your life. goodMix Gut Reset — Australia's #1 gut health blend. 💚 Link in bio to try risk-free! #GutReset #GutHealth #goodMix #AustralianSuperfoods #WellnessJourney #HealthyGut",
   },
   {
-    label: "Gut Repair — Ingredientes naturais",
+    id: "gut-repair",
+    label: "Gut Repair",
+    subtitle: "288 servings · Regeneração",
+    imageUrl: "https://www.goodmix.com.au/cdn/shop/files/gut_repair_new.png?v=1767569737&width=1024",
     prompt:
-      "Macro slow-motion video of natural superfoods — chia seeds, flaxseed, dried fruits — falling into a wooden bowl. Rich earthy colors. Voiceover text overlay: '288 servings of gut-healing power.' Australian health food brand aesthetic. Deep green and cream palette. 9:16 vertical.",
+      "The goodMix Gut Repair product stands tall on a dark green velvet surface. Macro shots of natural superfoods — aloe vera, dried fruits, flaxseed — drift past the camera in slow motion. Warm earthy light. Camera slowly zooms in. Text overlay: '288 servings of gut-healing power.' 9:16 vertical. Luxury Australian wellness brand.",
+    caption:
+      "🔬 288 servings of natural gut-healing power. goodMix Gut Repair — naturopathically designed for real results. 🌿 Link in bio! #GutRepair #GutHealing #goodMix #NaturalHealth #Superfoods #GutMicrobiome #WellnessTikTok",
   },
   {
-    label: "Bundle — Os 3 produtos juntos",
+    id: "bundle",
+    label: "Bundle — Os 3 Juntos",
+    subtitle: "Gut Cleanse + Reset + Repair",
+    imageUrl: "https://www.goodmix.com.au/cdn/shop/files/gut_cleanse_new.png?v=1767569796&width=1024",
     prompt:
-      "Elegant product reveal: three goodMix superfood jars — Gut Cleanse, Gut Reset, Gut Repair — arranged on a marble surface with fresh herbs and morning sunlight streaming in. Camera slowly pushes in. Text: 'The complete gut health system.' Forest green branding. 9:16 vertical format.",
+      "Three goodMix superfood products — Gut Cleanse, Gut Reset, Gut Repair — revealed one by one on a white marble surface with fresh herbs. Camera starts close and slowly pulls back to reveal all three. Morning sunlight. Text: 'The complete gut health system.' Forest green branding. 9:16 vertical. Elegant product hero shot.",
+    caption:
+      "🌿 The complete goodMix gut health system. 3 powerful blends. 1 simple routine. 💚 Bundle available — link in bio! #goodMix #GutHealth #GutCleanse #GutReset #GutRepair #Superfoods #AustralianHealth #WellnessBundle",
   },
 ];
 
@@ -37,16 +59,22 @@ const PLATFORMS = [
 type Status = "idle" | "generating" | "posting" | "done" | "error";
 
 export default function VideoPage() {
-  const [prompt, setPrompt] = useState(GOODMIX_PROMPTS[0].prompt);
+  const [selectedProduct, setSelectedProduct] = useState(GOODMIX_PRODUCTS[0]);
+  const [prompt, setPrompt] = useState(GOODMIX_PRODUCTS[0].prompt);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(["tiktok"]);
-  const [caption, setCaption] = useState(
-    "🌿 Reset your gut, reset your life. goodMix Superfoods — Australia's #1 gut health blend. Link in bio to try free. #GutHealth #Superfoods #Wellness #goodMix #TikTokMadeMeBuyIt #HealthyLiving"
-  );
+  const [caption, setCaption] = useState(GOODMIX_PRODUCTS[0].caption);
   const [videoUrl, setVideoUrl] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [log, setLog] = useState<string[]>([]);
 
-  const addLog = (msg: string) => setLog((prev) => [...prev, `${new Date().toLocaleTimeString()} — ${msg}`]);
+  const addLog = (msg: string) =>
+    setLog((prev) => [...prev, `${new Date().toLocaleTimeString()} — ${msg}`]);
+
+  const selectProduct = (product: typeof GOODMIX_PRODUCTS[0]) => {
+    setSelectedProduct(product);
+    setPrompt(product.prompt);
+    setCaption(product.caption);
+  };
 
   const togglePlatform = (id: string) =>
     setSelectedPlatforms((prev) =>
@@ -56,13 +84,20 @@ export default function VideoPage() {
   async function handleGenerate() {
     setStatus("generating");
     setLog([]);
-    addLog("🎬 Enviando prompt para geração de vídeo com IA...");
+    addLog(`🖼️ Usando imagem real do produto: ${selectedProduct.label}`);
+    addLog("🎬 Iniciando geração de vídeo com IA (Kling v2 — imagem-para-vídeo)...");
+    addLog("⏳ Isso pode levar entre 1 e 3 minutos, aguarde...");
 
     try {
       const res = await fetch("/api/generate-video", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, aspectRatio: "9:16", durationSeconds: 5 }),
+        body: JSON.stringify({
+          prompt,
+          imageUrl: selectedProduct.id !== "bundle" ? selectedProduct.imageUrl : undefined,
+          aspectRatio: "9:16",
+          durationSeconds: 5,
+        }),
       });
 
       const data = await res.json();
@@ -74,7 +109,6 @@ export default function VideoPage() {
       }
 
       addLog(`✅ Vídeo gerado com sucesso!`);
-      addLog(`🔗 URL: ${data.videoUrl}`);
       setVideoUrl(data.videoUrl);
       setStatus("idle");
     } catch {
@@ -117,14 +151,20 @@ export default function VideoPage() {
   async function handleGenerateAndPost() {
     setStatus("generating");
     setLog([]);
-    addLog("🎬 Iniciando geração de vídeo com IA (Kling v2)...");
+    addLog(`🖼️ Produto selecionado: ${selectedProduct.label}`);
+    addLog("🎬 Iniciando geração de vídeo com IA (Kling v2 — imagem-para-vídeo)...");
     addLog("⏳ Isso pode levar entre 1 e 3 minutos, aguarde...");
 
     try {
       const genRes = await fetch("/api/generate-video", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, aspectRatio: "9:16", durationSeconds: 5 }),
+        body: JSON.stringify({
+          prompt,
+          imageUrl: selectedProduct.id !== "bundle" ? selectedProduct.imageUrl : undefined,
+          aspectRatio: "9:16",
+          durationSeconds: 5,
+        }),
       });
 
       const genData = await genRes.json();
@@ -139,7 +179,7 @@ export default function VideoPage() {
       addLog(`✅ Vídeo gerado! Iniciando publicação...`);
       setStatus("posting");
 
-      addLog(`📤 Enviando para as plataformas selecionadas...`);
+      addLog(`📤 Enviando para: ${selectedPlatforms.join(", ")}...`);
 
       const postRes = await fetch("/api/post-social", {
         method: "POST",
@@ -171,10 +211,10 @@ export default function VideoPage() {
         <div className="flex items-center gap-3">
           <a href="/dashboard" className="text-gray-400 hover:text-gray-600 text-sm">← Painel</a>
           <span className="text-gray-300">/</span>
-          <span className="text-sm font-medium">Campanha de Vídeo com IA</span>
+          <span className="text-sm font-medium">Campanha de Vídeo goodMix</span>
         </div>
         <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
-          goodMix Superfoods
+          🌿 goodMix Superfoods
         </span>
       </div>
 
@@ -182,43 +222,70 @@ export default function VideoPage() {
         {/* Esquerda — Configuração */}
         <div className="flex flex-col gap-6">
 
-          {/* Seletor de prompt */}
+          {/* Seletor de produto com imagem real */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <h2 className="font-semibold text-gray-900 mb-1">🎬 Prompt do Vídeo</h2>
-            <p className="text-xs text-gray-400 mb-4">O prompt fica em inglês para a IA gerar melhor. Escolha um ou escreva o seu:</p>
-            <div className="flex flex-col gap-2 mb-4">
-              {GOODMIX_PROMPTS.map((p) => (
+            <h2 className="font-semibold text-gray-900 mb-1">🛍️ Produto goodMix</h2>
+            <p className="text-xs text-gray-400 mb-4">
+              A IA vai animar a foto real do produto para criar o vídeo:
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              {GOODMIX_PRODUCTS.map((p) => (
                 <button
-                  key={p.label}
-                  onClick={() => setPrompt(p.prompt)}
-                  className={`text-left text-sm px-3 py-2 rounded-lg border transition-colors ${
-                    prompt === p.prompt
-                      ? "border-indigo-400 bg-indigo-50 text-indigo-700"
-                      : "border-gray-200 hover:bg-gray-50 text-gray-600"
+                  key={p.id}
+                  onClick={() => selectProduct(p)}
+                  className={`relative rounded-xl border-2 overflow-hidden transition-all text-left ${
+                    selectedProduct.id === p.id
+                      ? "border-green-500 shadow-md"
+                      : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  {p.label}
+                  <div className="bg-gray-50 flex items-center justify-center h-28">
+                    <Image
+                      src={p.imageUrl}
+                      alt={p.label}
+                      width={90}
+                      height={90}
+                      className="object-contain"
+                      unoptimized
+                    />
+                  </div>
+                  <div className="p-2">
+                    <p className={`text-xs font-semibold ${selectedProduct.id === p.id ? "text-green-700" : "text-gray-800"}`}>
+                      {p.label}
+                    </p>
+                    <p className="text-[10px] text-gray-400">{p.subtitle}</p>
+                  </div>
+                  {selectedProduct.id === p.id && (
+                    <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">✓</div>
+                  )}
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Prompt de movimento */}
+          <div className="bg-white rounded-2xl border border-gray-100 p-6">
+            <h2 className="font-semibold text-gray-900 mb-1">🎬 Direção do Vídeo</h2>
+            <p className="text-xs text-gray-400 mb-3">
+              Descreve como a câmera se move e o que acontece no vídeo (em inglês para melhor resultado):
+            </p>
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               rows={5}
-              className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:border-indigo-400"
-              placeholder="Ou escreva seu próprio prompt em inglês..."
+              className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:border-green-400"
             />
           </div>
 
           {/* Legenda */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
             <h2 className="font-semibold text-gray-900 mb-1">📝 Legenda para as Redes</h2>
-            <p className="text-xs text-gray-400 mb-3">Texto que será publicado junto com o vídeo:</p>
+            <p className="text-xs text-gray-400 mb-3">Texto publicado junto com o vídeo:</p>
             <textarea
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
               rows={4}
-              className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:border-indigo-400"
+              className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:border-green-400"
             />
           </div>
 
@@ -233,7 +300,7 @@ export default function VideoPage() {
                   onClick={() => togglePlatform(p.id)}
                   className={`text-sm px-4 py-2 rounded-full border transition-colors ${
                     selectedPlatforms.includes(p.id)
-                      ? "bg-indigo-600 text-white border-indigo-600"
+                      ? "bg-green-600 text-white border-green-600"
                       : "border-gray-300 text-gray-600 hover:bg-gray-50"
                   }`}
                 >
@@ -248,7 +315,7 @@ export default function VideoPage() {
             <button
               onClick={handleGenerateAndPost}
               disabled={status === "generating" || status === "posting"}
-              className="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+              className="w-full bg-green-600 text-white rounded-xl py-3.5 font-semibold hover:bg-green-700 disabled:opacity-50 transition-colors"
             >
               {status === "generating"
                 ? "⏳ Gerando vídeo com IA..."
@@ -278,24 +345,36 @@ export default function VideoPage() {
         {/* Direita — Preview e Logs */}
         <div className="flex flex-col gap-6">
 
-          {/* Preview do vídeo */}
+          {/* Preview do produto selecionado */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
             <h2 className="font-semibold text-gray-900 mb-3">📺 Pré-visualização</h2>
             {videoUrl ? (
-              <video src={videoUrl} controls className="w-full rounded-xl" />
+              <>
+                <video src={videoUrl} controls className="w-full rounded-xl" />
+                <input
+                  type="text"
+                  value={videoUrl}
+                  readOnly
+                  className="mt-3 w-full text-xs border border-gray-200 rounded-lg px-3 py-2 text-gray-500 bg-gray-50"
+                />
+              </>
             ) : (
-              <div className="h-64 bg-gray-50 rounded-xl flex flex-col items-center justify-center text-gray-400 border border-dashed border-gray-200">
-                <span className="text-4xl mb-2">🎬</span>
-                <span className="text-sm">O vídeo aparecerá aqui após a geração</span>
+              <div className="h-64 bg-gray-50 rounded-xl flex flex-col items-center justify-center border border-dashed border-gray-200">
+                <Image
+                  src={selectedProduct.imageUrl}
+                  alt={selectedProduct.label}
+                  width={120}
+                  height={120}
+                  className="object-contain mb-3 opacity-60"
+                  unoptimized
+                />
+                <span className="text-xs text-gray-400">
+                  A IA vai animar este produto
+                </span>
+                <span className="text-xs font-medium text-green-600 mt-1">
+                  {selectedProduct.label}
+                </span>
               </div>
-            )}
-            {videoUrl && (
-              <input
-                type="text"
-                value={videoUrl}
-                readOnly
-                className="mt-3 w-full text-xs border border-gray-200 rounded-lg px-3 py-2 text-gray-500 bg-gray-50"
-              />
             )}
           </div>
 
@@ -316,7 +395,9 @@ export default function VideoPage() {
             <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
               <div className="text-2xl mb-1">🎉</div>
               <p className="text-green-700 font-semibold text-sm">Campanha publicada com sucesso!</p>
-              <p className="text-green-600 text-xs mt-1">Seu vídeo goodMix está no ar no @Cytron TikTok 🎵</p>
+              <p className="text-green-600 text-xs mt-1">
+                Seu vídeo goodMix {selectedProduct.label} está no ar! 🎵
+              </p>
             </div>
           )}
         </div>

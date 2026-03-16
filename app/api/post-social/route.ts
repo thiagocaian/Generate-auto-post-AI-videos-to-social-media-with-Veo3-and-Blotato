@@ -41,14 +41,20 @@ export async function POST(req: NextRequest) {
 
     // 1. Fetch connected accounts to get accountIds
     const accountsRes = await fetch(`${BLOTATO_API}/v2/users/me/accounts`, {
-      headers: { "api-key": apiKey },
+      headers: { "blotato-api-key": apiKey },
     });
 
     if (!accountsRes.ok) {
-      return NextResponse.json({ error: "Failed to fetch Blotato accounts" }, { status: 502 });
+      const errText = await accountsRes.text();
+      console.error("Blotato accounts error:", accountsRes.status, errText);
+      return NextResponse.json(
+        { error: `Failed to fetch Blotato accounts: ${accountsRes.status} — ${errText}` },
+        { status: 502 }
+      );
     }
 
     const accounts = await accountsRes.json();
+    console.log("Blotato accounts:", JSON.stringify(accounts));
 
     // 2. Post to each requested platform
     const results = await Promise.allSettled(
@@ -98,7 +104,7 @@ export async function POST(req: NextRequest) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "api-key": apiKey,
+            "blotato-api-key": apiKey,
           },
           body: JSON.stringify(body),
         });
