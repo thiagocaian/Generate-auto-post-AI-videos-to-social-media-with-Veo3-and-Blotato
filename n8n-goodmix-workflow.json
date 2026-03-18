@@ -1,0 +1,341 @@
+{
+  "name": "goodMix — Auto TikTok Video Post",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            { "field": "cronExpression", "expression": "0 9 * * *" }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000001",
+      "name": "⏰ Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [200, 300],
+      "typeVersion": 1.2,
+      "notes": "Configure os horários de postagem aqui. Padrão: 9h. Adicione mais intervalos para múltiplas postagens por dia (ex: 9h, 15h, 20h)."
+    },
+    {
+      "parameters": {
+        "jsCode": "// ✅ Rotação diária de produtos goodMix\nconst products = [\n  {\n    id: 'gut-cleanse',\n    label: 'goodMix Gut Cleanse',\n    recipe: 'tropical smoothie bowl',\n    imageUrl: 'https://www.goodmix.com.au/cdn/shop/files/gut_cleanse_new.png?v=1767569796&width=1024',\n    captionHint: 'smoothie bowl upgrade, prebiotic fuel, morning routine'\n  },\n  {\n    id: 'gut-reset',\n    label: 'goodMix Gut Reset',\n    recipe: 'overnight oats with almond milk',\n    imageUrl: 'https://www.goodmix.com.au/cdn/shop/files/gut_reset_new.png?v=1767569926&width=1024',\n    captionHint: 'overnight oats glow-up, prebiotic breakfast, works while you sleep'\n  },\n  {\n    id: 'gut-repair',\n    label: 'goodMix Gut Repair',\n    recipe: 'acai bowl with granola and berries',\n    imageUrl: 'https://www.goodmix.com.au/cdn/shop/files/gut_repair_new.png?v=1767569737&width=1024',\n    captionHint: 'gut healing, 288 servings, acai bowl topping, natural health'\n  }\n];\n\n// Rotação por dia da semana (segunda=Cleanse, terça=Reset, quarta=Repair, ...)\nconst dayIndex = new Date().getDay() % products.length;\nconst product = products[dayIndex];\n\nreturn [{ json: { ...product, timestamp: new Date().toISOString() } }];"
+      },
+      "id": "a1b2c3d4-0002-0002-0002-000000000002",
+      "name": "🛍️ Select Product",
+      "type": "n8n-nodes-base.code",
+      "position": [440, 300],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_OPENAI_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-4o\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a creative video director for goodMix Superfoods Australia. You create viral TikTok video scripts (9:16 vertical) that show faceless recipe preparation — hands only, no face shown. The videos feel like aesthetic ASMR cooking content. Always write prompts in English for best AI video generation results. Be specific about camera movements, lighting, textures, and the slow-motion powder-falling moments. Keep prompts under 300 words.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"=Create TWO things for a TikTok video about {{ $json.label }} being used in a {{ $json.recipe }}:\\n\\n1. VIDEO_PROMPT: A cinematic AI video generation prompt (under 250 words). Must include:\\n- Starting from a close-up of the {{ $json.label }} product package\\n- Female hands (no face shown at any point) preparing the {{ $json.recipe }}\\n- Satisfying slow-motion shot of the superfood powder being scooped and poured\\n- ASMR close-up of textures, natural morning light, marble/wooden kitchen surface\\n- 9:16 vertical, aesthetic wellness food content\\n- End with the finished {{ $json.recipe }} looking beautiful\\n\\n2. TIKTOK_CAPTION: A viral TikTok caption (under 200 chars) + 8-10 hashtags. Angle: {{ $json.captionHint }}. Use emojis. End with a CTA.\\n\\nReturn ONLY valid JSON: {\\\"videoPrompt\\\": \\\"...\\\", \\\"caption\\\": \\\"...\\\"}\"\n    }\n  ],\n  \"temperature\": 0.8,\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0003-0003-0003-000000000003",
+      "name": "✍️ Generate Prompt (OpenAI)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [680, 300],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse OpenAI response and prepare data\nconst openAiResponse = $input.item.json;\nconst content = JSON.parse(openAiResponse.choices[0].message.content);\nconst product = $('🛍️ Select Product').item.json;\n\nreturn [{\n  json: {\n    videoPrompt: content.videoPrompt,\n    caption: content.caption,\n    productLabel: product.label,\n    productId: product.id,\n    imageUrl: product.imageUrl,\n    timestamp: product.timestamp\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0004-0004-0004-000000000004",
+      "name": "📝 Parse AI Response",
+      "type": "n8n-nodes-base.code",
+      "position": [920, 300],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/veo3",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key YOUR_FAL_AI_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"prompt\": \"{{ $json.videoPrompt }}\",\n  \"aspect_ratio\": \"9:16\",\n  \"duration\": \"8s\",\n  \"resolution\": \"720p\",\n  \"generate_audio\": true,\n  \"safety_tolerance\": \"4\",\n  \"auto_fix\": true\n}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0005-0005-0005-000000000005",
+      "name": "🎬 Submit Veo3 Job (fal.ai)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1160, 300],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Store request_id and pass forward all data\nconst falResponse = $input.item.json;\nconst prevData = $('📝 Parse AI Response').item.json;\n\nreturn [{\n  json: {\n    requestId: falResponse.request_id,\n    falQueueUrl: falResponse.response_url || `https://queue.fal.run/fal-ai/veo3/requests/${falResponse.request_id}`,\n    videoPrompt: prevData.videoPrompt,\n    caption: prevData.caption,\n    productLabel: prevData.productLabel,\n    productId: prevData.productId,\n    imageUrl: prevData.imageUrl,\n    timestamp: prevData.timestamp,\n    pollAttempts: 0\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0006-0006-0006-000000000006",
+      "name": "💾 Save Request ID",
+      "type": "n8n-nodes-base.code",
+      "position": [1400, 300],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "amount": 90,
+        "unit": "seconds"
+      },
+      "id": "a1b2c3d4-0007-0007-0007-000000000007",
+      "name": "⏳ Wait 90s (initial)",
+      "type": "n8n-nodes-base.wait",
+      "position": [1640, 300],
+      "typeVersion": 1.1,
+      "webhookId": "wait-initial-90s"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://queue.fal.run/fal-ai/veo3/requests/{{ $json.requestId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key YOUR_FAL_AI_KEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0008-0008-0008-000000000008",
+      "name": "🔍 Poll Veo3 Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1880, 300],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Check status and pass forward all previous data\nconst statusResponse = $input.item.json;\nconst prevData = $('💾 Save Request ID').item.json;\n\nconst status = statusResponse.status;\nlet videoUrl = null;\n\n// Extract video URL if completed\nif (status === 'COMPLETED' && statusResponse.output) {\n  videoUrl = statusResponse.output.video?.url || statusResponse.output?.url || null;\n}\n\nreturn [{\n  json: {\n    status: status,\n    videoUrl: videoUrl,\n    requestId: prevData.requestId,\n    caption: prevData.caption,\n    productLabel: prevData.productLabel,\n    productId: prevData.productId,\n    timestamp: prevData.timestamp,\n    pollAttempts: (prevData.pollAttempts || 0) + 1\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0009-0009-0009-000000000009",
+      "name": "📊 Parse Status",
+      "type": "n8n-nodes-base.code",
+      "position": [2120, 300],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "condition-completed",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "COMPLETED",
+              "operator": { "type": "string", "operation": "equals" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0010-0010-0010-000000000010",
+      "name": "✅ Video Completed?",
+      "type": "n8n-nodes-base.if",
+      "position": [2360, 300],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "id": "a1b2c3d4-0011-0011-0011-000000000011",
+      "name": "⏳ Wait 30s (retry)",
+      "type": "n8n-nodes-base.wait",
+      "position": [2360, 540],
+      "typeVersion": 1.1,
+      "webhookId": "wait-retry-30s"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://backend.blotato.com/v2/users/me/accounts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "blotato-api-key",
+              "value": "YOUR_BLOTATO_API_KEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0012-0012-0012-000000000012",
+      "name": "👤 Get Blotato Accounts",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [2600, 180],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Find TikTok account (prefer @Cytron)\nconst accountsData = $input.item.json;\nconst accounts = Array.isArray(accountsData) ? accountsData : (accountsData.items ?? []);\n\nconst tiktokAccount = \n  accounts.find(a => a.platform === 'tiktok' && (\n    a.username?.toLowerCase().includes('cytron') ||\n    a.fullname?.toLowerCase().includes('cytron')\n  )) ||\n  accounts.find(a => a.platform === 'tiktok');\n\nif (!tiktokAccount) {\n  throw new Error('No TikTok account connected in Blotato!');\n}\n\nconst videoData = $('📊 Parse Status').item.json;\n\nreturn [{\n  json: {\n    accountId: tiktokAccount.id,\n    username: tiktokAccount.username,\n    videoUrl: videoData.videoUrl,\n    caption: videoData.caption,\n    productLabel: videoData.productLabel,\n    timestamp: videoData.timestamp\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0013-0013-0013-000000000013",
+      "name": "🎯 Find TikTok Account",
+      "type": "n8n-nodes-base.code",
+      "position": [2840, 180],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/posts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "blotato-api-key",
+              "value": "YOUR_BLOTATO_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"post\": {\n    \"accountId\": \"{{ $json.accountId }}\",\n    \"content\": {\n      \"text\": \"{{ $json.caption }}\",\n      \"mediaUrls\": [\"{{ $json.videoUrl }}\"],\n      \"platform\": \"tiktok\"\n    },\n    \"target\": {\n      \"targetType\": \"tiktok\",\n      \"privacyLevel\": \"PUBLIC_TO_EVERYONE\",\n      \"disabledComments\": false,\n      \"disabledDuet\": false,\n      \"disabledStitch\": false,\n      \"isBrandedContent\": false,\n      \"isYourBrand\": false,\n      \"isAiGenerated\": true\n    }\n  }\n}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0014-0014-0014-000000000014",
+      "name": "🚀 Post to TikTok (Blotato)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [3080, 180],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare final notification data\nconst postResponse = $input.item.json;\nconst accountData = $('🎯 Find TikTok Account').item.json;\n\nreturn [{\n  json: {\n    success: true,\n    postSubmissionId: postResponse.postSubmissionId,\n    tiktokAccount: accountData.username,\n    productLabel: accountData.productLabel,\n    videoUrl: accountData.videoUrl,\n    caption: accountData.caption,\n    postedAt: new Date().toISOString(),\n    message: `✅ goodMix vídeo postado no TikTok @${accountData.username}!\\n\\n🎬 Produto: ${accountData.productLabel}\\n🔗 Vídeo: ${accountData.videoUrl}\\n📝 Legenda: ${accountData.caption?.slice(0, 100)}...`\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0015-0015-0015-000000000015",
+      "name": "📋 Prepare Notification",
+      "type": "n8n-nodes-base.code",
+      "position": [3320, 180],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "YOUR_NOTIFICATION_WEBHOOK_URL",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": \"{{ $json.message }}\",\n  \"product\": \"{{ $json.productLabel }}\",\n  \"videoUrl\": \"{{ $json.videoUrl }}\",\n  \"postedAt\": \"{{ $json.postedAt }}\",\n  \"submissionId\": \"{{ $json.postSubmissionId }}\"\n}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0016-0016-0016-000000000016",
+      "name": "🔔 Notificação (Webhook/Email/Slack)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [3560, 180],
+      "typeVersion": 4.2,
+      "notes": "Configure com Slack webhook, email, Telegram bot ou qualquer serviço de notificação. URL atual é placeholder."
+    }
+  ],
+  "connections": {
+    "⏰ Schedule Trigger": {
+      "main": [[{ "node": "🛍️ Select Product", "type": "main", "index": 0 }]]
+    },
+    "🛍️ Select Product": {
+      "main": [[{ "node": "✍️ Generate Prompt (OpenAI)", "type": "main", "index": 0 }]]
+    },
+    "✍️ Generate Prompt (OpenAI)": {
+      "main": [[{ "node": "📝 Parse AI Response", "type": "main", "index": 0 }]]
+    },
+    "📝 Parse AI Response": {
+      "main": [[{ "node": "🎬 Submit Veo3 Job (fal.ai)", "type": "main", "index": 0 }]]
+    },
+    "🎬 Submit Veo3 Job (fal.ai)": {
+      "main": [[{ "node": "💾 Save Request ID", "type": "main", "index": 0 }]]
+    },
+    "💾 Save Request ID": {
+      "main": [[{ "node": "⏳ Wait 90s (initial)", "type": "main", "index": 0 }]]
+    },
+    "⏳ Wait 90s (initial)": {
+      "main": [[{ "node": "🔍 Poll Veo3 Status", "type": "main", "index": 0 }]]
+    },
+    "🔍 Poll Veo3 Status": {
+      "main": [[{ "node": "📊 Parse Status", "type": "main", "index": 0 }]]
+    },
+    "📊 Parse Status": {
+      "main": [[{ "node": "✅ Video Completed?", "type": "main", "index": 0 }]]
+    },
+    "✅ Video Completed?": {
+      "main": [
+        [{ "node": "👤 Get Blotato Accounts", "type": "main", "index": 0 }],
+        [{ "node": "⏳ Wait 30s (retry)", "type": "main", "index": 0 }]
+      ]
+    },
+    "⏳ Wait 30s (retry)": {
+      "main": [[{ "node": "🔍 Poll Veo3 Status", "type": "main", "index": 0 }]]
+    },
+    "👤 Get Blotato Accounts": {
+      "main": [[{ "node": "🎯 Find TikTok Account", "type": "main", "index": 0 }]]
+    },
+    "🎯 Find TikTok Account": {
+      "main": [[{ "node": "🚀 Post to TikTok (Blotato)", "type": "main", "index": 0 }]]
+    },
+    "🚀 Post to TikTok (Blotato)": {
+      "main": [[{ "node": "📋 Prepare Notification", "type": "main", "index": 0 }]]
+    },
+    "📋 Prepare Notification": {
+      "main": [[{ "node": "🔔 Notificação (Webhook/Email/Slack)", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "tags": ["goodMix", "TikTok", "AI Video", "Veo3", "Blotato"],
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "description": "Workflow automático para gerar vídeos de receitas goodMix com Veo3 (fal.ai) e publicar no TikTok via Blotato. Roda em nuvem, sem precisar de browser aberto."
+  }
+}

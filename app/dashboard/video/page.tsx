@@ -8,43 +8,43 @@ const GOODMIX_PRODUCTS = [
   {
     id: "gut-cleanse",
     label: "Gut Cleanse",
-    subtitle: "211 servings · Ritual matinal",
+    subtitle: "Smoothie bowl · Ritual matinal 🥣",
     imageUrl: "https://www.goodmix.com.au/cdn/shop/files/gut_cleanse_new.png?v=1767569796&width=1024",
-    // Prompt de MOVIMENTO — a IA anima a foto real do produto
+    // Prompt de RECEITA faceless — mãos preparando comida com o produto
     prompt:
-      "The goodMix Gut Cleanse product slowly rotates on a clean marble surface. Warm golden morning light streams in from the left. Camera gently pushes in. Ingredients — green powder, chia seeds — float gracefully around the product. Text fades in: 'Start your gut reset today.' Calm, premium wellness aesthetic. 9:16 vertical.",
+      "Starting from a close-up of the goodMix Gut Cleanse package on a white marble kitchen counter, the camera slowly pulls back. A pair of clean female hands (no face shown at any point) enters the frame, opens the container and scoops two heaped tablespoons of the green superfood blend. She pours it into a vibrant frozen mango and banana smoothie bowl. The green powder cascades in satisfying slow motion. Soft warm morning kitchen light streams through a window. Cozy, aesthetic ASMR-style food prep content. 9:16 vertical.",
     caption:
-      "🌿 Start your morning right with goodMix Gut Cleanse. 211 servings of gut-healing superfoods. 💚 Link in bio! #GutHealth #GutCleanse #goodMix #WellnessRoutine #Superfoods #HealthyLiving #TikTokMadeMeBuyIt",
+      "🥣 Smoothie bowl upgrade your gut will love 🌿 Two scoops of goodMix Gut Cleanse = prebiotic fuel for your whole day 💚 Drop a 🙋 if you're trying this! #GutHealth #SmoothieBowl #goodMix #HealthyBreakfast #MorningRoutine #GutCleanse #WellnessTips #HealthyRecipes #AustralianSuperfoods",
   },
   {
     id: "gut-reset",
     label: "Gut Reset",
-    subtitle: "199 servings · Transformação",
+    subtitle: "Overnight oats · Café da manhã 🫙",
     imageUrl: "https://www.goodmix.com.au/cdn/shop/files/gut_reset_new.png?v=1767569926&width=1024",
     prompt:
-      "The goodMix Gut Reset product sits on a natural wooden table. Camera orbits slowly around it, revealing all sides. Soft Australian daylight. A spoonful of natural powder pours into water in the foreground. Text appears: 'Reset your gut. Reset your life.' Forest green tones. 9:16 vertical. Premium health brand aesthetic.",
+      "Starting from a close-up of the goodMix Gut Reset package on a warm wooden kitchen bench, the camera gently zooms out. Female hands (no face shown at any point) pour a generous scoop of the earthy superfood blend into a glass jar of overnight oats with almond milk and chia seeds. She stirs it slowly with a wooden spoon — close-up of the oats swirling with the blend. Camera tilts up to show the beautifully layered jar. Soft cozy morning light. Satisfying, calming food prep aesthetic. 9:16 vertical.",
     caption:
-      "✨ Reset your gut, reset your life. goodMix Gut Reset — Australia's #1 gut health blend. 💚 Link in bio to try risk-free! #GutReset #GutHealth #goodMix #AustralianSuperfoods #WellnessJourney #HealthyGut",
+      "🫙 The overnight oats glow-up your gut has been waiting for ✨ Add goodMix Gut Reset for a prebiotic-packed breakfast that works while you sleep 💚 #GutReset #OvernightOats #GutHealth #goodMix #HealthyBreakfast #WellnessRoutine #GutMicrobiome #MealPrep #AustralianHealth",
   },
   {
     id: "gut-repair",
     label: "Gut Repair",
-    subtitle: "288 servings · Regeneração",
+    subtitle: "Acai bowl · Topping poderoso 🫐",
     imageUrl: "https://www.goodmix.com.au/cdn/shop/files/gut_repair_new.png?v=1767569737&width=1024",
     prompt:
-      "The goodMix Gut Repair product stands tall on a dark green velvet surface. Macro shots of natural superfoods — aloe vera, dried fruits, flaxseed — drift past the camera in slow motion. Warm earthy light. Camera slowly zooms in. Text overlay: '288 servings of gut-healing power.' 9:16 vertical. Luxury Australian wellness brand.",
+      "Starting from a macro close-up of the goodMix Gut Repair package, the camera slowly pulls back to reveal a purple acai smoothie bowl on a marble surface. Female hands (no face shown at any point) use a wooden spoon to scoop the healing superfood blend and gracefully sprinkle it over the bowl in a satisfying arc. The powder falls in beautiful slow motion over granola, blueberries and sliced banana. Close-up ASMR shot of textures. Warm golden natural light. Premium wellness food aesthetic. 9:16 vertical.",
     caption:
-      "🔬 288 servings of natural gut-healing power. goodMix Gut Repair — naturopathically designed for real results. 🌿 Link in bio! #GutRepair #GutHealing #goodMix #NaturalHealth #Superfoods #GutMicrobiome #WellnessTikTok",
+      "🫐 Your gut is literally begging for this acai bowl 🙏 Top it with goodMix Gut Repair — 288 servings of natural healing superfoods 🌿 Save this for your next breakfast! #GutRepair #AcaiBowl #GutHealth #goodMix #NaturalHealth #GutHealing #HealthyRecipes #WellnessFood #Superfoods",
   },
   {
     id: "bundle",
     label: "Bundle — Os 3 Juntos",
-    subtitle: "Gut Cleanse + Reset + Repair",
+    subtitle: "Kit completo · 3 receitas saudáveis 🌿",
     imageUrl: "https://www.goodmix.com.au/cdn/shop/files/gut_cleanse_new.png?v=1767569796&width=1024",
     prompt:
-      "Three goodMix superfood products — Gut Cleanse, Gut Reset, Gut Repair — revealed one by one on a white marble surface with fresh herbs. Camera starts close and slowly pulls back to reveal all three. Morning sunlight. Text: 'The complete gut health system.' Forest green branding. 9:16 vertical. Elegant product hero shot.",
+      "Top-down flat lay shot of three goodMix products — Gut Cleanse, Gut Reset, Gut Repair — arranged neatly on white marble beside matching smoothie jars. The camera slowly tilts and zooms in as female hands (no face shown at any point) open each container in sequence and scoop the blend into each jar. Each powder has a distinct color — green, earthy brown, golden. Morning sunlight. Labels clearly visible. Clean elegant kitchen aesthetic. ASMR food prep vibes. 9:16 vertical.",
     caption:
-      "🌿 The complete goodMix gut health system. 3 powerful blends. 1 simple routine. 💚 Bundle available — link in bio! #goodMix #GutHealth #GutCleanse #GutReset #GutRepair #Superfoods #AustralianHealth #WellnessBundle",
+      "🌿 Your complete gut health morning routine 🌅 Gut Cleanse + Gut Reset + Gut Repair — 3 powerful blends, 1 simple habit 💚 Which recipe are you trying first? Drop it below 👇 #goodMix #GutHealth #MorningRoutine #Superfoods #GutHealing #HealthyLifestyle #WellnessBundle #AustralianSuperfoods",
   },
 ];
 
@@ -81,38 +81,71 @@ export default function VideoPage() {
       prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
     );
 
+  // Submete o job e faz polling a cada 5s — evita timeout do browser
+  async function generateVideoWithPolling(onLog: (msg: string) => void): Promise<string | null> {
+    // 1. Submete o job
+    const submitRes = await fetch("/api/generate-video", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        prompt,
+        imageUrl: selectedProduct.id !== "bundle" ? selectedProduct.imageUrl : undefined,
+        aspectRatio: "9:16",
+        durationSeconds: 10,
+      }),
+    });
+
+    const submitData = await submitRes.json();
+    if (!submitRes.ok) {
+      onLog(`❌ Erro ao iniciar: ${submitData.error}`);
+      return null;
+    }
+
+    const { requestId, model } = submitData;
+    onLog(`🔄 Job iniciado (ID: ${requestId.slice(0, 8)}...) — verificando a cada 5s`);
+
+    // 2. Polling a cada 5s até completar
+    let attempts = 0;
+    const maxAttempts = 144; // máximo 12 minutos
+
+    while (attempts < maxAttempts) {
+      await new Promise((r) => setTimeout(r, 5000));
+      attempts++;
+
+      const statusRes = await fetch(
+        `/api/generate-video?requestId=${requestId}&model=${encodeURIComponent(model)}`
+      );
+      const statusData = await statusRes.json();
+
+      if (statusData.status === "COMPLETED") {
+        return statusData.videoUrl;
+      } else if (statusData.status === "FAILED") {
+        onLog(`❌ Falha na geração: ${statusData.error ?? "erro desconhecido"}`);
+        return null;
+      } else {
+        const elapsed = (attempts * 5);
+        onLog(`⏳ Processando... ${elapsed}s (status: ${statusData.status})`);
+      }
+    }
+
+    onLog("❌ Timeout: geração demorou mais de 12 minutos.");
+    return null;
+  }
+
   async function handleGenerate() {
     setStatus("generating");
     setLog([]);
-    addLog(`🖼️ Usando imagem real do produto: ${selectedProduct.label}`);
-    addLog("🎬 Iniciando geração de vídeo com IA (Kling v2 — imagem-para-vídeo)...");
-    addLog("⏳ Isso pode levar entre 1 e 3 minutos, aguarde...");
+    addLog(`🖼️ Produto selecionado: ${selectedProduct.label}`);
+    addLog("🎬 Enviando para fal.ai (Kling v2 — imagem-para-vídeo)...");
 
     try {
-      const res = await fetch("/api/generate-video", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt,
-          imageUrl: selectedProduct.id !== "bundle" ? selectedProduct.imageUrl : undefined,
-          aspectRatio: "9:16",
-          durationSeconds: 5,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        addLog(`❌ Erro na geração: ${data.error}`);
-        setStatus("error");
-        return;
-      }
-
-      addLog(`✅ Vídeo gerado com sucesso!`);
-      setVideoUrl(data.videoUrl);
+      const url = await generateVideoWithPolling(addLog);
+      if (!url) { setStatus("error"); return; }
+      addLog("✅ Vídeo gerado com sucesso!");
+      setVideoUrl(url);
       setStatus("idle");
     } catch {
-      addLog("❌ Erro de rede ao gerar vídeo. Verifique sua conexão.");
+      addLog("❌ Erro inesperado. Tente novamente.");
       setStatus("error");
     }
   }
@@ -152,33 +185,15 @@ export default function VideoPage() {
     setStatus("generating");
     setLog([]);
     addLog(`🖼️ Produto selecionado: ${selectedProduct.label}`);
-    addLog("🎬 Iniciando geração de vídeo com IA (Kling v2 — imagem-para-vídeo)...");
-    addLog("⏳ Isso pode levar entre 1 e 3 minutos, aguarde...");
+    addLog("🎬 Enviando para fal.ai (Kling v2 — imagem-para-vídeo)...");
 
     try {
-      const genRes = await fetch("/api/generate-video", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt,
-          imageUrl: selectedProduct.id !== "bundle" ? selectedProduct.imageUrl : undefined,
-          aspectRatio: "9:16",
-          durationSeconds: 5,
-        }),
-      });
+      const generatedUrl = await generateVideoWithPolling(addLog);
+      if (!generatedUrl) { setStatus("error"); return; }
 
-      const genData = await genRes.json();
-      if (!genRes.ok) {
-        addLog(`❌ Falha na geração: ${genData.error}`);
-        setStatus("error");
-        return;
-      }
-
-      const generatedUrl = genData.videoUrl;
       setVideoUrl(generatedUrl);
-      addLog(`✅ Vídeo gerado! Iniciando publicação...`);
+      addLog("✅ Vídeo gerado! Iniciando publicação...");
       setStatus("posting");
-
       addLog(`📤 Enviando para: ${selectedPlatforms.join(", ")}...`);
 
       const postRes = await fetch("/api/post-social", {
@@ -226,7 +241,7 @@ export default function VideoPage() {
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
             <h2 className="font-semibold text-gray-900 mb-1">🛍️ Produto goodMix</h2>
             <p className="text-xs text-gray-400 mb-4">
-              A IA vai animar a foto real do produto para criar o vídeo:
+              A IA cria um vídeo de receita faceless — mãos preparando comida com o produto:
             </p>
             <div className="grid grid-cols-2 gap-3">
               {GOODMIX_PRODUCTS.map((p) => (
@@ -265,9 +280,9 @@ export default function VideoPage() {
 
           {/* Prompt de movimento */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            <h2 className="font-semibold text-gray-900 mb-1">🎬 Direção do Vídeo</h2>
+            <h2 className="font-semibold text-gray-900 mb-1">🎬 Roteiro do Vídeo</h2>
             <p className="text-xs text-gray-400 mb-3">
-              Descreve como a câmera se move e o que acontece no vídeo (em inglês para melhor resultado):
+              Descreve a cena de receita — mãos, ingredientes, câmera (em inglês para melhor resultado):
             </p>
             <textarea
               value={prompt}
@@ -369,10 +384,10 @@ export default function VideoPage() {
                   unoptimized
                 />
                 <span className="text-xs text-gray-400">
-                  A IA vai animar este produto
+                  A IA vai criar uma receita com este produto
                 </span>
                 <span className="text-xs font-medium text-green-600 mt-1">
-                  {selectedProduct.label}
+                  {selectedProduct.label} — {selectedProduct.subtitle}
                 </span>
               </div>
             )}

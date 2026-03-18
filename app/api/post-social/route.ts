@@ -53,8 +53,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const accounts = await accountsRes.json();
-    console.log("Blotato accounts:", JSON.stringify(accounts));
+    const accountsData = await accountsRes.json();
+    console.log("Blotato accounts:", JSON.stringify(accountsData));
+
+    // Blotato returns { items: [...] }
+    const accounts: { id: string; platform: string; name?: string; username?: string; fullname?: string }[] =
+      Array.isArray(accountsData) ? accountsData : (accountsData.items ?? []);
 
     // 2. Post to each requested platform
     const results = await Promise.allSettled(
@@ -63,42 +67,53 @@ export async function POST(req: NextRequest) {
         const account =
           platform === "tiktok"
             ? (accounts.find(
-                (a: { platform: string; name?: string; username?: string }) =>
+                (a) =>
                   a.platform === "tiktok" &&
                   (a.name?.toLowerCase().includes("cytron") ||
-                    a.username?.toLowerCase().includes("cytron"))
+                    a.username?.toLowerCase().includes("cytron") ||
+                    a.fullname?.toLowerCase().includes("cytron"))
               ) ??
-              accounts.find((a: { platform: string }) => a.platform === "tiktok"))
-            : accounts.find((a: { platform: string }) => a.platform === platform);
+              accounts.find((a) => a.platform === "tiktok"))
+            : accounts.find((a) => a.platform === platform);
 
         if (!account) {
           throw new Error(`No connected account for platform: ${platform}`);
         }
 
-        const body: Record<string, unknown> = {
-          accountId: account.id,
+        const content: Record<string, unknown> = {
           text: caption,
           mediaUrls: [videoUrl],
-          useNextFreeSlot: useNextFreeSlot ?? true,
+          platform,
+        };
+
+        // Instagram — mark as reel
+        if (platform === "instagram") content.videoUploadType = "reel";
+
+        // TikTok — fields go in target, not content
+        const target: Record<string, unknown> = { targetType: platform };
+        if (platform === "tiktok") {
+          content.title = caption.slice(0, 150);
+          target.privacyLevel = "PUBLIC_TO_EVERYONE";
+          target.disabledComments = false;
+          target.disabledDuet = false;
+          target.disabledStitch = false;
+          target.isBrandedContent = false;
+          target.isYourBrand = false;
+          target.isAiGenerated = true;
+        }
+
+        const body: Record<string, unknown> = {
+          post: {
+            accountId: account.id,
+            content,
+            target,
+          },
         };
 
         if (scheduledTime) {
           body.scheduledTime = scheduledTime;
-          delete body.useNextFreeSlot;
         }
-
-        // Instagram — mark as reel
-        if (platform === "instagram") body.videoUploadType = "reel";
-
-        // TikTok — Cytron account settings
-        if (platform === "tiktok") {
-          body.isAiGenerated = true;
-          body.privacyLevel = "PUBLIC_TO_EVERYONE";
-          body.disabledComments = false;
-          body.disabledDuet = false;
-          body.disabledStitch = false;
-          body.title = caption.slice(0, 150); // TikTok title max 150 chars
-        }
+        // useNextFreeSlot omitted — posts immediately if no scheduledTime
 
         const postRes = await fetch(`${BLOTATO_API}/v2/posts`, {
           method: "POST",
