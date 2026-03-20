@@ -1,113 +1,122 @@
-import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div className="min-h-screen bg-white font-sans">
+      {/* NAV */}
+      <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white/80 backdrop-blur-sm z-50">
+        <span className="text-xl font-extrabold tracking-tight">
+          CYTR<span className="text-[#00c853]">ON</span>
+        </span>
+        <div className="flex items-center gap-3">
+          <Link href="/login" className="text-sm font-semibold text-gray-500 hover:text-black transition-colors">
+            Login
+          </Link>
+          <Link href="/login" className="bg-[#00c853] text-white text-sm font-semibold px-4 py-2 rounded-[8px] hover:opacity-90 transition-opacity">
+            Start now
+          </Link>
         </div>
-      </div>
+      </nav>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+      {/* HERO */}
+      <section className="flex flex-col items-center text-center px-6 pt-16 pb-20">
+        <div className="inline-flex items-center gap-2 bg-[#f0fdf4] border border-[#bbf7d0] text-[#007a33] text-[11px] font-semibold tracking-wider px-3 py-1.5 rounded-full mb-6 uppercase">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#00c853] inline-block" />
+          AI Marketing Automation — Now Available
+        </div>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+        <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight tracking-tight text-[#0a0a0a] max-w-sm sm:max-w-xl mb-5">
+          Marketing automático para{" "}
+          <span className="text-[#00c853]">negócios modernos</span>
+        </h1>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+        <p className="text-gray-500 text-base sm:text-lg leading-relaxed max-w-sm mb-10">
+          Seus clientes enviam fotos do serviço. A Cytron transforma em vídeos e posts para Instagram e TikTok — automaticamente.
+        </p>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-sm sm:max-w-none sm:justify-center">
+          <Link href="/login" className="w-full sm:w-auto bg-[#00c853] text-white font-semibold px-8 py-4 rounded-[10px] text-base hover:opacity-90 transition-opacity text-center">
+            Começar grátis →
+          </Link>
+          <Link href="/login" className="w-full sm:w-auto border border-gray-200 text-[#0a0a0a] font-semibold px-8 py-4 rounded-[10px] text-base hover:border-gray-400 transition-colors text-center">
+            Ver demo
+          </Link>
+        </div>
+      </section>
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      {/* DASHBOARD PREVIEW */}
+      <section className="px-6 pb-16 flex justify-center">
+        <div className="w-full max-w-2xl bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-3 h-3 rounded-full bg-red-400" />
+            <div className="w-3 h-3 rounded-full bg-yellow-400" />
+            <div className="w-3 h-3 rounded-full bg-[#00c853]" />
+            <span className="text-xs text-gray-400 ml-2 font-medium">Cytron Dashboard</span>
+          </div>
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            {[
+              { label: "Posts Published", value: "248", up: "+34%" },
+              { label: "Leads Captured", value: "91", up: "+12%" },
+            ].map((s) => (
+              <div key={s.label} className="bg-white rounded-xl p-4 border border-gray-100">
+                <p className="text-xs text-gray-400 font-medium mb-1">{s.label}</p>
+                <p className="text-2xl font-extrabold">{s.value}<span className="text-[#00c853] text-xs font-semibold ml-1">↑ {s.up}</span></p>
+              </div>
+            ))}
+          </div>
+          <div className="space-y-2">
+            {[
+              { icon: "🎬", label: "TikTok Video — AI Generated", tag: "Live", color: "bg-[#00c853]/10 text-[#007a33]" },
+              { icon: "📹", label: "YouTube Short — AI Written", tag: "Scheduled", color: "bg-blue-50 text-blue-600" },
+              { icon: "📸", label: "Instagram Reel — AI Draft", tag: "Ready", color: "bg-orange-50 text-orange-600" },
+            ].map((item) => (
+              <div key={item.label} className="flex items-center justify-between bg-white rounded-xl px-4 py-3 border border-gray-100">
+                <div className="flex items-center gap-3">
+                  <span>{item.icon}</span>
+                  <span className="text-sm font-medium text-[#0a0a0a]">{item.label}</span>
+                </div>
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${item.color}`}>{item.tag}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section className="px-6 pb-20 max-w-2xl mx-auto">
+        <h2 className="text-2xl font-extrabold text-center mb-2">Como funciona</h2>
+        <p className="text-gray-500 text-center text-sm mb-10">Três passos. Zero esforço.</p>
+        <div className="space-y-4">
+          {[
+            { n: "01", title: "Cliente envia as fotos", desc: "Antes e depois do serviço, direto pelo celular. Sem complicação." },
+            { n: "02", title: "IA cria o conteúdo", desc: "Vídeos, legendas e posts prontos para Instagram, TikTok e YouTube." },
+            { n: "03", title: "Marketing no piloto automático", desc: "Você recebe, aprova e publica. Ou deixa publicar sozinho." },
+          ].map((f) => (
+            <div key={f.n} className="flex gap-5 items-start bg-gray-50 border border-gray-100 rounded-2xl p-5">
+              <span className="text-[#00c853] font-extrabold text-lg leading-none mt-0.5">{f.n}</span>
+              <div>
+                <h3 className="font-bold text-[#0a0a0a] mb-1">{f.title}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="mx-6 mb-16 bg-[#0a0a0a] rounded-3xl px-8 py-12 flex flex-col items-center text-center max-w-2xl mx-auto">
+        <h2 className="text-2xl font-extrabold text-white mb-3">Pronto para automatizar?</h2>
+        <p className="text-gray-400 text-sm mb-8 max-w-xs">Comece hoje. Sem cartão de crédito. Resultados em minutos.</p>
+        <Link href="/login" className="bg-[#00c853] text-white font-semibold px-8 py-4 rounded-[10px] text-base hover:opacity-90 transition-opacity">
+          Criar minha conta →
+        </Link>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="border-t border-gray-100 px-6 py-8 flex items-center justify-between text-xs text-gray-400">
+        <span className="font-extrabold text-[#0a0a0a]">CYTR<span className="text-[#00c853]">ON</span></span>
+        <span>© 2025 Cytron. Todos os direitos reservados.</span>
+      </footer>
+    </div>
   );
 }

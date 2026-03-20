@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Cytron — Enviar Fotos do Job</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background: #fff;
+      color: #0a0a0a;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* NAV */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .nav-logo {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #0a0a0a;
+      text-decoration: none;
+    }
+    .nav-logo em { color: #00c853; font-style: normal; }
+
+    /* SCREEN */
+    .screen { flex: 1; display: none; flex-direction: column; }
+    .screen.active { display: flex; }
+
+    /* HOME */
+    #screen-home {
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px 40px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #007a33;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 5px 12px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+    .hero-badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #00c853;
+    }
+
+    .hero-title {
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      text-align: center;
+      margin-bottom: 12px;
+      max-width: 300px;
+    }
+    .hero-title em { color: #00c853; font-style: normal; }
+
+    .hero-sub {
+      color: #555;
+      font-size: 15px;
+      text-align: center;
+      line-height: 1.6;
+      max-width: 280px;
+      margin-bottom: 36px;
+    }
+
+    .steps {
+      width: 100%;
+      max-width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #f9f9f9;
+      border: 1px solid #efefef;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 14px;
+      color: #444;
+    }
+    .step strong { color: #0a0a0a; }
+    .step-num {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: #00c85318;
+      border: 1.5px solid #00c853;
+      color: #00c853;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* UPLOAD */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .back-btn {
+      background: #f5f5f5;
+      border: none;
+      color: #0a0a0a;
+      font-size: 20px;
+      cursor: pointer;
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+    }
+    .header-title { font-size: 16px; font-weight: 700; }
+
+    .upload-body {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .field-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .job-input {
+      width: 100%;
+      background: #f9f9f9;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 10px;
+      color: #0a0a0a;
+      font-size: 15px;
+      padding: 13px 16px;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .job-input:focus { border-color: #00c853; background: #fff; }
+    .job-input::placeholder { color: #aaa; }
+
+    .photo-zone {
+      border: 2px dashed #e0e0e0;
+      border-radius: 14px;
+      height: 170px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: #fafafa;
+      position: relative;
+      overflow: hidden;
+    }
+    .photo-zone:active { background: #f0fdf4; border-color: #00c853; }
+    .photo-zone.has-photo { border-style: solid; border-color: #00c85344; }
+    .photo-zone .icon { font-size: 32px; }
+    .photo-zone .hint { font-size: 13px; color: #999; font-weight: 500; }
+
+    .photo-zone img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .remove-btn {
+      position: absolute; top: 10px; right: 10px;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.55);
+      border: none; color: #fff;
+      font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2;
+    }
+
+    .error-msg {
+      background: #fff5f5;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      font-size: 14px;
+      text-align: center;
+      padding: 12px 16px;
+      border-radius: 10px;
+      display: none;
+      font-weight: 500;
+    }
+
+    .upload-footer {
+      padding: 16px 20px 36px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    /* SUCCESS */
+    #screen-success {
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .success-icon { font-size: 72px; margin-bottom: 20px; }
+    .success-title { font-size: 26px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px; }
+    .success-sub {
+      color: #666; font-size: 15px; line-height: 1.6;
+      max-width: 280px; margin-bottom: 36px;
+    }
+
+    /* BUTTON */
+    .btn {
+      width: 100%; max-width: 400px;
+      padding: 16px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: #00c853; color: #fff; }
+    .btn-primary:disabled { background: #e8e8e8; color: #aaa; cursor: default; }
+    .btn-primary:not(:disabled):hover { opacity: 0.88; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="#">CYTR<em>ON</em></a>
+</nav>
+
+<!-- HOME -->
+<div id="screen-home" class="screen active">
+  <div class="hero-badge">
+    <div class="hero-badge-dot"></div>
+    Envio de Fotos — Job
+  </div>
+
+  <h1 class="hero-title">
+    Fotos do Job,<br/><em>Marketing Automático</em>
+  </h1>
+  <p class="hero-sub">
+    Tire as fotos antes e depois do serviço. A Cytron transforma em conteúdo para redes sociais automaticamente.
+  </p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <span>Tire a foto <strong>antes</strong> do serviço</span>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <span>Tire a foto <strong>depois</strong> do serviço</span>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <span>O <strong>marketing é criado</strong> automaticamente</span>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" style="max-width:340px" onclick="showUpload()">
+    Começar →
+  </button>
+</div>
+
+<!-- UPLOAD -->
+<div id="screen-upload" class="screen">
+  <div class="header">
+    <button class="back-btn" onclick="showHome()">‹</button>
+    <span class="header-title">Novo Job</span>
+  </div>
+
+  <div class="upload-body">
+    <div>
+      <label class="field-label">Nome do job (opcional)</label>
+      <input id="job-name" class="job-input" type="text"
+        placeholder="Ex: Instalação elétrica — Rua das Flores" />
+    </div>
+
+    <div>
+      <label class="field-label">🔴 Foto ANTES</label>
+      <input id="input-antes" type="file" accept="image/*" capture="environment"
+        style="display:none" onchange="handlePhoto('antes', this)" />
+      <div id="zone-antes" class="photo-zone" onclick="document.getElementById('input-antes').click()">
+        <span class="icon">📷</span>
+        <span class="hint">Toque para fotografar ou escolher</span>
+      </div>
+    </div>
+
+    <div>
+      <label class="field-label">🟢 Foto DEPOIS</label>
+      <input id="input-depois" type="file" accept="image/*" capture="environment"
+        style="display:none" onchange="handlePhoto('depois', this)" />
+      <div id="zone-depois" class="photo-zone" onclick="document.getElementById('input-depois').click()">
+        <span class="icon">📷</span>
+        <span class="hint">Toque para fotografar ou escolher</span>
+      </div>
+    </div>
+
+    <div id="error-msg" class="error-msg"></div>
+  </div>
+
+  <div class="upload-footer">
+    <button id="btn-send" class="btn btn-primary" disabled onclick="sendPhotos()">
+      Enviar Fotos
+    </button>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div id="screen-success" class="screen">
+  <div class="success-icon">✅</div>
+  <h1 class="success-title">Fotos Enviadas!</h1>
+  <p class="success-sub">
+    Recebemos suas fotos. Em breve o conteúdo de marketing estará pronto para você.
+  </p>
+  <button class="btn btn-primary" style="max-width:340px" onclick="resetApp()">
+    Enviar Novo Job
+  </button>
+</div>
+
+<script>
+  var N8N_URL = 'https://labofantasma.app.n8n.cloud/form/goodmix-photo-form';
+  var photos = { antes: null, depois: null };
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+  }
+  function showUpload() { showScreen('screen-upload'); }
+  function showHome() { showScreen('screen-home'); }
+
+  function handlePhoto(type, input) {
+    var file = input.files[0];
+    if (!file) return;
+    photos[type] = file;
+    var zone = document.getElementById('zone-' + type);
+    var url = URL.createObjectURL(file);
+    zone.classList.add('has-photo');
+    zone.innerHTML = '<img src="' + url + '" alt="' + type + '" />'
+      + '<button class="remove-btn" onclick="removePhoto(event,\'' + type + '\')">×</button>';
+    updateSendBtn();
+  }
+
+  function removePhoto(e, type) {
+    e.stopPropagation();
+    photos[type] = null;
+    var zone = document.getElementById('zone-' + type);
+    zone.classList.remove('has-photo');
+    zone.innerHTML = '<span class="icon">📷</span><span class="hint">Toque para fotografar ou escolher</span>';
+    zone.onclick = function() { document.getElementById('input-' + type).click(); };
+    document.getElementById('input-' + type).value = '';
+    updateSendBtn();
+  }
+
+  function updateSendBtn() {
+    document.getElementById('btn-send').disabled = !(photos.antes && photos.depois);
+  }
+
+  function showError(msg) {
+    var el = document.getElementById('error-msg');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function hideError() {
+    document.getElementById('error-msg').style.display = 'none';
+  }
+
+  async function sendPhotos() {
+    hideError();
+    var btn = document.getElementById('btn-send');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    try {
+      var form = new FormData();
+      var job = document.getElementById('job-name').value;
+      if (job) form.append('job', job);
+      form.append('Foto do Produto', photos.antes, 'antes_' + photos.antes.name);
+      form.append('Foto do Produto', photos.depois, 'depois_' + photos.depois.name);
+
+      await fetch(N8N_URL, { method: 'POST', body: form });
+      showScreen('screen-success');
+    } catch (err) {
+      showError('Erro ao enviar. Verifique sua conexão e tente novamente.');
+      btn.disabled = false;
+      btn.textContent = 'Enviar Fotos';
+    }
+  }
+
+  function resetApp() {
+    photos = { antes: null, depois: null };
+    document.getElementById('job-name').value = '';
+    ['antes', 'depois'].forEach(function(type) {
+      var zone = document.getElementById('zone-' + type);
+      zone.classList.remove('has-photo');
+      zone.innerHTML = '<span class="icon">📷</span><span class="hint">Toque para fotografar ou escolher</span>';
+      zone.onclick = function() { document.getElementById('input-' + type).click(); };
+      document.getElementById('input-' + type).value = '';
+    });
+    document.getElementById('btn-send').textContent = 'Enviar Fotos';
+    showScreen('screen-home');
+  }
+</script>
+</body>
+</html>
