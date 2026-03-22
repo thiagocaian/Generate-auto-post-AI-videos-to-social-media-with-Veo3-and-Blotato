@@ -2,22 +2,18 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase, WarehouseItem } from '@/lib/supabase'
+import Sidebar from '@/components/Sidebar'
 
 export default function WarehousePage() {
-  const [items, setItems] = useState<WarehouseItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
+  const [items, setItems]       = useState<WarehouseItem[]>([])
+  const [loading, setLoading]   = useState(true)
+  const [search, setSearch]     = useState('')
   const [category, setCategory] = useState('all')
 
-  useEffect(() => {
-    fetchItems()
-  }, [])
+  useEffect(() => { fetchItems() }, [])
 
   async function fetchItems() {
-    const { data, error } = await supabase
-      .from('warehouse_items')
-      .select('*')
-      .order('name')
+    const { data } = await supabase.from('warehouse_items').select('*').order('name')
     if (data) setItems(data)
     setLoading(false)
   }
@@ -30,138 +26,153 @@ export default function WarehousePage() {
     return matchSearch && matchCat
   })
 
-  const lowStock = items.filter(i => i.current_stock <= i.minimum_stock)
+  const lowStock   = items.filter(i => i.current_stock <= i.minimum_stock)
   const totalValue = items.reduce((sum, i) => sum + (i.current_stock * i.unit_cost), 0)
 
   return (
-    <main className="min-h-screen bg-gray-950 text-white">
-      {/* Header */}
-      <div className="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="text-gray-400 hover:text-white">← CYTRON</Link>
-          <span className="text-gray-600">/</span>
-          <span className="font-semibold">📦 Warehouse</span>
-        </div>
-        <div className="flex gap-3">
-          <Link href="/warehouse/scan" className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-            📷 Escanear QR
-          </Link>
-          <Link href="/warehouse/items/new" className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-            + Novo Item
-          </Link>
-        </div>
-      </div>
+    <div className="flex min-h-screen" style={{ background: '#F8FAFC', fontFamily: "'Inter', system-ui, sans-serif" }}>
+      <Sidebar active="warehouse" />
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-gray-900 rounded-xl p-4 border border-gray-800">
-            <div className="text-gray-400 text-xs mb-1">Total de Itens</div>
-            <div className="text-2xl font-bold">{items.length}</div>
-          </div>
-          <div className={`bg-gray-900 rounded-xl p-4 border ${lowStock.length > 0 ? 'border-orange-500/50' : 'border-gray-800'}`}>
-            <div className="text-gray-400 text-xs mb-1">⚠️ Estoque Baixo</div>
-            <div className={`text-2xl font-bold ${lowStock.length > 0 ? 'text-orange-400' : ''}`}>{lowStock.length}</div>
-          </div>
-          <div className="bg-gray-900 rounded-xl p-4 border border-gray-800">
-            <div className="text-gray-400 text-xs mb-1">Valor Total</div>
-            <div className="text-2xl font-bold">${totalValue.toFixed(0)}</div>
-          </div>
-          <div className="bg-gray-900 rounded-xl p-4 border border-gray-800">
-            <div className="text-gray-400 text-xs mb-1">Categorias</div>
-            <div className="text-2xl font-bold">{categories.length - 1}</div>
-          </div>
-        </div>
-
-        {/* Low stock alert */}
-        {lowStock.length > 0 && (
-          <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4 mb-6">
-            <div className="font-semibold text-orange-400 mb-2">⚠️ {lowStock.length} iten(s) com estoque abaixo do mínimo</div>
-            <div className="flex flex-wrap gap-2">
-              {lowStock.map(item => (
-                <span key={item.id} className="text-sm bg-orange-500/20 text-orange-300 px-3 py-1 rounded-full">
-                  {item.name} — {item.current_stock} {item.unit} restantes
-                </span>
-              ))}
+      <main className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <header className="flex items-center justify-between px-6 py-3.5"
+          style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+          <div>
+            <div className="flex items-center gap-2 text-xs mb-0.5" style={{ color: '#9CA3AF' }}>
+              <Link href="/" style={{ color: '#1D4ED8', fontWeight: 600 }}>CYTRON</Link>
+              <span>/</span>
+              <span style={{ color: '#374151', fontWeight: 600 }}>Warehouse</span>
             </div>
+            <h1 className="text-base font-semibold" style={{ color: '#111827' }}>Stock Guardian</h1>
           </div>
-        )}
+          <div className="flex gap-2">
+            <Link href="/warehouse/scan"
+              className="px-3 py-1.5 rounded text-xs font-semibold text-white transition-all"
+              style={{ background: '#1D4ED8' }}>
+              Scan QR Code
+            </Link>
+          </div>
+        </header>
 
-        {/* Filters */}
-        <div className="flex gap-3 mb-6">
-          <input
-            type="text"
-            placeholder="Buscar item ou SKU..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500"
-          />
-          <select
-            value={category}
-            onChange={e => setCategory(e.target.value)}
-            className="bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm focus:outline-none"
-          >
-            {categories.map(cat => (
-              <option key={cat} value={cat}>{cat === 'all' ? 'Todas categorias' : cat}</option>
+        <div className="flex-1 overflow-y-auto p-6 space-y-5">
+
+          {/* KPIs */}
+          <div className="grid grid-cols-4 gap-4">
+            {[
+              { label: 'Total Items',    value: String(items.length),              sub: 'SKUs tracked'          },
+              { label: 'Low Stock',      value: String(lowStock.length),           sub: 'Require attention',    alert: lowStock.length > 0 },
+              { label: 'Total Value',    value: `$${totalValue.toFixed(0)}`,       sub: 'Current inventory'     },
+              { label: 'Categories',     value: String(categories.length - 1),     sub: 'Product types'         },
+            ].map((k, i) => (
+              <div key={i} className="rounded-lg p-5" style={{ background: '#FFFFFF', border: `1px solid ${k.alert ? '#FCA5A5' : '#E5E7EB'}` }}>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#9CA3AF' }}>{k.label}</p>
+                <p className="text-2xl font-bold mb-1" style={{ color: k.alert ? '#DC2626' : '#111827' }}>{k.value}</p>
+                <p className="text-xs" style={{ color: '#9CA3AF' }}>{k.sub}</p>
+              </div>
             ))}
-          </select>
-        </div>
-
-        {/* Items table */}
-        {loading ? (
-          <div className="text-center py-20 text-gray-500">Carregando inventário...</div>
-        ) : (
-          <div className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="border-b border-gray-800">
-                <tr className="text-gray-400">
-                  <th className="text-left px-4 py-3">Item / SKU</th>
-                  <th className="text-left px-4 py-3">Categoria</th>
-                  <th className="text-left px-4 py-3">Localização</th>
-                  <th className="text-right px-4 py-3">Estoque</th>
-                  <th className="text-right px-4 py-3">Mínimo</th>
-                  <th className="text-right px-4 py-3">Custo Unit.</th>
-                  <th className="text-right px-4 py-3">Valor Total</th>
-                  <th className="px-4 py-3"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map(item => {
-                  const isLow = item.current_stock <= item.minimum_stock
-                  return (
-                    <tr key={item.id} className={`border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors ${isLow ? 'bg-orange-500/5' : ''}`}>
-                      <td className="px-4 py-3">
-                        <div className="font-medium">{item.name}</div>
-                        <div className="text-gray-500 text-xs">{item.sku}</div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="bg-gray-800 px-2 py-1 rounded text-xs">{item.category}</span>
-                      </td>
-                      <td className="px-4 py-3 text-gray-400">{item.location || '—'}</td>
-                      <td className="px-4 py-3 text-right">
-                        <span className={`font-semibold ${isLow ? 'text-orange-400' : 'text-green-400'}`}>
-                          {item.current_stock} {item.unit}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right text-gray-400">{item.minimum_stock} {item.unit}</td>
-                      <td className="px-4 py-3 text-right text-gray-300">${item.unit_cost.toFixed(2)}</td>
-                      <td className="px-4 py-3 text-right font-medium">${(item.current_stock * item.unit_cost).toFixed(2)}</td>
-                      <td className="px-4 py-3">
-                        <Link href={`/warehouse/scan?item=${item.qr_code}`} className="text-blue-400 hover:text-blue-300 text-xs">
-                          Mover →
-                        </Link>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-            {filtered.length === 0 && (
-              <div className="text-center py-10 text-gray-500">Nenhum item encontrado</div>
-            )}
           </div>
-        )}
-      </div>
-    </main>
+
+          {/* Low stock alert */}
+          {lowStock.length > 0 && (
+            <div className="rounded-lg p-4 flex items-start gap-3"
+              style={{ background: '#FEF2F2', border: '1px solid #FCA5A5' }}>
+              <div className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ background: '#DC2626' }} />
+              <div>
+                <p className="text-xs font-semibold mb-1" style={{ color: '#991B1B' }}>
+                  {lowStock.length} item{lowStock.length > 1 ? 's' : ''} below minimum stock level
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {lowStock.map(item => (
+                    <span key={item.id} className="text-xs px-2 py-0.5 rounded font-medium"
+                      style={{ background: '#FEE2E2', color: '#DC2626' }}>
+                      {item.name} — {item.current_stock} {item.unit} remaining
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Filters */}
+          <div className="flex gap-3">
+            <input
+              type="text"
+              placeholder="Search item or SKU..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="flex-1 text-xs rounded-lg px-4 py-2 outline-none"
+              style={{ border: '1px solid #E5E7EB', background: '#FFFFFF', color: '#111827' }}
+            />
+            <select
+              value={category}
+              onChange={e => setCategory(e.target.value)}
+              className="text-xs rounded-lg px-4 py-2 outline-none"
+              style={{ border: '1px solid #E5E7EB', background: '#FFFFFF', color: '#374151' }}
+            >
+              {categories.map(cat => (
+                <option key={cat} value={cat}>{cat === 'all' ? 'All categories' : cat}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Table */}
+          {loading ? (
+            <div className="text-center py-20 text-xs" style={{ color: '#9CA3AF' }}>Loading inventory...</div>
+          ) : (
+            <div className="rounded-lg overflow-hidden" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
+              <table className="w-full text-xs">
+                <thead style={{ borderBottom: '1px solid #E5E7EB', background: '#F9FAFB' }}>
+                  <tr>
+                    {['Item / SKU', 'Category', 'Location', 'Stock', 'Min.', 'Unit Cost', 'Total Value', ''].map(h => (
+                      <th key={h} className="text-left px-4 py-3 font-semibold uppercase tracking-wider"
+                        style={{ color: '#6B7280', fontSize: 10 }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((item, i) => {
+                    const isLow = item.current_stock <= item.minimum_stock
+                    return (
+                      <tr key={item.id} style={{
+                        borderBottom: '1px solid #F9FAFB',
+                        background: isLow ? '#FEF2F2' : i % 2 === 0 ? '#FFFFFF' : '#FAFAFA'
+                      }}>
+                        <td className="px-4 py-3">
+                          <div className="font-semibold" style={{ color: '#111827' }}>{item.name}</div>
+                          <div className="text-xs mt-0.5" style={{ color: '#9CA3AF' }}>{item.sku}</div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="px-2 py-0.5 rounded text-xs font-medium"
+                            style={{ background: '#EFF6FF', color: '#1D4ED8' }}>{item.category}</span>
+                        </td>
+                        <td className="px-4 py-3" style={{ color: '#6B7280' }}>{item.location || '—'}</td>
+                        <td className="px-4 py-3 text-right font-semibold"
+                          style={{ color: isLow ? '#DC2626' : '#16A34A' }}>
+                          {item.current_stock} {item.unit}
+                        </td>
+                        <td className="px-4 py-3 text-right" style={{ color: '#9CA3AF' }}>{item.minimum_stock} {item.unit}</td>
+                        <td className="px-4 py-3 text-right" style={{ color: '#374151' }}>${item.unit_cost.toFixed(2)}</td>
+                        <td className="px-4 py-3 text-right font-semibold" style={{ color: '#111827' }}>
+                          ${(item.current_stock * item.unit_cost).toFixed(2)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <Link href={`/warehouse/scan?item=${item.qr_code}`}
+                            className="text-xs font-medium" style={{ color: '#1D4ED8' }}>
+                            Move
+                          </Link>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+              {filtered.length === 0 && (
+                <div className="text-center py-12 text-xs" style={{ color: '#9CA3AF' }}>No items found</div>
+              )}
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
   )
 }

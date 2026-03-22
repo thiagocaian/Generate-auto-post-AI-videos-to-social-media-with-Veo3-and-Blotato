@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Sidebar from '@/components/Sidebar'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface QuoteLineItem {
@@ -90,15 +91,6 @@ const catBg: Record<string, string> = {
   Compliance: '#F5F3FF', Labour: '#E8F5EE', Infrastructure: '#F8FAFC', Management: '#FEF3C7',
 }
 
-// ─── Sidebar nav ──────────────────────────────────────────────────────────────
-const navItems = [
-  { label: 'Command Center', href: '/', icon: '⊞' },
-  { label: 'STOCK GUARDIAN', href: '/warehouse', icon: '📦' },
-  { label: 'QUOTE MASTER', href: '/quotes', icon: '📋', active: true },
-  { label: 'FIELD COMMANDER', href: '#', icon: '👷', soon: true },
-  { label: 'COMPLIANCE SHIELD', href: '#', icon: '📄', soon: true },
-  { label: 'CONTENT ENGINE', href: '#', icon: '🎬', soon: true },
-]
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function QuotesPage() {
@@ -141,82 +133,41 @@ export default function QuotesPage() {
   const fmt = (n: number) => '$' + n.toLocaleString('en-AU')
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex' }}>
+    <div className="flex min-h-screen" style={{ background: '#F8FAFC', fontFamily: "'Inter', system-ui, sans-serif" }}>
 
-      {/* ── Sidebar ── */}
-      <aside style={{
-        width: 240, background: 'var(--surface)', borderRight: '1px solid var(--border)',
-        display: 'flex', flexDirection: 'column', padding: '24px 0', flexShrink: 0,
-      }}>
-        <div style={{ padding: '0 20px 24px', borderBottom: '1px solid var(--border)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: 8,
-              background: 'linear-gradient(135deg, #00B050, #00803A)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#fff', fontWeight: 900, fontSize: 16, fontFamily: 'Poppins, sans-serif',
-            }}>C</div>
-            <div>
-              <div style={{ fontWeight: 900, fontSize: 14, letterSpacing: 1, color: 'var(--text)', fontFamily: 'Poppins, sans-serif' }}>CYTRON</div>
-              <div style={{ fontSize: 9, color: 'var(--text-muted)', letterSpacing: 0.5 }}>AUTOMATION PLATFORM</div>
-            </div>
-          </div>
-        </div>
-        <nav style={{ padding: '16px 12px', flex: 1 }}>
-          {navItems.map(item => (
-            <Link key={item.label} href={item.href} style={{ textDecoration: 'none' }}>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
-                borderRadius: 8, marginBottom: 2,
-                background: item.active ? 'var(--cytron-green-light)' : 'transparent',
-                color: item.active ? 'var(--cytron-green)' : item.soon ? 'var(--text-light)' : 'var(--text-muted)',
-                fontSize: 12, fontWeight: item.active ? 700 : 500,
-                cursor: item.soon ? 'default' : 'pointer',
-              }}>
-                <span>{item.icon}</span>
-                <span style={{ flex: 1 }}>{item.label}</span>
-                {item.soon && (
-                  <span style={{ fontSize: 9, background: '#F3F4F6', color: '#9CA3AF', padding: '1px 6px', borderRadius: 4, fontWeight: 600 }}>SOON</span>
-                )}
-              </div>
-            </Link>
-          ))}
-        </nav>
-        <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border)' }}>
-          <div style={{ fontSize: 10, color: 'var(--text-light)', marginBottom: 4 }}>ACTIVE CLIENT</div>
-          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>Maco Electrics</div>
-          <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>Gold Coast, QLD</div>
-        </div>
-      </aside>
+      <Sidebar active="quotes" />
 
       {/* ── Main ── */}
-      <main style={{ flex: 1, padding: '32px', overflowY: 'auto' }}>
+      <main className="flex-1 flex flex-col overflow-hidden">
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{
-              width: 44, height: 44, borderRadius: 12, background: '#F5F3FF',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
-            }}>📋</div>
-            <div>
-              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: 'var(--text)', letterSpacing: 0.5 }}>QUOTE MASTER</h1>
-              <p style={{ margin: 0, fontSize: 12, color: 'var(--text-muted)' }}>AI-powered electrical quoting engine — Maco Electrics</p>
+        <header className="flex items-center justify-between px-6 py-3.5"
+          style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+          <div>
+            <div className="flex items-center gap-2 text-xs mb-0.5" style={{ color: '#9CA3AF' }}>
+              <Link href="/" style={{ color: '#1D4ED8', fontWeight: 600 }}>CYTRON</Link>
+              <span>/</span>
+              <span style={{ color: '#374151', fontWeight: 600 }}>Quoting</span>
             </div>
+            <h1 className="text-base font-semibold" style={{ color: '#111827' }}>Quote Master — AI Quoting Engine</h1>
           </div>
           {step === 'quote' && quote && (
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => { setStep('form'); setApprovalState('none'); setSignatureName('') }} style={{
-                padding: '8px 16px', borderRadius: 8, border: '1px solid var(--border)',
-                background: 'var(--surface)', color: 'var(--text-muted)', fontSize: 12, cursor: 'pointer', fontWeight: 600,
-              }}>← New Quote</button>
-              <button onClick={() => window.print()} style={{
-                padding: '8px 16px', borderRadius: 8, border: '1px solid var(--border)',
-                background: 'var(--surface)', color: 'var(--text)', fontSize: 12, cursor: 'pointer', fontWeight: 600,
-              }}>🖨️ Print / PDF</button>
+            <div className="flex gap-2">
+              <button onClick={() => { setStep('form'); setApprovalState('none'); setSignatureName('') }}
+                className="px-3 py-1.5 rounded text-xs font-semibold"
+                style={{ background: '#F9FAFB', color: '#6B7280', border: '1px solid #E5E7EB' }}>
+                New Quote
+              </button>
+              <button onClick={() => window.print()}
+                className="px-3 py-1.5 rounded text-xs font-semibold"
+                style={{ background: '#1D4ED8', color: '#FFFFFF' }}>
+                Print / PDF
+              </button>
             </div>
           )}
-        </div>
+        </header>
+
+        <div className="flex-1 overflow-y-auto p-6">
 
         {/* ── STEP 1: FORM ── */}
         {step === 'form' && (
@@ -537,6 +488,7 @@ export default function QuotesPage() {
 
           </div>
         )}
+        </div>
       </main>
     </div>
   )

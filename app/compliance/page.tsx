@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Sidebar from '@/components/Sidebar'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type FormStep = 'select' | 'fill' | 'generating' | 'done'
@@ -18,11 +19,11 @@ interface ComplianceReport {
 }
 
 const formTypes = [
-  { id: 'as3012', label: 'AS3012 Electrical Safety', icon: '⚡', desc: 'Standard residential & commercial electrical safety report', color: '#2563EB', bg: '#EFF6FF' },
-  { id: 'rcd', label: 'RCD / Safety Switch Testing', icon: '🔌', desc: 'AS/NZS 3017 — Residual current device compliance test', color: '#7C3AED', bg: '#F5F3FF' },
-  { id: 'emergency', label: 'Emergency Lighting Test', icon: '🚨', desc: '90-minute battery duration test per AS 2293', color: '#D97706', bg: '#FFFBEB' },
-  { id: 'hv', label: 'HV Switchgear Inspection', icon: '⚠️', desc: 'High voltage equipment inspection and thermal imaging report', color: '#DC2626', bg: '#FEF2F2' },
-  { id: 'dali', label: 'DALI Lighting Commissioning', icon: '💡', desc: 'DALI addressing, scene programming and handover checklist', color: '#059669', bg: '#ECFDF5' },
+  { id: 'as3012',    label: 'AS3012 Electrical Safety',      desc: 'Standard residential & commercial electrical safety report', color: '#1D4ED8', bg: '#EFF6FF' },
+  { id: 'rcd',       label: 'RCD / Safety Switch Testing',   desc: 'AS/NZS 3017 — Residual current device compliance test',     color: '#7C3AED', bg: '#F5F3FF' },
+  { id: 'emergency', label: 'Emergency Lighting Test',       desc: '90-minute battery duration test per AS 2293',               color: '#D97706', bg: '#FEF9C3' },
+  { id: 'hv',        label: 'HV Switchgear Inspection',      desc: 'High voltage equipment inspection and thermal imaging',      color: '#DC2626', bg: '#FEF2F2' },
+  { id: 'dali',      label: 'DALI Lighting Commissioning',   desc: 'DALI addressing, scene programming and handover checklist', color: '#16A34A', bg: '#F0FDF4' },
 ]
 
 const statusConfig = {
@@ -31,14 +32,6 @@ const statusConfig = {
   pending: { label: 'PENDING', color: '#D97706', bg: '#FFFBEB' },
 }
 
-const navItems = [
-  { label: 'Dashboard',      href: '/',                icon: '⊞' },
-  { label: 'Warehouse',      href: '/warehouse',       icon: '📦', badge: '2' },
-  { label: 'Quoting',        href: '/quotes',          icon: '📋' },
-  { label: 'Subcontractors', href: '/field-commander', icon: '👷' },
-  { label: 'Compliance',     href: '/compliance',      icon: '📄', active: true },
-  { label: 'Marketing AI',   href: '/marketing',       icon: '🎬' },
-]
 
 const generatingSteps = [
   'Validating form data against AS3012 clause 1.4...',
@@ -122,76 +115,38 @@ export default function CompliancePage() {
   )
 
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: '#F4F6F8' }}>
+    <div className="flex min-h-screen" style={{ background: '#F8FAFC', fontFamily: "'Inter', system-ui, sans-serif" }}>
 
-      {/* Sidebar */}
-      <aside className="w-60 flex-shrink-0 flex flex-col" style={{ backgroundColor: '#FFFFFF', borderRight: '1px solid #E5E9EF' }}>
-        <div className="px-5 py-5" style={{ borderBottom: '1px solid #E5E9EF' }}>
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm text-white" style={{ background: 'linear-gradient(135deg, #00B050, #007A32)' }}>C</div>
-            <div>
-              <div className="font-black text-base tracking-widest" style={{ color: '#1A1A2E' }}>CYTRON</div>
-              <div className="text-xs" style={{ color: '#9CA3AF' }}>Automation Platform</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mx-3 mt-4 px-3 py-2.5 rounded-lg" style={{ background: '#E8F5EE', border: '1px solid #C8E6D4' }}>
-          <div className="text-xs font-semibold mb-0.5" style={{ color: '#9CA3AF' }}>ACTIVE CLIENT</div>
-          <div className="font-bold text-sm" style={{ color: '#1A1A2E' }}>Maco Electrics</div>
-          <div className="text-xs font-medium flex items-center gap-1 mt-0.5" style={{ color: '#00B050' }}>
-            <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#00B050' }}></span>
-            Gold Coast, QLD
-          </div>
-        </div>
-
-        <nav className="flex-1 px-3 mt-5 space-y-0.5">
-          {navItems.map(item => (
-            <Link key={item.label} href={item.href}
-              className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all"
-              style={item.active ? { background: '#ECFDF5', color: '#059669' } : { color: '#6B7280' }}
-            >
-              <div className="flex items-center gap-2.5">
-                <span>{item.icon}</span>{item.label}
-              </div>
-              {item.badge && (
-                <span className="text-xs px-1.5 py-0.5 rounded-full font-bold" style={{ background: '#FEF3C7', color: '#D97706' }}>{item.badge}</span>
-              )}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="px-5 py-4" style={{ borderTop: '1px solid #E5E9EF' }}>
-          <div className="text-xs" style={{ color: '#D1D5DB' }}>v1.0.0 · Build 2026.03</div>
-        </div>
-      </aside>
+      <Sidebar active="compliance" />
 
       {/* Main */}
       <main className="flex-1 flex flex-col overflow-hidden">
 
         {/* Header */}
-        <header className="flex items-center justify-between px-8 py-4" style={{ backgroundColor: '#FFFFFF', borderBottom: '1px solid #E5E9EF' }}>
+        <header className="flex items-center justify-between px-6 py-3.5"
+          style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
           <div>
-            <div className="flex items-center gap-2 mb-0.5">
-              <span className="text-xl">📄</span>
-              <h1 className="text-lg font-bold" style={{ color: '#1A1A2E' }}>COMPLIANCE SHIELD</h1>
-              <span className="text-xs px-2 py-0.5 rounded-full font-bold" style={{ background: '#ECFDF5', color: '#059669' }}>AS3012 Reporting</span>
+            <div className="flex items-center gap-2 text-xs mb-0.5" style={{ color: '#9CA3AF' }}>
+              <Link href="/" style={{ color: '#1D4ED8', fontWeight: 600 }}>CYTRON</Link>
+              <span>/</span>
+              <span style={{ color: '#374151', fontWeight: 600 }}>Compliance</span>
             </div>
-            <p className="text-xs" style={{ color: '#9CA3AF' }}>Sunday, 22 March 2026 · {archive.length} compliance records archived</p>
+            <h1 className="text-base font-semibold" style={{ color: '#111827' }}>Compliance Shield — {archive.length} records</h1>
           </div>
           <div className="flex items-center gap-3">
             {failCount > 0 && (
-              <div className="px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5" style={{ background: '#FEF2F2', color: '#DC2626' }}>
-                ⚠️ {failCount} Failed Report{failCount > 1 ? 's' : ''}
+              <div className="px-3 py-1.5 rounded text-xs font-semibold"
+                style={{ background: '#FEF2F2', color: '#DC2626', border: '1px solid #FCA5A5' }}>
+                {failCount} Failed Report{failCount > 1 ? 's' : ''}
               </div>
             )}
             {step !== 'select' && (
               <button
                 onClick={() => { setStep('select'); setSelectedType(null); setGenDone(false) }}
-                className="px-3 py-2 rounded-lg text-xs font-semibold transition-all hover:opacity-80"
-                style={{ background: '#F3F4F6', color: '#6B7280' }}
+                className="px-3 py-2 rounded text-xs font-semibold"
+                style={{ background: '#F9FAFB', color: '#6B7280', border: '1px solid #E5E7EB' }}
               >
-                ← Back
+                Back
               </button>
             )}
           </div>
@@ -202,16 +157,16 @@ export default function CompliancePage() {
           {/* KPIs */}
           <div className="grid grid-cols-4 gap-4 mb-6">
             {[
-              { label: 'Total Reports', value: String(archive.length), sub: 'All projects', icon: '📋', color: '#059669', bg: '#ECFDF5' },
-              { label: 'Passed', value: String(passCount), sub: 'Compliant', icon: '✅', color: '#059669', bg: '#ECFDF5' },
-              { label: 'Failed', value: String(failCount), sub: 'Action required', icon: '❌', color: '#DC2626', bg: '#FEF2F2', alert: failCount > 0 },
-              { label: 'Pending', value: String(pendingCount), sub: 'Awaiting sign-off', icon: '⏳', color: '#D97706', bg: '#FFFBEB' },
+              { label: 'Total Reports', value: String(archive.length), sub: 'All projects',      alert: false },
+              { label: 'Passed',        value: String(passCount),      sub: 'Compliant',          alert: false },
+              { label: 'Failed',        value: String(failCount),      sub: 'Action required',    alert: failCount > 0 },
+              { label: 'Pending',       value: String(pendingCount),   sub: 'Awaiting sign-off',  alert: false },
             ].map(kpi => (
-              <div key={kpi.label} className="rounded-xl p-5" style={{ background: '#FFFFFF', border: `1px solid ${(kpi as {alert?: boolean}).alert ? '#FECACA' : '#E5E9EF'}` }}>
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl mb-4" style={{ background: kpi.bg }}>{kpi.icon}</div>
-                <div className="text-2xl font-bold mb-0.5" style={{ color: kpi.color }}>{kpi.value}</div>
-                <div className="text-sm font-semibold mb-0.5" style={{ color: '#1A1A2E' }}>{kpi.label}</div>
-                <div className="text-xs" style={{ color: '#9CA3AF' }}>{kpi.sub}</div>
+              <div key={kpi.label} className="rounded-lg p-5"
+                style={{ background: '#FFFFFF', border: `1px solid ${kpi.alert ? '#FCA5A5' : '#E5E7EB'}` }}>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#9CA3AF' }}>{kpi.label}</p>
+                <p className="text-2xl font-bold mb-1" style={{ color: kpi.alert ? '#DC2626' : '#111827' }}>{kpi.value}</p>
+                <p className="text-xs" style={{ color: '#9CA3AF' }}>{kpi.sub}</p>
               </div>
             ))}
           </div>
@@ -224,22 +179,21 @@ export default function CompliancePage() {
                 <p className="text-sm" style={{ color: '#9CA3AF' }}>Select the inspection type. AI fills the regulatory template — you review and save.</p>
               </div>
 
-              <div className="grid grid-cols-1 gap-3 mb-8">
+              <div className="grid grid-cols-1 gap-2 mb-8">
                 {formTypes.map(ft => (
                   <button
                     key={ft.id}
                     onClick={() => handleSelectType(ft.id)}
-                    className="flex items-center gap-4 p-4 rounded-xl text-left transition-all hover:shadow-md"
-                    style={{ background: '#FFFFFF', border: '1px solid #E5E9EF' }}
+                    className="flex items-center gap-4 p-4 rounded-lg text-left transition-all"
+                    style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}
                   >
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0" style={{ background: ft.bg }}>
-                      {ft.icon}
-                    </div>
+                    <div className="w-2 h-10 rounded-full flex-shrink-0" style={{ background: ft.color }} />
                     <div className="flex-1">
-                      <div className="font-bold text-sm mb-0.5" style={{ color: '#1A1A2E' }}>{ft.label}</div>
+                      <div className="text-xs font-semibold mb-0.5" style={{ color: '#111827' }}>{ft.label}</div>
                       <div className="text-xs" style={{ color: '#9CA3AF' }}>{ft.desc}</div>
                     </div>
-                    <span className="text-xs font-bold px-3 py-1.5 rounded-lg" style={{ background: ft.bg, color: ft.color }}>Generate →</span>
+                    <span className="text-xs font-semibold px-3 py-1.5 rounded"
+                      style={{ background: ft.bg, color: ft.color }}>Generate</span>
                   </button>
                 ))}
               </div>
@@ -299,10 +253,10 @@ export default function CompliancePage() {
             const ft = formTypes.find(f => f.id === selectedType)!
             return (
               <div className="max-w-2xl">
-                <div className="flex items-center gap-3 mb-6 p-4 rounded-xl" style={{ background: ft.bg }}>
-                  <span className="text-3xl">{ft.icon}</span>
+                <div className="flex items-center gap-3 mb-6 p-4 rounded-lg" style={{ background: ft.bg, border: `1px solid ${ft.color}22` }}>
+                  <div className="w-1.5 h-10 rounded-full flex-shrink-0" style={{ background: ft.color }} />
                   <div>
-                    <div className="font-black text-base" style={{ color: ft.color }}>{ft.label}</div>
+                    <div className="text-sm font-semibold" style={{ color: ft.color }}>{ft.label}</div>
                     <div className="text-xs mt-0.5" style={{ color: '#6B7280' }}>{ft.desc}</div>
                   </div>
                 </div>
