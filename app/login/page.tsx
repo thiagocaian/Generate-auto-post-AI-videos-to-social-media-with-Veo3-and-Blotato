@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { LogoWordmark, LogoIcon } from '@/components/Logo'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -34,15 +35,7 @@ export default function LoginPage() {
         style={{ background: '#0F172A' }}>
 
         {/* Logo */}
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center"
-            style={{ background: '#1D4ED8' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="white" />
-            </svg>
-          </div>
-          <span className="text-lg font-bold tracking-tight" style={{ color: '#F8FAFC' }}>CYTRON</span>
-        </div>
+        <LogoWordmark variant="dark" size="md" />
 
         {/* Hero text */}
         <div>
@@ -83,14 +76,8 @@ export default function LoginPage() {
         <div className="w-full max-w-sm">
 
           {/* Mobile logo */}
-          <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ background: '#1D4ED8' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="white" />
-              </svg>
-            </div>
-            <span className="text-base font-bold" style={{ color: '#111827' }}>CYTRON</span>
+          <div className="mb-8 lg:hidden">
+            <LogoWordmark variant="light" size="sm" />
           </div>
 
           <h2 className="text-2xl font-bold mb-1" style={{ color: '#111827' }}>Sign in</h2>

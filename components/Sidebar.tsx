@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { LogoIcon } from '@/components/Logo'
 
 type NavItem = { label: string; href: string; key: string; iconPath: string; badge?: string }
 
@@ -65,8 +66,9 @@ export default function Sidebar({ active }: { active: string }) {
       {/* Narrow icon strip */}
       <aside className="w-14 flex flex-col items-center py-4 gap-4"
         style={{ background: '#1E293B', borderRight: '1px solid #0F172A' }}>
-        <div className="w-8 h-8 rounded flex items-center justify-center font-black text-xs text-white mb-2"
-          style={{ background: '#1D4ED8' }}>C</div>
+        <div className="mb-2">
+          <LogoIcon size="sm" />
+        </div>
         {navWithBadge.map((item) => {
           const isActive = item.key === active
           return (
@@ -103,8 +105,8 @@ export default function Sidebar({ active }: { active: string }) {
       <aside className="w-52 flex flex-col"
         style={{ background: '#FFFFFF', borderRight: '1px solid #E5E7EB' }}>
         <div className="px-4 py-4" style={{ borderBottom: '1px solid #E5E7EB' }}>
-          <div className="font-bold text-sm tracking-widest" style={{ color: '#111827', letterSpacing: '0.08em' }}>CYTRON</div>
-          <div className="text-xs mt-0.5" style={{ color: '#9CA3AF' }}>Automation Platform</div>
+          <div style={{ fontWeight: 800, fontSize: 14, letterSpacing: '0.12em', color: '#111827', lineHeight: 1 }}>CYTRON</div>
+          <div style={{ fontWeight: 500, fontSize: 9, letterSpacing: '0.2em', color: '#9CA3AF', marginTop: 3, textTransform: 'uppercase' }}>Platform</div>
         </div>
 
         <div className="px-4 py-3" style={{ borderBottom: '1px solid #F3F4F6' }}>
