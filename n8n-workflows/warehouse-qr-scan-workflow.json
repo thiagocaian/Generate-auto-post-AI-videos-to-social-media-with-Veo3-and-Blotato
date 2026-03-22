@@ -1,0 +1,346 @@
+{
+  "name": "Warehouse QR Scan Processing",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "warehouse-qr-scan",
+        "options": {
+          "responseMode": "lastNode"
+        }
+      },
+      "id": "node-webhook-qr",
+      "name": "Webhook: QR Scan",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 400],
+      "webhookId": "warehouse-qr-scan"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nconst itemId = body.item_id;\nconst quantity = Number(body.quantity);\nconst transactionType = body.transaction_type;\nconst projectId = body.project_id;\nconst performedBy = body.performed_by;\n\n// Validate required fields\nif (!itemId || quantity === undefined || !transactionType || !projectId || !performedBy) {\n  throw new Error(`Missing required fields. Received: ${JSON.stringify(body)}`);\n}\n\n// Validate transaction type\nconst validTypes = ['entrada', 'saida', 'ajuste', 'transferencia'];\nif (!validTypes.includes(transactionType)) {\n  throw new Error(`Invalid transaction_type: '${transactionType}'. Must be one of: ${validTypes.join(', ')}`);\n}\n\n// Validate quantity\nif (isNaN(quantity) || quantity <= 0) {\n  throw new Error(`Invalid quantity: ${quantity}. Must be a positive number.`);\n}\n\nconst stockDelta = (transactionType === 'saida') ? -quantity : quantity;\n\nreturn [{\n  json: {\n    item_id: itemId,\n    quantity: quantity,\n    stock_delta: stockDelta,\n    transaction_type: transactionType,\n    project_id: projectId,\n    performed_by: performedBy,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "node-validate-input",
+      "name": "Validate & Parse Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 400]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://awjagykdhrroeonewwgx.supabase.co/rest/v1/warehouse_items?id=eq.{{ $json.item_id }}&select=id,name,current_stock,minimum_stock,unit,supplier_id,warehouse_location,project_id",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $credentials.headerAuth.value }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $credentials.headerAuth.value }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-get-item",
+      "name": "Get Item from Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 400],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-api-key",
+          "name": "Supabase API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const scanData = $('Validate & Parse Input').first().json;\nconst itemData = $input.first().json;\n\nif (!itemData || !Array.isArray(itemData) || itemData.length === 0) {\n  throw new Error(`Item not found in Supabase: ${scanData.item_id}`);\n}\n\nconst item = itemData[0];\nconst currentStock = Number(item.current_stock);\nconst newStock = currentStock + scanData.stock_delta;\n\nif (newStock < 0) {\n  throw new Error(`Insufficient stock. Current: ${currentStock}, Requested: ${scanData.quantity}`);\n}\n\nconst isLowStock = newStock <= Number(item.minimum_stock);\n\nreturn [{\n  json: {\n    // Scan data\n    item_id: scanData.item_id,\n    quantity: scanData.quantity,\n    stock_delta: scanData.stock_delta,\n    transaction_type: scanData.transaction_type,\n    project_id: scanData.project_id,\n    performed_by: scanData.performed_by,\n    timestamp: scanData.timestamp,\n\n    // Item data\n    item_name: item.name,\n    previous_stock: currentStock,\n    new_stock: newStock,\n    minimum_stock: Number(item.minimum_stock),\n    unit: item.unit,\n    supplier_id: item.supplier_id,\n    warehouse_location: item.warehouse_location,\n\n    // Alert flag\n    is_low_stock: isLowStock\n  }\n}];"
+      },
+      "id": "node-compute-stock",
+      "name": "Compute New Stock Level",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 400]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://awjagykdhrroeonewwgx.supabase.co/rest/v1/warehouse_items?id=eq.{{ $json.item_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $credentials.headerAuth.value }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $credentials.headerAuth.value }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"current_stock\": {{ $json.new_stock }},\n  \"last_transaction_at\": \"{{ $json.timestamp }}\",\n  \"last_transaction_by\": \"{{ $json.performed_by }}\",\n  \"updated_at\": \"{{ $json.timestamp }}\"\n}",
+        "options": {}
+      },
+      "id": "node-update-stock",
+      "name": "Update Stock in Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-api-key",
+          "name": "Supabase API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://awjagykdhrroeonewwgx.supabase.co/rest/v1/warehouse_transactions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $credentials.headerAuth.value }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $credentials.headerAuth.value }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"item_id\": \"{{ $('Compute New Stock Level').first().json.item_id }}\",\n  \"item_name\": \"{{ $('Compute New Stock Level').first().json.item_name }}\",\n  \"transaction_type\": \"{{ $('Compute New Stock Level').first().json.transaction_type }}\",\n  \"quantity\": {{ $('Compute New Stock Level').first().json.quantity }},\n  \"stock_before\": {{ $('Compute New Stock Level').first().json.previous_stock }},\n  \"stock_after\": {{ $('Compute New Stock Level').first().json.new_stock }},\n  \"unit\": \"{{ $('Compute New Stock Level').first().json.unit }}\",\n  \"project_id\": \"{{ $('Compute New Stock Level').first().json.project_id }}\",\n  \"performed_by\": \"{{ $('Compute New Stock Level').first().json.performed_by }}\",\n  \"warehouse_location\": \"{{ $('Compute New Stock Level').first().json.warehouse_location }}\",\n  \"low_stock_triggered\": {{ $('Compute New Stock Level').first().json.is_low_stock }},\n  \"created_at\": \"{{ $('Compute New Stock Level').first().json.timestamp }}\"\n}",
+        "options": {}
+      },
+      "id": "node-insert-transaction",
+      "name": "Insert Transaction Record",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 500],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-api-key",
+          "name": "Supabase API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-low-stock",
+              "leftValue": "={{ $('Compute New Stock Level').first().json.is_low_stock }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "node-check-low-stock",
+      "name": "Check Low Stock?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1340, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://labofantasma.app.n8n.cloud/webhook/warehouse-alert",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"item_id\": \"{{ $('Compute New Stock Level').first().json.item_id }}\",\n  \"item_name\": \"{{ $('Compute New Stock Level').first().json.item_name }}\",\n  \"current_stock\": {{ $('Compute New Stock Level').first().json.new_stock }},\n  \"minimum_stock\": {{ $('Compute New Stock Level').first().json.minimum_stock }},\n  \"supplier_id\": \"{{ $('Compute New Stock Level').first().json.supplier_id }}\",\n  \"project_id\": \"{{ $('Compute New Stock Level').first().json.project_id }}\",\n  \"unit\": \"{{ $('Compute New Stock Level').first().json.unit }}\",\n  \"warehouse_location\": \"{{ $('Compute New Stock Level').first().json.warehouse_location }}\",\n  \"triggered_by_transaction\": true,\n  \"performed_by\": \"{{ $('Compute New Stock Level').first().json.performed_by }}\"\n}",
+        "options": {}
+      },
+      "id": "node-trigger-alert",
+      "name": "Trigger Alert Workflow",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"transaction_type\": \"{{ $('Compute New Stock Level').first().json.transaction_type }}\",\n  \"item_id\": \"{{ $('Compute New Stock Level').first().json.item_id }}\",\n  \"item_name\": \"{{ $('Compute New Stock Level').first().json.item_name }}\",\n  \"previous_stock\": {{ $('Compute New Stock Level').first().json.previous_stock }},\n  \"new_stock\": {{ $('Compute New Stock Level').first().json.new_stock }},\n  \"unit\": \"{{ $('Compute New Stock Level').first().json.unit }}\",\n  \"low_stock_alert_triggered\": {{ $('Compute New Stock Level').first().json.is_low_stock }},\n  \"performed_by\": \"{{ $('Compute New Stock Level').first().json.performed_by }}\",\n  \"timestamp\": \"{{ $('Compute New Stock Level').first().json.timestamp }}\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "node-respond-success",
+      "name": "Respond with Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1780, 400]
+    }
+  ],
+  "connections": {
+    "Webhook: QR Scan": {
+      "main": [
+        [
+          {
+            "node": "Validate & Parse Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Parse Input": {
+      "main": [
+        [
+          {
+            "node": "Get Item from Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Item from Supabase": {
+      "main": [
+        [
+          {
+            "node": "Compute New Stock Level",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute New Stock Level": {
+      "main": [
+        [
+          {
+            "node": "Update Stock in Supabase",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert Transaction Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Stock in Supabase": {
+      "main": [
+        [
+          {
+            "node": "Check Low Stock?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Transaction Record": {
+      "main": [
+        [
+          {
+            "node": "Check Low Stock?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Low Stock?": {
+      "main": [
+        [
+          {
+            "node": "Trigger Alert Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond with Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Alert Workflow": {
+      "main": [
+        [
+          {
+            "node": "Respond with Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2026-03-22T00:00:00.000Z",
+      "updatedAt": "2026-03-22T00:00:00.000Z",
+      "id": "tag-warehouse",
+      "name": "warehouse"
+    },
+    {
+      "createdAt": "2026-03-22T00:00:00.000Z",
+      "updatedAt": "2026-03-22T00:00:00.000Z",
+      "id": "tag-qr-scan",
+      "name": "qr-scan"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-22T00:00:00.000Z",
+  "versionId": "1"
+}

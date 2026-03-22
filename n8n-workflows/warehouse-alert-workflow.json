@@ -1,0 +1,282 @@
+{
+  "name": "Warehouse Stock Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "warehouse-alert",
+        "options": {
+          "responseMode": "lastNode"
+        }
+      },
+      "id": "node-webhook-stock-alert",
+      "name": "Webhook: Stock Alert",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "warehouse-alert"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\n\nconst itemId = body.item_id;\nconst itemName = body.item_name || 'Unknown Item';\nconst currentStock = body.current_stock;\nconst minimumStock = body.minimum_stock;\nconst supplierId = body.supplier_id;\nconst projectId = body.project_id || 'N/A';\nconst unit = body.unit || 'units';\nconst warehouseLocation = body.warehouse_location || 'Main Warehouse';\n\nconst now = new Date();\nconst formattedDate = now.toLocaleDateString('pt-BR', {\n  day: '2-digit',\n  month: '2-digit',\n  year: 'numeric',\n  hour: '2-digit',\n  minute: '2-digit'\n});\n\nconst telegramMessage = [\n  `\\u26a0\\ufe0f *ALERTA DE ESTOQUE BAIXO*`,\n  ``,\n  `\\ud83d\\udce6 *Item:* ${itemName}`,\n  `\\ud83c\\udff7\\ufe0f *ID:* \\`${itemId}\\``,\n  `\\ud83d\\udccd *Local:* ${warehouseLocation}`,\n  ``,\n  `\\ud83d\\udcca *Estoque Atual:* ${currentStock} ${unit}`,\n  `\\ud83d\\udd34 *Estoque Mínimo:* ${minimumStock} ${unit}`,\n  `\\ud83d\\udcc9 *Abaixo do mínimo por:* ${minimumStock - currentStock} ${unit}`,\n  ``,\n  `\\ud83d\\udd17 *Fornecedor ID:* ${supplierId}`,\n  `\\ud83d\\uddd3\\ufe0f *Data/Hora:* ${formattedDate}`,\n  ``,\n  `_Pedido de reposição enviado automaticamente ao fornecedor._`\n].join('\\n');\n\nconst suggestedOrderQuantity = Math.max(minimumStock * 3 - currentStock, minimumStock * 2);\n\nreturn [{\n  json: {\n    item_id: itemId,\n    item_name: itemName,\n    current_stock: currentStock,\n    minimum_stock: minimumStock,\n    supplier_id: supplierId,\n    project_id: projectId,\n    unit: unit,\n    warehouse_location: warehouseLocation,\n    formatted_date: formattedDate,\n    telegram_message: telegramMessage,\n    suggested_order_quantity: suggestedOrderQuantity\n  }\n}];"
+      },
+      "id": "node-format-alert",
+      "name": "Format Alert Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://awjagykdhrroeonewwgx.supabase.co/rest/v1/suppliers?id=eq.{{ $json.supplier_id }}&select=id,name,email,phone,contact_person",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $credentials.headerAuth.value }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $credentials.headerAuth.value }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": false
+            }
+          }
+        }
+      },
+      "id": "node-get-supplier",
+      "name": "Get Supplier from Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-api-key",
+          "name": "Supabase API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "={{ $env.TELEGRAM_CHAT_ID }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Format Alert Message').first().json.telegram_message }}"
+            },
+            {
+              "name": "parse_mode",
+              "value": "Markdown"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-telegram-alert",
+      "name": "Send Telegram Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "sistema@cytron.app",
+        "toEmail": "={{ $('Get Supplier from Supabase').first().json[0].email }}",
+        "subject": "=Pedido de Reposição Automático - {{ $('Format Alert Message').first().json.item_name }}",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\">\n  <style>\n    body { font-family: Arial, sans-serif; color: #333; }\n    .header { background-color: #1a1a2e; color: white; padding: 20px; border-radius: 8px 8px 0 0; }\n    .content { padding: 24px; border: 1px solid #ddd; border-top: none; border-radius: 0 0 8px 8px; }\n    .alert-box { background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 16px; margin: 16px 0; }\n    .order-table { width: 100%; border-collapse: collapse; margin: 16px 0; }\n    .order-table th { background-color: #1a1a2e; color: white; padding: 10px; text-align: left; }\n    .order-table td { padding: 10px; border-bottom: 1px solid #eee; }\n    .footer { color: #888; font-size: 12px; margin-top: 24px; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h2>Pedido de Reposição Automático</h2>\n    <p>Cytron Warehouse Management System</p>\n  </div>\n  <div class=\"content\">\n    <p>Prezado(a) <strong>{{ $('Get Supplier from Supabase').first().json[0].contact_person || $('Get Supplier from Supabase').first().json[0].name }}</strong>,</p>\n    <p>Nosso sistema de monitoramento de estoque detectou que o seguinte item atingiu o nível mínimo e requer reposição imediata:</p>\n\n    <div class=\"alert-box\">\n      <strong>⚠️ Estoque Abaixo do Mínimo</strong>\n      <p>Item: <strong>{{ $('Format Alert Message').first().json.item_name }}</strong></p>\n      <p>Estoque atual: <strong>{{ $('Format Alert Message').first().json.current_stock }} {{ $('Format Alert Message').first().json.unit }}</strong></p>\n      <p>Estoque mínimo: <strong>{{ $('Format Alert Message').first().json.minimum_stock }} {{ $('Format Alert Message').first().json.unit }}</strong></p>\n    </div>\n\n    <h3>Pedido de Compra</h3>\n    <table class=\"order-table\">\n      <tr>\n        <th>Campo</th>\n        <th>Valor</th>\n      </tr>\n      <tr>\n        <td>Item ID</td>\n        <td>{{ $('Format Alert Message').first().json.item_id }}</td>\n      </tr>\n      <tr>\n        <td>Descrição</td>\n        <td>{{ $('Format Alert Message').first().json.item_name }}</td>\n      </tr>\n      <tr>\n        <td>Quantidade Solicitada</td>\n        <td><strong>{{ $('Format Alert Message').first().json.suggested_order_quantity }} {{ $('Format Alert Message').first().json.unit }}</strong></td>\n      </tr>\n      <tr>\n        <td>Local de Entrega</td>\n        <td>{{ $('Format Alert Message').first().json.warehouse_location }}</td>\n      </tr>\n      <tr>\n        <td>Data da Solicitação</td>\n        <td>{{ $('Format Alert Message').first().json.formatted_date }}</td>\n      </tr>\n      <tr>\n        <td>Projeto</td>\n        <td>{{ $('Format Alert Message').first().json.project_id }}</td>\n      </tr>\n    </table>\n\n    <p>Por favor, confirme o recebimento deste pedido e nos informe o prazo estimado de entrega respondendo este email.</p>\n\n    <p>Atenciosamente,<br>\n    <strong>Sistema Cytron - Gestão de Almoxarifado</strong><br>\n    <a href=\"mailto:sistema@cytron.app\">sistema@cytron.app</a></p>\n\n    <div class=\"footer\">\n      <p>Este é um email automático gerado pelo sistema Cytron. Por favor, não ignore esta mensagem.</p>\n    </div>\n  </div>\n</body>\n</html>",
+        "options": {}
+      },
+      "id": "node-send-email",
+      "name": "Send Email to Supplier",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [900, 400],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-credentials",
+          "name": "SMTP Credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://awjagykdhrroeonewwgx.supabase.co/rest/v1/warehouse_alert_logs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $credentials.headerAuth.value }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $credentials.headerAuth.value }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"item_id\": \"{{ $('Format Alert Message').first().json.item_id }}\",\n  \"supplier_id\": \"{{ $('Format Alert Message').first().json.supplier_id }}\",\n  \"project_id\": \"{{ $('Format Alert Message').first().json.project_id }}\",\n  \"current_stock\": {{ $('Format Alert Message').first().json.current_stock }},\n  \"minimum_stock\": {{ $('Format Alert Message').first().json.minimum_stock }},\n  \"suggested_order_quantity\": {{ $('Format Alert Message').first().json.suggested_order_quantity }},\n  \"telegram_sent\": true,\n  \"email_sent\": true,\n  \"alert_sent\": true,\n  \"supplier_email\": \"{{ $('Get Supplier from Supabase').first().json[0].email }}\",\n  \"supplier_name\": \"{{ $('Get Supplier from Supabase').first().json[0].name }}\",\n  \"alert_timestamp\": \"{{ new Date().toISOString() }}\"\n}",
+        "options": {}
+      },
+      "id": "node-log-alert",
+      "name": "Log Alert to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-api-key",
+          "name": "Supabase API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Stock alert processed successfully\",\n  \"item_id\": \"{{ $('Format Alert Message').first().json.item_id }}\",\n  \"supplier_notified\": \"{{ $('Get Supplier from Supabase').first().json[0].email }}\",\n  \"telegram_sent\": true,\n  \"alert_logged\": true\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "node-respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1340, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Stock Alert": {
+      "main": [
+        [
+          {
+            "node": "Format Alert Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Alert Message": {
+      "main": [
+        [
+          {
+            "node": "Get Supplier from Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Supplier from Supabase": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Email to Supplier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Telegram Alert": {
+      "main": [
+        [
+          {
+            "node": "Log Alert to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email to Supplier": {
+      "main": [
+        [
+          {
+            "node": "Log Alert to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Alert to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2026-03-22T00:00:00.000Z",
+      "updatedAt": "2026-03-22T00:00:00.000Z",
+      "id": "tag-warehouse",
+      "name": "warehouse"
+    },
+    {
+      "createdAt": "2026-03-22T00:00:00.000Z",
+      "updatedAt": "2026-03-22T00:00:00.000Z",
+      "id": "tag-alerts",
+      "name": "alerts"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-22T00:00:00.000Z",
+  "versionId": "1"
+}

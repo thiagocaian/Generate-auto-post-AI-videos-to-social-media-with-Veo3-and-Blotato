@@ -1,0 +1,556 @@
+{
+  "name": "CYTRON — Warehouse Voice Inventory Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": ["message"],
+        "additionalFields": {}
+      },
+      "id": "cyt-0001-0000-0000-000000000001",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [0, 300],
+      "webhookId": "cytron-warehouse-voice-bot",
+      "credentials": {
+        "telegramApi": {
+          "id": "CONFIGURE_TELEGRAM_CREDENTIAL",
+          "name": "Maco Electrics Bot"
+        }
+      },
+      "notes": "⚙️ Configure: Telegram Bot credential (token do bot do Telegram)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false },
+          "conditions": [
+            {
+              "id": "voice-check",
+              "leftValue": "={{ !!$json.message.voice }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "cyt-0001-0000-0000-000000000002",
+      "name": "Is Audio?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [240, 300]
+    },
+
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot{{ $credentials.token }}/getFile?file_id={{ $json.message.voice.file_id }}",
+        "options": {}
+      },
+      "id": "cyt-0001-0000-0000-000000000003",
+      "name": "Get Audio File URL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 180],
+      "notes": "Obtém URL do arquivo de voz enviado pelo operador"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {
+          "language": "pt"
+        }
+      },
+      "id": "cyt-0001-0000-0000-000000000004",
+      "name": "Transcribe Audio (Whisper)",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1,
+      "position": [720, 180],
+      "credentials": {
+        "openAiApi": {
+          "id": "CONFIGURE_OPENAI_CREDENTIAL",
+          "name": "OpenAI API"
+        }
+      },
+      "notes": "⚙️ Configure: OpenAI API credential para Whisper"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set-text",
+              "name": "user_text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "set-chat-id",
+              "name": "chat_id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "set-username",
+              "name": "username",
+              "value": "={{ $json.message.from.first_name }} {{ $json.message.from.last_name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cyt-0001-0000-0000-000000000005",
+      "name": "Set Text Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [480, 420],
+      "notes": "Ramo texto: extrai texto e chat_id"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set-transcribed-text",
+              "name": "user_text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "set-chat-id-audio",
+              "name": "chat_id",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "set-username-audio",
+              "name": "username",
+              "value": "={{ $('Telegram Trigger').item.json.message.from.first_name }} {{ $('Telegram Trigger').item.json.message.from.last_name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cyt-0001-0000-0000-000000000006",
+      "name": "Set Transcribed Text",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [960, 180],
+      "notes": "Normaliza saída do Whisper para formato padrão"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "output": "input1"
+      },
+      "id": "cyt-0001-0000-0000-000000000007",
+      "name": "Merge Input",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [1200, 300],
+      "notes": "Unifica ramo áudio + ramo texto em formato padrão {user_text, chat_id, username}"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "warehouse_items",
+        "returnAll": true,
+        "filters": {}
+      },
+      "id": "cyt-0001-0000-0000-000000000008",
+      "name": "Get Warehouse Items (Supabase)",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1440, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "CONFIGURE_SUPABASE_CREDENTIAL",
+          "name": "CYTRON Supabase"
+        }
+      },
+      "notes": "⚙️ Configure: Supabase credential (URL: https://awjagykdhrroeonewwgx.supabase.co)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Coleta itens do Supabase\nconst supabaseItems = $('Get Warehouse Items (Supabase)').all().map(i => i.json);\n\n// Texto do operador\nconst userText = $('Merge Input').item.json.user_text || '';\nconst chatId = $('Merge Input').item.json.chat_id;\nconst username = $('Merge Input').item.json.username;\n\n// Passa tudo junto para o próximo nó (AI)\nreturn [{\n  json: {\n    user_text: userText,\n    chat_id: chatId,\n    username: username,\n    warehouse_items_json: JSON.stringify(supabaseItems.map(i => ({\n      id: i.id,\n      name: i.name,\n      sku: i.sku,\n      current_stock: i.current_stock,\n      minimum_stock: i.minimum_stock,\n      unit: i.unit,\n      unit_cost: i.unit_cost\n    })))\n  }\n}];"
+      },
+      "id": "cyt-0001-0000-0000-000000000009",
+      "name": "Prepare AI Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1680, 300],
+      "notes": "Monta o contexto: texto do operador + lista de itens do warehouse"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Você é o assistente de inventário da CYTRON para a empresa Maco Electrics.\n\nO operador enviou a seguinte mensagem de voz/texto:\n\"{{ $json.user_text }}\"\n\nLista atual de itens no warehouse (JSON):\n{{ $json.warehouse_items_json }}\n\nSua tarefa: extrair as informações da mensagem e retornar um JSON com:\n- item_id: o ID do item correspondente (ou null se não encontrado)\n- item_name: nome do item identificado\n- quantity: quantidade mencionada (número positivo)\n- operation: \"ENTRADA\" se o operador está recebendo/adicionando, \"SAIDA\" se está retirando/usando\n- confidence: HIGH | MEDIUM | LOW\n- message_pt: mensagem de confirmação em português para o operador\n\nRegras:\n- Compare o nome falado com os itens da lista (use fuzzy match, ignore capitalização)\n- Se não identificar o item, retorne item_id: null e confidence: LOW\n- Se não identificar a quantidade, retorne quantity: 0\n- Responda APENAS com o JSON, sem markdown ou explicação",
+        "options": {}
+      },
+      "id": "cyt-0001-0000-0000-000000000010",
+      "name": "AI Extract Item + Quantity",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [1920, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "id": "cyt-0001-0000-0000-000000000010b",
+      "name": "GPT-4o-mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [1920, 500],
+      "credentials": {
+        "openAiApi": {
+          "id": "CONFIGURE_OPENAI_CREDENTIAL",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse da resposta do AI\nconst rawText = $json.text || $json.response || '';\nlet parsed;\n\ntry {\n  // Remove possíveis ```json ``` do GPT\n  const clean = rawText.replace(/```json\\n?|```/g, '').trim();\n  parsed = JSON.parse(clean);\n} catch(e) {\n  return [{ json: { error: true, error_msg: 'AI não retornou JSON válido: ' + rawText } }];\n}\n\n// Recupera dados do contexto anterior\nconst chatId = $('Prepare AI Context').item.json.chat_id;\nconst username = $('Prepare AI Context').item.json.username;\n\nreturn [{\n  json: {\n    ...parsed,\n    chat_id: chatId,\n    username: username,\n    parse_error: false\n  }\n}];"
+      },
+      "id": "cyt-0001-0000-0000-000000000011",
+      "name": "Parse AI Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2160, 300],
+      "notes": "Faz parse do JSON retornado pelo GPT e adiciona chat_id"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false },
+          "conditions": [
+            {
+              "id": "has-item",
+              "leftValue": "={{ $json.item_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "isNotEmpty"
+              }
+            },
+            {
+              "id": "has-quantity",
+              "leftValue": "={{ $json.quantity }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "cyt-0001-0000-0000-000000000012",
+      "name": "Item Found & Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [2400, 300]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "warehouse_items",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.item_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "current_stock",
+              "fieldValue": "={{ $json.operation === 'ENTRADA' ? ($json.current_stock_before + $json.quantity) : Math.max(0, $json.current_stock_before - $json.quantity) }}"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            }
+          ]
+        }
+      },
+      "id": "cyt-0001-0000-0000-000000000013",
+      "name": "Update Stock (Supabase)",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [2640, 180],
+      "credentials": {
+        "supabaseApi": {
+          "id": "CONFIGURE_SUPABASE_CREDENTIAL",
+          "name": "CYTRON Supabase"
+        }
+      },
+      "notes": "Atualiza current_stock na tabela warehouse_items"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "warehouse_transactions",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "item_id",
+              "fieldValue": "={{ $('Parse AI Response').item.json.item_id }}"
+            },
+            {
+              "fieldId": "transaction_type",
+              "fieldValue": "={{ $('Parse AI Response').item.json.operation }}"
+            },
+            {
+              "fieldId": "quantity",
+              "fieldValue": "={{ $('Parse AI Response').item.json.quantity }}"
+            },
+            {
+              "fieldId": "notes",
+              "fieldValue": "=Registrado via Telegram por {{ $('Parse AI Response').item.json.username }} | Confiança: {{ $('Parse AI Response').item.json.confidence }}"
+            },
+            {
+              "fieldId": "created_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            }
+          ]
+        }
+      },
+      "id": "cyt-0001-0000-0000-000000000014",
+      "name": "Insert Transaction (Supabase)",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [2640, 360],
+      "credentials": {
+        "supabaseApi": {
+          "id": "CONFIGURE_SUPABASE_CREDENTIAL",
+          "name": "CYTRON Supabase"
+        }
+      },
+      "notes": "Loga a transação em warehouse_transactions"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {},
+          "conditions": [
+            {
+              "id": "low-stock-check",
+              "leftValue": "={{ $('Parse AI Response').item.json.new_stock }}",
+              "rightValue": "={{ $('Parse AI Response').item.json.minimum_stock }}",
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "cyt-0001-0000-0000-000000000015",
+      "name": "Low Stock?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [2880, 180],
+      "notes": "Verifica se o estoque caiu abaixo do mínimo"
+    },
+    {
+      "parameters": {
+        "url": "=http://localhost:3000/api/warehouse/alert",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "itemId",
+              "value": "={{ $('Parse AI Response').item.json.item_id }}"
+            },
+            {
+              "name": "itemName",
+              "value": "={{ $('Parse AI Response').item.json.item_name }}"
+            },
+            {
+              "name": "currentStock",
+              "value": "={{ $('Parse AI Response').item.json.new_stock }}"
+            },
+            {
+              "name": "source",
+              "value": "telegram-voice-bot"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cyt-0001-0000-0000-000000000016",
+      "name": "Trigger CYTRON Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [3120, 80],
+      "notes": "Chama a API do CYTRON para disparar alerta de estoque baixo"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Parse AI Response').item.json.chat_id }}",
+        "text": "=✅ *CYTRON Warehouse*\n\n{{ $('Parse AI Response').item.json.operation === 'ENTRADA' ? '📦 Entrada' : '📤 Saída' }} registrada!\n\n*Item:* {{ $('Parse AI Response').item.json.item_name }}\n*Quantidade:* {{ $('Parse AI Response').item.json.quantity }}\n*Operador:* {{ $('Parse AI Response').item.json.username }}\n*Horário:* {{ new Date().toLocaleString('pt-AU', {timeZone: 'Australia/Brisbane'}) }}\n\n_Estoque atualizado no dashboard CYTRON._",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "cyt-0001-0000-0000-000000000017",
+      "name": "Telegram: Success ✅",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [3120, 300],
+      "credentials": {
+        "telegramApi": {
+          "id": "CONFIGURE_TELEGRAM_CREDENTIAL",
+          "name": "Maco Electrics Bot"
+        }
+      },
+      "notes": "Envia confirmação para o operador no Telegram"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Parse AI Response').item.json.chat_id }}",
+        "text": "=❌ *CYTRON Warehouse*\n\nNão consegui identificar o item ou a quantidade.\n\n_Tente novamente com mais clareza. Exemplo:_\n🎙️ \"Cabo 2.5mm, entrada, 50 metros\"\n🎙️ \"DALI Controller, saída, 2 unidades\"\n\nSe o item não existir no estoque, contacte o responsável.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "cyt-0001-0000-0000-000000000018",
+      "name": "Telegram: Error ❌",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [2640, 500],
+      "credentials": {
+        "telegramApi": {
+          "id": "CONFIGURE_TELEGRAM_CREDENTIAL",
+          "name": "Maco Electrics Bot"
+        }
+      },
+      "notes": "Envia mensagem de erro quando item ou qty não identificado"
+    }
+  ],
+
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [{ "node": "Is Audio?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Is Audio?": {
+      "main": [
+        [{ "node": "Get Audio File URL", "type": "main", "index": 0 }],
+        [{ "node": "Set Text Message", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get Audio File URL": {
+      "main": [
+        [{ "node": "Transcribe Audio (Whisper)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Transcribe Audio (Whisper)": {
+      "main": [
+        [{ "node": "Set Transcribed Text", "type": "main", "index": 0 }]
+      ]
+    },
+    "Set Transcribed Text": {
+      "main": [
+        [{ "node": "Merge Input", "type": "main", "index": 0 }]
+      ]
+    },
+    "Set Text Message": {
+      "main": [
+        [{ "node": "Merge Input", "type": "main", "index": 1 }]
+      ]
+    },
+    "Merge Input": {
+      "main": [
+        [{ "node": "Get Warehouse Items (Supabase)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get Warehouse Items (Supabase)": {
+      "main": [
+        [{ "node": "Prepare AI Context", "type": "main", "index": 0 }]
+      ]
+    },
+    "Prepare AI Context": {
+      "main": [
+        [{ "node": "AI Extract Item + Quantity", "type": "main", "index": 0 }]
+      ]
+    },
+    "AI Extract Item + Quantity": {
+      "main": [
+        [{ "node": "Parse AI Response", "type": "main", "index": 0 }]
+      ]
+    },
+    "GPT-4o-mini": {
+      "ai_languageModel": [
+        [{ "node": "AI Extract Item + Quantity", "type": "ai_languageModel", "index": 0 }]
+      ]
+    },
+    "Parse AI Response": {
+      "main": [
+        [{ "node": "Item Found & Valid?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Item Found & Valid?": {
+      "main": [
+        [
+          { "node": "Update Stock (Supabase)", "type": "main", "index": 0 },
+          { "node": "Insert Transaction (Supabase)", "type": "main", "index": 0 }
+        ],
+        [{ "node": "Telegram: Error ❌", "type": "main", "index": 0 }]
+      ]
+    },
+    "Update Stock (Supabase)": {
+      "main": [
+        [{ "node": "Low Stock?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Low Stock?": {
+      "main": [
+        [{ "node": "Trigger CYTRON Alert", "type": "main", "index": 0 }],
+        [{ "node": "Telegram: Success ✅", "type": "main", "index": 0 }]
+      ]
+    },
+    "Trigger CYTRON Alert": {
+      "main": [
+        [{ "node": "Telegram: Success ✅", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "tags": ["CYTRON", "Warehouse", "Maco Electrics", "Telegram", "Voice", "Supabase"],
+
+  "meta": {
+    "cytron_version": "1.0",
+    "setup_notes": {
+      "step1": "Crie um Telegram Bot via @BotFather e configure a credencial 'Maco Electrics Bot'",
+      "step2": "Configure a credencial OpenAI API (para Whisper + GPT-4o-mini)",
+      "step3": "Configure a credencial Supabase: URL=https://awjagykdhrroeonewwgx.supabase.co + Service Role Key",
+      "step4": "No nó 'Trigger CYTRON Alert', substitua localhost:3000 pela URL do Vercel após o deploy",
+      "step5": "Ative o workflow e adicione o bot a um grupo Telegram da equipe Maco"
+    }
+  }
+}
