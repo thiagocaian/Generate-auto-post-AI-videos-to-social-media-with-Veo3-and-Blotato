@@ -38,12 +38,30 @@ export default function MarketingPage() {
     if (file?.type.startsWith('image/')) handleFile(file)
   }
 
-  const runAgent = () => {
+  const runAgent = async () => {
     setStep('analysing')
+    try {
+      // Send to n8n with cinematic style prompt for Inkwell Printing
+      await fetch('https://labofantasma.app.n8n.cloud/webhook/photo-to-video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_name: 'Custom Screen Printed Apparel',
+          brand: 'Inkwell Printing',
+          target_audience: 'athletes, teams, businesses and streetwear lovers aged 18-40',
+          platform: platforms.join(',').toLowerCase(),
+          image_url: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=1080&q=80',
+          style: 'cinematic slow motion, golden hour warm light, film grain texture, close-up of hands on press, ink bleeding through silk screen, bold graffiti-meets-craft aesthetic, 9:16 vertical',
+          caption_tone: 'bold, authentic, street energy, proud craftsman',
+          client: 'inkwell_printing',
+        }),
+      })
+    } catch { /* non-blocking */ }
+
     setTimeout(() => setStep('generating'), 2000)
     setTimeout(() => {
       setStep('ready')
-      setCaption('Precision electrical systems installed at Madeline Tower — 40 floors of engineering excellence. #MacoElectrics #GoldCoastElectrician #ElectricalEngineering #HighRise #Construction')
+      setCaption('Built by hand. Worn with pride. 🖤\n\nEvery stitch of ink tells a story — custom screen printing crafted for teams, brands, and culture. From your vision to the press to the streets.\n\n📩 DM us or visit inkwellprinting.net\n\n#InkwellPrinting #ScreenPrinting #CustomApparel #PrintLife #StreetWear #MadeByHand #CustomTees #PrintShop #TeamWear #AustralianMade')
     }, 4500)
   }
 
@@ -53,7 +71,14 @@ export default function MarketingPage() {
       await fetch('/api/marketing', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'marketing_post', caption, platforms, project: 'Madeline Tower' }),
+        body: JSON.stringify({
+          type: 'marketing_post',
+          caption,
+          platforms,
+          brand: 'Inkwell Printing',
+          style: 'cinematic',
+          project: 'Custom Apparel Campaign',
+        }),
       })
     } catch { /* proceed even if webhook fails */ }
     setStep('posted')
