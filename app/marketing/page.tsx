@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Sidebar from '@/components/Sidebar'
 
@@ -17,18 +17,60 @@ const pipeline = [
   { label: 'Auto Publisher',     tool: 'Blotato API'      },
 ]
 
+// Default brand config per company (can be expanded per client)
+const BRAND_CONFIG: Record<string, { product_name: string; target_audience: string; style: string; caption_tone: string }> = {
+  'inkwell_printing': {
+    product_name: 'Custom Screen Printed Apparel',
+    target_audience: 'athletes, teams, businesses and streetwear lovers aged 18-40',
+    style: 'cinematic slow motion, golden hour warm light, film grain texture, close-up of hands on press, ink bleeding through silk screen, bold graffiti-meets-craft aesthetic, 9:16 vertical',
+    caption_tone: 'bold, authentic, street energy, proud craftsman',
+  },
+  'default': {
+    product_name: 'Product',
+    target_audience: 'general audience aged 18-45',
+    style: 'cinematic, natural lighting, warm tones, authentic human moments, 9:16 vertical',
+    caption_tone: 'engaging, authentic, professional',
+  },
+}
+
 export default function MarketingPage() {
-  const [step, setStep] = useState<'idle' | 'uploaded' | 'analysing' | 'generating' | 'ready' | 'posted'>('idle')
+  const [step, setStep] = useState<'idle' | 'uploaded' | 'uploading' | 'analysing' | 'generating' | 'ready' | 'posted'>('idle')
   const [dragOver, setDragOver]   = useState(false)
   const [preview, setPreview]     = useState<string | null>(null)
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null)
   const [caption, setCaption]     = useState('')
   const [platforms, setPlatforms] = useState<string[]>(['Instagram', 'TikTok'])
   const [posting, setPosting]     = useState(false)
+  const [company, setCompany]     = useState<{ name: string; slug: string } | null>(null)
+  const [uploadError, setUploadError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const handleFile = (file: File) => {
+  // Load company info on mount
+  useEffect(() => {
+    fetch('/api/company')
+      .then(r => r.json())
+      .then(d => { if (d.company) setCompany(d.company) })
+      .catch(() => {})
+  }, [])
+
+  const handleFile = async (file: File) => {
     setPreview(URL.createObjectURL(file))
-    setStep('uploaded')
+    setStep('uploading')
+    setUploadError(null)
+
+    try {
+      const form = new FormData()
+      form.append('file', file)
+      const res = await fetch('/api/upload', { method: 'POST', body: form })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Upload failed')
+      setUploadedUrl(data.url)
+      setStep('uploaded')
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Upload failed'
+      setUploadError(message)
+      setStep('idle')
+    }
   }
 
   const handleDrop = (e: React.DragEvent) => {
@@ -38,22 +80,29 @@ export default function MarketingPage() {
     if (file?.type.startsWith('image/')) handleFile(file)
   }
 
+  const getBrandConfig = () => {
+    const slug = company?.slug || 'default'
+    return BRAND_CONFIG[slug] || BRAND_CONFIG['default']
+  }
+
   const runAgent = async () => {
     setStep('analysing')
+    const brand = getBrandConfig()
+    const imageUrl = uploadedUrl || 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=1080&q=80'
+
     try {
-      // Send to n8n with cinematic style prompt for Inkwell Printing
       await fetch('https://labofantasma.app.n8n.cloud/webhook/photo-to-video', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          product_name: 'Custom Screen Printed Apparel',
-          brand: 'Inkwell Printing',
-          target_audience: 'athletes, teams, businesses and streetwear lovers aged 18-40',
+          product_name: brand.product_name,
+          brand: company?.name || 'Brand',
+          target_audience: brand.target_audience,
           platform: platforms.join(',').toLowerCase(),
-          image_url: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=1080&q=80',
-          style: 'cinematic slow motion, golden hour warm light, film grain texture, close-up of hands on press, ink bleeding through silk screen, bold graffiti-meets-craft aesthetic, 9:16 vertical',
-          caption_tone: 'bold, authentic, street energy, proud craftsman',
-          client: 'inkwell_printing',
+          image_url: imageUrl,
+          style: brand.style,
+          caption_tone: brand.caption_tone,
+          client: company?.slug || 'unknown',
         }),
       })
     } catch { /* non-blocking */ }
@@ -61,7 +110,8 @@ export default function MarketingPage() {
     setTimeout(() => setStep('generating'), 2000)
     setTimeout(() => {
       setStep('ready')
-      setCaption('Built by hand. Worn with pride. 🖤\n\nEvery stitch of ink tells a story — custom screen printing crafted for teams, brands, and culture. From your vision to the press to the streets.\n\n📩 DM us or visit inkwellprinting.net\n\n#InkwellPrinting #ScreenPrinting #CustomApparel #PrintLife #StreetWear #MadeByHand #CustomTees #PrintShop #TeamWear #AustralianMade')
+      // Caption will come from AI via n8n — placeholder while async
+      setCaption(`Built by hand. Worn with pride. 🖤\n\nEvery stitch of ink tells a story — custom screen printing crafted for teams, brands, and culture. From your vision to the press to the streets.\n\n📩 DM us or visit inkwellprinting.net\n\n#InkwellPrinting #ScreenPrinting #CustomApparel #PrintLife #StreetWear #MadeByHand #CustomTees #PrintShop #TeamWear #AustralianMade`)
     }, 4500)
   }
 
@@ -75,9 +125,10 @@ export default function MarketingPage() {
           type: 'marketing_post',
           caption,
           platforms,
-          brand: 'Inkwell Printing',
-          style: 'cinematic',
-          project: 'Custom Apparel Campaign',
+          brand: company?.name || 'Brand',
+          image_url: uploadedUrl,
+          style: getBrandConfig().style,
+          project: `${company?.name || 'Brand'} Campaign`,
         }),
       })
     } catch { /* proceed even if webhook fails */ }
@@ -144,13 +195,19 @@ export default function MarketingPage() {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-sm font-semibold" style={{ color: '#111827' }}>New Content</h2>
                   {step !== 'idle' && (
-                    <button onClick={() => { setStep('idle'); setPreview(null); setCaption('') }}
+                    <button onClick={() => { setStep('idle'); setPreview(null); setCaption(''); setUploadedUrl(null) }}
                       className="text-xs px-3 py-1 rounded"
                       style={{ background: '#F9FAFB', color: '#6B7280', border: '1px solid #E5E7EB' }}>
                       Reset
                     </button>
                   )}
                 </div>
+
+                {uploadError && (
+                  <div className="mb-3 p-3 rounded-lg text-xs" style={{ background: '#FEF2F2', color: '#DC2626', border: '1px solid #FECACA' }}>
+                    ⚠️ {uploadError}
+                  </div>
+                )}
 
                 {step === 'idle' && (
                   <div
@@ -171,7 +228,17 @@ export default function MarketingPage() {
                   </div>
                 )}
 
-                {step !== 'idle' && preview && (
+                {step === 'uploading' && preview && (
+                  <div className="flex flex-col items-center justify-center py-8 gap-3">
+                    <img src={preview} alt="upload" className="w-24 h-24 object-cover rounded-lg opacity-60" />
+                    <div className="flex items-center gap-2 text-xs" style={{ color: '#6B7280' }}>
+                      <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#1D4ED8' }} />
+                      Uploading photo to secure storage...
+                    </div>
+                  </div>
+                )}
+
+                {step !== 'idle' && step !== 'uploading' && preview && (
                   <div className="flex gap-4">
                     <div className="flex-shrink-0 w-44 h-44 rounded-lg overflow-hidden" style={{ border: '1px solid #E5E7EB' }}>
                       <img src={preview} alt="upload" className="w-full h-full object-cover" />
@@ -183,13 +250,16 @@ export default function MarketingPage() {
                           <div className={`w-2 h-2 rounded-full ${['analysing','generating'].includes(step) ? 'animate-pulse' : ''}`}
                             style={{ background: step === 'posted' ? '#16A34A' : step === 'ready' ? '#16A34A' : ['analysing','generating'].includes(step) ? '#1D4ED8' : '#9CA3AF' }} />
                           <span className="text-xs font-semibold" style={{ color: '#374151' }}>
-                            {step === 'uploaded'   && 'Photo ready — click Analyse'}
+                            {step === 'uploaded'   && 'Photo ready — click Run AI Agent'}
                             {step === 'analysing'  && 'AI analysing your photo...'}
                             {step === 'generating' && 'Generating cinematic video with Kling AI...'}
                             {step === 'ready'      && 'Video ready — review and post'}
                             {step === 'posted'     && 'Published to Instagram + TikTok'}
                           </span>
                         </div>
+                        {step === 'uploaded' && uploadedUrl && (
+                          <p className="text-xs mt-1" style={{ color: '#16A34A' }}>✓ Photo uploaded successfully</p>
+                        )}
                         {['analysing', 'generating'].includes(step) && (
                           <div className="h-1 rounded-full overflow-hidden mt-2" style={{ background: '#E5E7EB' }}>
                             <div className="h-full rounded-full transition-all"
@@ -319,7 +389,7 @@ export default function MarketingPage() {
                 <p className="text-xs text-center mt-2" style={{ color: '#9CA3AF' }}>4 posts this week · Goal: 5</p>
               </div>
 
-              {/* System status */}
+              {/* Integrations status */}
               <div className="rounded-lg p-5" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
                 <h2 className="text-sm font-semibold mb-3" style={{ color: '#111827' }}>Integrations</h2>
                 {[
