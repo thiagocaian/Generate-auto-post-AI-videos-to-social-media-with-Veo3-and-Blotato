@@ -40,18 +40,18 @@ export default function LoginPage() {
         {/* Hero text */}
         <div>
           <h1 className="text-4xl font-bold mb-4 leading-tight" style={{ color: '#F8FAFC' }}>
-            Intelligent<br />Automation<br />Platform
+            AI Agents<br />Running Your<br />Business
           </h1>
           <p className="text-sm mb-10" style={{ color: '#94A3B8' }}>
-            Field operations, compliance, warehousing and quoting — unified for electrical contractors.
+            Marketing, content, operations and growth — powered by AI agents that work 24/7 so you can focus on what matters.
           </p>
 
           {/* Feature list */}
           {[
-            'AI-powered work order management',
-            'Real-time stock control with QR scanning',
-            'Automated compliance reporting',
-            'Instant quote generation',
+            'AI-generated videos & social media content',
+            'Automated posting to Instagram & TikTok',
+            'Smart marketing campaigns per client',
+            'Real-time analytics & performance tracking',
           ].map((f, i) => (
             <div key={i} className="flex items-center gap-3 mb-3">
               <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
@@ -81,8 +81,11 @@ export default function LoginPage() {
           </div>
 
           <h2 className="text-2xl font-bold mb-1" style={{ color: '#111827' }}>Sign in</h2>
-          <p className="text-sm mb-8" style={{ color: '#6B7280' }}>
+          <p className="text-sm mb-2" style={{ color: '#6B7280' }}>
             Enter your credentials to access your workspace
+          </p>
+          <p className="text-xs mb-8" style={{ color: '#94A3B8', fontStyle: 'italic' }}>
+            AI agents running your business while you focus on what matters.
           </p>
 
           <form onSubmit={handleLogin} className="space-y-4">

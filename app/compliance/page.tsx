@@ -264,10 +264,10 @@ export default function CompliancePage() {
                 <form onSubmit={handleGenerate} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     {[
-                      { label: 'Project Name', key: 'project', placeholder: 'e.g. Madeline Tower Stage 2' },
-                      { label: 'Site Location', key: 'location', placeholder: 'e.g. Level 12, Switchroom A' },
-                      { label: 'Inspector Name', key: 'inspector', placeholder: 'e.g. Mark Peters' },
-                      { label: 'Licence Number', key: 'license', placeholder: 'e.g. QLD-82311' },
+                      { label: 'Project Name', key: 'project', placeholder: 'e.g. Project Name' },
+                      { label: 'Site Location', key: 'location', placeholder: 'e.g. Main area' },
+                      { label: 'Inspector Name', key: 'inspector', placeholder: 'e.g. John Smith' },
+                      { label: 'Licence Number', key: 'license', placeholder: 'e.g. LIC-0001' },
                       { label: 'Inspection Date', key: 'date', placeholder: '22 Mar 2026' },
                       { label: 'Supply Voltage', key: 'voltage', placeholder: 'e.g. 415V 3-phase' },
                     ].map(f => (
@@ -378,8 +378,8 @@ export default function CompliancePage() {
                     {[
                       ['Report Ref', reportRef],
                       ['Type', formTypes.find(f => f.id === selectedType)?.label || ''],
-                      ['Project', form.project || 'Madeline Tower'],
-                      ['Inspector', form.inspector || 'Mark Peters'],
+                      ['Project', form.project || '—'],
+                      ['Inspector', form.inspector || '—'],
                       ['Result', form.result.toUpperCase()],
                       ['Archived', 'Supabase · compliance_reports'],
                     ].map(([label, value]) => (
@@ -394,7 +394,7 @@ export default function CompliancePage() {
                 <div className="space-y-2 text-xs mb-6" style={{ color: '#065F46' }}>
                   {[
                     '📄 PDF saved to project compliance folder',
-                    '📧 Copy sent to admin@macoelectrics.com',
+                    '📧 Copy sent to admin@cytron.io',
                     '📁 Archived in Supabase — compliance_reports table',
                     '✅ Available for regulatory submission',
                   ].map((a, i) => <div key={i}>{a}</div>)}

@@ -46,33 +46,29 @@ export function LogoWordmark({ variant = 'dark', size = 'md' }: LogoProps) {
   const fontSize  = size === 'sm' ? 13 : size === 'lg' ? 20 : 15
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: size === 'lg' ? 14 : 10 }}>
-      <LogoIcon size={size} />
-      <div>
+    <div>
+      <div style={{
+        fontFamily: "'Inter', system-ui, sans-serif",
+        fontWeight: 800,
+        fontSize,
+        letterSpacing: '0.12em',
+        color: textColor,
+        lineHeight: 1,
+      }}>
+        CYTRON
+      </div>
+      {size !== 'sm' && (
         <div style={{
           fontFamily: "'Inter', system-ui, sans-serif",
-          fontWeight: 800,
-          fontSize,
-          letterSpacing: '0.12em',
-          color: textColor,
-          lineHeight: 1,
+          fontWeight: 500,
+          fontSize: 9,
+          letterSpacing: '0.08em',
+          color: subColor,
+          marginTop: 4,
         }}>
-          CYTRON
+          AI agents running your business.
         </div>
-        {size !== 'sm' && (
-          <div style={{
-            fontFamily: "'Inter', system-ui, sans-serif",
-            fontWeight: 500,
-            fontSize: 9,
-            letterSpacing: '0.2em',
-            color: subColor,
-            marginTop: 2,
-            textTransform: 'uppercase' as const,
-          }}>
-            Platform
-          </div>
-        )}
-      </div>
+      )}
     </div>
   )
 }

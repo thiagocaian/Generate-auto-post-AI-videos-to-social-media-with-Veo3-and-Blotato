@@ -319,9 +319,9 @@ export default function FieldCommanderPage() {
             </div>
             <form onSubmit={handleCreateOrder} className="space-y-3">
               {[
-                { label: 'Job Title',     key: 'title',    placeholder: 'e.g. Switchboard Installation L5'  },
-                { label: 'Project / Site',key: 'project',  placeholder: 'e.g. Madeline Tower — Level 5'     },
-                { label: 'Assign To',     key: 'assignee', placeholder: 'e.g. Jake Brennan'                 },
+                { label: 'Job Title',     key: 'title',    placeholder: 'e.g. Job title'  },
+                { label: 'Project / Site',key: 'project',  placeholder: 'e.g. Site / Location'     },
+                { label: 'Assign To',     key: 'assignee', placeholder: 'e.g. Team member name'                 },
                 { label: 'Due Date',      key: 'dueDate',  placeholder: '24 Mar 2026'                       },
               ].map(f => (
                 <div key={f.key}>

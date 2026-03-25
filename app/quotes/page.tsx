@@ -74,7 +74,7 @@ function generateQuote(form: Record<string, string>): GeneratedQuote {
     address: form.address || 'Gold Coast QLD',
     validUntil: validDate.toLocaleDateString('en-AU'),
     items, subtotal, gst, total,
-    notes: `This quote covers all electrical works as specified. All works will be completed in accordance with AS/NZS 3000:2018 Wiring Rules and Queensland Electrical Safety Act 2002. Maco Electrics holds Queensland Electrical Contractor Licence #82868. Payment terms: 30% deposit on acceptance, balance on completion.`,
+    notes: `This quote covers all works as specified. Payment terms: 30% deposit on acceptance, balance on completion.`,
     estimatedDays,
   }
 }
@@ -107,7 +107,7 @@ export default function QuotesPage() {
   const thinkingSteps = [
     { icon: '🔍', text: 'Analysing project specifications...' },
     { icon: '📐', text: 'Calculating material quantities...' },
-    { icon: '💡', text: 'Applying Maco Electrics pricing matrix...' },
+    { icon: '💡', text: 'Applying pricing matrix...' },
     { icon: '⚡', text: 'Cross-referencing warehouse stock...' },
     { icon: '📋', text: 'Generating AS3012 compliance items...' },
     { icon: '✅', text: 'Quote ready — reviewing for accuracy...' },
@@ -196,8 +196,8 @@ export default function QuotesPage() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
                 {[
-                  { label: 'Client Name *', key: 'clientName', placeholder: 'e.g. Madeline Tower Pty Ltd' },
-                  { label: 'Project Name *', key: 'projectName', placeholder: 'e.g. Madeline Tower Stage 2' },
+                  { label: 'Client Name *', key: 'clientName', placeholder: 'e.g. Acme Corp' },
+                  { label: 'Project Name *', key: 'projectName', placeholder: 'e.g. Project Alpha' },
                 ].map(f => (
                   <div key={f.key}>
                     <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>{f.label}</label>
@@ -321,13 +321,13 @@ export default function QuotesPage() {
                       color: '#fff', fontWeight: 900, fontSize: 20,
                     }}>M</div>
                     <div>
-                      <div style={{ fontWeight: 900, fontSize: 17, color: 'var(--text)' }}>Maco Electrics</div>
-                      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>QLD Licence #82868 · NSW #313610c</div>
+                      <div style={{ fontWeight: 900, fontSize: 17, color: 'var(--text)' }}>CYTRON</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>AI-Powered Quoting</div>
                     </div>
                   </div>
                   <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.9 }}>
                     <div>Gold Coast QLD, Australia</div>
-                    <div>www.macoelectrics.com.au</div>
+                    <div>cytron.io</div>
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -479,7 +479,7 @@ export default function QuotesPage() {
                   fontSize: 12, lineHeight: 1.8, textAlign: 'left',
                 }}>
                   <div>📧 <strong>Confirmation email</strong> sent to client automatically</div>
-                  <div>📋 <strong>Work order</strong> created in CYTRON — assigned to Tim McKay</div>
+                  <div>📋 <strong>Work order</strong> created in CYTRON</div>
                   <div>📦 <strong>Warehouse stock check</strong> initiated for this project</div>
                   <div>📊 <strong>Job tracked</strong> in dashboard under Active Projects</div>
                 </div>
