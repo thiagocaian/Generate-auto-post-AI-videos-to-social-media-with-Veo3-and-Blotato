@@ -30,12 +30,25 @@ function getAdmin() {
   )
 }
 
-// GET — list marketing posts for user's company
-export async function GET() {
+// GET — list marketing posts for user's company, or fetch single post by id
+export async function GET(req: NextRequest) {
   const user = await getAuthUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const admin = getAdmin()
+  const { searchParams } = new URL(req.url)
+  const singleId = searchParams.get('id')
+
+  // Single post lookup (for polling)
+  if (singleId) {
+    const { data, error } = await admin
+      .from('marketing_posts')
+      .select('*')
+      .eq('id', singleId)
+      .single()
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ post: data })
+  }
 
   const { data: member } = await admin
     .from('company_members')

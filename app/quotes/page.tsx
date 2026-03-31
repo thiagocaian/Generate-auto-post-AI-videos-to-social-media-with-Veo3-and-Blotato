@@ -113,21 +113,82 @@ export default function QuotesPage() {
     { icon: '✅', text: 'Quote ready — reviewing for accuracy...' },
   ]
 
-  const handleGenerate = () => {
+  const [aiError, setAiError] = useState<string | null>(null)
+
+  const handleGenerate = async () => {
     setStep('thinking')
     setThinkingStep(0)
+    setAiError(null)
+
+    // Start thinking animation
     let i = 0
     const interval = setInterval(() => {
       i++
-      setThinkingStep(i)
-      if (i >= thinkingSteps.length) {
-        clearInterval(interval)
-        setTimeout(() => {
-          setQuote(generateQuote(form))
-          setStep('quote')
-        }, 600)
-      }
+      if (i < thinkingSteps.length) setThinkingStep(i)
     }, 550)
+
+    try {
+      // Call real AI API
+      const res = await fetch('/api/quotes/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectType: form.projectType,
+          floorArea: form.size || '200',
+          clientName: form.clientName,
+          projectName: form.projectName,
+        }),
+      })
+
+      clearInterval(interval)
+      setThinkingStep(thinkingSteps.length)
+
+      if (!res.ok) {
+        const errData = await res.json()
+        // Fallback to client-side generation if API key missing
+        if (errData.error?.includes('ANTHROPIC_API_KEY')) {
+          setTimeout(() => {
+            setQuote(generateQuote(form))
+            setStep('quote')
+          }, 600)
+          return
+        }
+        throw new Error(errData.error || 'Failed to generate quote')
+      }
+
+      const data = await res.json()
+      const aiQuote = data.quote
+
+      const today = new Date()
+      const validDate = new Date(today)
+      validDate.setDate(today.getDate() + 30)
+      const qNum = 'MCE-' + today.getFullYear() + '-' + String(Math.floor(Math.random() * 9000) + 1000)
+
+      setTimeout(() => {
+        setQuote({
+          quoteNumber: qNum,
+          projectName: form.projectName || 'Unnamed Project',
+          clientName: form.clientName || 'Client',
+          address: form.address || 'Gold Coast QLD',
+          validUntil: validDate.toLocaleDateString('en-AU'),
+          items: aiQuote.items,
+          subtotal: aiQuote.subtotal,
+          gst: aiQuote.gst,
+          total: aiQuote.total,
+          notes: aiQuote.notes || 'This quote covers all works as specified.',
+          estimatedDays: aiQuote.estimatedDays || Math.ceil(parseInt(form.size || '200') / 30) + 5,
+        })
+        setStep('quote')
+      }, 600)
+    } catch (err: unknown) {
+      clearInterval(interval)
+      // Fallback to client-side generation
+      setThinkingStep(thinkingSteps.length)
+      setTimeout(() => {
+        setQuote(generateQuote(form))
+        setStep('quote')
+      }, 600)
+    }
   }
 
   const fmt = (n: number) => '$' + n.toLocaleString('en-AU')

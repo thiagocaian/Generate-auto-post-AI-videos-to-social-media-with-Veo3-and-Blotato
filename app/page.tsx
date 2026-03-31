@@ -4,23 +4,51 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Sidebar from '@/components/Sidebar'
 
+type DashboardData = {
+  company: { name: string; slug: string; plan: string; plan_status: string }
+  role: string
+  stats: {
+    marketing: { total: number; published: number; totalReach: number; totalLikes: number; videosGenerated: number }
+    quotes: { total: number; totalValue: number; approved: number }
+    compliance: { total: number; passed: number; failed: number; pending: number }
+    workOrders: { total: number; active: number; completed: number }
+  }
+  recent: {
+    posts: { id: string; caption: string; platform: string; status: string; created_at: string }[]
+    quotes: { id: string; quote_number: string; client_name: string; total: number; status: string; created_at: string }[]
+  }
+}
+
+const PLAN_LIMITS: Record<string, { videos: number; posts: number }> = {
+  starter: { videos: 10, posts: 30 },
+  pro: { videos: 50, posts: 150 },
+  enterprise: { videos: 999, posts: 999 },
+}
+
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 60) return `${mins}m ago`
+  const hrs = Math.floor(mins / 60)
+  if (hrs < 24) return `${hrs}h ago`
+  return `${Math.floor(hrs / 24)}d ago`
+}
+
 export default function Home() {
-  const [company, setCompany] = useState<{ name: string; slug: string } | null>(null)
-  const [stats, setStats] = useState({ total: 0, published: 0, totalReach: 0, totalLikes: 0 })
+  const [data, setData] = useState<DashboardData | null>(null)
 
   useEffect(() => {
-    fetch('/api/company')
+    fetch('/api/dashboard')
       .then(r => r.json())
-      .then(d => { if (d.company) setCompany(d.company) })
-      .catch(() => {})
-
-    fetch('/api/marketing-posts')
-      .then(r => r.json())
-      .then(d => { if (d.stats) setStats(d.stats) })
+      .then(d => { if (d.company) setData(d) })
       .catch(() => {})
   }, [])
 
-  const clientName = company?.name || 'Loading...'
+  const company = data?.company
+  const s = data?.stats
+  const recent = data?.recent
+  const plan = company?.plan || 'starter'
+  const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.starter
 
   return (
     <div className="flex min-h-screen" style={{ background: '#F8FAFC', fontFamily: "'Inter', system-ui, sans-serif" }}>
@@ -37,7 +65,7 @@ export default function Home() {
               <span>/</span>
               <span style={{ color: '#374151', fontWeight: 600 }}>Dashboard</span>
             </div>
-            <h1 className="text-base font-semibold" style={{ color: '#111827' }}>Welcome, {clientName}</h1>
+            <h1 className="text-base font-semibold" style={{ color: '#111827' }}>Welcome, {company?.name || 'Loading...'}</h1>
           </div>
           <div className="flex items-center gap-3">
             <div className="px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5"
@@ -50,13 +78,33 @@ export default function Home() {
 
         <div className="flex-1 overflow-y-auto p-6">
 
-          {/* KPIs — all zeroed */}
+          {/* KPIs */}
           <div className="grid grid-cols-4 gap-4 mb-5">
             {[
-              { label: 'Posts Published',   value: String(stats.published), sub: stats.published ? `${stats.published} total` : 'No posts yet',           status: stats.published > 0 ? 'Active' : 'Waiting' },
-              { label: 'Total Reach',       value: String(stats.totalReach), sub: stats.totalReach ? 'across platforms' : 'Start posting to track', status: stats.totalReach > 0 ? 'Active' : 'Waiting' },
-              { label: 'Total Likes',       value: stats.totalLikes ? String(stats.totalLikes) : '—', sub: stats.totalLikes ? 'across platforms' : 'No data yet',            status: stats.totalLikes > 0 ? 'Active' : 'Waiting' },
-              { label: 'Videos Generated',  value: String(stats.total), sub: 'via Kling AI',           status: 'Ready' },
+              {
+                label: 'Posts Published',
+                value: s ? String(s.marketing.published) : '—',
+                sub: s?.marketing.published ? `${s.marketing.total} total` : 'No posts yet',
+                status: s && s.marketing.published > 0 ? 'Active' : 'Waiting',
+              },
+              {
+                label: 'Quotes Value',
+                value: s ? `$${(s.quotes.totalValue / 1000).toFixed(1)}k` : '—',
+                sub: s?.quotes.total ? `${s.quotes.total} quotes • ${s.quotes.approved} approved` : 'No quotes yet',
+                status: s && s.quotes.total > 0 ? 'Active' : 'Waiting',
+              },
+              {
+                label: 'Compliance',
+                value: s ? String(s.compliance.total) : '—',
+                sub: s?.compliance.total ? `${s.compliance.passed} passed • ${s.compliance.failed} failed` : 'No reports yet',
+                status: s && s.compliance.failed > 0 ? 'Alert' : s && s.compliance.total > 0 ? 'Active' : 'Waiting',
+              },
+              {
+                label: 'Work Orders',
+                value: s ? String(s.workOrders.active) : '—',
+                sub: s?.workOrders.total ? `${s.workOrders.completed} completed of ${s.workOrders.total}` : 'No orders yet',
+                status: s && s.workOrders.active > 0 ? 'Active' : 'Waiting',
+              },
             ].map((k, i) => (
               <div key={i} className="rounded-lg p-5" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
                 <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#9CA3AF' }}>{k.label}</p>
@@ -64,7 +112,10 @@ export default function Home() {
                 <div className="flex items-center justify-between">
                   <span className="text-xs" style={{ color: '#9CA3AF' }}>{k.sub}</span>
                   <span className="text-xs font-semibold px-1.5 py-0.5 rounded"
-                    style={{ background: k.status === 'Ready' ? '#F0FDF4' : '#F9FAFB', color: k.status === 'Ready' ? '#15803D' : '#9CA3AF' }}>{k.status}</span>
+                    style={{
+                      background: k.status === 'Active' ? '#F0FDF4' : k.status === 'Alert' ? '#FEF2F2' : '#F9FAFB',
+                      color: k.status === 'Active' ? '#15803D' : k.status === 'Alert' ? '#DC2626' : '#9CA3AF',
+                    }}>{k.status}</span>
                 </div>
               </div>
             ))}
@@ -77,69 +128,84 @@ export default function Home() {
 
               {/* Quick Actions */}
               <div className="rounded-lg p-5" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
-                <h2 className="text-sm font-semibold mb-4" style={{ color: '#111827' }}>Get Started</h2>
-                <div className="space-y-3">
-                  <Link href="/marketing"
-                    className="flex items-center gap-4 p-4 rounded-lg transition-all hover:shadow-sm"
-                    style={{ background: '#EFF6FF', border: '1px solid #BFDBFE' }}>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ background: '#1D4ED8' }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M15 10l4.553-2.069A1 1 0 0121 8.806v6.388a1 1 0 01-1.447.894L15 14M3 8h12v8H3a1 1 0 01-1-1V9a1 1 0 011-1z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold" style={{ color: '#1D4ED8' }}>Create Your First AI Video</p>
-                      <p className="text-xs" style={{ color: '#6B7280' }}>Upload a photo and let AI generate a cinematic video for Instagram & TikTok</p>
-                    </div>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-auto flex-shrink-0">
-                      <path d="M9 18l6-6-6-6" />
-                    </svg>
-                  </Link>
-
-                  <div className="flex items-center gap-4 p-4 rounded-lg"
-                    style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ background: '#F3F4F6' }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M16 8a6 6 0 01-12 0 6 6 0 0112 0zM2 21a8 8 0 0116 0" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium" style={{ color: '#374151' }}>Connect Social Accounts</p>
-                      <p className="text-xs" style={{ color: '#9CA3AF' }}>Link your Instagram and TikTok for auto-publishing</p>
-                    </div>
-                    <span className="text-xs px-2 py-0.5 rounded ml-auto" style={{ background: '#FEF9C3', color: '#92400E' }}>Coming soon</span>
-                  </div>
-
-                  <div className="flex items-center gap-4 p-4 rounded-lg"
-                    style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ background: '#F3F4F6' }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 20V10M18 20V4M6 20v-4" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium" style={{ color: '#374151' }}>View Analytics</p>
-                      <p className="text-xs" style={{ color: '#9CA3AF' }}>Track reach, engagement and growth across platforms</p>
-                    </div>
-                    <span className="text-xs px-2 py-0.5 rounded ml-auto" style={{ background: '#F9FAFB', color: '#9CA3AF' }}>No data yet</span>
-                  </div>
+                <h2 className="text-sm font-semibold mb-4" style={{ color: '#111827' }}>Quick Actions</h2>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { label: 'Create AI Video', desc: 'Upload photo, generate video', href: '/marketing', icon: 'M15 10l4.553-2.069A1 1 0 0121 8.806v6.388a1 1 0 01-1.447.894L15 14M3 8h12v8H3a1 1 0 01-1-1V9a1 1 0 011-1z' },
+                    { label: 'New Quote', desc: 'AI-powered quote generator', href: '/quotes', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+                    { label: 'Compliance Report', desc: 'Generate inspection report', href: '/compliance', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+                    { label: 'Warehouse', desc: 'Scan QR, manage stock', href: '/warehouse', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
+                  ].map((a, i) => (
+                    <Link key={i} href={a.href}
+                      className="flex items-center gap-3 p-3.5 rounded-lg transition-all hover:shadow-sm"
+                      style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ background: '#1D4ED8' }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d={a.icon} />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold" style={{ color: '#374151' }}>{a.label}</p>
+                        <p className="text-xs" style={{ color: '#9CA3AF' }}>{a.desc}</p>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               </div>
 
-              {/* Recent Activity — empty */}
+              {/* Recent Activity */}
               <div className="rounded-lg p-5" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
                 <h2 className="text-sm font-semibold mb-4" style={{ color: '#111827' }}>Recent Activity</h2>
-                <div className="flex flex-col items-center justify-center py-10">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mb-3">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                  <p className="text-xs font-medium" style={{ color: '#9CA3AF' }}>No activity yet</p>
-                  <p className="text-xs mt-1" style={{ color: '#D1D5DB' }}>Your AI-generated content will appear here</p>
-                </div>
+                {recent && (recent.posts.length > 0 || recent.quotes.length > 0) ? (
+                  <div className="space-y-2">
+                    {recent.posts.map(p => (
+                      <div key={p.id} className="flex items-center justify-between py-2 px-3 rounded"
+                        style={{ background: '#F9FAFB' }}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-7 h-7 rounded flex items-center justify-center" style={{ background: '#EFF6FF' }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M15 10l4.553-2.069A1 1 0 0121 8.806v6.388a1 1 0 01-1.447.894L15 14M3 8h12v8H3a1 1 0 01-1-1V9a1 1 0 011-1z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium" style={{ color: '#374151' }}>
+                              {p.caption ? (p.caption.length > 50 ? p.caption.slice(0, 50) + '...' : p.caption) : 'Marketing post'}
+                            </p>
+                            <p className="text-xs" style={{ color: '#9CA3AF' }}>{p.platform}</p>
+                          </div>
+                        </div>
+                        <span className="text-xs" style={{ color: '#9CA3AF' }}>{timeAgo(p.created_at)}</span>
+                      </div>
+                    ))}
+                    {recent.quotes.map(q => (
+                      <div key={q.id} className="flex items-center justify-between py-2 px-3 rounded"
+                        style={{ background: '#F9FAFB' }}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-7 h-7 rounded flex items-center justify-center" style={{ background: '#FEF9C3' }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#92400E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium" style={{ color: '#374151' }}>{q.quote_number} — {q.client_name}</p>
+                            <p className="text-xs" style={{ color: '#9CA3AF' }}>${q.total?.toLocaleString()}</p>
+                          </div>
+                        </div>
+                        <span className="text-xs" style={{ color: '#9CA3AF' }}>{timeAgo(q.created_at)}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-10">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mb-3">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    <p className="text-xs font-medium" style={{ color: '#9CA3AF' }}>No activity yet</p>
+                    <p className="text-xs mt-1" style={{ color: '#D1D5DB' }}>Your AI-generated content will appear here</p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -155,8 +221,8 @@ export default function Home() {
                 {[
                   { name: 'Content Engine',   href: '/marketing', status: 'Ready',   color: '#16A34A' },
                   { name: 'Video Generator',  href: '/marketing', status: 'Ready',   color: '#16A34A' },
-                  { name: 'Auto Publisher',   href: '/marketing', status: 'Ready',   color: '#16A34A' },
-                  { name: 'Caption Writer',   href: '/marketing', status: 'Ready',   color: '#16A34A' },
+                  { name: 'Quote AI',         href: '/quotes',    status: 'Ready',   color: '#16A34A' },
+                  { name: 'Field Commander',  href: '/field-commander', status: 'Ready', color: '#16A34A' },
                 ].map((a, i) => (
                   <Link key={i} href={a.href}
                     className="flex items-center justify-between py-2"
@@ -187,26 +253,37 @@ export default function Home() {
                 ))}
               </div>
 
-              {/* Plan info */}
+              {/* Plan info — real data */}
               <div className="rounded-lg p-5" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
                 <h2 className="text-sm font-semibold mb-3" style={{ color: '#111827' }}>Your Plan</h2>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded" style={{ background: '#EFF6FF', color: '#1D4ED8' }}>Starter</span>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded capitalize" style={{ background: '#EFF6FF', color: '#1D4ED8' }}>
+                    {plan}
+                  </span>
+                  {company?.plan_status === 'trial' && (
+                    <span className="text-xs px-2 py-0.5 rounded" style={{ background: '#FEF9C3', color: '#92400E' }}>Trial</span>
+                  )}
                 </div>
                 <div className="space-y-2 mt-3">
                   <div className="flex items-center justify-between text-xs">
                     <span style={{ color: '#6B7280' }}>AI Videos</span>
-                    <span style={{ color: '#374151' }}>0 / 10 this month</span>
+                    <span style={{ color: '#374151' }}>{s?.marketing.videosGenerated || 0} / {limits.videos} this month</span>
                   </div>
                   <div className="h-1.5 rounded-full" style={{ background: '#F3F4F6' }}>
-                    <div className="h-full rounded-full" style={{ width: '0%', background: '#1D4ED8' }} />
+                    <div className="h-full rounded-full" style={{
+                      width: `${Math.min(100, ((s?.marketing.videosGenerated || 0) / limits.videos) * 100)}%`,
+                      background: '#1D4ED8',
+                    }} />
                   </div>
                   <div className="flex items-center justify-between text-xs">
                     <span style={{ color: '#6B7280' }}>Auto Posts</span>
-                    <span style={{ color: '#374151' }}>0 / 30 this month</span>
+                    <span style={{ color: '#374151' }}>{s?.marketing.published || 0} / {limits.posts} this month</span>
                   </div>
                   <div className="h-1.5 rounded-full" style={{ background: '#F3F4F6' }}>
-                    <div className="h-full rounded-full" style={{ width: '0%', background: '#0891B2' }} />
+                    <div className="h-full rounded-full" style={{
+                      width: `${Math.min(100, ((s?.marketing.published || 0) / limits.posts) * 100)}%`,
+                      background: '#0891B2',
+                    }} />
                   </div>
                 </div>
               </div>

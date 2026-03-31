@@ -43,7 +43,9 @@ export default function MarketingPage() {
   const [brief, setBrief]         = useState('')
   const [posts, setPosts]         = useState<Post[]>([])
   const [stats, setStats]         = useState({ total: 0, published: 0, totalReach: 0, totalLikes: 0 })
+  const [pendingPostId, setPendingPostId] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
+  const pollingRef = useRef<NodeJS.Timeout | null>(null)
 
   // Load company info + posts on mount
   useEffect(() => {
@@ -93,16 +95,66 @@ export default function MarketingPage() {
     return BRAND_CONFIG[slug] || BRAND_CONFIG['default']
   }
 
+  const startPolling = (postId: string) => {
+    if (pollingRef.current) clearInterval(pollingRef.current)
+    let attempts = 0
+    pollingRef.current = setInterval(async () => {
+      attempts++
+      try {
+        const res = await fetch(`/api/marketing-posts?id=${postId}`)
+        const data = await res.json()
+        const post = data.post || data.posts?.[0]
+        if (post?.video_url) {
+          clearInterval(pollingRef.current!)
+          pollingRef.current = null
+          setCaption(post.caption || caption)
+          setStep('ready')
+        }
+      } catch { /* retry */ }
+      if (attempts >= 24) { // 2 min timeout (24 x 5s)
+        clearInterval(pollingRef.current!)
+        pollingRef.current = null
+        // Fallback: show ready with placeholder caption
+        setStep('ready')
+        if (!caption) setCaption('Your AI-generated content is ready for review.')
+      }
+    }, 5000)
+  }
+
   const runAgent = async () => {
     setStep('analysing')
     const brand = getBrandConfig()
     const imageUrl = uploadedUrl || 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=1080&q=80'
 
+    // 1. Create a pending post in the database first
+    let postId: string | null = null
+    try {
+      const saveRes = await fetch('/api/marketing-posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image_url: imageUrl,
+          caption: '',
+          brief,
+          platform: platforms[0]?.toLowerCase() || 'instagram',
+          status: 'processing',
+        }),
+      })
+      const saveData = await saveRes.json()
+      if (saveData.post) {
+        postId = saveData.post.id
+        setPendingPostId(postId)
+      }
+    } catch { /* continue anyway */ }
+
+    // 2. Trigger n8n webhook with post_id for callback
     try {
       await fetch('https://labofantasma.app.n8n.cloud/webhook/photo-to-video', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          post_id: postId,
+          callback_url: `${window.location.origin}/api/marketing/callback`,
           product_name: brand.product_name,
           brand: company?.name || 'Brand',
           target_audience: brand.target_audience,
@@ -116,12 +168,17 @@ export default function MarketingPage() {
       })
     } catch { /* non-blocking */ }
 
+    // 3. Start polling + show generating state
     setTimeout(() => setStep('generating'), 2000)
-    setTimeout(() => {
-      setStep('ready')
-      // Caption will come from AI via n8n — placeholder while async
-      setCaption(`Built by hand. Worn with pride. 🖤\n\nEvery stitch of ink tells a story — custom screen printing crafted for teams, brands, and culture. From your vision to the press to the streets.\n\n📩 DM us or visit inkwellprinting.net\n\n#InkwellPrinting #ScreenPrinting #CustomApparel #PrintLife #StreetWear #MadeByHand #CustomTees #PrintShop #TeamWear #AustralianMade`)
-    }, 4500)
+    if (postId) {
+      setTimeout(() => startPolling(postId!), 3000)
+    } else {
+      // Fallback if post creation failed: use timer
+      setTimeout(() => {
+        setStep('ready')
+        setCaption('Your AI-generated content is ready for review.')
+      }, 6000)
+    }
   }
 
   const postNow = async () => {
