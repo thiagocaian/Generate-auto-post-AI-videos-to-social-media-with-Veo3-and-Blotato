@@ -198,35 +198,45 @@ export default function MarketingPage() {
 
   const postNow = async () => {
     setPosting(true)
-    try {
-      // Trigger n8n webhook for auto-publishing
-      await fetch('/api/marketing', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'marketing_post',
-          caption,
-          platforms,
-          brand: company?.name || 'Brand',
-          image_url: uploadedUrl,
-          style: getBrandConfig().style,
-          project: `${company?.name || 'Brand'} Campaign`,
-        }),
-      })
-    } catch { /* proceed even if webhook fails */ }
+    const imageUrl = uploadedUrls[0] || ''
+    const publishResults: { platform: string; success: boolean; error?: string }[] = []
+
+    // Post to each platform via Blotato API
+    for (const platform of platforms) {
+      const platformLower = platform.toLowerCase()
+      try {
+        const res = await fetch('/api/post-social', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            imageUrl: imageUrl,
+            caption,
+            platforms: [platformLower],
+          }),
+        })
+        const data = await res.json()
+        const success = res.ok && (data.successes?.length > 0 || data.postSubmissionId)
+        publishResults.push({ platform: platformLower, success, error: success ? undefined : (data.error || data.failures?.[0]?.error || 'Unknown error') })
+      } catch (err) {
+        publishResults.push({ platform: platformLower, success: false, error: err instanceof Error ? err.message : 'Network error' })
+      }
+    }
+
+    const successCount = publishResults.filter(r => r.success).length
+    const failedPlatforms = publishResults.filter(r => !r.success)
 
     // Save to database
-    for (const p of platforms) {
+    for (const result of publishResults) {
       try {
         const res = await fetch('/api/marketing-posts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            image_url: uploadedUrl,
+            image_url: imageUrl,
             caption,
             brief,
-            platform: p.toLowerCase(),
-            status: 'published',
+            platform: result.platform,
+            status: result.success ? 'published' : 'failed',
           }),
         })
         const data = await res.json()
@@ -236,11 +246,15 @@ export default function MarketingPage() {
 
     // Update stats
     setStats(prev => ({
-      total: prev.total + platforms.length,
-      published: prev.published + platforms.length,
+      total: prev.total + successCount,
+      published: prev.published + successCount,
       totalReach: prev.totalReach,
       totalLikes: prev.totalLikes,
     }))
+
+    if (failedPlatforms.length > 0 && successCount === 0) {
+      setUploadError(`Failed to post: ${failedPlatforms.map(f => f.platform).join(', ')}`)
+    }
 
     setStep('posted')
     setPosting(false)
