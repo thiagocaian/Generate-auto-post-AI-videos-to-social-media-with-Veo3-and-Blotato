@@ -27,7 +27,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to fetch Blotato accounts' }, { status: 500 })
   }
 
-  // 2. Post to each requested platform
+  // 2. Upload media to Blotato first (so URLs don't expire)
+  let blotaroMediaUrl = imageUrl
+  try {
+    const uploadRes = await fetch(`${BLOTATO_API}/media`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url: imageUrl }),
+    })
+    const uploadData = await uploadRes.json()
+    if (uploadData.url) {
+      blotaroMediaUrl = uploadData.url
+    }
+  } catch {
+    // Continue with original URL if upload fails
+  }
+
+  // 3. Post to each requested platform
   const successes: { platform: string; postSubmissionId: string }[] = []
   const failures: { platform: string; error: string }[] = []
 
@@ -43,7 +62,7 @@ export async function POST(req: NextRequest) {
       accountId: account.id,
       content: {
         text: caption,
-        mediaUrls: [imageUrl],
+        mediaUrls: [blotaroMediaUrl],
         platform,
       },
       target: {
