@@ -33,8 +33,11 @@ const BRAND_CONFIG: Record<string, { product_name: string; target_audience: stri
 export default function MarketingPage() {
   const [step, setStep] = useState<'idle' | 'uploaded' | 'uploading' | 'analysing' | 'generating' | 'ready' | 'posted'>('idle')
   const [dragOver, setDragOver]   = useState(false)
-  const [preview, setPreview]     = useState<string | null>(null)
-  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null)
+  const [previews, setPreviews]     = useState<string[]>([])
+  const [uploadedUrls, setUploadedUrls] = useState<string[]>([])
+  // Legacy single-value aliases for backward compatibility
+  const preview = previews[0] || null
+  const uploadedUrl = uploadedUrls[0] || null
   const [caption, setCaption]     = useState('')
   const [platforms, setPlatforms] = useState<string[]>(['Instagram', 'TikTok'])
   const [posting, setPosting]     = useState(false)
@@ -63,18 +66,25 @@ export default function MarketingPage() {
       .catch(() => {})
   }, [])
 
-  const handleFile = async (file: File) => {
-    setPreview(URL.createObjectURL(file))
+  const handleFiles = async (files: File[]) => {
+    const imageFiles = files.filter(f => f.type.startsWith('image/'))
+    if (imageFiles.length === 0) return
+
+    setPreviews(imageFiles.map(f => URL.createObjectURL(f)))
     setStep('uploading')
     setUploadError(null)
 
     try {
-      const form = new FormData()
-      form.append('file', file)
-      const res = await fetch('/api/upload', { method: 'POST', body: form })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Upload failed')
-      setUploadedUrl(data.url)
+      const urls: string[] = []
+      for (const file of imageFiles) {
+        const form = new FormData()
+        form.append('file', file)
+        const res = await fetch('/api/upload', { method: 'POST', body: form })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || 'Upload failed')
+        urls.push(data.url)
+      }
+      setUploadedUrls(urls)
       setStep('uploaded')
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Upload failed'
@@ -83,11 +93,14 @@ export default function MarketingPage() {
     }
   }
 
+  // Legacy single-file handler
+  const handleFile = (file: File) => handleFiles([file])
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setDragOver(false)
-    const file = e.dataTransfer.files[0]
-    if (file?.type.startsWith('image/')) handleFile(file)
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'))
+    if (files.length > 0) handleFiles(files)
   }
 
   const getBrandConfig = () => {
@@ -124,7 +137,8 @@ export default function MarketingPage() {
   const runAgent = async () => {
     setStep('analysing')
     const brand = getBrandConfig()
-    const imageUrl = uploadedUrl || 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=1080&q=80'
+    const imageUrl = uploadedUrls[0] || 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=1080&q=80'
+    const allImageUrls = uploadedUrls.length > 0 ? uploadedUrls : [imageUrl]
 
     // 1. Create a pending post in the database first
     let postId: string | null = null
@@ -160,6 +174,7 @@ export default function MarketingPage() {
           target_audience: brand.target_audience,
           platform: platforms.join(',').toLowerCase(),
           image_url: imageUrl,
+          image_urls: allImageUrls,
           style: brand.style,
           caption_tone: brand.caption_tone,
           client: company?.slug || 'unknown',
@@ -290,7 +305,7 @@ export default function MarketingPage() {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-sm font-semibold" style={{ color: '#111827' }}>New Content</h2>
                   {step !== 'idle' && (
-                    <button onClick={() => { setStep('idle'); setPreview(null); setCaption(''); setUploadedUrl(null) }}
+                    <button onClick={() => { setStep('idle'); setPreviews([]); setCaption(''); setUploadedUrls([]) }}
                       className="text-xs px-3 py-1 rounded"
                       style={{ background: '#F9FAFB', color: '#6B7280', border: '1px solid #E5E7EB' }}>
                       Reset
@@ -316,27 +331,33 @@ export default function MarketingPage() {
                       <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
                       <polyline points="21,15 16,10 5,21"/>
                     </svg>
-                    <p className="text-xs font-semibold mb-1" style={{ color: '#374151' }}>Drop a site photo here</p>
-                    <p className="text-xs" style={{ color: '#9CA3AF' }}>or click to select from your device</p>
-                    <input ref={fileRef} type="file" accept="image/*" className="hidden"
-                      onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
+                    <p className="text-xs font-semibold mb-1" style={{ color: '#374151' }}>Drop your site photos here</p>
+                    <p className="text-xs" style={{ color: '#9CA3AF' }}>or click to select from your device (multiple allowed)</p>
+                    <input ref={fileRef} type="file" accept="image/*" multiple className="hidden"
+                      onChange={(e) => e.target.files && e.target.files.length > 0 && handleFiles(Array.from(e.target.files))} />
                   </div>
                 )}
 
-                {step === 'uploading' && preview && (
+                {step === 'uploading' && previews.length > 0 && (
                   <div className="flex flex-col items-center justify-center py-8 gap-3">
-                    <img src={preview} alt="upload" className="w-24 h-24 object-cover rounded-lg opacity-60" />
+                    <div className="flex gap-2 flex-wrap justify-center">
+                      {previews.map((p, i) => (
+                        <img key={i} src={p} alt={`upload ${i+1}`} className="w-20 h-20 object-cover rounded-lg opacity-60" />
+                      ))}
+                    </div>
                     <div className="flex items-center gap-2 text-xs" style={{ color: '#6B7280' }}>
                       <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#1D4ED8' }} />
-                      Uploading photo to secure storage...
+                      Uploading {previews.length} photo{previews.length > 1 ? 's' : ''} to secure storage...
                     </div>
                   </div>
                 )}
 
-                {step !== 'idle' && step !== 'uploading' && preview && (
+                {step !== 'idle' && step !== 'uploading' && previews.length > 0 && (
                   <div className="flex gap-4">
-                    <div className="flex-shrink-0 w-44 h-44 rounded-lg overflow-hidden" style={{ border: '1px solid #E5E7EB' }}>
-                      <img src={preview} alt="upload" className="w-full h-full object-cover" />
+                    <div className={`flex-shrink-0 ${previews.length > 1 ? 'grid grid-cols-2 gap-1 w-44' : 'w-44 h-44'} rounded-lg overflow-hidden`} style={{ border: '1px solid #E5E7EB' }}>
+                      {previews.map((p, i) => (
+                        <img key={i} src={p} alt={`photo ${i+1}`} className={`${previews.length > 1 ? 'w-full h-20' : 'w-full h-full'} object-cover`} />
+                      ))}
                     </div>
                     <div className="flex-1 space-y-3">
                       {/* Status */}
@@ -352,8 +373,8 @@ export default function MarketingPage() {
                             {step === 'posted'     && 'Published to Instagram + TikTok'}
                           </span>
                         </div>
-                        {step === 'uploaded' && uploadedUrl && (
-                          <p className="text-xs mt-1" style={{ color: '#16A34A' }}>✓ Photo uploaded successfully</p>
+                        {step === 'uploaded' && uploadedUrls.length > 0 && (
+                          <p className="text-xs mt-1" style={{ color: '#16A34A' }}>✓ {uploadedUrls.length} photo{uploadedUrls.length > 1 ? 's' : ''} uploaded successfully</p>
                         )}
                         {['analysing', 'generating'].includes(step) && (
                           <div className="h-1 rounded-full overflow-hidden mt-2" style={{ background: '#E5E7EB' }}>
