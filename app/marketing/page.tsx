@@ -170,24 +170,33 @@ export default function MarketingPage() {
       setStep('generating')
 
       // 2. Poll for video completion (every 8s, max 5 min)
-      const requestId = genData.requestId
-      const statusUrl = encodeURIComponent(genData.statusUrl || '')
-      const responseUrl = encodeURIComponent(genData.responseUrl || genData.statusUrl?.replace('/status', '') || '')
+      const falStatusUrl = genData.statusUrl || ''
+      const falResponseUrl = genData.responseUrl || ''
       let attempts = 0
       const maxAttempts = 38 // ~5 min (38 x 8s)
 
       const pollInterval = setInterval(async () => {
         attempts++
         try {
-          const pollRes = await fetch(`/api/generate-video-from-photo?requestId=${requestId}&statusUrl=${statusUrl}&responseUrl=${responseUrl}`)
-          const pollData = await pollRes.json()
+          // Poll fal.ai directly from the client (faster + avoids server encoding issues)
+          const statusRes = await fetch(falStatusUrl)
+          const statusData = await statusRes.json()
 
-          if (pollData.status === 'COMPLETED' && pollData.videoUrl) {
-            clearInterval(pollInterval)
-            // Store video URL for posting
-            setUploadedUrls([pollData.videoUrl])
-            setStep('ready')
-          } else if (attempts >= maxAttempts) {
+          if (statusData.status === 'COMPLETED') {
+            // Fetch the result directly
+            const resultRes = await fetch(falResponseUrl)
+            const resultData = await resultRes.json()
+            const videoUrl = resultData.video?.url || resultData.video_url || ''
+
+            if (videoUrl) {
+              clearInterval(pollInterval)
+              setUploadedUrls([videoUrl])
+              setStep('ready')
+              return
+            }
+          }
+
+          if (attempts >= maxAttempts) {
             clearInterval(pollInterval)
             setUploadError('Video generation timed out (5 min). Please try again.')
             setStep('idle')
