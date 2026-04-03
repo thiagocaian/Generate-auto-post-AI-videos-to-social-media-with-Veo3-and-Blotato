@@ -139,15 +139,16 @@ export default function MarketingPage() {
   const runAgent = async () => {
     setStep('analysing')
     const brand = getBrandConfig()
-    const imageUrl = uploadedUrls[0] || 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=1080&q=80'
+    const allImageUrls = uploadedUrls.length > 0 ? uploadedUrls : ['https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=1080&q=80']
 
     try {
-      // 1. Call GPT-4o Vision + submit video generation
+      // 1. Call GPT-4o Vision with ALL photos + submit video generation
       const genRes = await fetch('/api/generate-video-from-photo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          imageUrl,
+          imageUrl: allImageUrls[0],
+          imageUrls: allImageUrls,
           brief,
           brandConfig: {
             product_name: brand.product_name,

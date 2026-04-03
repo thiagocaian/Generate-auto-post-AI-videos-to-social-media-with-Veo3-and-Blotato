@@ -4,7 +4,9 @@ const FAL_API = 'https://queue.fal.run'
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
-  const { imageUrl, brandConfig, brief } = body
+  const { imageUrl, imageUrls, brandConfig, brief } = body
+  // Support both single and multiple images
+  const allImages: string[] = imageUrls?.length > 0 ? imageUrls : (imageUrl ? [imageUrl] : [])
 
   const openaiKey = process.env.OPENAI_API_KEY
   const falKey = process.env.FAL_KEY
@@ -40,15 +42,17 @@ export async function POST(req: NextRequest) {
             content: [
               {
                 type: 'text',
-                text: `Analyze this image and create marketing content for ${platform}. ${brief ? 'Brief: ' + brief : ''}
+                text: `${allImages.length > 1 ? `I'm sending you ${allImages.length} product/scene photos. Analyze ALL of them and pick the BEST one for creating a viral video. Consider visual impact, composition, and storytelling potential.` : 'Analyze this image and create marketing content.'} ${brief ? 'Brief: ' + brief : ''}
 
-Return a JSON object with exactly these two fields:
+Platform: ${platform}
+
+Return a JSON object with exactly these fields:
 {
-  "video_prompt": "A detailed cinematic video generation prompt describing the scene, lighting, camera angles, textures, mood and motion. Apply the visual style specified. Minimum 80 words. Must create scroll-stopping content.",
-  "caption": "A ${captionTone} caption for ${platform}. Opens with a strong hook. Builds desire. Ends with a relatable CTA. Includes 3-5 relevant hashtags."
+  "video_prompt": "A detailed cinematic video generation prompt based on the best image. Describe the scene, lighting, camera angles, textures, mood and motion. Apply the visual style specified. Minimum 80 words. Must create scroll-stopping content.",
+  "caption": "A ${captionTone} caption for ${platform}. Opens with a strong hook. Builds desire. Ends with a relatable CTA. Includes 3-5 relevant hashtags."${allImages.length > 1 ? ',\n  "chosen_image": "Brief explanation of which image you chose and why (1 sentence)"' : ''}
 }`,
               },
-              { type: 'image_url', image_url: { url: imageUrl } },
+              ...allImages.map(url => ({ type: 'image_url' as const, image_url: { url } })),
             ],
           },
         ],
