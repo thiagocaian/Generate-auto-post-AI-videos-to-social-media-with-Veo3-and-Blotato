@@ -169,16 +169,17 @@ export default function MarketingPage() {
       if (genData.caption) setCaption(genData.caption)
       setStep('generating')
 
-      // 2. Poll for video completion (every 5s, max 3 min)
+      // 2. Poll for video completion (every 8s, max 5 min)
       const requestId = genData.requestId
-      const model = genData.model || 'veo3-fast'
+      const statusUrl = encodeURIComponent(genData.statusUrl || '')
+      const responseUrl = encodeURIComponent(genData.responseUrl || genData.statusUrl?.replace('/status', '') || '')
       let attempts = 0
-      const maxAttempts = 36 // 3 min
+      const maxAttempts = 38 // ~5 min (38 x 8s)
 
       const pollInterval = setInterval(async () => {
         attempts++
         try {
-          const pollRes = await fetch(`/api/generate-video-from-photo?requestId=${requestId}&model=${model}`)
+          const pollRes = await fetch(`/api/generate-video-from-photo?requestId=${requestId}&statusUrl=${statusUrl}&responseUrl=${responseUrl}`)
           const pollData = await pollRes.json()
 
           if (pollData.status === 'COMPLETED' && pollData.videoUrl) {
@@ -188,13 +189,13 @@ export default function MarketingPage() {
             setStep('ready')
           } else if (attempts >= maxAttempts) {
             clearInterval(pollInterval)
-            setUploadError('Video generation timed out. Please try again.')
+            setUploadError('Video generation timed out (5 min). Please try again.')
             setStep('idle')
           }
         } catch {
           // Keep polling on error
         }
-      }, 5000)
+      }, 8000)
 
       pollingRef.current = pollInterval
     } catch (err) {

@@ -124,6 +124,7 @@ Return a JSON object with exactly these two fields:
       requestId: falData.request_id,
       model: 'veo3-fast',
       statusUrl: falData.status_url,
+      responseUrl: falData.response_url,
       caption,
       videoPrompt,
     })
@@ -132,13 +133,14 @@ Return a JSON object with exactly these two fields:
   }
 }
 
-// GET — poll video generation status
+// GET — poll video generation status using the statusUrl/responseUrl from fal.ai
 export async function GET(req: NextRequest) {
   const requestId = req.nextUrl.searchParams.get('requestId')
-  const model = req.nextUrl.searchParams.get('model') || 'veo3-fast'
+  const statusUrl = req.nextUrl.searchParams.get('statusUrl')
+  const responseUrl = req.nextUrl.searchParams.get('responseUrl')
 
-  if (!requestId) {
-    return NextResponse.json({ error: 'Missing requestId' }, { status: 400 })
+  if (!requestId && !statusUrl) {
+    return NextResponse.json({ error: 'Missing requestId or statusUrl' }, { status: 400 })
   }
 
   const falKey = process.env.FAL_KEY
@@ -146,18 +148,18 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'FAL_KEY not configured' }, { status: 500 })
   }
 
-  const modelPath = model === 'kling' ? 'fal-ai/kling-video/v2.6/pro/image-to-video' : 'fal-ai/veo3/fast'
-
   try {
-    // Check status
-    const statusRes = await fetch(`${FAL_API}/${modelPath}/requests/${requestId}/status`, {
+    // Use the statusUrl directly from fal.ai (most reliable)
+    const checkUrl = statusUrl || `${FAL_API}/fal-ai/veo3/fast/requests/${requestId}/status`
+    const statusRes = await fetch(checkUrl, {
       headers: { Authorization: `Key ${falKey}` },
     })
     const statusData = await statusRes.json()
 
     if (statusData.status === 'COMPLETED') {
-      // Get the result
-      const resultRes = await fetch(`${FAL_API}/${modelPath}/requests/${requestId}`, {
+      // Get the result using responseUrl or construct from statusUrl
+      const resultUrl = responseUrl || statusData.response_url || checkUrl.replace('/status', '')
+      const resultRes = await fetch(resultUrl, {
         headers: { Authorization: `Key ${falKey}` },
       })
       const resultData = await resultRes.json()
@@ -165,7 +167,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ status: 'COMPLETED', videoUrl })
     }
 
-    return NextResponse.json({ status: statusData.status || 'IN_PROGRESS' })
+    return NextResponse.json({
+      status: statusData.status || 'IN_PROGRESS',
+      queuePosition: statusData.queue_position,
+    })
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 })
   }
