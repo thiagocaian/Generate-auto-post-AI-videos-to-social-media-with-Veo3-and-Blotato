@@ -213,7 +213,7 @@ export default function MarketingPage() {
     for (const platform of platforms) {
       const platformLower = platform.toLowerCase()
       try {
-        const res = await fetch('/api/post-social', {
+        const res = await fetch('/api/marketing/post', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
