@@ -138,61 +138,68 @@ export default function MarketingPage() {
     setStep('analysing')
     const brand = getBrandConfig()
     const imageUrl = uploadedUrls[0] || 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=1080&q=80'
-    const allImageUrls = uploadedUrls.length > 0 ? uploadedUrls : [imageUrl]
 
-    // 1. Create a pending post in the database first
-    let postId: string | null = null
     try {
-      const saveRes = await fetch('/api/marketing-posts', {
+      // 1. Call GPT-4o Vision + submit video generation
+      const genRes = await fetch('/api/generate-video-from-photo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          image_url: imageUrl,
-          caption: '',
+          imageUrl,
           brief,
-          platform: platforms[0]?.toLowerCase() || 'instagram',
-          status: 'processing',
+          brandConfig: {
+            product_name: brand.product_name,
+            brand: company?.name || 'Brand',
+            target_audience: brand.target_audience,
+            style: brand.style,
+            caption_tone: brand.caption_tone,
+            platform: platforms.join(',').toLowerCase(),
+          },
         }),
       })
-      const saveData = await saveRes.json()
-      if (saveData.post) {
-        postId = saveData.post.id
-        setPendingPostId(postId)
+      const genData = await genRes.json()
+
+      if (!genRes.ok || !genData.requestId) {
+        setUploadError(genData.error || 'Failed to start video generation')
+        setStep('idle')
+        return
       }
-    } catch { /* continue anyway */ }
 
-    // 2. Trigger n8n webhook with post_id for callback
-    try {
-      await fetch('https://labofantasma.app.n8n.cloud/webhook/photo-to-video', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          post_id: postId,
-          callback_url: `${window.location.origin}/api/marketing/callback`,
-          product_name: brand.product_name,
-          brand: company?.name || 'Brand',
-          target_audience: brand.target_audience,
-          platform: platforms.join(',').toLowerCase(),
-          image_url: imageUrl,
-          image_urls: allImageUrls,
-          style: brand.style,
-          caption_tone: brand.caption_tone,
-          client: company?.slug || 'unknown',
-          brief: brief || '',
-        }),
-      })
-    } catch { /* non-blocking */ }
+      // Set caption from GPT-4o
+      if (genData.caption) setCaption(genData.caption)
+      setStep('generating')
 
-    // 3. Start polling + show generating state
-    setTimeout(() => setStep('generating'), 2000)
-    if (postId) {
-      setTimeout(() => startPolling(postId!), 3000)
-    } else {
-      // Fallback if post creation failed: use timer
-      setTimeout(() => {
-        setStep('ready')
-        setCaption('Your AI-generated content is ready for review.')
-      }, 6000)
+      // 2. Poll for video completion (every 5s, max 3 min)
+      const requestId = genData.requestId
+      const model = genData.model || 'veo3-fast'
+      let attempts = 0
+      const maxAttempts = 36 // 3 min
+
+      const pollInterval = setInterval(async () => {
+        attempts++
+        try {
+          const pollRes = await fetch(`/api/generate-video-from-photo?requestId=${requestId}&model=${model}`)
+          const pollData = await pollRes.json()
+
+          if (pollData.status === 'COMPLETED' && pollData.videoUrl) {
+            clearInterval(pollInterval)
+            // Store video URL for posting
+            setUploadedUrls([pollData.videoUrl])
+            setStep('ready')
+          } else if (attempts >= maxAttempts) {
+            clearInterval(pollInterval)
+            setUploadError('Video generation timed out. Please try again.')
+            setStep('idle')
+          }
+        } catch {
+          // Keep polling on error
+        }
+      }, 5000)
+
+      pollingRef.current = pollInterval
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Agent failed')
+      setStep('idle')
     }
   }
 

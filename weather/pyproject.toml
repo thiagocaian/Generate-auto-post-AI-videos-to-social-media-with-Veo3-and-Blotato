@@ -1,0 +1,10 @@
+[project]
+name = "ghost-lab"
+version = "1.0.0"
+description = "Ghost Lab — MCP server for HTTP, Python, shell, filesystem and weather"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "httpx>=0.28.1",
+    "mcp[cli]>=1.26.0",
+]
