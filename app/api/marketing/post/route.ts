@@ -110,3 +110,29 @@ export async function POST(req: NextRequest) {
     totalFailed: failures.length,
   })
 }
+
+// PUT — Upload video to Blotato storage (called when video generation completes)
+export async function PUT(req: NextRequest) {
+  const body = await req.json()
+  const { videoUrl } = body
+
+  const apiKey = process.env.BLOTATO_API_KEY
+  if (!apiKey || !videoUrl) {
+    return NextResponse.json({ permanentUrl: videoUrl })
+  }
+
+  try {
+    const uploadRes = await fetch(`${BLOTATO_API}/media`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url: videoUrl }),
+    })
+    const uploadData = await uploadRes.json()
+    return NextResponse.json({ permanentUrl: uploadData.url || videoUrl })
+  } catch {
+    return NextResponse.json({ permanentUrl: videoUrl })
+  }
+}

@@ -188,9 +188,27 @@ export default function MarketingPage() {
           if (pollData.status === 'COMPLETED' && pollData.videoUrl) {
             clearInterval(pollInterval)
             console.log('VIDEO READY:', pollData.videoUrl)
-            videoUrlRef.current = pollData.videoUrl
-            setGeneratedVideoUrl(pollData.videoUrl)
-            setUploadedUrls([pollData.videoUrl])
+
+            // Immediately upload to Blotato storage so URL doesn't expire
+            try {
+              const uploadRes = await fetch('/api/marketing/post', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ videoUrl: pollData.videoUrl }),
+              })
+              const uploadData = await uploadRes.json()
+              const permanentUrl = uploadData.permanentUrl || pollData.videoUrl
+              console.log('PERMANENT URL:', permanentUrl)
+              videoUrlRef.current = permanentUrl
+              setGeneratedVideoUrl(permanentUrl)
+              setUploadedUrls([permanentUrl])
+            } catch {
+              // Fallback to original URL
+              videoUrlRef.current = pollData.videoUrl
+              setGeneratedVideoUrl(pollData.videoUrl)
+              setUploadedUrls([pollData.videoUrl])
+            }
+
             setStep('ready')
             return
           }
