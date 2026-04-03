@@ -35,6 +35,8 @@ export default function MarketingPage() {
   const [dragOver, setDragOver]   = useState(false)
   const [previews, setPreviews]     = useState<string[]>([])
   const [uploadedUrls, setUploadedUrls] = useState<string[]>([])
+  const [generatedVideoUrl, setGeneratedVideoUrl] = useState<string | null>(null)
+  const videoUrlRef = useRef<string | null>(null)
   // Legacy single-value aliases for backward compatibility
   const preview = previews[0] || null
   const uploadedUrl = uploadedUrls[0] || null
@@ -190,6 +192,8 @@ export default function MarketingPage() {
 
             if (videoUrl) {
               clearInterval(pollInterval)
+              videoUrlRef.current = videoUrl
+              setGeneratedVideoUrl(videoUrl)
               setUploadedUrls([videoUrl])
               setStep('ready')
               return
@@ -215,7 +219,9 @@ export default function MarketingPage() {
 
   const postNow = async () => {
     setPosting(true)
-    const imageUrl = uploadedUrls[0] || ''
+    // Use the video URL from ref (guaranteed to be current) or fall back to state
+    const imageUrl = videoUrlRef.current || generatedVideoUrl || uploadedUrls[0] || ''
+    console.log('POSTING WITH URL:', imageUrl.substring(0, 80))
     const publishResults: { platform: string; success: boolean; error?: string }[] = []
 
     // Post to each platform via Blotato API
@@ -336,7 +342,7 @@ export default function MarketingPage() {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-sm font-semibold" style={{ color: '#111827' }}>New Content</h2>
                   {step !== 'idle' && (
-                    <button onClick={() => { setStep('idle'); setPreviews([]); setCaption(''); setUploadedUrls([]) }}
+                    <button onClick={() => { setStep('idle'); setPreviews([]); setCaption(''); setUploadedUrls([]); setGeneratedVideoUrl(null); videoUrlRef.current = null }}
                       className="text-xs px-3 py-1 rounded"
                       style={{ background: '#F9FAFB', color: '#6B7280', border: '1px solid #E5E7EB' }}>
                       Reset
