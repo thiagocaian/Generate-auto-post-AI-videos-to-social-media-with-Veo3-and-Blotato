@@ -180,24 +180,19 @@ export default function MarketingPage() {
       const pollInterval = setInterval(async () => {
         attempts++
         try {
-          // Poll fal.ai directly from the client (faster + avoids server encoding issues)
-          const statusRes = await fetch(falStatusUrl)
-          const statusData = await statusRes.json()
+          // Poll via server API to avoid CORS issues with fal.ai
+          const pollRes = await fetch(`/api/generate-video-from-photo?statusUrl=${encodeURIComponent(falStatusUrl)}&responseUrl=${encodeURIComponent(falResponseUrl)}`)
+          const pollData = await pollRes.json()
+          console.log('Poll attempt', attempts, ':', pollData.status, pollData.videoUrl ? 'URL:' + pollData.videoUrl.substring(0, 60) : '')
 
-          if (statusData.status === 'COMPLETED') {
-            // Fetch the result directly
-            const resultRes = await fetch(falResponseUrl)
-            const resultData = await resultRes.json()
-            const videoUrl = resultData.video?.url || resultData.video_url || ''
-
-            if (videoUrl) {
-              clearInterval(pollInterval)
-              videoUrlRef.current = videoUrl
-              setGeneratedVideoUrl(videoUrl)
-              setUploadedUrls([videoUrl])
-              setStep('ready')
-              return
-            }
+          if (pollData.status === 'COMPLETED' && pollData.videoUrl) {
+            clearInterval(pollInterval)
+            console.log('VIDEO READY:', pollData.videoUrl)
+            videoUrlRef.current = pollData.videoUrl
+            setGeneratedVideoUrl(pollData.videoUrl)
+            setUploadedUrls([pollData.videoUrl])
+            setStep('ready')
+            return
           }
 
           if (attempts >= maxAttempts) {
@@ -205,8 +200,8 @@ export default function MarketingPage() {
             setUploadError('Video generation timed out (5 min). Please try again.')
             setStep('idle')
           }
-        } catch {
-          // Keep polling on error
+        } catch (err) {
+          console.log('Poll error:', err)
         }
       }, 8000)
 
