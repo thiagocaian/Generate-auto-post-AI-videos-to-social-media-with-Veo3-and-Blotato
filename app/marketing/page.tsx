@@ -232,6 +232,11 @@ export default function MarketingPage() {
   }
 
   const postNow = async () => {
+    // Stop any running polling first
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current)
+      pollingRef.current = null
+    }
     setPosting(true)
     // Use the video URL from ref (guaranteed to be current) or fall back to state
     const imageUrl = videoUrlRef.current || generatedVideoUrl || uploadedUrls[0] || ''
