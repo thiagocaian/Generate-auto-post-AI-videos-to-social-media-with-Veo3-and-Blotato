@@ -1,76 +1,128 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+const OUTSTAND_API = 'https://api.outstand.so/v1'
 const BLOTATO_API = 'https://backend.blotato.com/v2'
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
   const { imageUrl, caption, platforms } = body
 
-  const apiKey = process.env.BLOTATO_API_KEY
-  if (!apiKey) {
-    return NextResponse.json({ error: 'BLOTATO_API_KEY not configured' }, { status: 500 })
+  // Try Outstand first (faster, <200ms), fall back to Blotato
+  const outstandKey = process.env.OUTSTAND_API_KEY
+  const blotaloKey = process.env.BLOTATO_API_KEY
+
+  if (!outstandKey && !blotaloKey) {
+    return NextResponse.json({ error: 'No posting API key configured' }, { status: 500 })
   }
 
   if (!imageUrl || !caption || !platforms?.length) {
     return NextResponse.json({ error: 'Missing required fields: imageUrl, caption, platforms' }, { status: 400 })
   }
 
+  // === OUTSTAND (primary — instant posting) ===
+  if (outstandKey) {
+    try {
+      // 1. Get connected social accounts
+      const accRes = await fetch(`${OUTSTAND_API}/social-accounts`, {
+        headers: { Authorization: `Bearer ${outstandKey}` },
+      })
+      const accData = await accRes.json()
+      const accounts = accData.data || []
+
+      if (accounts.length > 0) {
+        // 2. Find matching accounts for requested platforms
+        const matchedIds: string[] = []
+        for (const platform of platforms) {
+          const account = accounts.find((a: { platform: string; id: string }) =>
+            a.platform?.toLowerCase() === platform.toLowerCase()
+          )
+          if (account) matchedIds.push(account.id)
+        }
+
+        if (matchedIds.length > 0) {
+          // 3. Create post via Outstand
+          const postRes = await fetch(`${OUTSTAND_API}/posts`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${outstandKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              containers: [{
+                content: caption,
+                mediaUrls: [imageUrl],
+              }],
+              socialAccountIds: matchedIds,
+            }),
+          })
+          const postData = await postRes.json()
+
+          if (postRes.ok && postData.success) {
+            return NextResponse.json({
+              successes: matchedIds.map((id, i) => ({ platform: platforms[i] || 'unknown', postId: postData.data?.id || id })),
+              failures: [],
+              totalPosted: matchedIds.length,
+              totalFailed: 0,
+              provider: 'outstand',
+            })
+          }
+        }
+      }
+      // If Outstand has no accounts or failed, fall through to Blotato
+    } catch {
+      // Fall through to Blotato
+    }
+  }
+
+  // === BLOTATO (fallback) ===
+  if (!blotaloKey) {
+    return NextResponse.json({ error: 'No accounts connected in Outstand and no Blotato key configured' }, { status: 500 })
+  }
+
   // 1. Fetch connected Blotato accounts
   let accounts: { id: string; platform: string; username: string }[] = []
   try {
     const accRes = await fetch(`${BLOTATO_API}/users/me/accounts`, {
-      headers: { Authorization: `Bearer ${apiKey}` },
+      headers: { Authorization: `Bearer ${blotaloKey}` },
     })
     const accData = await accRes.json()
     accounts = accData.items || []
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch Blotato accounts' }, { status: 500 })
   }
 
-  // 2. Upload media to Blotato first (so URLs don't expire)
-  let blotaroMediaUrl = imageUrl
+  // 2. Upload media to Blotato storage first
+  let mediaUrl = imageUrl
   try {
     const uploadRes = await fetch(`${BLOTATO_API}/media`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${blotaloKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ url: imageUrl }),
     })
     const uploadData = await uploadRes.json()
-    if (uploadData.url) {
-      blotaroMediaUrl = uploadData.url
-    }
-  } catch {
-    // Continue with original URL if upload fails
-  }
+    if (uploadData.url) mediaUrl = uploadData.url
+  } catch { /* continue with original URL */ }
 
-  // 3. Post to each requested platform
+  // 3. Post to each platform
   const successes: { platform: string; postSubmissionId: string }[] = []
   const failures: { platform: string; error: string }[] = []
 
   for (const platform of platforms) {
     const account = accounts.find(a => a.platform === platform)
     if (!account) {
-      failures.push({ platform, error: `No ${platform} account connected in Blotato` })
+      failures.push({ platform, error: `No ${platform} account connected` })
       continue
     }
 
-    // Build platform-specific post payload
     const postPayload: Record<string, unknown> = {
       accountId: account.id,
-      content: {
-        text: caption,
-        mediaUrls: [blotaroMediaUrl],
-        platform,
-      },
-      target: {
-        targetType: platform,
-      },
+      content: { text: caption, mediaUrls: [mediaUrl], platform },
+      target: { targetType: platform },
     }
 
-    // TikTok requires extra fields
     if (platform === 'tiktok') {
       (postPayload.target as Record<string, unknown>).privacyLevel = 'PUBLIC_TO_EVERYONE';
       (postPayload.target as Record<string, unknown>).disabledComments = false;
@@ -84,15 +136,10 @@ export async function POST(req: NextRequest) {
     try {
       const postRes = await fetch(`${BLOTATO_API}/posts`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
+        headers: { Authorization: `Bearer ${blotaloKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ post: postPayload }),
       })
-
       const postData = await postRes.json()
-
       if (postRes.ok && postData.postSubmissionId) {
         successes.push({ platform, postSubmissionId: postData.postSubmissionId })
       } else {
@@ -108,6 +155,7 @@ export async function POST(req: NextRequest) {
     failures,
     totalPosted: successes.length,
     totalFailed: failures.length,
+    provider: 'blotato',
   })
 }
 
@@ -116,8 +164,8 @@ export async function PUT(req: NextRequest) {
   const body = await req.json()
   const { videoUrl } = body
 
-  const apiKey = process.env.BLOTATO_API_KEY
-  if (!apiKey || !videoUrl) {
+  const blotaloKey = process.env.BLOTATO_API_KEY
+  if (!blotaloKey || !videoUrl) {
     return NextResponse.json({ permanentUrl: videoUrl })
   }
 
@@ -125,7 +173,7 @@ export async function PUT(req: NextRequest) {
     const uploadRes = await fetch(`${BLOTATO_API}/media`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${blotaloKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ url: videoUrl }),
