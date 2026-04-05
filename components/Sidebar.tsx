@@ -18,6 +18,7 @@ export default function Sidebar({ active }: { active: string }) {
   const [userEmail, setUserEmail] = useState<string | null>(null)
   const [companyName, setCompanyName] = useState('Loading...')
   const [lowStockCount, setLowStockCount] = useState(0)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
     async function loadUserData() {
@@ -47,6 +48,13 @@ export default function Sidebar({ active }: { active: string }) {
     loadUserData()
   }, [])
 
+  // Close mobile menu on route change / resize
+  useEffect(() => {
+    const handleResize = () => { if (window.innerWidth >= 768) setMobileOpen(false) }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   async function handleSignOut() {
     await supabase.auth.signOut()
     window.location.href = '/login'
@@ -59,51 +67,34 @@ export default function Sidebar({ active }: { active: string }) {
   )
 
   return (
-    <div className="flex flex-shrink-0">
-      {/* Narrow icon strip */}
-      <aside className="w-14 flex flex-col items-center py-4 gap-4"
-        style={{ background: '#0A0A0A', borderRight: '1px solid rgba(255,255,255,0.08)' }}>
-        <div className="mb-2"></div>
-        {navWithBadge.map((item) => {
-          const isActive = item.key === active
-          return (
-            <Link key={item.key} href={item.href}
-              title={item.label}
-              className="w-9 h-9 flex items-center justify-center transition-all relative"
-              style={isActive ? { background: '#FFFFFF', color: '#000000' } : { color: 'rgba(255,255,255,0.3)' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d={item.iconPath} />
-              </svg>
-              {item.badge && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 text-xs flex items-center justify-center font-bold"
-                  style={{ background: '#FFFFFF', color: '#000000', fontSize: 9 }}>{item.badge}</span>
-              )}
-            </Link>
-          )
-        })}
-
-        {/* Sign out at bottom */}
-        <div className="mt-auto">
-          <button onClick={handleSignOut} title="Sign out"
-            className="w-9 h-9 flex items-center justify-center transition-all"
-            style={{ color: 'rgba(255,255,255,0.2)' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+    <>
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3"
+        style={{ background: '#0A0A0A', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ fontWeight: 800, fontSize: 14, letterSpacing: '0.12em', color: '#FFFFFF', lineHeight: 1 }}>CYTRON</div>
+        <button onClick={() => setMobileOpen(!mobileOpen)}
+          className="w-9 h-9 flex items-center justify-center"
+          style={{ color: '#FFFFFF' }}>
+          {mobileOpen ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
-          </button>
-        </div>
-      </aside>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          )}
+        </button>
+      </div>
 
-      {/* Wide label sidebar */}
-      <aside className="w-52 flex flex-col"
-        style={{ background: '#000000', borderRight: '1px solid rgba(255,255,255,0.08)' }}>
-        <div className="px-4 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <div style={{ fontWeight: 800, fontSize: 14, letterSpacing: '0.12em', color: '#FFFFFF', lineHeight: 1 }}>CYTRON</div>
-          <div style={{ fontWeight: 500, fontSize: 9, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.3)', marginTop: 3 }}>AI agents running your business.</div>
-        </div>
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-0 z-40 bg-black/60" onClick={() => setMobileOpen(false)} />
+      )}
 
+      {/* Mobile slide-out menu */}
+      <div className={`md:hidden fixed top-12 left-0 bottom-0 z-50 w-64 flex flex-col transition-transform duration-200 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{ background: '#000000' }}>
         <div className="px-4 py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
           <div className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.2)' }}>Active Client</div>
           <div className="font-semibold text-xs" style={{ color: '#FFFFFF' }}>{companyName}</div>
@@ -117,12 +108,16 @@ export default function Sidebar({ active }: { active: string }) {
           {navWithBadge.map((item) => {
             const isActive = item.key === active
             return (
-              <Link key={item.key} href={item.href}
-                className="flex items-center justify-between px-3 py-2 text-xs font-medium transition-colors"
+              <Link key={item.key} href={item.href} onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 text-xs font-medium transition-colors"
                 style={isActive ? { background: 'rgba(255,255,255,0.08)', color: '#FFFFFF' } : { color: 'rgba(255,255,255,0.4)' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d={item.iconPath} />
+                </svg>
                 <span>{item.label}</span>
                 {item.badge && (
-                  <span className="text-xs px-1.5 py-0.5 font-semibold"
+                  <span className="ml-auto text-xs px-1.5 py-0.5 font-semibold"
                     style={{ background: 'rgba(255,255,255,0.1)', color: '#FFFFFF' }}>{item.badge}</span>
                 )}
               </Link>
@@ -130,7 +125,7 @@ export default function Sidebar({ active }: { active: string }) {
           })}
         </nav>
 
-        {/* User info at bottom */}
+        {/* User info */}
         <div className="px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
           {userEmail && (
             <div className="flex items-center gap-2 mb-2">
@@ -142,21 +137,117 @@ export default function Sidebar({ active }: { active: string }) {
                 <div className="text-xs font-medium truncate" style={{ color: '#FFFFFF' }}>
                   {userEmail.split('@')[0]}
                 </div>
-                <div className="text-xs truncate" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                  {userEmail}
-                </div>
               </div>
             </div>
           )}
           <button onClick={handleSignOut}
             className="w-full text-left text-xs px-2 py-1.5 transition-colors"
-            style={{ color: 'rgba(255,255,255,0.3)' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)', e.currentTarget.style.color = '#FF4444')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent', e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}>
+            style={{ color: 'rgba(255,255,255,0.3)' }}>
             Sign out
           </button>
         </div>
-      </aside>
-    </div>
+      </div>
+
+      {/* Desktop sidebar — hidden on mobile */}
+      <div className="hidden md:flex flex-shrink-0">
+        {/* Narrow icon strip */}
+        <aside className="w-14 flex flex-col items-center py-4 gap-4"
+          style={{ background: '#0A0A0A', borderRight: '1px solid rgba(255,255,255,0.08)' }}>
+          <div className="mb-2"></div>
+          {navWithBadge.map((item) => {
+            const isActive = item.key === active
+            return (
+              <Link key={item.key} href={item.href}
+                title={item.label}
+                className="w-9 h-9 flex items-center justify-center transition-all relative"
+                style={isActive ? { background: '#FFFFFF', color: '#000000' } : { color: 'rgba(255,255,255,0.3)' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d={item.iconPath} />
+                </svg>
+                {item.badge && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 text-xs flex items-center justify-center font-bold"
+                    style={{ background: '#FFFFFF', color: '#000000', fontSize: 9 }}>{item.badge}</span>
+                )}
+              </Link>
+            )
+          })}
+
+          {/* Sign out at bottom */}
+          <div className="mt-auto">
+            <button onClick={handleSignOut} title="Sign out"
+              className="w-9 h-9 flex items-center justify-center transition-all"
+              style={{ color: 'rgba(255,255,255,0.2)' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+              </svg>
+            </button>
+          </div>
+        </aside>
+
+        {/* Wide label sidebar */}
+        <aside className="w-52 flex flex-col"
+          style={{ background: '#000000', borderRight: '1px solid rgba(255,255,255,0.08)' }}>
+          <div className="px-4 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ fontWeight: 800, fontSize: 14, letterSpacing: '0.12em', color: '#FFFFFF', lineHeight: 1 }}>CYTRON</div>
+            <div style={{ fontWeight: 500, fontSize: 9, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.3)', marginTop: 3 }}>AI agents running your business.</div>
+          </div>
+
+          <div className="px-4 py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.2)' }}>Active Client</div>
+            <div className="font-semibold text-xs" style={{ color: '#FFFFFF' }}>{companyName}</div>
+            <div className="flex items-center gap-1.5 mt-1 text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              <span className="w-1.5 h-1.5 animate-pulse inline-block" style={{ background: '#FFFFFF' }}></span>
+              Gold Coast, QLD
+            </div>
+          </div>
+
+          <nav className="flex-1 px-3 py-3 space-y-0.5">
+            {navWithBadge.map((item) => {
+              const isActive = item.key === active
+              return (
+                <Link key={item.key} href={item.href}
+                  className="flex items-center justify-between px-3 py-2 text-xs font-medium transition-colors"
+                  style={isActive ? { background: 'rgba(255,255,255,0.08)', color: '#FFFFFF' } : { color: 'rgba(255,255,255,0.4)' }}>
+                  <span>{item.label}</span>
+                  {item.badge && (
+                    <span className="text-xs px-1.5 py-0.5 font-semibold"
+                      style={{ background: 'rgba(255,255,255,0.1)', color: '#FFFFFF' }}>{item.badge}</span>
+                  )}
+                </Link>
+              )
+            })}
+          </nav>
+
+          {/* User info at bottom */}
+          <div className="px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            {userEmail && (
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0"
+                  style={{ background: '#FFFFFF', color: '#000000' }}>
+                  {userEmail[0].toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-medium truncate" style={{ color: '#FFFFFF' }}>
+                    {userEmail.split('@')[0]}
+                  </div>
+                  <div className="text-xs truncate" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                    {userEmail}
+                  </div>
+                </div>
+              </div>
+            )}
+            <button onClick={handleSignOut}
+              className="w-full text-left text-xs px-2 py-1.5 transition-colors"
+              style={{ color: 'rgba(255,255,255,0.3)' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)', e.currentTarget.style.color = '#FF4444')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent', e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}>
+              Sign out
+            </button>
+          </div>
+        </aside>
+      </div>
+    </>
   )
 }

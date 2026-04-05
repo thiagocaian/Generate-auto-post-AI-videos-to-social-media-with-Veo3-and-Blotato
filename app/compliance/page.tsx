@@ -211,7 +211,7 @@ export default function CompliancePage() {
       <Sidebar active="compliance" />
 
       {/* Main */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden pt-12 md:pt-0">
 
         {/* Header */}
         <header className="flex items-center justify-between px-6 py-3.5"
@@ -243,10 +243,10 @@ export default function CompliancePage() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto px-8 py-6" style={{ background: '#FAFAFA' }}>
+        <div className="flex-1 overflow-y-auto px-4 md:px-8 py-4 md:py-6" style={{ background: '#FAFAFA' }}>
 
           {/* KPIs */}
-          <div className="grid grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
             {[
               { label: 'Total Reports', value: String(archive.length), sub: 'All projects',      alert: false },
               { label: 'Passed',        value: String(passCount),      sub: 'Compliant',          alert: false },

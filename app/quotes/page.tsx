@@ -199,7 +199,7 @@ export default function QuotesPage() {
       <Sidebar active="quotes" />
 
       {/* ── Main ── */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden pt-12 md:pt-0">
 
         {/* Header */}
         <header className="flex items-center justify-between px-6 py-3.5"
@@ -228,7 +228,7 @@ export default function QuotesPage() {
           )}
         </header>
 
-        <div className="flex-1 overflow-y-auto p-6" style={{ background: '#FAFAFA' }}>
+        <div className="flex-1 overflow-y-auto p-4 md:p-6" style={{ background: '#FAFAFA' }}>
 
         {/* ── STEP 1: FORM ── */}
         {step === 'form' && (

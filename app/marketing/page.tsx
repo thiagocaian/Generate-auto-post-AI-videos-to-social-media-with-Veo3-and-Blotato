@@ -309,9 +309,9 @@ export default function MarketingPage() {
     <div className="flex min-h-screen" style={{ background: '#FFFFFF', fontFamily: "'Inter', system-ui, sans-serif" }}>
       <Sidebar active="marketing" />
 
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden pt-12 md:pt-0">
         {/* Header */}
-        <header className="flex items-center justify-between px-6 py-3.5"
+        <header className="flex items-center justify-between px-4 md:px-6 py-3.5"
           style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E5E5' }}>
           <div>
             <div className="flex items-center gap-2 text-xs mb-0.5" style={{ color: '#999999' }}>
@@ -330,19 +330,19 @@ export default function MarketingPage() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-6" style={{ background: '#FAFAFA' }}>
+        <div className="flex-1 overflow-y-auto p-4 md:p-6" style={{ background: '#FAFAFA' }}>
 
           {/* KPIs */}
-          <div className="grid grid-cols-4 gap-4 mb-5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-5">
             {[
               { label: 'Posts Published',  value: String(stats.published),  sub: stats.published ? `${stats.published} total` : 'No posts yet',           up: stats.published > 0 },
               { label: 'Total Reach',      value: String(stats.totalReach), sub: stats.totalReach ? 'across platforms' : 'Start posting to track', up: stats.totalReach > 0 },
               { label: 'Total Likes',      value: stats.totalLikes ? String(stats.totalLikes) : '—',  sub: stats.totalLikes ? 'across platforms' : 'No data yet',            up: stats.totalLikes > 0 },
               { label: 'Videos Generated', value: String(stats.total),      sub: 'via Kling AI',           up: stats.total > 0 },
             ].map((k, i) => (
-              <div key={i} className="p-5" style={{ background: '#FFFFFF', border: '1px solid #E5E5E5' }}>
-                <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#999999' }}>{k.label}</p>
-                <p className="text-2xl font-bold mb-1" style={{ color: '#000000' }}>{k.value}</p>
+              <div key={i} className="p-3 md:p-5" style={{ background: '#FFFFFF', border: '1px solid #E5E5E5' }}>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-2 md:mb-3" style={{ color: '#999999' }}>{k.label}</p>
+                <p className="text-xl md:text-2xl font-bold mb-1" style={{ color: '#000000' }}>{k.value}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-xs" style={{ color: '#999999' }}>{k.sub}</span>
                   <span className="text-xs font-semibold px-1.5 py-0.5"
@@ -352,10 +352,10 @@ export default function MarketingPage() {
             ))}
           </div>
 
-          <div className="grid grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-5">
 
             {/* Upload + Flow */}
-            <div className="col-span-2 space-y-4">
+            <div className="lg:col-span-2 space-y-4">
 
               <div className="p-5" style={{ background: '#FFFFFF', border: '1px solid #E5E5E5' }}>
                 <div className="flex items-center justify-between mb-4">
@@ -409,8 +409,8 @@ export default function MarketingPage() {
                 )}
 
                 {step !== 'idle' && step !== 'uploading' && previews.length > 0 && (
-                  <div className="flex gap-4">
-                    <div className={`flex-shrink-0 ${previews.length > 1 ? 'grid grid-cols-2 gap-1 w-44' : 'w-44 h-44'} overflow-hidden`} style={{ border: '1px solid #E5E5E5' }}>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className={`flex-shrink-0 ${previews.length > 1 ? 'grid grid-cols-2 gap-1 w-full sm:w-44' : 'w-full sm:w-44 h-44'} overflow-hidden`} style={{ border: '1px solid #E5E5E5' }}>
                       {previews.map((p, i) => (
                         <img key={i} src={p} alt={`photo ${i+1}`} className={`${previews.length > 1 ? 'w-full h-20' : 'w-full h-full'} object-cover`} />
                       ))}
