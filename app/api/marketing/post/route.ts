@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
       })
       const accData = await accRes.json()
       const accounts = accData.data || []
+      console.log('[POST] Outstand accounts:', accounts.length, accounts.map((a: { platform: string }) => a.platform))
 
       if (accounts.length > 0) {
         // 2. Find matching accounts for requested platforms
@@ -41,21 +42,24 @@ export async function POST(req: NextRequest) {
 
         if (matchedIds.length > 0) {
           // 3. Create post via Outstand
+          const postBody = {
+            containers: [{
+              content: caption,
+              mediaUrls: [imageUrl],
+            }],
+            socialAccountIds: matchedIds,
+          }
+          console.log('[POST] Outstand posting to', matchedIds.length, 'accounts, mediaUrl:', imageUrl?.substring(0, 80))
           const postRes = await fetch(`${OUTSTAND_API}/posts`, {
             method: 'POST',
             headers: {
               Authorization: `Bearer ${outstandKey}`,
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-              containers: [{
-                content: caption,
-                mediaUrls: [imageUrl],
-              }],
-              socialAccountIds: matchedIds,
-            }),
+            body: JSON.stringify(postBody),
           })
           const postData = await postRes.json()
+          console.log('[POST] Outstand response:', postRes.status, JSON.stringify(postData).substring(0, 300))
 
           if (postRes.ok && postData.success) {
             return NextResponse.json({
@@ -65,12 +69,16 @@ export async function POST(req: NextRequest) {
               totalFailed: 0,
               provider: 'outstand',
             })
+          } else {
+            console.log('[POST] Outstand post failed, falling through to Blotato. Status:', postRes.status, 'Data:', JSON.stringify(postData))
           }
+        } else {
+          console.log('[POST] Outstand: no matching accounts for platforms:', platforms)
         }
       }
       // If Outstand has no accounts or failed, fall through to Blotato
-    } catch {
-      // Fall through to Blotato
+    } catch (err) {
+      console.log('[POST] Outstand error, falling through to Blotato:', err instanceof Error ? err.message : err)
     }
   }
 
@@ -94,6 +102,7 @@ export async function POST(req: NextRequest) {
   // 2. Upload media to Blotato storage first
   let mediaUrl = imageUrl
   try {
+    console.log('[POST] Blotato: uploading media from:', imageUrl?.substring(0, 80))
     const uploadRes = await fetch(`${BLOTATO_API}/media`, {
       method: 'POST',
       headers: {
@@ -103,8 +112,11 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({ url: imageUrl }),
     })
     const uploadData = await uploadRes.json()
+    console.log('[POST] Blotato media upload response:', uploadRes.status, JSON.stringify(uploadData).substring(0, 200))
     if (uploadData.url) mediaUrl = uploadData.url
-  } catch { /* continue with original URL */ }
+  } catch (err) {
+    console.log('[POST] Blotato media upload failed:', err instanceof Error ? err.message : err)
+  }
 
   // 3. Post to each platform
   const successes: { platform: string; postSubmissionId: string }[] = []
@@ -134,16 +146,18 @@ export async function POST(req: NextRequest) {
     }
 
     try {
+      console.log('[POST] Blotato: posting to', platform, 'account:', account.id, 'mediaUrl:', mediaUrl?.substring(0, 80))
       const postRes = await fetch(`${BLOTATO_API}/posts`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${blotaloKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ post: postPayload }),
       })
       const postData = await postRes.json()
+      console.log('[POST] Blotato post response:', postRes.status, JSON.stringify(postData).substring(0, 300))
       if (postRes.ok && postData.postSubmissionId) {
         successes.push({ platform, postSubmissionId: postData.postSubmissionId })
       } else {
-        failures.push({ platform, error: postData.message || 'Post failed' })
+        failures.push({ platform, error: postData.message || postData.error || `API returned ${postRes.status}: ${JSON.stringify(postData).substring(0, 100)}` })
       }
     } catch (err) {
       failures.push({ platform, error: err instanceof Error ? err.message : 'Network error' })

@@ -294,8 +294,16 @@ export default function MarketingPage() {
       totalLikes: prev.totalLikes,
     }))
 
-    if (failedPlatforms.length > 0 && successCount === 0) {
-      setUploadError(`Failed to post: ${failedPlatforms.map(f => f.platform).join(', ')}`)
+    if (failedPlatforms.length > 0) {
+      const errorDetails = failedPlatforms.map(f => `${f.platform}: ${f.error}`).join(' | ')
+      if (successCount === 0) {
+        setUploadError(`Failed to post: ${errorDetails}`)
+        setStep('ready') // Stay on ready so user can retry
+        setPosting(false)
+        return
+      } else {
+        setUploadError(`Partial success — failed: ${errorDetails}`)
+      }
     }
 
     setStep('posted')
