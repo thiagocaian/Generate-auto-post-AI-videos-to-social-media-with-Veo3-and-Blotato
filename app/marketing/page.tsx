@@ -7,11 +7,11 @@ import Sidebar from '@/components/Sidebar'
 type Post = { id: string; caption: string; platform: string; reach: number; likes: number; created_at: string; status: string; image_url: string; video_url: string }
 
 const pipeline = [
-  { label: 'Photo Intake',       tool: 'n8n Webhook'      },
-  { label: 'Scene Analysis',     tool: 'Claude Vision'    },
-  { label: 'Video Generation',   tool: 'Kling AI (fal.ai)'},
-  { label: 'Caption Writer',     tool: 'Claude Sonnet'    },
-  { label: 'Auto Publisher',     tool: 'Blotato API'      },
+  { label: 'Photo Intake',       tool: 'Secure Upload'     },
+  { label: 'Scene Analysis',     tool: 'CYTRON Vision AI'  },
+  { label: 'Video Generation',   tool: 'CYTRON Video Engine'},
+  { label: 'Caption Writer',     tool: 'CYTRON Copy AI'    },
+  { label: 'Auto Publisher',     tool: 'Multi-Platform'    },
 ]
 
 // Default brand config per company (can be expanded per client)
