@@ -39,12 +39,12 @@ export async function GET() {
     }
   }
 
-  // Test Blotato
+  // Test Blotato (using correct auth header)
   const blotaloKey = process.env.BLOTATO_API_KEY
   if (blotaloKey) {
     try {
       const res = await fetch(`${BLOTATO_API}/users/me/accounts`, {
-        headers: { Authorization: `Bearer ${blotaloKey}` },
+        headers: { 'blotato-api-key': blotaloKey },
       })
       const data = await res.json()
       results.blotato = {
