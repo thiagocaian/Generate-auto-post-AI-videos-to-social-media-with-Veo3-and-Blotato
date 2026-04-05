@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { GeistMono } from "geist/font/mono";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "CYTRON — Intelligent Automation Platform",
@@ -14,7 +12,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`} style={{ backgroundColor: '#F4F6F8' }}>
+      <body className={`${GeistMono.className} antialiased`} style={{ backgroundColor: '#FFFFFF', color: '#0a0a0a' }}>
         {children}
       </body>
     </html>

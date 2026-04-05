@@ -2,28 +2,121 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --cytron-green: #00B050;
-  --cytron-green-light: #E8F5EE;
-  --cytron-green-mid: #C8E6D4;
-  --bg: #F4F6F8;
-  --surface: #FFFFFF;
-  --sidebar: #FFFFFF;
-  --border: #E5E9EF;
-  --text: #1A1A2E;
-  --text-muted: #6B7280;
-  --text-light: #9CA3AF;
+@layer base {
+  :root {
+    /* ── 21st.dev Mono Theme ────────────────────────────── */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 4%;
+    --primary: 0 0% 45%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 44%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 100% 45%;
+    --destructive-foreground: 0 0% 96%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 63%;
+    --radius: 0rem;
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 4%;
+    --sidebar-primary: 0 0% 9%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 0 0% 63%;
+
+    /* Charts */
+    --chart-1: 0 0% 45%;
+    --chart-2: 0 0% 45%;
+    --chart-3: 0 0% 45%;
+    --chart-4: 0 0% 45%;
+    --chart-5: 0 0% 45%;
+
+    /* Shadow */
+    --shadow-blur: 0px;
+    --shadow-color: 0 0% 0%;
+    --shadow-spread: 0px;
+    --shadow-opacity: 0;
+    --shadow-offset-x: 0px;
+    --shadow-offset-y: 1px;
+
+    /* Fonts */
+    --font-mono: 'Geist Mono', monospace;
+    --font-sans: 'Geist Mono', monospace;
+    --font-serif: 'Geist Mono', monospace;
+
+    /* CYTRON brand */
+    --cytron-green: #00B050;
+    --cytron-green-light: #E8F5EE;
+    --cytron-green-mid: #C8E6D4;
+  }
+
+  .dark {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 15%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 45%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 63%;
+    --accent: 0 0% 25%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 100% 70%;
+    --destructive-foreground: 0 0% 15%;
+    --border: 0 0% 22%;
+    --input: 0 0% 32%;
+    --ring: 0 0% 45%;
+
+    /* Sidebar dark */
+    --sidebar-background: 0 0% 9%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 0 0% 9%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 100%;
+    --sidebar-ring: 0 0% 32%;
+
+    /* Charts dark */
+    --chart-1: 0 0% 45%;
+    --chart-2: 0 0% 45%;
+    --chart-3: 0 0% 45%;
+    --chart-4: 0 0% 45%;
+    --chart-5: 0 0% 45%;
+  }
 }
 
-* { box-sizing: border-box; }
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+    box-sizing: border-box;
+  }
 
-body {
-  background-color: var(--bg);
-  color: var(--text);
-  -webkit-font-smoothing: antialiased;
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
 }
 
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 0; }
 ::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }

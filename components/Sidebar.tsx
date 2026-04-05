@@ -2,7 +2,6 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { LogoIcon } from '@/components/Logo'
 
 type NavItem = { label: string; href: string; key: string; iconPath: string; badge?: string }
 
@@ -26,7 +25,6 @@ export default function Sidebar({ active }: { active: string }) {
       if (user) {
         setUserEmail(user.email ?? null)
 
-        // Get company name
         const { data: member } = await supabase
           .from('company_members')
           .select('companies(name)')
@@ -39,7 +37,6 @@ export default function Sidebar({ active }: { active: string }) {
         }
       }
 
-      // Get low stock count
       const { data: items } = await supabase
         .from('warehouse_items')
         .select('current_stock, minimum_stock')
@@ -65,22 +62,22 @@ export default function Sidebar({ active }: { active: string }) {
     <div className="flex flex-shrink-0">
       {/* Narrow icon strip */}
       <aside className="w-14 flex flex-col items-center py-4 gap-4"
-        style={{ background: '#1E293B', borderRight: '1px solid #0F172A' }}>
+        style={{ background: '#0A0A0A', borderRight: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="mb-2"></div>
         {navWithBadge.map((item) => {
           const isActive = item.key === active
           return (
             <Link key={item.key} href={item.href}
               title={item.label}
-              className="w-9 h-9 rounded-lg flex items-center justify-center transition-all relative"
-              style={isActive ? { background: '#1D4ED8', color: '#FFFFFF' } : { color: '#64748B' }}>
+              className="w-9 h-9 flex items-center justify-center transition-all relative"
+              style={isActive ? { background: '#FFFFFF', color: '#000000' } : { color: 'rgba(255,255,255,0.3)' }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d={item.iconPath} />
               </svg>
               {item.badge && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold"
-                  style={{ background: '#D97706', color: '#fff', fontSize: 9 }}>{item.badge}</span>
+                <span className="absolute -top-1 -right-1 w-4 h-4 text-xs flex items-center justify-center font-bold"
+                  style={{ background: '#FFFFFF', color: '#000000', fontSize: 9 }}>{item.badge}</span>
               )}
             </Link>
           )
@@ -89,8 +86,8 @@ export default function Sidebar({ active }: { active: string }) {
         {/* Sign out at bottom */}
         <div className="mt-auto">
           <button onClick={handleSignOut} title="Sign out"
-            className="w-9 h-9 rounded-lg flex items-center justify-center transition-all"
-            style={{ color: '#475569' }}>
+            className="w-9 h-9 flex items-center justify-center transition-all"
+            style={{ color: 'rgba(255,255,255,0.2)' }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
               strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
@@ -101,17 +98,17 @@ export default function Sidebar({ active }: { active: string }) {
 
       {/* Wide label sidebar */}
       <aside className="w-52 flex flex-col"
-        style={{ background: '#FFFFFF', borderRight: '1px solid #E5E7EB' }}>
-        <div className="px-4 py-4" style={{ borderBottom: '1px solid #E5E7EB' }}>
-          <div style={{ fontWeight: 800, fontSize: 14, letterSpacing: '0.12em', color: '#111827', lineHeight: 1 }}>CYTRON</div>
-          <div style={{ fontWeight: 500, fontSize: 9, letterSpacing: '0.08em', color: '#9CA3AF', marginTop: 3 }}>AI agents running your business.</div>
+        style={{ background: '#000000', borderRight: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="px-4 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+          <div style={{ fontWeight: 800, fontSize: 14, letterSpacing: '0.12em', color: '#FFFFFF', lineHeight: 1 }}>CYTRON</div>
+          <div style={{ fontWeight: 500, fontSize: 9, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.3)', marginTop: 3 }}>AI agents running your business.</div>
         </div>
 
-        <div className="px-4 py-3" style={{ borderBottom: '1px solid #F3F4F6' }}>
-          <div className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: '#CBD5E1' }}>Active Client</div>
-          <div className="font-semibold text-xs" style={{ color: '#111827' }}>{companyName}</div>
-          <div className="flex items-center gap-1.5 mt-1 text-xs" style={{ color: '#16A34A' }}>
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse inline-block" style={{ background: '#16A34A' }}></span>
+        <div className="px-4 py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.2)' }}>Active Client</div>
+          <div className="font-semibold text-xs" style={{ color: '#FFFFFF' }}>{companyName}</div>
+          <div className="flex items-center gap-1.5 mt-1 text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            <span className="w-1.5 h-1.5 animate-pulse inline-block" style={{ background: '#FFFFFF' }}></span>
             Gold Coast, QLD
           </div>
         </div>
@@ -121,12 +118,12 @@ export default function Sidebar({ active }: { active: string }) {
             const isActive = item.key === active
             return (
               <Link key={item.key} href={item.href}
-                className="flex items-center justify-between px-3 py-2 rounded text-xs font-medium transition-colors"
-                style={isActive ? { background: '#EFF6FF', color: '#1D4ED8' } : { color: '#6B7280' }}>
+                className="flex items-center justify-between px-3 py-2 text-xs font-medium transition-colors"
+                style={isActive ? { background: 'rgba(255,255,255,0.08)', color: '#FFFFFF' } : { color: 'rgba(255,255,255,0.4)' }}>
                 <span>{item.label}</span>
                 {item.badge && (
-                  <span className="text-xs px-1.5 py-0.5 rounded font-semibold"
-                    style={{ background: '#FEF3C7', color: '#92400E' }}>{item.badge}</span>
+                  <span className="text-xs px-1.5 py-0.5 font-semibold"
+                    style={{ background: 'rgba(255,255,255,0.1)', color: '#FFFFFF' }}>{item.badge}</span>
                 )}
               </Link>
             )
@@ -134,28 +131,28 @@ export default function Sidebar({ active }: { active: string }) {
         </nav>
 
         {/* User info at bottom */}
-        <div className="px-4 py-3" style={{ borderTop: '1px solid #E5E7EB' }}>
+        <div className="px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
           {userEmail && (
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-                style={{ background: '#1D4ED8' }}>
+              <div className="w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0"
+                style={{ background: '#FFFFFF', color: '#000000' }}>
                 {userEmail[0].toUpperCase()}
               </div>
               <div className="min-w-0">
-                <div className="text-xs font-medium truncate" style={{ color: '#111827' }}>
+                <div className="text-xs font-medium truncate" style={{ color: '#FFFFFF' }}>
                   {userEmail.split('@')[0]}
                 </div>
-                <div className="text-xs truncate" style={{ color: '#9CA3AF' }}>
+                <div className="text-xs truncate" style={{ color: 'rgba(255,255,255,0.3)' }}>
                   {userEmail}
                 </div>
               </div>
             </div>
           )}
           <button onClick={handleSignOut}
-            className="w-full text-left text-xs px-2 py-1.5 rounded transition-colors"
-            style={{ color: '#6B7280' }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#FEF2F2', e.currentTarget.style.color = '#DC2626')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent', e.currentTarget.style.color = '#6B7280')}>
+            className="w-full text-left text-xs px-2 py-1.5 transition-colors"
+            style={{ color: 'rgba(255,255,255,0.3)' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)', e.currentTarget.style.color = '#FF4444')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent', e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}>
             Sign out
           </button>
         </div>
