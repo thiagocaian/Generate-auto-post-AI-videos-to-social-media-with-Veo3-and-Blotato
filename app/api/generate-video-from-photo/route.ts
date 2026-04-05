@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const maxDuration = 60 // Allow up to 60s for GPT-4o Vision + base64 conversion
+
 const FAL_API = 'https://queue.fal.run'
 
 export async function POST(req: NextRequest) {

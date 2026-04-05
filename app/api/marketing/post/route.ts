@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const maxDuration = 60 // Allow up to 60s for media upload + posting
+
 const OUTSTAND_API = 'https://api.outstand.so/v1'
 const BLOTATO_API = 'https://backend.blotato.com/v2'
 
