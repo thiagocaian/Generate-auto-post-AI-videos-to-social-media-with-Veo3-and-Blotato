@@ -110,7 +110,38 @@ Return a JSON object with exactly these fields:
       return NextResponse.json({ error: 'GPT-4o did not generate a video prompt' }, { status: 500 })
     }
 
-    // STEP 2: Submit video generation to Veo3 Fast (or Kling as fallback)
+    // STEP 2: Submit video generation — Kling (image-to-video) is PRIMARY
+    // Kling uses the actual photo as reference, so the video matches the content.
+    // Veo3 is text-only (ignores the photo), so it's used as fallback only.
+    console.log('[GENERATE] Using Kling image-to-video (PRIMARY) with image:', imageUrl?.substring(0, 60))
+    const klingRes = await fetch(`${FAL_API}/fal-ai/kling-video/v2.6/pro/image-to-video`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Key ${falKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: videoPrompt,
+        image_url: imageUrl,
+        aspect_ratio: '9:16',
+        duration: '5',
+      }),
+    })
+
+    const klingData = await klingRes.json()
+    if (klingRes.ok && klingData.request_id) {
+      return NextResponse.json({
+        requestId: klingData.request_id,
+        model: 'kling',
+        statusUrl: klingData.status_url,
+        responseUrl: klingData.response_url,
+        caption,
+        videoPrompt,
+      })
+    }
+
+    // Fallback to Veo3 Fast (text-to-video, no image reference)
+    console.log('[GENERATE] Kling failed, falling back to Veo3 Fast (text-only)')
     const falRes = await fetch(`${FAL_API}/fal-ai/veo3/fast`, {
       method: 'POST',
       headers: {
@@ -126,28 +157,7 @@ Return a JSON object with exactly these fields:
 
     const falData = await falRes.json()
     if (!falRes.ok || !falData.request_id) {
-      // Fallback to Kling v2 image-to-video
-      const klingRes = await fetch(`${FAL_API}/fal-ai/kling-video/v2.6/pro/image-to-video`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Key ${falKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          prompt: videoPrompt,
-          image_url: imageUrl,
-          aspect_ratio: '9:16',
-          duration: '5',
-        }),
-      })
-      const klingData = await klingRes.json()
-      return NextResponse.json({
-        requestId: klingData.request_id,
-        model: 'kling',
-        statusUrl: klingData.status_url,
-        caption,
-        videoPrompt,
-      })
+      return NextResponse.json({ error: 'Both Kling and Veo3 failed to start video generation' }, { status: 500 })
     }
 
     return NextResponse.json({

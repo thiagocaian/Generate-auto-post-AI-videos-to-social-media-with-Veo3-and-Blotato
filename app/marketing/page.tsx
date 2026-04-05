@@ -72,6 +72,12 @@ export default function MarketingPage() {
     const imageFiles = files.filter(f => f.type.startsWith('image/'))
     if (imageFiles.length === 0) return
 
+    // CRITICAL: Clear ALL previous video/caption state so old content is never reused
+    setGeneratedVideoUrl(null)
+    videoUrlRef.current = null
+    setCaption('')
+    setBrief('')
+
     setPreviews(imageFiles.map(f => URL.createObjectURL(f)))
     setStep('uploading')
     setUploadError(null)
@@ -241,6 +247,14 @@ export default function MarketingPage() {
     // Use the video URL from ref (guaranteed to be current) or fall back to state
     const imageUrl = videoUrlRef.current || generatedVideoUrl || uploadedUrls[0] || ''
     console.log('POSTING WITH URL:', imageUrl.substring(0, 80))
+
+    // Safety check: block publishing if no video was generated for this session
+    if (!imageUrl) {
+      setUploadError('No video found. Please run the AI Agent first to generate a video.')
+      setStep('uploaded')
+      setPosting(false)
+      return
+    }
     const publishResults: { platform: string; success: boolean; error?: string }[] = []
 
     // Post to each platform via Blotato API
