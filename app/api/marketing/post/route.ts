@@ -19,6 +19,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields: imageUrl, caption, platforms' }, { status: 400 })
   }
 
+  // Validate media URL is accessible before posting
+  try {
+    const headRes = await fetch(imageUrl, { method: 'HEAD' })
+    if (!headRes.ok) {
+      console.log('[POST] Media URL not accessible:', headRes.status, imageUrl?.substring(0, 80))
+      return NextResponse.json({
+        error: `Media URL is not accessible (${headRes.status}). The video URL may have expired. Please generate a new video.`,
+        expired: true
+      }, { status: 400 })
+    }
+    console.log('[POST] Media URL validated OK:', headRes.headers.get('content-type'), headRes.headers.get('content-length'))
+  } catch (err) {
+    console.log('[POST] Media URL validation failed:', err instanceof Error ? err.message : err)
+    return NextResponse.json({
+      error: 'Cannot reach media URL. The video may have expired. Please generate a new video.',
+      expired: true
+    }, { status: 400 })
+  }
+
   // === OUTSTAND (primary — instant posting) ===
   if (outstandKey) {
     try {
@@ -173,28 +192,88 @@ export async function POST(req: NextRequest) {
   })
 }
 
-// PUT — Upload video to Blotato storage (called when video generation completes)
+// PUT — Upload video to permanent storage (Supabase + Blotato fallback)
 export async function PUT(req: NextRequest) {
   const body = await req.json()
   const { videoUrl } = body
 
-  const blotaloKey = process.env.BLOTATO_API_KEY
-  if (!blotaloKey || !videoUrl) {
+  if (!videoUrl) {
     return NextResponse.json({ permanentUrl: videoUrl })
   }
 
+  console.log('[PUT] Uploading video to permanent storage:', videoUrl?.substring(0, 80))
+
+  // Strategy 1: Upload to Supabase Storage (most reliable)
   try {
-    const uploadRes = await fetch(`${BLOTATO_API}/media`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${blotaloKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ url: videoUrl }),
-    })
-    const uploadData = await uploadRes.json()
-    return NextResponse.json({ permanentUrl: uploadData.url || videoUrl })
-  } catch {
-    return NextResponse.json({ permanentUrl: videoUrl })
+    const { createClient } = await import('@supabase/supabase-js')
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    if (supabaseUrl && supabaseKey) {
+      const adminClient = createClient(supabaseUrl, supabaseKey)
+
+      // Ensure bucket exists
+      await adminClient.storage.createBucket('marketing-uploads', {
+        public: true,
+        fileSizeLimit: 52428800, // 50MB for videos
+      }).catch(() => {})
+
+      // Download the video from fal.ai
+      const videoRes = await fetch(videoUrl)
+      if (videoRes.ok) {
+        const videoBuffer = Buffer.from(await videoRes.arrayBuffer())
+        const contentType = videoRes.headers.get('content-type') || 'video/mp4'
+        const ext = contentType.includes('mp4') ? 'mp4' : 'webm'
+        const fileName = `videos/${Date.now()}.${ext}`
+
+        const { error } = await adminClient.storage
+          .from('marketing-uploads')
+          .upload(fileName, videoBuffer, {
+            contentType,
+            upsert: true,
+          })
+
+        if (!error) {
+          const { data: { publicUrl } } = adminClient.storage
+            .from('marketing-uploads')
+            .getPublicUrl(fileName)
+
+          console.log('[PUT] Supabase permanent URL:', publicUrl)
+          return NextResponse.json({ permanentUrl: publicUrl })
+        }
+        console.log('[PUT] Supabase upload error:', error.message)
+      } else {
+        console.log('[PUT] Failed to download video from source:', videoRes.status)
+      }
+    }
+  } catch (err) {
+    console.log('[PUT] Supabase upload failed:', err instanceof Error ? err.message : err)
   }
+
+  // Strategy 2: Upload to Blotato media storage
+  const blotaloKey = process.env.BLOTATO_API_KEY
+  if (blotaloKey) {
+    try {
+      const uploadRes = await fetch(`${BLOTATO_API}/media`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${blotaloKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: videoUrl }),
+      })
+      const uploadData = await uploadRes.json()
+      if (uploadData.url) {
+        console.log('[PUT] Blotato permanent URL:', uploadData.url)
+        return NextResponse.json({ permanentUrl: uploadData.url })
+      }
+      console.log('[PUT] Blotato media response:', JSON.stringify(uploadData).substring(0, 200))
+    } catch (err) {
+      console.log('[PUT] Blotato upload failed:', err instanceof Error ? err.message : err)
+    }
+  }
+
+  // Fallback: return original URL (may expire)
+  console.log('[PUT] WARNING: Using original URL (may expire):', videoUrl?.substring(0, 80))
+  return NextResponse.json({ permanentUrl: videoUrl, warning: 'Using temporary URL - may expire' })
 }
