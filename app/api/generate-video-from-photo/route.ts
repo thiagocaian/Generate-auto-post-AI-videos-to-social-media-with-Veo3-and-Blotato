@@ -23,7 +23,31 @@ export async function POST(req: NextRequest) {
   const platform = brand.platform || 'instagram,tiktok'
 
   try {
-    // STEP 1: GPT-4o Vision — analyse photo and generate video prompt + caption
+    // STEP 1: Convert images to base64 (avoids GPT-4o download timeouts with Supabase/fal.ai URLs)
+    const imageContents: { type: 'image_url'; image_url: { url: string } }[] = []
+    for (const url of allImages) {
+      try {
+        const imgRes = await fetch(url)
+        if (imgRes.ok) {
+          const buffer = Buffer.from(await imgRes.arrayBuffer())
+          const contentType = imgRes.headers.get('content-type') || 'image/jpeg'
+          const base64 = buffer.toString('base64')
+          imageContents.push({
+            type: 'image_url' as const,
+            image_url: { url: `data:${contentType};base64,${base64}` },
+          })
+          console.log('[GENERATE] Image converted to base64:', url.substring(0, 60), `(${Math.round(buffer.length / 1024)}KB)`)
+        } else {
+          // Fallback to direct URL if download fails
+          console.log('[GENERATE] Image download failed, using URL directly:', url.substring(0, 60))
+          imageContents.push({ type: 'image_url' as const, image_url: { url } })
+        }
+      } catch {
+        imageContents.push({ type: 'image_url' as const, image_url: { url } })
+      }
+    }
+
+    // GPT-4o Vision — analyse photo and generate video prompt + caption
     const gptRes = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -52,7 +76,7 @@ Return a JSON object with exactly these fields:
   "caption": "A ${captionTone} caption for ${platform}. Opens with a strong hook. Builds desire. Ends with a relatable CTA. Includes 3-5 relevant hashtags."${allImages.length > 1 ? ',\n  "chosen_image": "Brief explanation of which image you chose and why (1 sentence)"' : ''}
 }`,
               },
-              ...allImages.map(url => ({ type: 'image_url' as const, image_url: { url } })),
+              ...imageContents,
             ],
           },
         ],
