@@ -284,90 +284,111 @@ export default function MarketingPage() {
   }
 
   const postNow = async () => {
-    // Stop any running polling first
-    if (pollingRef.current) {
-      clearInterval(pollingRef.current)
-      pollingRef.current = null
-    }
-    setPosting(true)
-    // Use the video URL from ref (guaranteed to be current) or fall back to state
-    const imageUrl = videoUrlRef.current || generatedVideoUrl || uploadedUrls[0] || ''
-    console.log('POSTING WITH URL:', imageUrl.substring(0, 80))
-
-    // Safety check: block publishing if no video was generated for this session
-    if (!imageUrl) {
-      setUploadError('No video found. Please run the AI Agent first to generate a video.')
-      setStep('uploaded')
-      setPosting(false)
-      return
-    }
-    const publishResults: { platform: string; success: boolean; error?: string }[] = []
-
-    // Post to each platform via Blotato API
-    for (const platform of platforms) {
-      const platformLower = platform.toLowerCase()
-      try {
-        const res = await fetch('/api/marketing/post', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            imageUrl: imageUrl,
-            caption,
-            platforms: [platformLower],
-          }),
-        })
-        const data = await res.json()
-        const success = res.ok && (data.successes?.length > 0 || data.postSubmissionId)
-        publishResults.push({ platform: platformLower, success, error: success ? undefined : (data.error || data.failures?.[0]?.error || 'Unknown error') })
-      } catch (err) {
-        publishResults.push({ platform: platformLower, success: false, error: err instanceof Error ? err.message : 'Network error' })
+    try {
+      // Stop any running polling first
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current)
+        pollingRef.current = null
       }
-    }
+      setPosting(true)
+      setUploadError(null)
+      // Use the video URL from ref (guaranteed to be current) or fall back to state
+      const imageUrl = videoUrlRef.current || generatedVideoUrl || uploadedUrls[0] || ''
+      console.log('POSTING WITH URL:', imageUrl ? imageUrl.substring(0, 80) : '(empty)')
 
-    const successCount = publishResults.filter(r => r.success).length
-    const failedPlatforms = publishResults.filter(r => !r.success)
-
-    // Save to database
-    for (const result of publishResults) {
-      try {
-        const res = await fetch('/api/marketing-posts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            image_url: imageUrl,
-            caption,
-            brief,
-            platform: result.platform,
-            status: result.success ? 'published' : 'failed',
-          }),
-        })
-        const data = await res.json()
-        if (data.post) setPosts(prev => [data.post, ...prev])
-      } catch { /* non-blocking */ }
-    }
-
-    // Update stats
-    setStats(prev => ({
-      total: prev.total + successCount,
-      published: prev.published + successCount,
-      totalReach: prev.totalReach,
-      totalLikes: prev.totalLikes,
-    }))
-
-    if (failedPlatforms.length > 0) {
-      const errorDetails = failedPlatforms.map(f => `${f.platform}: ${f.error}`).join(' | ')
-      if (successCount === 0) {
-        setUploadError(`Failed to post: ${errorDetails}`)
-        setStep('ready') // Stay on ready so user can retry
+      // Safety check: block publishing if no video was generated for this session
+      if (!imageUrl) {
+        setUploadError('No video found. Please run the AI Agent first to generate a video.')
+        setStep('uploaded')
         setPosting(false)
         return
-      } else {
-        setUploadError(`Partial success — failed: ${errorDetails}`)
       }
-    }
 
-    setStep('posted')
-    setPosting(false)
+      if (!caption.trim()) {
+        setUploadError('Caption is empty. Please add a caption before publishing.')
+        setPosting(false)
+        return
+      }
+
+      if (platforms.length === 0) {
+        setUploadError('No platforms selected. Please select Instagram or TikTok.')
+        setPosting(false)
+        return
+      }
+
+      const publishResults: { platform: string; success: boolean; error?: string }[] = []
+
+      // Post to each platform via Blotato API
+      for (const platform of platforms) {
+        const platformLower = platform.toLowerCase()
+        try {
+          const res = await fetch('/api/marketing/post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              imageUrl: imageUrl,
+              caption,
+              platforms: [platformLower],
+            }),
+          })
+          const data = await res.json()
+          const success = res.ok && (data.successes?.length > 0 || data.postSubmissionId)
+          publishResults.push({ platform: platformLower, success, error: success ? undefined : (data.error || data.failures?.[0]?.error || 'Unknown error') })
+        } catch (err) {
+          publishResults.push({ platform: platformLower, success: false, error: err instanceof Error ? err.message : 'Network error' })
+        }
+      }
+
+      const successCount = publishResults.filter(r => r.success).length
+      const failedPlatforms = publishResults.filter(r => !r.success)
+
+      // Save to database (non-blocking, errors won't crash the flow)
+      for (const result of publishResults) {
+        try {
+          const res = await fetch('/api/marketing-posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              image_url: imageUrl,
+              caption,
+              brief,
+              platform: result.platform,
+              status: result.success ? 'published' : 'failed',
+            }),
+          })
+          const data = await res.json()
+          if (data.post) setPosts(prev => [data.post, ...prev])
+        } catch { /* non-blocking */ }
+      }
+
+      // Update stats
+      setStats(prev => ({
+        total: prev.total + successCount,
+        published: prev.published + successCount,
+        totalReach: prev.totalReach,
+        totalLikes: prev.totalLikes,
+      }))
+
+      if (failedPlatforms.length > 0) {
+        const errorDetails = failedPlatforms.map(f => `${f.platform}: ${f.error}`).join(' | ')
+        if (successCount === 0) {
+          setUploadError(`Failed to post: ${errorDetails}`)
+          setStep('ready') // Stay on ready so user can retry
+          setPosting(false)
+          return
+        } else {
+          setUploadError(`Partial success — failed: ${errorDetails}`)
+        }
+      }
+
+      setStep('posted')
+      setPosting(false)
+    } catch (err) {
+      console.error('postNow crash:', err)
+      setUploadError(err instanceof Error ? err.message : 'Publishing failed. Please try again.')
+      setStep('ready')
+      setPosting(false)
+    }
   }
 
   const togglePlatform = (p: string) =>
