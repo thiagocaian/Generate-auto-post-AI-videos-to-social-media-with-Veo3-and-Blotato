@@ -68,8 +68,52 @@ export default function MarketingPage() {
       .catch(() => {})
   }, [])
 
+  // Compress image client-side (mobile camera photos are 5-10MB, Vercel limit is 4.5MB)
+  const compressImage = (file: File, maxWidth = 2000, quality = 0.85): Promise<File> => {
+    return new Promise((resolve) => {
+      // Skip compression for small files (<2MB)
+      if (file.size < 2 * 1024 * 1024) { resolve(file); return }
+
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        let { width, height } = img
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width)
+          width = maxWidth
+        }
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')!
+        ctx.drawImage(img, 0, 0, width, height)
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressed = new File([blob], file.name.replace(/\.\w+$/, '.jpg'), { type: 'image/jpeg' })
+              console.log(`[COMPRESS] ${file.name}: ${(file.size/1024/1024).toFixed(1)}MB → ${(compressed.size/1024/1024).toFixed(1)}MB`)
+              resolve(compressed)
+            } else {
+              resolve(file)
+            }
+          },
+          'image/jpeg',
+          quality,
+        )
+        URL.revokeObjectURL(img.src)
+      }
+      img.onerror = () => { resolve(file) }
+      img.src = URL.createObjectURL(file)
+    })
+  }
+
   const handleFiles = async (files: File[]) => {
-    const imageFiles = files.filter(f => f.type.startsWith('image/'))
+    // Accept image files — handle mobile camera where file.type can be empty (HEIC/HEIF)
+    const imageExts = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif', '.bmp', '.tiff']
+    const imageFiles = files.filter(f =>
+      f.type.startsWith('image/') ||
+      imageExts.some(ext => f.name.toLowerCase().endsWith(ext)) ||
+      (f.type === '' && f.size > 0) // Mobile camera fallback — empty type but has data
+    )
     if (imageFiles.length === 0) return
 
     // CRITICAL: Clear ALL previous video/caption state so old content is never reused
@@ -85,8 +129,10 @@ export default function MarketingPage() {
     try {
       const urls: string[] = []
       for (const file of imageFiles) {
+        // Compress before upload (critical for mobile camera photos)
+        const compressed = await compressImage(file)
         const form = new FormData()
-        form.append('file', file)
+        form.append('file', compressed)
         const res = await fetch('/api/upload', { method: 'POST', body: form })
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || 'Upload failed')
@@ -411,8 +457,11 @@ export default function MarketingPage() {
                     </svg>
                     <p className="text-xs font-semibold mb-1" style={{ color: '#333333' }}>Drop your site photos here</p>
                     <p className="text-xs" style={{ color: '#999999' }}>or click to select from your device (multiple allowed)</p>
-                    <input ref={fileRef} type="file" accept="image/*" multiple className="hidden"
-                      onChange={(e) => e.target.files && e.target.files.length > 0 && handleFiles(Array.from(e.target.files))} />
+                    <input ref={fileRef} type="file" accept="image/*,.heic,.heif" multiple className="hidden"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files.length > 0) handleFiles(Array.from(e.target.files))
+                        e.target.value = '' // Reset so same file can be re-selected
+                      }} />
                   </div>
                 )}
 
