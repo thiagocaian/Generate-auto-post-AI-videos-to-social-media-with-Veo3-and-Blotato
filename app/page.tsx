@@ -106,123 +106,163 @@ function VignetteBorder() {
   );
 }
 
-// ─── Full-Screen Particle Background ─────────────────────────────────────────
+// ─── 3D Brain Particle Sphere (WebGL) ────────────────────────────────────────
 
-function ParticleBackground() {
+function BrainSphere() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mouseRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
 
-    let animId: number;
-    let w = 0, h = 0;
-
-    type Particle = { x: number; y: number; vx: number; vy: number; size: number; alpha: number; baseAlpha: number; pulse: number };
-    const particles: Particle[] = [];
-    const count = 200;
-
-    const resize = () => {
-      w = window.innerWidth;
-      h = window.innerHeight;
-      canvas.width = w * 2;
-      canvas.height = h * 2;
-      ctx.scale(2, 2);
+    // Track mouse for interactivity
+    const onMouseMove = (e: MouseEvent) => {
+      mouseRef.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseRef.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
     };
-    resize();
-    window.addEventListener("resize", resize);
+    window.addEventListener("mousemove", onMouseMove);
 
-    // Create particles spread across the full screen
-    for (let i = 0; i < count; i++) {
-      const baseAlpha = Math.random() * 0.4 + 0.05;
-      particles.push({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        size: Math.random() * 2 + 0.5,
-        alpha: baseAlpha,
-        baseAlpha,
-        pulse: Math.random() * Math.PI * 2,
+    // Dynamic import Three.js to avoid SSR issues
+    import("three").then((THREE) => {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, canvas.offsetWidth / canvas.offsetHeight, 0.1, 1000);
+      camera.position.z = 4.5;
+
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Create sphere of particles (brain-like organic shape)
+      const count = 3000;
+      const positions = new Float32Array(count * 3);
+      const sizes = new Float32Array(count);
+      const offsets = new Float32Array(count); // for noise displacement
+
+      for (let i = 0; i < count; i++) {
+        // Fibonacci sphere distribution for even spacing
+        const phi = Math.acos(1 - 2 * (i + 0.5) / count);
+        const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+        const r = 1.8 + (Math.random() - 0.5) * 0.4; // slight randomness in radius
+
+        positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+        positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+        positions[i * 3 + 2] = r * Math.cos(phi);
+
+        sizes[i] = Math.random() * 2 + 0.5;
+        offsets[i] = Math.random() * Math.PI * 2;
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
+      geometry.setAttribute("offset", new THREE.BufferAttribute(offsets, 1));
+
+      // Vertex shader - particles with breathing animation
+      const vertexShader = `
+        attribute float size;
+        attribute float offset;
+        uniform float uTime;
+        varying float vAlpha;
+
+        void main() {
+          vec3 pos = position;
+
+          // Organic breathing/pulsing
+          float noise = sin(pos.x * 2.0 + uTime + offset) *
+                       cos(pos.y * 2.0 + uTime * 0.7 + offset) *
+                       sin(pos.z * 2.0 + uTime * 0.5 + offset);
+          pos += normalize(position) * noise * 0.15;
+
+          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+          gl_PointSize = size * (3.0 / -mvPosition.z);
+          gl_Position = projectionMatrix * mvPosition;
+
+          // Fade based on depth
+          vAlpha = smoothstep(8.0, 2.0, -mvPosition.z) * (0.4 + 0.6 * (sin(uTime + offset) * 0.5 + 0.5));
+        }
+      `;
+
+      // Fragment shader - soft circular particles
+      const fragmentShader = `
+        varying float vAlpha;
+
+        void main() {
+          float dist = length(gl_PointCoord - vec2(0.5));
+          if (dist > 0.5) discard;
+          float alpha = smoothstep(0.5, 0.1, dist) * vAlpha;
+          gl_FragColor = vec4(1.0, 1.0, 1.0, alpha * 0.7);
+        }
+      `;
+
+      const material = new THREE.ShaderMaterial({
+        vertexShader,
+        fragmentShader,
+        uniforms: { uTime: { value: 0 } },
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
       });
-    }
 
-    let time = 0;
-    const draw = () => {
-      time += 0.01;
-      ctx.clearRect(0, 0, w, h);
+      const points = new THREE.Points(geometry, material);
+      scene.add(points);
 
-      // Draw subtle radial glow in center-right
-      const grd = ctx.createRadialGradient(w * 0.7, h * 0.4, 0, w * 0.7, h * 0.4, 350);
-      grd.addColorStop(0, "rgba(128,82,255,0.06)");
-      grd.addColorStop(0.5, "rgba(128,82,255,0.02)");
-      grd.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = grd;
-      ctx.fillRect(0, 0, w, h);
+      // Add inner glow sphere
+      const glowGeo = new THREE.SphereGeometry(1.2, 32, 32);
+      const glowMat = new THREE.MeshBasicMaterial({
+        color: new THREE.Color(0x8052ff),
+        transparent: true,
+        opacity: 0.03,
+      });
+      const glowMesh = new THREE.Mesh(glowGeo, glowMat);
+      scene.add(glowMesh);
 
-      for (const p of particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.pulse += 0.02;
+      let animId: number;
+      const clock = new THREE.Clock();
 
-        // Wrap around
-        if (p.x < -10) p.x = w + 10;
-        if (p.x > w + 10) p.x = -10;
-        if (p.y < -10) p.y = h + 10;
-        if (p.y > h + 10) p.y = -10;
+      const animate = () => {
+        const elapsed = clock.getElapsedTime();
+        material.uniforms.uTime.value = elapsed;
 
-        // Pulse alpha
-        p.alpha = p.baseAlpha + Math.sin(p.pulse) * p.baseAlpha * 0.5;
+        // Slow rotation + mouse influence
+        points.rotation.y = elapsed * 0.1 + mouseRef.current.x * 0.3;
+        points.rotation.x = elapsed * 0.05 + mouseRef.current.y * 0.2;
+        glowMesh.rotation.y = points.rotation.y;
+        glowMesh.rotation.x = points.rotation.x;
 
-        // Draw particle with glow
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${p.alpha})`;
-        ctx.fill();
+        renderer.render(scene, camera);
+        animId = requestAnimationFrame(animate);
+      };
+      animate();
 
-        // Glow effect for bigger particles
-        if (p.size > 1.5) {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(128,82,255,${p.alpha * 0.15})`;
-          ctx.fill();
-        }
-      }
+      const onResize = () => {
+        const w = canvas.offsetWidth;
+        const h = canvas.offsetHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      };
+      window.addEventListener("resize", onResize);
 
-      // Draw connections between close particles
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 100) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(255,255,255,${0.03 * (1 - dist / 100)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
-      }
-
-      animId = requestAnimationFrame(draw);
-    };
-    draw();
+      return () => {
+        cancelAnimationFrame(animId);
+        window.removeEventListener("resize", onResize);
+        renderer.dispose();
+        geometry.dispose();
+        material.dispose();
+      };
+    });
 
     return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", onMouseMove);
     };
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 z-0 pointer-events-none"
-      style={{ width: "100vw", height: "100vh" }}
+      className="absolute top-0 right-0 w-full h-full lg:w-[55%] pointer-events-none z-0"
+      style={{ opacity: 0.85 }}
     />
   );
 }
@@ -339,8 +379,9 @@ function Navbar() {
 
 function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center pt-[76px]">
-      <div className="max-w-[1400px] mx-auto px-6 md:px-10 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <section className="relative min-h-screen flex items-center pt-[76px] overflow-hidden">
+      <BrainSphere />
+      <div className="relative z-10 max-w-[1400px] mx-auto px-6 md:px-10 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div>
           <RevealText delay={0.1}>
             <span
@@ -384,8 +425,8 @@ function Hero() {
           </FadeIn>
         </div>
 
-        {/* Empty space for layout balance - particles are in the background */}
-        <div className="hidden lg:block h-[500px]" />
+        {/* Right side reserved for 3D sphere */}
+        <div className="hidden lg:block h-[500px]" aria-hidden="true" />
       </div>
     </section>
   );
@@ -732,7 +773,6 @@ export default function LandingPage() {
     <div className="bg-black text-white min-h-screen" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
       <AnimatePresence>{!loaded && <LoadingScreen onComplete={handleLoadComplete} />}</AnimatePresence>
       <VignetteBorder />
-      <ParticleBackground />
       <Navbar />
       <Hero />
       <StatementSection text="Your team already creates incredible work every day. But 80% of it never reaches your audience. Content sits in phones, projects go unshared, and marketing stays manual." />
