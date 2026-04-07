@@ -134,155 +134,132 @@ function VignetteBorder() {
   );
 }
 
-// ─── 3D Brain Particle Sphere (WebGL) ────────────────────────────────────────
+// ─── 3D Colorful Brain Dome (WebGL - Dala style) ─────────────────────────────
 
 function BrainSphere() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    // Track mouse for interactivity
     const onMouseMove = (e: MouseEvent) => {
       mouseRef.current.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouseRef.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
     };
     window.addEventListener("mousemove", onMouseMove);
 
-    // Dynamic import Three.js to avoid SSR issues
     import("three").then((THREE) => {
+      const w = container.offsetWidth;
+      const h = container.offsetHeight;
+
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(50, canvas.offsetWidth / canvas.offsetHeight, 0.1, 1000);
-      camera.position.z = 3.8;
+      const camera = new THREE.PerspectiveCamera(55, w / h, 0.1, 1000);
+      camera.position.set(0, 0.5, 3.2);
 
-      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-      renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(w, h);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(renderer.domElement);
 
-      // Create dense cloud of particles (brain-like organic shape)
-      const count = 5000;
-      const positions = new Float32Array(count * 3);
-      const sizes = new Float32Array(count);
-      const offsets = new Float32Array(count);
+      // Colors matching Dala palette
+      const colors = [
+        new THREE.Color(0xff8844), // orange
+        new THREE.Color(0xffcc22), // yellow/gold
+        new THREE.Color(0x44dd88), // green
+        new THREE.Color(0x4488ff), // blue
+        new THREE.Color(0x8852ff), // purple
+        new THREE.Color(0xff44aa), // pink
+        new THREE.Color(0x44dddd), // cyan
+      ];
+
+      // Create triangle geometry for instances
+      const triGeo = new THREE.BufferGeometry();
+      const s = 0.04;
+      const triVerts = new Float32Array([0, s, 0, -s * 0.866, -s * 0.5, 0, s * 0.866, -s * 0.5, 0]);
+      triGeo.setAttribute("position", new THREE.BufferAttribute(triVerts, 3));
+
+      const count = 4000;
+      const dummy = new THREE.Object3D();
+      const meshMaterial = new THREE.MeshBasicMaterial({
+        transparent: true,
+        opacity: 0.85,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+      });
+
+      // Store particle data
+      const particleData: { pos: THREE.Vector3; vel: THREE.Vector3; color: THREE.Color; rotSpeed: number; offset: number; baseR: number }[] = [];
+
+      const instancedMesh = new THREE.InstancedMesh(triGeo, meshMaterial, count);
+      instancedMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+      // Color buffer for instances
+      const colorArr = new Float32Array(count * 3);
 
       for (let i = 0; i < count; i++) {
-        // Mix of surface particles + volume particles for density
-        const isSurface = i < count * 0.6;
+        // Hemisphere distribution (dome shape)
+        const phi = Math.acos(1 - 2 * Math.random() * 0.55); // top hemisphere only
+        const theta = Math.random() * Math.PI * 2;
+        const r = 1.6 + (Math.random() - 0.5) * 0.5;
 
-        if (isSurface) {
-          // Fibonacci sphere - surface shell
-          const phi = Math.acos(1 - 2 * (i + 0.5) / (count * 0.6));
-          const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-          const r = 1.5 + (Math.random() - 0.5) * 0.3;
-          positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-          positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-          positions[i * 3 + 2] = r * Math.cos(phi);
-        } else {
-          // Volume particles - inside the sphere for density
-          const phi = Math.random() * Math.PI * 2;
-          const theta = Math.random() * Math.PI;
-          const r = Math.random() * 1.3;
-          positions[i * 3] = r * Math.sin(theta) * Math.cos(phi);
-          positions[i * 3 + 1] = r * Math.sin(theta) * Math.sin(phi);
-          positions[i * 3 + 2] = r * Math.cos(theta);
-        }
+        const x = r * Math.sin(phi) * Math.cos(theta);
+        const y = r * Math.cos(phi); // up
+        const z = r * Math.sin(phi) * Math.sin(theta);
 
-        sizes[i] = Math.random() * 2.5 + 0.8;
-        offsets[i] = Math.random() * Math.PI * 2;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        colorArr[i * 3] = color.r;
+        colorArr[i * 3 + 1] = color.g;
+        colorArr[i * 3 + 2] = color.b;
+
+        particleData.push({
+          pos: new THREE.Vector3(x, y - 0.5, z),
+          vel: new THREE.Vector3((Math.random() - 0.5) * 0.002, (Math.random() - 0.5) * 0.002, (Math.random() - 0.5) * 0.002),
+          color,
+          rotSpeed: (Math.random() - 0.5) * 2,
+          offset: Math.random() * Math.PI * 2,
+          baseR: r,
+        });
       }
 
-      const geometry = new THREE.BufferGeometry();
-      geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-      geometry.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
-      geometry.setAttribute("offset", new THREE.BufferAttribute(offsets, 1));
-
-      // Vertex shader - particles with breathing animation
-      const vertexShader = `
-        attribute float size;
-        attribute float offset;
-        uniform float uTime;
-        varying float vAlpha;
-
-        void main() {
-          vec3 pos = position;
-
-          // Organic breathing/pulsing
-          float noise = sin(pos.x * 2.0 + uTime + offset) *
-                       cos(pos.y * 2.0 + uTime * 0.7 + offset) *
-                       sin(pos.z * 2.0 + uTime * 0.5 + offset);
-          pos += normalize(position) * noise * 0.15;
-
-          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-          gl_PointSize = size * (3.0 / -mvPosition.z);
-          gl_Position = projectionMatrix * mvPosition;
-
-          // Fade based on depth
-          vAlpha = smoothstep(8.0, 2.0, -mvPosition.z) * (0.4 + 0.6 * (sin(uTime + offset) * 0.5 + 0.5));
-        }
-      `;
-
-      // Fragment shader - soft glowing particles
-      const fragmentShader = `
-        varying float vAlpha;
-
-        void main() {
-          float dist = length(gl_PointCoord - vec2(0.5));
-          if (dist > 0.5) discard;
-          float alpha = smoothstep(0.5, 0.0, dist) * vAlpha;
-          // Warm white with subtle purple tint
-          vec3 color = mix(vec3(0.5, 0.32, 1.0), vec3(1.0), 0.7);
-          gl_FragColor = vec4(color, alpha * 0.85);
-        }
-      `;
-
-      const material = new THREE.ShaderMaterial({
-        vertexShader,
-        fragmentShader,
-        uniforms: { uTime: { value: 0 } },
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-      });
-
-      const points = new THREE.Points(geometry, material);
-      scene.add(points);
-
-      // Add inner glow sphere (brighter)
-      const glowGeo = new THREE.SphereGeometry(1.0, 32, 32);
-      const glowMat = new THREE.MeshBasicMaterial({
-        color: new THREE.Color(0x8052ff),
-        transparent: true,
-        opacity: 0.08,
-      });
-      const glowMesh = new THREE.Mesh(glowGeo, glowMat);
-      scene.add(glowMesh);
-
-      // Outer halo glow
-      const haloGeo = new THREE.SphereGeometry(2.0, 32, 32);
-      const haloMat = new THREE.MeshBasicMaterial({
-        color: new THREE.Color(0x8052ff),
-        transparent: true,
-        opacity: 0.015,
-      });
-      const haloMesh = new THREE.Mesh(haloGeo, haloMat);
-      scene.add(haloMesh);
+      instancedMesh.instanceColor = new THREE.InstancedBufferAttribute(colorArr, 3);
+      scene.add(instancedMesh);
 
       let animId: number;
       const clock = new THREE.Clock();
 
       const animate = () => {
-        const elapsed = clock.getElapsedTime();
-        material.uniforms.uTime.value = elapsed;
+        const t = clock.getElapsedTime();
 
-        // Slow rotation + mouse influence
-        points.rotation.y = elapsed * 0.1 + mouseRef.current.x * 0.3;
-        points.rotation.x = elapsed * 0.05 + mouseRef.current.y * 0.2;
-        glowMesh.rotation.y = points.rotation.y;
-        glowMesh.rotation.x = points.rotation.x;
-        haloMesh.rotation.y = points.rotation.y * 0.5;
-        haloMesh.rotation.x = points.rotation.x * 0.5;
+        // Global rotation + mouse
+        const rotY = t * 0.08 + mouseRef.current.x * 0.4;
+        const rotX = t * 0.03 + mouseRef.current.y * 0.2;
+
+        for (let i = 0; i < count; i++) {
+          const pd = particleData[i];
+
+          // Organic pulsing
+          const pulse = Math.sin(t * 0.5 + pd.offset) * 0.08;
+          const nx = pd.pos.x * (1 + pulse);
+          const ny = pd.pos.y * (1 + pulse);
+          const nz = pd.pos.z * (1 + pulse);
+
+          dummy.position.set(nx, ny, nz);
+          dummy.rotation.set(t * pd.rotSpeed * 0.3, t * pd.rotSpeed * 0.2, pd.offset);
+
+          // Scale variation
+          const scale = 0.8 + Math.sin(t + pd.offset) * 0.3;
+          dummy.scale.setScalar(scale);
+
+          dummy.updateMatrix();
+          instancedMesh.setMatrixAt(i, dummy.matrix);
+        }
+        instancedMesh.instanceMatrix.needsUpdate = true;
+
+        // Apply global rotation
+        instancedMesh.rotation.y = rotY;
+        instancedMesh.rotation.x = rotX * 0.3;
 
         renderer.render(scene, camera);
         animId = requestAnimationFrame(animate);
@@ -290,11 +267,11 @@ function BrainSphere() {
       animate();
 
       const onResize = () => {
-        const w = canvas.offsetWidth;
-        const h = canvas.offsetHeight;
-        camera.aspect = w / h;
+        const nw = container.offsetWidth;
+        const nh = container.offsetHeight;
+        camera.aspect = nw / nh;
         camera.updateProjectionMatrix();
-        renderer.setSize(w, h);
+        renderer.setSize(nw, nh);
       };
       window.addEventListener("resize", onResize);
 
@@ -302,8 +279,8 @@ function BrainSphere() {
         cancelAnimationFrame(animId);
         window.removeEventListener("resize", onResize);
         renderer.dispose();
-        geometry.dispose();
-        material.dispose();
+        triGeo.dispose();
+        meshMaterial.dispose();
       };
     });
 
@@ -313,10 +290,9 @@ function BrainSphere() {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute top-0 right-0 w-full h-full lg:w-[55%] pointer-events-none z-0"
-      style={{ opacity: 0.85 }}
+    <div
+      ref={containerRef}
+      className="absolute inset-0 z-0 pointer-events-none"
     />
   );
 }
@@ -436,8 +412,8 @@ function Hero() {
   return (
     <section className="relative min-h-screen flex items-center pt-[76px] overflow-hidden">
       <BrainSphere />
-      <div className="relative z-10 max-w-[1400px] mx-auto px-6 md:px-10 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div>
+      <div className="relative z-10 max-w-[1400px] mx-auto px-6 md:px-10 w-full">
+        <div className="max-w-xl">
           <RevealText delay={0.1}>
             <span
               className="text-[12px] font-semibold uppercase tracking-[0.05em] mb-6 block"
@@ -480,8 +456,6 @@ function Hero() {
           </FadeIn>
         </div>
 
-        {/* Right side reserved for 3D sphere */}
-        <div className="hidden lg:block h-[500px]" aria-hidden="true" />
       </div>
     </section>
   );
