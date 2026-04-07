@@ -106,9 +106,9 @@ function VignetteBorder() {
   );
 }
 
-// ─── Particle Canvas ─────────────────────────────────────────────────────────
+// ─── Full-Screen Particle Background ─────────────────────────────────────────
 
-function ParticleCanvas() {
+function ParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -118,53 +118,96 @@ function ParticleCanvas() {
     if (!ctx) return;
 
     let animId: number;
-    const particles: { x: number; y: number; vx: number; vy: number; size: number; alpha: number }[] = [];
-    const count = 120;
+    let w = 0, h = 0;
+
+    type Particle = { x: number; y: number; vx: number; vy: number; size: number; alpha: number; baseAlpha: number; pulse: number };
+    const particles: Particle[] = [];
+    const count = 200;
 
     const resize = () => {
-      canvas.width = canvas.offsetWidth * 2;
-      canvas.height = canvas.offsetHeight * 2;
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w * 2;
+      canvas.height = h * 2;
+      ctx.scale(2, 2);
     };
     resize();
     window.addEventListener("resize", resize);
 
-    const cx = canvas.width / 2;
-    const cy = canvas.height / 2;
-
+    // Create particles spread across the full screen
     for (let i = 0; i < count; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const dist = Math.random() * 200 + 40;
+      const baseAlpha = Math.random() * 0.4 + 0.05;
       particles.push({
-        x: cx + Math.cos(angle) * dist,
-        y: cy + Math.sin(angle) * dist,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
         size: Math.random() * 2 + 0.5,
-        alpha: Math.random() * 0.6 + 0.2,
+        alpha: baseAlpha,
+        baseAlpha,
+        pulse: Math.random() * Math.PI * 2,
       });
     }
 
+    let time = 0;
     const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      time += 0.01;
+      ctx.clearRect(0, 0, w, h);
+
+      // Draw subtle radial glow in center-right
+      const grd = ctx.createRadialGradient(w * 0.7, h * 0.4, 0, w * 0.7, h * 0.4, 350);
+      grd.addColorStop(0, "rgba(128,82,255,0.06)");
+      grd.addColorStop(0.5, "rgba(128,82,255,0.02)");
+      grd.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, w, h);
+
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
-        // Gravitate towards center
-        const dx = cx - p.x;
-        const dy = cy - p.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist > 250) {
-          p.vx += dx * 0.0005;
-          p.vy += dy * 0.0005;
-        }
-        p.vx *= 0.999;
-        p.vy *= 0.999;
+        p.pulse += 0.02;
 
+        // Wrap around
+        if (p.x < -10) p.x = w + 10;
+        if (p.x > w + 10) p.x = -10;
+        if (p.y < -10) p.y = h + 10;
+        if (p.y > h + 10) p.y = -10;
+
+        // Pulse alpha
+        p.alpha = p.baseAlpha + Math.sin(p.pulse) * p.baseAlpha * 0.5;
+
+        // Draw particle with glow
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255,255,255,${p.alpha})`;
         ctx.fill();
+
+        // Glow effect for bigger particles
+        if (p.size > 1.5) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(128,82,255,${p.alpha * 0.15})`;
+          ctx.fill();
+        }
       }
+
+      // Draw connections between close particles
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 100) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(255,255,255,${0.03 * (1 - dist / 100)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+
       animId = requestAnimationFrame(draw);
     };
     draw();
@@ -175,7 +218,13 @@ function ParticleCanvas() {
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="w-full h-full" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 z-0 pointer-events-none"
+      style={{ width: "100vw", height: "100vh" }}
+    />
+  );
 }
 
 // ─── Text Reveal Animation ───────────────────────────────────────────────────
@@ -335,10 +384,8 @@ function Hero() {
           </FadeIn>
         </div>
 
-        {/* Particle animation */}
-        <div className="hidden lg:block h-[500px]">
-          <ParticleCanvas />
-        </div>
+        {/* Empty space for layout balance - particles are in the background */}
+        <div className="hidden lg:block h-[500px]" />
       </div>
     </section>
   );
@@ -685,6 +732,7 @@ export default function LandingPage() {
     <div className="bg-black text-white min-h-screen" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
       <AnimatePresence>{!loaded && <LoadingScreen onComplete={handleLoadComplete} />}</AnimatePresence>
       <VignetteBorder />
+      <ParticleBackground />
       <Navbar />
       <Hero />
       <StatementSection text="Your team already creates incredible work every day. But 80% of it never reaches your audience. Content sits in phones, projects go unshared, and marketing stays manual." />
