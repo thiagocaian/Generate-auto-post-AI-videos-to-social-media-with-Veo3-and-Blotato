@@ -10,25 +10,16 @@ import Link from "next/link";
 function CytronLogo({ size = 32, className = "" }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <defs>
-        <linearGradient id="cytronGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#8052FF" />
-          <stop offset="100%" stopColor="#B388FF" />
-        </linearGradient>
-      </defs>
-      {/* Rounded square background */}
-      <rect x="2" y="2" width="44" height="44" rx="12" fill="url(#cytronGrad)" />
-      {/* Modern C lettermark with circuit node */}
+      {/* Black rounded square with white border */}
+      <rect x="2" y="2" width="44" height="44" rx="12" fill="#0a0a0a" stroke="white" strokeWidth="2" />
+      {/* Clean C lettermark */}
       <path
-        d="M30 15.5C28.2 14.2 26.2 13.5 24 13.5C18.2 13.5 13.5 18.2 13.5 24C13.5 29.8 18.2 34.5 24 34.5C26.2 34.5 28.2 33.8 30 32.5"
+        d="M30 16C28.2 14.5 25.8 13.5 23.5 13.5C17.7 13.5 13 18.2 13 24C13 29.8 17.7 34.5 23.5 34.5C25.8 34.5 28.2 33.5 30 32"
         stroke="white"
-        strokeWidth="3.5"
+        strokeWidth="3"
         strokeLinecap="round"
         fill="none"
       />
-      {/* Circuit node dot */}
-      <circle cx="31" cy="15" r="2.5" fill="white" />
-      <circle cx="31" cy="33" r="2.5" fill="white" />
     </svg>
   );
 }
