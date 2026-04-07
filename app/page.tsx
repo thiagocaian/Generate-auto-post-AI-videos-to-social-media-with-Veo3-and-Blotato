@@ -5,6 +5,34 @@ import { motion, useInView, AnimatePresence } from "motion/react";
 import { ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
 
+// ─── Logo Icon ───────────────────────────────────────────────────────────────
+
+function CytronLogo({ size = 32, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <defs>
+        <linearGradient id="cytronGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#8052FF" />
+          <stop offset="100%" stopColor="#B388FF" />
+        </linearGradient>
+      </defs>
+      {/* Rounded square background */}
+      <rect x="2" y="2" width="44" height="44" rx="12" fill="url(#cytronGrad)" />
+      {/* Modern C lettermark with circuit node */}
+      <path
+        d="M30 15.5C28.2 14.2 26.2 13.5 24 13.5C18.2 13.5 13.5 18.2 13.5 24C13.5 29.8 18.2 34.5 24 34.5C26.2 34.5 28.2 33.8 30 32.5"
+        stroke="white"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+        fill="none"
+      />
+      {/* Circuit node dot */}
+      <circle cx="31" cy="15" r="2.5" fill="white" />
+      <circle cx="31" cy="33" r="2.5" fill="white" />
+    </svg>
+  );
+}
+
 // ─── Colors ──────────────────────────────────────────────────────────────────
 
 const C = {
@@ -320,8 +348,9 @@ function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-40">
       <div className="absolute inset-0 backdrop-blur-md bg-black/40" />
       <div className="relative max-w-[1400px] mx-auto px-6 md:px-10 h-[76px] flex items-center justify-between">
-        <Link href="/" className="text-white font-semibold text-lg tracking-[-0.02em]">
-          cytron
+        <Link href="/" className="flex items-center gap-2.5">
+          <CytronLogo size={30} />
+          <span className="text-white font-semibold text-lg tracking-[-0.02em]">cytron</span>
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
@@ -740,6 +769,7 @@ function Footer() {
         {/* Footer bar */}
         <div className="border-t py-8 flex flex-col md:flex-row items-center justify-between gap-6" style={{ borderColor: C.divider }}>
           <div className="flex items-center gap-6">
+            <CytronLogo size={24} />
             <span className="text-white font-semibold text-[15px] tracking-[-0.02em]">cytron</span>
             <span className="text-[12px] text-[#9A9A9A]">&copy; 2026 Cytron Technologies. All rights reserved.</span>
           </div>

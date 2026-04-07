@@ -4,7 +4,11 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "CYTRON — Intelligent Automation Platform",
-  description: "Enterprise automation platform for electrical contractors",
+  description: "AI-powered content automation. Transform photos into cinematic marketing videos, auto-publish to social media.",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
