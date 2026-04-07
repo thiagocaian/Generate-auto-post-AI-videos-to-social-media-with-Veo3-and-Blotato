@@ -48,7 +48,8 @@ export async function middleware(request: NextRequest) {
       request.nextUrl.pathname.startsWith('/auth/callback') ||
       request.nextUrl.pathname === '/forgot-password' ||
       request.nextUrl.pathname === '/reset-password' ||
-      request.nextUrl.pathname === '/landing'
+      request.nextUrl.pathname === '/landing' ||
+      request.nextUrl.pathname === '/'
 
     // Not logged in → redirect to login
     if (!session && !isLoginPage && !isPublicPath) {
@@ -57,7 +58,7 @@ export async function middleware(request: NextRequest) {
 
     // Already logged in → redirect away from login
     if (session && isLoginPage) {
-      return NextResponse.redirect(new URL('/', request.url))
+      return NextResponse.redirect(new URL('/dashboard', request.url))
     }
 
     return response

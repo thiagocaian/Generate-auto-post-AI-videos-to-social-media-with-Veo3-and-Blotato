@@ -1,298 +1,441 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import Sidebar from '@/components/Sidebar'
+import React, { useState, useEffect, useRef } from "react";
+import { motion, useInView } from "motion/react";
+import { Square, Zap, Video, BarChart3, Users, Shield, ArrowRight, Check, Mail, Phone, MapPin } from "lucide-react";
+import Link from "next/link";
 
-type DashboardData = {
-  company: { name: string; slug: string; plan: string; plan_status: string }
-  role: string
-  stats: {
-    marketing: { total: number; published: number; totalReach: number; totalLikes: number; videosGenerated: number }
-    quotes: { total: number; totalValue: number; approved: number }
-    compliance: { total: number; passed: number; failed: number; pending: number }
-    workOrders: { total: number; active: number; completed: number }
-  }
-  recent: {
-    posts: { id: string; caption: string; platform: string; status: string; created_at: string }[]
-    quotes: { id: string; quote_number: string; client_name: string; total: number; status: string; created_at: string }[]
-  }
-}
+// ─── Noise Background ─────────────────────────────────────────────────────────
 
-const PLAN_LIMITS: Record<string, { videos: number; posts: number }> = {
-  starter: { videos: 10, posts: 30 },
-  pro: { videos: 50, posts: 150 },
-  enterprise: { videos: 999, posts: 999 },
-}
-
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 60) return `${mins}m ago`
-  const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h ago`
-  return `${Math.floor(hrs / 24)}d ago`
-}
-
-export default function Home() {
-  const [data, setData] = useState<DashboardData | null>(null)
+function NoiseBackground() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    fetch('/api/dashboard')
-      .then(r => r.json())
-      .then(d => { if (d.company) setData(d) })
-      .catch(() => {})
-  }, [])
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-  const company = data?.company
-  const s = data?.stats
-  const recent = data?.recent
-  const plan = company?.plan || 'starter'
-  const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.starter
+    canvas.width = 300;
+    canvas.height = 300;
+
+    const imageData = ctx.createImageData(300, 300);
+    for (let i = 0; i < imageData.data.length; i += 4) {
+      const v = Math.random() * 255;
+      imageData.data[i] = v;
+      imageData.data[i + 1] = v;
+      imageData.data[i + 2] = v;
+      imageData.data[i + 3] = 12;
+    }
+    ctx.putImageData(imageData, 0, 0);
+  }, []);
 
   return (
-    <div className="flex min-h-screen" style={{ background: '#F7F7F7', fontFamily: "'Inter', system-ui, sans-serif" }}>
-      <Sidebar active="dashboard" />
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-[0.05]"
+      style={{ imageRendering: "pixelated" }}
+    />
+  );
+}
 
-      <main className="flex-1 flex flex-col overflow-hidden pt-12 md:pt-0">
+// ─── Section Header ───────────────────────────────────────────────────────────
 
-        {/* Header */}
-        <header className="flex items-center justify-between px-5 md:px-8 py-4"
-          style={{ background: '#FFFFFF', borderBottom: '1px solid #EBEBEB' }}>
+function SectionHeader({ label, title, subtitle }: { label: string; title: string; subtitle?: string }) {
+  return (
+    <div className="text-center mb-16 md:mb-20">
+      <span className="text-xs uppercase tracking-[0.3em] text-neutral-500 block mb-4">{label}</span>
+      <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-[-0.03em] text-white uppercase">{title}</h2>
+      {subtitle && <p className="mt-4 text-neutral-400 max-w-2xl mx-auto text-sm md:text-base">{subtitle}</p>}
+    </div>
+  );
+}
+
+// ─── Navbar ───────────────────────────────────────────────────────────────────
+
+function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const links = [
+    { label: "Features", href: "#features" },
+    { label: "Process", href: "#process" },
+    { label: "Pricing", href: "#pricing" },
+    { label: "Contact", href: "#contact" },
+  ];
+
+  return (
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-black/80 backdrop-blur-md border-b border-white/10" : ""}`}>
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <Link href="/" className="text-white font-bold text-xl tracking-[-0.03em]">CYTRON</Link>
+
+        <div className="hidden md:flex items-center gap-8">
+          {links.map((l) => (
+            <a key={l.href} href={l.href} className="text-xs uppercase tracking-[0.2em] text-neutral-400 hover:text-white transition-colors">
+              {l.label}
+            </a>
+          ))}
+          <Link href="/login" className="text-xs uppercase tracking-[0.2em] px-6 py-2.5 bg-white text-black font-semibold hover:bg-neutral-200 transition-colors">
+            LOGIN
+          </Link>
+        </div>
+
+        <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden text-white">
+          {mobileOpen ? (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          )}
+        </button>
+      </div>
+
+      {mobileOpen && (
+        <div className="md:hidden bg-black border-t border-white/10 px-6 py-6 flex flex-col gap-4">
+          {links.map((l) => (
+            <a key={l.href} href={l.href} onClick={() => setMobileOpen(false)} className="text-sm uppercase tracking-wider text-neutral-400 hover:text-white">
+              {l.label}
+            </a>
+          ))}
+          <Link href="/login" className="text-sm uppercase tracking-wider px-6 py-2.5 bg-white text-black font-semibold text-center">
+            LOGIN
+          </Link>
+        </div>
+      )}
+    </nav>
+  );
+}
+
+// ─── Hero ─────────────────────────────────────────────────────────────────────
+
+function Hero() {
+  return (
+    <section className="relative min-h-screen flex items-center pt-20">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,#222_0%,#000_70%)]" />
+      <div className="relative z-10 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
           <div>
-            <h1 className="text-xl md:text-2xl font-bold" style={{ color: '#1A1A1A' }}>Dashboard</h1>
-            <p className="text-sm mt-0.5" style={{ color: '#AAAAAA' }}>
-              {company?.name ? `${company.name} — Overview` : 'Loading...'}
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex px-3 py-1.5 text-xs font-medium items-center gap-2 rounded-lg"
-              style={{ background: '#F5F5F5', color: '#888' }}>
-              <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#22C55E' }}></span>
-              All Systems Online
-            </div>
-          </div>
-        </header>
-
-        <div className="flex-1 overflow-y-auto p-4 md:p-8">
-
-          {/* KPIs */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 mb-6 md:mb-8">
-            {[
-              {
-                label: 'Posts Published',
-                value: s ? String(s.marketing.published) : '0',
-                sub: s?.marketing.published ? `${s.marketing.total} total` : 'No posts yet',
-                change: s && s.marketing.published > 0 ? '+12%' : null,
-              },
-              {
-                label: 'Quotes Value',
-                value: s ? `$${(s.quotes.totalValue / 1000).toFixed(1)}k` : '$0',
-                sub: s?.quotes.total ? `${s.quotes.total} quotes` : 'No quotes yet',
-                change: s && s.quotes.total > 0 ? '+8%' : null,
-              },
-              {
-                label: 'Compliance',
-                value: s ? String(s.compliance.total) : '0',
-                sub: s?.compliance.total ? `${s.compliance.passed} passed` : 'No reports yet',
-                change: null,
-              },
-              {
-                label: 'Work Orders',
-                value: s ? String(s.workOrders.active) : '0',
-                sub: s?.workOrders.total ? `${s.workOrders.completed} completed` : 'No orders yet',
-                change: null,
-              },
-            ].map((k, i) => (
-              <div key={i} className="p-4 md:p-5 rounded-xl"
-                style={{ background: '#FFFFFF', border: '1px solid #EBEBEB' }}>
-                <p className="text-xs font-medium uppercase tracking-wider mb-3" style={{ color: '#AAAAAA' }}>{k.label}</p>
-                <div className="flex items-end gap-2">
-                  <p className="text-2xl md:text-3xl font-bold" style={{ color: '#1A1A1A' }}>{k.value}</p>
-                  {k.change && (
-                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded mb-1"
-                      style={{ background: '#ECFDF5', color: '#059669' }}>{k.change}</span>
-                  )}
-                </div>
-                <p className="text-xs mt-1.5" style={{ color: '#BCBCBC' }}>{k.sub}</p>
-              </div>
-            ))}
+            <span className="inline-block text-xs uppercase tracking-[0.3em] text-neutral-500 border border-neutral-800 px-4 py-1.5 mb-8">
+              AI Automation Platform
+            </span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+          <h1
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-[-0.03em] text-white uppercase leading-[0.9]"
+          >
+            PHOTO
+            <br />
+            <span className="text-neutral-500">TO VIDEO</span>
+            <br />
+            ENGINE
+          </h1>
 
-            {/* Left column */}
-            <div className="lg:col-span-2 space-y-4 md:space-y-6">
+          <p
+            className="mt-8 text-neutral-400 text-sm md:text-base max-w-md leading-relaxed"
+          >
+            Your employee snaps a photo on-site. CYTRON&apos;s AI generates a cinematic marketing video and auto-publishes to Instagram &amp; TikTok. Zero manual work.
+          </p>
 
-              {/* Quick Actions */}
-              <div className="p-5 md:p-6 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #EBEBEB' }}>
-                <h2 className="text-sm font-semibold mb-4 uppercase tracking-wider" style={{ color: '#1A1A1A' }}>Quick Actions</h2>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { label: 'Create AI Video', desc: 'Upload photo, generate video', href: '/marketing',
-                      icon: 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-                    { label: 'New Quote', desc: 'AI-powered quoting', href: '/quotes',
-                      icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
-                    { label: 'Compliance', desc: 'Inspection reports', href: '/compliance',
-                      icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
-                    { label: 'Warehouse', desc: 'QR scan, manage stock', href: '/warehouse',
-                      icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
-                  ].map((a, i) => (
-                    <Link key={i} href={a.href}
-                      className="flex items-center gap-3 p-3.5 rounded-xl transition-all group"
-                      style={{ background: '#FAFAFA', border: '1px solid #F0F0F0' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = '#F5F5F5'; e.currentTarget.style.borderColor = '#E0E0E0' }}
-                      onMouseLeave={e => { e.currentTarget.style.background = '#FAFAFA'; e.currentTarget.style.borderColor = '#F0F0F0' }}>
-                      <div className="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-lg"
-                        style={{ background: '#1A1A1A' }}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                          <path d={a.icon} />
-                        </svg>
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold truncate" style={{ color: '#1A1A1A' }}>{a.label}</p>
-                        <p className="text-xs truncate" style={{ color: '#AAAAAA' }}>{a.desc}</p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              {/* Recent Activity */}
-              <div className="p-5 md:p-6 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #EBEBEB' }}>
-                <h2 className="text-sm font-semibold mb-4 uppercase tracking-wider" style={{ color: '#1A1A1A' }}>Recent Activity</h2>
-                {recent && (recent.posts.length > 0 || recent.quotes.length > 0) ? (
-                  <div className="space-y-2">
-                    {recent.posts.map(p => (
-                      <div key={p.id} className="flex items-center justify-between py-2.5 px-3 rounded-lg"
-                        style={{ background: '#FAFAFA' }}>
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 flex items-center justify-center rounded-lg flex-shrink-0" style={{ background: '#F0F0F0' }}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium truncate" style={{ color: '#333' }}>
-                              {p.caption ? (p.caption.length > 45 ? p.caption.slice(0, 45) + '...' : p.caption) : 'Marketing post'}
-                            </p>
-                            <p className="text-xs" style={{ color: '#AAAAAA' }}>{p.platform}</p>
-                          </div>
-                        </div>
-                        <span className="text-xs flex-shrink-0 ml-2" style={{ color: '#CCCCCC' }}>{timeAgo(p.created_at)}</span>
-                      </div>
-                    ))}
-                    {recent.quotes.map(q => (
-                      <div key={q.id} className="flex items-center justify-between py-2.5 px-3 rounded-lg"
-                        style={{ background: '#FAFAFA' }}>
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 flex items-center justify-center rounded-lg flex-shrink-0" style={{ background: '#F0F0F0' }}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium truncate" style={{ color: '#333' }}>{q.quote_number} — {q.client_name}</p>
-                            <p className="text-xs" style={{ color: '#AAAAAA' }}>${q.total?.toLocaleString()}</p>
-                          </div>
-                        </div>
-                        <span className="text-xs flex-shrink-0 ml-2" style={{ color: '#CCCCCC' }}>{timeAgo(q.created_at)}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-12">
-                    <div className="w-12 h-12 flex items-center justify-center rounded-full mb-3" style={{ background: '#F5F5F5' }}>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#CCCCCC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10" />
-                        <polyline points="12 6 12 12 16 14" />
-                      </svg>
-                    </div>
-                    <p className="text-sm font-medium" style={{ color: '#999' }}>No activity yet</p>
-                    <p className="text-xs mt-1" style={{ color: '#CCCCCC' }}>Your AI-generated content will appear here</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Right column */}
-            <div className="space-y-4 md:space-y-6">
-
-              {/* AI Agents Status */}
-              <div className="p-5 md:p-6 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #EBEBEB' }}>
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#22C55E' }} />
-                  <h2 className="text-sm font-semibold uppercase tracking-wider" style={{ color: '#1A1A1A' }}>AI Agents</h2>
-                </div>
-                {[
-                  { name: 'Content Engine',   href: '/marketing', status: 'Ready' },
-                  { name: 'Video Generator',  href: '/marketing', status: 'Ready' },
-                  { name: 'Quote AI',         href: '/quotes',    status: 'Ready' },
-                  { name: 'Field Commander',  href: '/field-commander', status: 'Ready' },
-                ].map((a, i) => (
-                  <Link key={i} href={a.href}
-                    className="flex items-center justify-between py-2.5 transition-colors"
-                    style={{ borderBottom: i < 3 ? '1px solid #F5F5F5' : 'none' }}>
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-2 h-2 rounded-full" style={{ background: '#1A1A1A' }} />
-                      <span className="text-sm font-medium" style={{ color: '#444' }}>{a.name}</span>
-                    </div>
-                    <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#BCBCBC' }}>{a.status}</span>
-                  </Link>
-                ))}
-              </div>
-
-              {/* Connected Platforms */}
-              <div className="p-5 md:p-6 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #EBEBEB' }}>
-                <h2 className="text-sm font-semibold mb-3 uppercase tracking-wider" style={{ color: '#1A1A1A' }}>Platforms</h2>
-                {[
-                  { name: 'Instagram',  connected: false },
-                  { name: 'TikTok',     connected: true  },
-                ].map((p, i) => (
-                  <div key={i} className="flex items-center justify-between py-2.5"
-                    style={{ borderBottom: i < 1 ? '1px solid #F5F5F5' : 'none' }}>
-                    <span className="text-sm" style={{ color: '#444' }}>{p.name}</span>
-                    <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: p.connected ? '#22C55E' : '#CCCCCC' }}>
-                      {p.connected ? 'Connected' : 'Not connected'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Plan info */}
-              <div className="p-5 md:p-6 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #EBEBEB' }}>
-                <h2 className="text-sm font-semibold mb-4 uppercase tracking-wider" style={{ color: '#1A1A1A' }}>Usage</h2>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between text-xs mb-1.5">
-                      <span style={{ color: '#AAAAAA' }}>AI Videos</span>
-                      <span className="font-semibold" style={{ color: '#444' }}>{s?.marketing.videosGenerated || 0} / {limits.videos}</span>
-                    </div>
-                    <div className="h-2 rounded-full overflow-hidden" style={{ background: '#F0F0F0' }}>
-                      <div className="h-full rounded-full transition-all" style={{
-                        width: `${Math.min(100, ((s?.marketing.videosGenerated || 0) / limits.videos) * 100)}%`,
-                        background: '#1A1A1A',
-                      }} />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex items-center justify-between text-xs mb-1.5">
-                      <span style={{ color: '#AAAAAA' }}>Auto Posts</span>
-                      <span className="font-semibold" style={{ color: '#444' }}>{s?.marketing.published || 0} / {limits.posts}</span>
-                    </div>
-                    <div className="h-2 rounded-full overflow-hidden" style={{ background: '#F0F0F0' }}>
-                      <div className="h-full rounded-full transition-all" style={{
-                        width: `${Math.min(100, ((s?.marketing.published || 0) / limits.posts) * 100)}%`,
-                        background: '#888',
-                      }} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div
+            className="mt-10 flex flex-wrap gap-4"
+          >
+            <Link href="/login" className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] px-8 py-3.5 bg-white text-black font-semibold hover:bg-neutral-200 transition-colors">
+              GET STARTED <ArrowRight size={14} />
+            </Link>
+            <a href="#features" className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] px-8 py-3.5 border border-neutral-800 text-neutral-400 hover:text-white hover:border-white transition-colors">
+              LEARN MORE
+            </a>
           </div>
         </div>
-      </main>
+
+        {/* Geometric shape */}
+        <div className="hidden lg:flex items-center justify-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+            className="relative w-80 h-80"
+          >
+            {[0, 1, 2, 3].map((i) => (
+              <motion.div
+                key={i}
+                className="absolute inset-0 border border-white/20"
+                style={{
+                  transform: `rotate(${i * 22.5}deg) scale(${1 - i * 0.15})`,
+                }}
+                animate={{ rotate: [0, 90] }}
+                transition={{ duration: 10 + i * 2, repeat: Infinity, ease: "linear", repeatType: "reverse" }}
+              />
+            ))}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Zap size={48} className="text-white/40" />
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        animate={{ y: [0, 8, 0] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-neutral-600 text-xs uppercase tracking-widest"
+      >
+        Scroll
+      </motion.div>
+    </section>
+  );
+}
+
+// ─── Features ─────────────────────────────────────────────────────────────────
+
+function Features() {
+  const features = [
+    { icon: Video, title: "AI Video Generation", desc: "Transform photos into cinematic marketing videos with Kling AI. Auto-post to Instagram & TikTok." },
+    { icon: Zap, title: "n8n Automation", desc: "Workflows running 24/7 with 0% failure rate. From photo upload to social media — fully automated." },
+    { icon: BarChart3, title: "Smart Analytics", desc: "Real-time performance tracking. AI-powered insights across all channels and campaigns." },
+    { icon: Users, title: "Client Management", desc: "Manage multiple clients from one dashboard. Each with their own brand and AI campaigns." },
+    { icon: Shield, title: "Compliance Shield", desc: "Generate AS3012, RCD testing, emergency lighting reports. PDF export with AI assistance." },
+    { icon: Square, title: "Warehouse System", desc: "QR-powered inventory. Real-time stock tracking, low-stock alerts, and project allocation." },
+  ];
+
+  return (
+    <section id="features" className="relative py-24 md:py-32">
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
+      <div className="relative z-10 max-w-7xl mx-auto px-6">
+        <SectionHeader label="What we build" title="Features" subtitle="Everything your business needs to automate marketing, manage operations, and scale without hiring." />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/10">
+          {features.map((f) => {
+            const Icon = f.icon;
+            return (
+              <div
+                key={f.title}
+                className="bg-black p-8 md:p-10 group hover:bg-white/5 transition-colors"
+              >
+                <Icon size={24} className="text-white/40 mb-6 group-hover:text-white transition-colors" strokeWidth={1} />
+                <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-3">{f.title}</h3>
+                <p className="text-neutral-500 text-sm leading-relaxed">{f.desc}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Process ──────────────────────────────────────────────────────────────────
+
+function Process() {
+  const steps = [
+    { n: "01", title: "Snap", desc: "Employee takes a photo on the job site. That's it." },
+    { n: "02", title: "Analyse", desc: "Claude Vision identifies the scene, materials, and context." },
+    { n: "03", title: "Generate", desc: "Kling AI creates a cinematic video from the photo." },
+    { n: "04", title: "Caption", desc: "AI writes platform-optimized captions with hashtags." },
+    { n: "05", title: "Publish", desc: "Auto-posts to Instagram & TikTok via Blotato API." },
+  ];
+
+  return (
+    <section id="process" className="py-24 md:py-32">
+      <div className="max-w-7xl mx-auto px-6">
+        <SectionHeader label="How it works" title="Process" subtitle="From a single photo to a full marketing campaign in under 60 seconds." />
+
+        <div className="space-y-0">
+          {steps.map((s) => (
+            <div
+              key={s.n}
+              className="flex items-start gap-6 md:gap-10 py-8 border-t border-white/10 group hover:bg-white/[0.02] px-4 -mx-4 transition-colors"
+            >
+              <span className="text-3xl md:text-5xl font-bold text-neutral-800 group-hover:text-neutral-600 transition-colors tabular-nums tracking-tight">
+                {s.n}
+              </span>
+              <div>
+                <h3 className="text-white font-semibold text-lg md:text-xl uppercase tracking-wider mb-2">{s.title}</h3>
+                <p className="text-neutral-500 text-sm">{s.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Pricing ──────────────────────────────────────────────────────────────────
+
+function Pricing() {
+  const [annual, setAnnual] = useState(false);
+
+  const plans = [
+    {
+      name: "Starter",
+      price: annual ? 49 : 59,
+      features: ["10 AI videos/month", "1 brand", "Instagram auto-post", "Basic analytics", "Email support"],
+      popular: false,
+    },
+    {
+      name: "Pro",
+      price: annual ? 149 : 179,
+      features: ["50 AI videos/month", "5 brands", "Instagram + TikTok", "Advanced analytics", "Compliance reports", "Warehouse system", "Priority support"],
+      popular: true,
+    },
+    {
+      name: "Enterprise",
+      price: annual ? 399 : 499,
+      features: ["Unlimited videos", "Unlimited brands", "All platforms", "Custom AI models", "Full compliance suite", "Warehouse + Field Commander", "Dedicated account manager", "SLA guarantee"],
+      popular: false,
+    },
+  ];
+
+  return (
+    <section id="pricing" className="py-24 md:py-32">
+      <div className="max-w-7xl mx-auto px-6">
+        <SectionHeader label="Plans" title="Pricing" subtitle="Scale your automation. No contracts, cancel anytime." />
+
+        <div className="flex justify-center mb-12">
+          <div className="flex items-center gap-4 border border-white/10 p-1">
+            <button
+              onClick={() => setAnnual(false)}
+              className={`text-xs uppercase tracking-wider px-5 py-2 transition-colors ${!annual ? "bg-white text-black" : "text-neutral-500 hover:text-white"}`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setAnnual(true)}
+              className={`text-xs uppercase tracking-wider px-5 py-2 transition-colors ${annual ? "bg-white text-black" : "text-neutral-500 hover:text-white"}`}
+            >
+              Annual
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10">
+          {plans.map((plan) => (
+            <div
+              key={plan.name}
+              className={`bg-black p-8 md:p-10 relative ${plan.popular ? "border border-white/20" : ""}`}
+            >
+              {plan.popular && (
+                <span className="absolute top-0 right-0 text-[10px] uppercase tracking-widest bg-white text-black px-3 py-1 font-semibold">
+                  Popular
+                </span>
+              )}
+              <h3 className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-4">{plan.name}</h3>
+              <div className="mb-8">
+                <span className="text-4xl md:text-5xl font-bold text-white tracking-tight">${plan.price}</span>
+                <span className="text-neutral-600 text-sm ml-1">/mo</span>
+              </div>
+              <ul className="space-y-3 mb-10">
+                {plan.features.map((f) => (
+                  <li key={f} className="flex items-center gap-3 text-sm text-neutral-400">
+                    <Check size={14} className="text-neutral-600 flex-shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/login"
+                className={`block text-center text-xs uppercase tracking-[0.2em] py-3 font-semibold transition-colors ${
+                  plan.popular
+                    ? "bg-white text-black hover:bg-neutral-200"
+                    : "border border-neutral-800 text-neutral-400 hover:text-white hover:border-white"
+                }`}
+              >
+                GET STARTED
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Contact ──────────────────────────────────────────────────────────────────
+
+function Contact() {
+  return (
+    <section id="contact" className="py-24 md:py-32 border-t border-white/10">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+          <div>
+            <SectionHeader label="Get in touch" title="Contact" />
+            <div className="space-y-6 mt-8">
+              <div className="flex items-center gap-4">
+                <Mail size={16} className="text-neutral-600" />
+                <span className="text-neutral-400 text-sm">hello@cytron.com.au</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <Phone size={16} className="text-neutral-600" />
+                <span className="text-neutral-400 text-sm">+61 4XX XXX XXX</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <MapPin size={16} className="text-neutral-600" />
+                <span className="text-neutral-400 text-sm">Gold Coast, QLD, Australia</span>
+              </div>
+            </div>
+          </div>
+
+          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <div>
+              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-2">Name</label>
+              <input className="w-full bg-transparent border border-neutral-800 px-4 py-3 text-white text-sm focus:outline-none focus:border-white/40 transition-colors" placeholder="Your name" />
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-2">Email</label>
+              <input type="email" className="w-full bg-transparent border border-neutral-800 px-4 py-3 text-white text-sm focus:outline-none focus:border-white/40 transition-colors" placeholder="you@company.com" />
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-wider text-neutral-600 block mb-2">Message</label>
+              <textarea rows={4} className="w-full bg-transparent border border-neutral-800 px-4 py-3 text-white text-sm focus:outline-none focus:border-white/40 transition-colors resize-none" placeholder="Tell us about your project" />
+            </div>
+            <button type="submit" className="text-xs uppercase tracking-[0.2em] px-8 py-3.5 bg-white text-black font-semibold hover:bg-neutral-200 transition-colors w-full md:w-auto">
+              SEND MESSAGE
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Footer ───────────────────────────────────────────────────────────────────
+
+function Footer() {
+  return (
+    <footer className="border-t border-white/10 py-12">
+      <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="text-white font-bold text-lg tracking-[-0.03em]">CYTRON</div>
+        <div className="flex gap-6">
+          {["Features", "Process", "Pricing", "Contact"].map((l) => (
+            <a key={l} href={`#${l.toLowerCase()}`} className="text-xs uppercase tracking-wider text-neutral-600 hover:text-white transition-colors">
+              {l}
+            </a>
+          ))}
+        </div>
+        <p className="text-xs text-neutral-700">&copy; 2026 CYTRON Platform. All rights reserved.</p>
+      </div>
+    </footer>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default function LandingPage() {
+  return (
+    <div className="bg-black text-white min-h-screen" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+      <NoiseBackground />
+      <Navbar />
+      <Hero />
+      <Features />
+      <Process />
+      <Pricing />
+      <Contact />
+      <Footer />
     </div>
-  )
+  );
 }

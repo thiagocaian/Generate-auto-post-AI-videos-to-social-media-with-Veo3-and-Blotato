@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase'
 type NavItem = { label: string; href: string; key: string; iconPath: string; badge?: string }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard',      href: '/',                key: 'dashboard',    iconPath: 'M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z' },
+  { label: 'Dashboard',      href: '/dashboard',       key: 'dashboard',    iconPath: 'M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z' },
   { label: 'Warehouse',      href: '/warehouse',       key: 'warehouse',    iconPath: 'M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z' },
   { label: 'Quoting',        href: '/quotes',          key: 'quotes',       iconPath: 'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8' },
   { label: 'Subcontractors', href: '/field-commander', key: 'field',        iconPath: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100 8 4 4 0 000-8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75' },
