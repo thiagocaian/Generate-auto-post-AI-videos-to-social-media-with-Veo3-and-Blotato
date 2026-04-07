@@ -154,30 +154,42 @@ function BrainSphere() {
     // Dynamic import Three.js to avoid SSR issues
     import("three").then((THREE) => {
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(60, canvas.offsetWidth / canvas.offsetHeight, 0.1, 1000);
-      camera.position.z = 4.5;
+      const camera = new THREE.PerspectiveCamera(50, canvas.offsetWidth / canvas.offsetHeight, 0.1, 1000);
+      camera.position.z = 3.8;
 
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
       renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-      // Create sphere of particles (brain-like organic shape)
-      const count = 3000;
+      // Create dense cloud of particles (brain-like organic shape)
+      const count = 5000;
       const positions = new Float32Array(count * 3);
       const sizes = new Float32Array(count);
-      const offsets = new Float32Array(count); // for noise displacement
+      const offsets = new Float32Array(count);
 
       for (let i = 0; i < count; i++) {
-        // Fibonacci sphere distribution for even spacing
-        const phi = Math.acos(1 - 2 * (i + 0.5) / count);
-        const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-        const r = 1.8 + (Math.random() - 0.5) * 0.4; // slight randomness in radius
+        // Mix of surface particles + volume particles for density
+        const isSurface = i < count * 0.6;
 
-        positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-        positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-        positions[i * 3 + 2] = r * Math.cos(phi);
+        if (isSurface) {
+          // Fibonacci sphere - surface shell
+          const phi = Math.acos(1 - 2 * (i + 0.5) / (count * 0.6));
+          const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+          const r = 1.5 + (Math.random() - 0.5) * 0.3;
+          positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+          positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+          positions[i * 3 + 2] = r * Math.cos(phi);
+        } else {
+          // Volume particles - inside the sphere for density
+          const phi = Math.random() * Math.PI * 2;
+          const theta = Math.random() * Math.PI;
+          const r = Math.random() * 1.3;
+          positions[i * 3] = r * Math.sin(theta) * Math.cos(phi);
+          positions[i * 3 + 1] = r * Math.sin(theta) * Math.sin(phi);
+          positions[i * 3 + 2] = r * Math.cos(theta);
+        }
 
-        sizes[i] = Math.random() * 2 + 0.5;
+        sizes[i] = Math.random() * 2.5 + 0.8;
         offsets[i] = Math.random() * Math.PI * 2;
       }
 
@@ -211,15 +223,17 @@ function BrainSphere() {
         }
       `;
 
-      // Fragment shader - soft circular particles
+      // Fragment shader - soft glowing particles
       const fragmentShader = `
         varying float vAlpha;
 
         void main() {
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
-          float alpha = smoothstep(0.5, 0.1, dist) * vAlpha;
-          gl_FragColor = vec4(1.0, 1.0, 1.0, alpha * 0.7);
+          float alpha = smoothstep(0.5, 0.0, dist) * vAlpha;
+          // Warm white with subtle purple tint
+          vec3 color = mix(vec3(0.5, 0.32, 1.0), vec3(1.0), 0.7);
+          gl_FragColor = vec4(color, alpha * 0.85);
         }
       `;
 
@@ -235,15 +249,25 @@ function BrainSphere() {
       const points = new THREE.Points(geometry, material);
       scene.add(points);
 
-      // Add inner glow sphere
-      const glowGeo = new THREE.SphereGeometry(1.2, 32, 32);
+      // Add inner glow sphere (brighter)
+      const glowGeo = new THREE.SphereGeometry(1.0, 32, 32);
       const glowMat = new THREE.MeshBasicMaterial({
         color: new THREE.Color(0x8052ff),
         transparent: true,
-        opacity: 0.03,
+        opacity: 0.08,
       });
       const glowMesh = new THREE.Mesh(glowGeo, glowMat);
       scene.add(glowMesh);
+
+      // Outer halo glow
+      const haloGeo = new THREE.SphereGeometry(2.0, 32, 32);
+      const haloMat = new THREE.MeshBasicMaterial({
+        color: new THREE.Color(0x8052ff),
+        transparent: true,
+        opacity: 0.015,
+      });
+      const haloMesh = new THREE.Mesh(haloGeo, haloMat);
+      scene.add(haloMesh);
 
       let animId: number;
       const clock = new THREE.Clock();
@@ -257,6 +281,8 @@ function BrainSphere() {
         points.rotation.x = elapsed * 0.05 + mouseRef.current.y * 0.2;
         glowMesh.rotation.y = points.rotation.y;
         glowMesh.rotation.x = points.rotation.x;
+        haloMesh.rotation.y = points.rotation.y * 0.5;
+        haloMesh.rotation.x = points.rotation.x * 0.5;
 
         renderer.render(scene, camera);
         animId = requestAnimationFrame(animate);
