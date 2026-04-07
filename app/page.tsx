@@ -190,7 +190,8 @@ function BrainSphere() {
       });
 
       // Store particle data
-      const particleData: { pos: THREE.Vector3; vel: THREE.Vector3; color: THREE.Color; rotSpeed: number; offset: number; baseR: number }[] = [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const particleData: { pos: any; vel: any; color: any; rotSpeed: number; offset: number; baseR: number }[] = [];
 
       const instancedMesh = new THREE.InstancedMesh(triGeo, meshMaterial, count);
       instancedMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
