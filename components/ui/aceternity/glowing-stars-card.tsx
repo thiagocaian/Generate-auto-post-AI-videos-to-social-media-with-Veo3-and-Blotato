@@ -69,7 +69,7 @@ function Illustration({ mouseEnter }: { mouseEnter: boolean }) {
                   animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
                   exit={{ scale: 0 }}
                   transition={{ duration: 2, delay, ease: "easeInOut" }}
-                  className="absolute h-[1px] w-[1px] rounded-full bg-[#00B050] shadow-[0_0_4px_#00B050]"
+                  className="absolute h-[1px] w-[1px] rounded-full bg-[#886cff] shadow-[0_0_4px_#886cff]"
                 />
               )}
             </AnimatePresence>

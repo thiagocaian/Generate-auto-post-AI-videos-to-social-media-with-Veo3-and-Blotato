@@ -83,12 +83,12 @@ function generateQuote(form: Record<string, string>): GeneratedQuote {
 const catColors: Record<string, string> = {
   Design: '#7C3AED', Switchgear: '#1D4ED8', Cabling: '#0369A1',
   Lighting: '#D97706', Power: '#059669', Safety: '#DC2626',
-  Compliance: '#6D28D9', Labour: '#00B050', Infrastructure: '#475569', Management: '#92400E',
+  Compliance: '#6D28D9', Labour: '#886cff', Infrastructure: '#475569', Management: '#92400E',
 }
 const catBg: Record<string, string> = {
   Design: 'rgba(124,58,237,0.08)', Switchgear: 'rgba(29,78,216,0.08)', Cabling: 'rgba(3,105,161,0.08)',
   Lighting: 'rgba(217,119,6,0.08)', Power: 'rgba(5,150,105,0.08)', Safety: 'rgba(220,38,38,0.08)',
-  Compliance: 'rgba(109,40,217,0.08)', Labour: 'rgba(0,176,80,0.08)', Infrastructure: 'rgba(71,85,105,0.08)', Management: 'rgba(146,64,14,0.08)',
+  Compliance: 'rgba(109,40,217,0.08)', Labour: 'rgba(136,108,255,0.08)', Infrastructure: 'rgba(71,85,105,0.08)', Management: 'rgba(146,64,14,0.08)',
 }
 
 

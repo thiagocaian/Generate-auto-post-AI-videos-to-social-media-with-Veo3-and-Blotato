@@ -72,13 +72,13 @@ export function InfiniteMovingCards({
                 </span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="mt-0.5 text-[#00B050]">&#10004;</span>
+                <span className="mt-0.5 text-[#886cff]">&#10004;</span>
                 <span className="font-mono text-sm text-neutral-200">
                   {item.after}
                 </span>
               </div>
               <div className="mt-1 border-t border-white/[0.05] pt-2">
-                <span className="font-mono text-xs font-bold text-[#00B050]">
+                <span className="font-mono text-xs font-bold text-[#886cff]">
                   {item.metric}
                 </span>
               </div>

@@ -42,7 +42,7 @@ export function BackgroundBeams({ className }: { className?: string }) {
           >
             <defs>
               <radialGradient id="beam-gradient" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="rgba(0, 176, 80, 0.15)" />
+                <stop offset="0%" stopColor="rgba(136, 108, 255, 0.15)" />
                 <stop offset="100%" stopColor="transparent" />
               </radialGradient>
             </defs>
@@ -75,7 +75,7 @@ export function BackgroundBeams({ className }: { className?: string }) {
               height: 400,
               left: mousePosition.x - 200,
               top: mousePosition.y - 200,
-              background: "radial-gradient(circle, rgba(0,176,80,0.3) 0%, transparent 70%)",
+              background: "radial-gradient(circle, rgba(136,108,255,0.3) 0%, transparent 70%)",
             }}
           />
         </>

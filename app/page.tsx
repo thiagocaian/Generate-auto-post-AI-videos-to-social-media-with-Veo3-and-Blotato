@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform, useMotionValue, useSpring } from "fram
 import { ArrowRight, Check, Play, Video, Share2, BarChart3, Bot, Clock, Zap, Camera, FolderOpen, Upload, Sparkles, ClipboardList, LineChart, Package, FileText, Users } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { BackgroundBeams } from "@/components/ui/aceternity/background-beams";
+import BackgroundScene from "@/components/BackgroundScene";
 import { TextGenerateEffect } from "@/components/ui/aceternity/text-generate-effect";
 import { BentoGrid, BentoGridItem } from "@/components/ui/aceternity/bento-grid";
 import { InfiniteMovingCards } from "@/components/ui/aceternity/infinite-moving-cards";
@@ -117,19 +117,19 @@ const automationItems = [
 // ─── Video Hub Modes ──────────────────────────────────────────────────────────
 const videoModes = [
   {
-    icon: <Sparkles className="w-6 h-6 text-[#00B050]" />,
+    icon: <Sparkles className="w-6 h-6 text-[#886cff]" />,
     title: "AI Create",
     desc: "Upload a photo. AI generates a cinematic video with transitions, music, and captions — ready to publish.",
     tag: "MOST POPULAR",
   },
   {
-    icon: <FolderOpen className="w-6 h-6 text-[#00B050]" />,
+    icon: <FolderOpen className="w-6 h-6 text-[#886cff]" />,
     title: "Ready to Use",
     desc: "Browse our library of pre-made video templates. Pick one, customize the caption, publish instantly.",
     tag: "FASTEST",
   },
   {
-    icon: <Camera className="w-6 h-6 text-[#00B050]" />,
+    icon: <Camera className="w-6 h-6 text-[#886cff]" />,
     title: "Record & Post",
     desc: "Open your camera, record directly. Choose: AI-enhance with effects & captions, or quick-post raw to all platforms.",
     tag: "AUTHENTIC",
@@ -203,9 +203,9 @@ function EarlyAccessForm() {
         animate={{ opacity: 1, scale: 1 }}
         className="flex items-center justify-center gap-3 mt-6"
       >
-        <div className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-[#00B050]/30 bg-[#00B050]/5">
-          <Check size={16} className="text-[#00B050]" />
-          <span className="text-sm text-[#00B050] font-medium">You&apos;re on the list! We&apos;ll be in touch soon.</span>
+        <div className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-[#886cff]/30 bg-[#886cff]/5">
+          <Check size={16} className="text-[#886cff]" />
+          <span className="text-sm text-[#886cff] font-medium">You&apos;re on the list! We&apos;ll be in touch soon.</span>
         </div>
       </motion.div>
     );
@@ -224,13 +224,13 @@ function EarlyAccessForm() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="your@email.com"
-        className="w-full sm:w-72 px-4 py-3 text-sm rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-neutral-600 outline-none focus:border-[#00B050]/50 font-mono"
+        className="w-full sm:w-72 px-4 py-3 text-sm rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-neutral-600 outline-none focus:border-[#886cff]/50 font-mono"
         required
       />
       <button
         type="submit"
         disabled={status === "loading"}
-        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm font-medium px-7 py-3 rounded-lg bg-[#00B050] text-black transition-opacity disabled:opacity-50"
+        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm font-medium px-7 py-3 rounded-lg bg-[#886cff] text-white transition-opacity disabled:opacity-50"
       >
         {status === "loading" ? "Sending..." : "Request Early Access"} <ArrowRight size={14} />
       </button>
@@ -247,7 +247,7 @@ export default function LandingPage() {
     <div className="relative min-h-screen bg-[#050505] text-white font-mono">
 
       {/* ─── Top Accent Line ─────────────────────────────────────── */}
-      <div className="fixed top-0 left-0 right-0 h-[1px] z-50" style={{ background: "linear-gradient(90deg, transparent, #00B050 30%, #00B050 70%, transparent)" }} />
+      <div className="fixed top-0 left-0 right-0 h-[1px] z-50" style={{ background: "linear-gradient(90deg, transparent, #886cff 30%, #886cff 70%, transparent)" }} />
 
       {/* ─── Floating Nav ────────────────────────────────────────── */}
       <FloatingNav navItems={navItems} />
@@ -256,21 +256,21 @@ export default function LandingPage() {
       {/* ─── HERO SECTION ────────────────────────────────────────── */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <BackgroundBeams />
+        <BackgroundScene />
 
         {/* Radial glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(0,176,80,0.06) 0%, transparent 70%)" }} />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(136,108,255,0.06) 0%, transparent 70%)" }} />
 
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
           {/* Badge */}
           <motion.div
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#00B050]/30 bg-[#00B050]/5 text-xs text-[#00B050] mb-10"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#886cff]/30 bg-[#886cff]/5 text-xs text-[#886cff] mb-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <motion.span
-              className="w-1.5 h-1.5 bg-[#00B050]"
+              className="w-1.5 h-1.5 bg-[#886cff]"
               animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
@@ -286,7 +286,22 @@ export default function LandingPage() {
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[80px] font-bold leading-[1.05] tracking-[-0.04em] mb-4">
               Post your video to
               <br />
-              <span className="text-[#00B050]">all platforms</span>
+              <motion.span
+                style={{
+                  background: "linear-gradient(135deg, rgba(136,108,255,0.9), rgba(99,179,237,0.9), rgba(236,121,154,0.9))",
+                  backgroundSize: "200% 200%",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+                animate={{
+                  backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                }}
+                transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+                className="inline-block"
+              >
+                all platforms
+              </motion.span>
               <br />
               at the same time.
             </h1>
@@ -352,7 +367,7 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <p className="text-xs uppercase tracking-[0.2em] text-[#00B050]/70 mb-4">Video Hub</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-[#886cff]/70 mb-4">Video Hub</p>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.03em]">
               Three ways in.
               <br />
@@ -369,7 +384,7 @@ export default function LandingPage() {
                     <div className="w-12 h-12 rounded-lg border border-white/[0.1] bg-white/[0.03] flex items-center justify-center">
                       {mode.icon}
                     </div>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#00B050]/60 rounded-full border border-[#00B050]/20 px-2 py-0.5">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#886cff]/60 rounded-full border border-[#886cff]/20 px-2 py-0.5">
                       {mode.tag}
                     </span>
                   </div>
@@ -389,7 +404,7 @@ export default function LandingPage() {
           >
             <div className="inline-flex items-center gap-4 px-6 py-3 rounded-full border border-white/[0.08] bg-white/[0.02]">
               <span className="text-xs text-neutral-600">Then choose:</span>
-              <span className="text-xs font-bold text-[#00B050]">AI Enhance + Post</span>
+              <span className="text-xs font-bold text-[#886cff]">AI Enhance + Post</span>
               <span className="text-neutral-700">or</span>
               <span className="text-xs font-bold text-white">Quick Post Raw</span>
               <ArrowRight size={14} className="text-neutral-600" />
@@ -410,7 +425,7 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <p className="text-xs uppercase tracking-[0.2em] text-[#00B050]/70 mb-4">Platform</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-[#886cff]/70 mb-4">Platform</p>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.03em]">
               Everything you need.
               <br />
@@ -423,10 +438,10 @@ export default function LandingPage() {
               className="md:col-span-2"
               title="AI Video Generation"
               description="Transform product photos into cinematic marketing videos. AI handles transitions, music, and copy."
-              icon={<Video className="w-5 h-5 text-[#00B050]" />}
+              icon={<Video className="w-5 h-5 text-[#886cff]" />}
               header={
                 <div className="flex items-center gap-2 text-xs text-neutral-600">
-                  <span className="w-2 h-2 bg-[#00B050] animate-pulse" />
+                  <span className="w-2 h-2 bg-[#886cff] animate-pulse" />
                   Core Engine
                 </div>
               }
@@ -434,25 +449,25 @@ export default function LandingPage() {
             <BentoGridItem
               title="Auto-Publish"
               description="Schedule and publish to TikTok, Instagram, Facebook, LinkedIn — all at once."
-              icon={<Share2 className="w-5 h-5 text-[#00B050]" />}
+              icon={<Share2 className="w-5 h-5 text-[#886cff]" />}
               header={<div className="text-xs text-neutral-600">Distribution</div>}
             />
             <BentoGridItem
               title="Smart Automation"
               description="Connect workflows with n8n. Automate quotes, compliance, inventory alerts."
-              icon={<Zap className="w-5 h-5 text-[#00B050]" />}
+              icon={<Zap className="w-5 h-5 text-[#886cff]" />}
               header={<div className="text-xs text-neutral-600">Workflows</div>}
             />
             <BentoGridItem
               title="Analytics"
               description="Real-time insights on reach, engagement, and ROI across all platforms."
-              icon={<BarChart3 className="w-5 h-5 text-[#00B050]" />}
+              icon={<BarChart3 className="w-5 h-5 text-[#886cff]" />}
               header={<div className="text-xs text-neutral-600">Intelligence</div>}
             />
             <BentoGridItem
               title="AI Agents"
               description="Autonomous agents handle your content pipeline 24/7. Set it and forget it."
-              icon={<Bot className="w-5 h-5 text-[#00B050]" />}
+              icon={<Bot className="w-5 h-5 text-[#886cff]" />}
               header={<div className="text-xs text-neutral-600">Automation</div>}
             />
           </BentoGrid>
@@ -470,7 +485,7 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <p className="text-xs uppercase tracking-[0.2em] text-[#00B050]/70 mb-4">Built-in Solutions</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-[#886cff]/70 mb-4">Built-in Solutions</p>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.03em]">
               Beyond video.
               <br />
@@ -484,7 +499,7 @@ export default function LandingPage() {
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 rounded-lg border border-white/[0.1] bg-white/[0.03] flex items-center justify-center">
-                    <ClipboardList className="w-5 h-5 text-[#00B050]" />
+                    <ClipboardList className="w-5 h-5 text-[#886cff]" />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-neutral-200">Office Admin</h3>
@@ -494,22 +509,22 @@ export default function LandingPage() {
                 <div className="space-y-3 mb-6">
                   {["Kanban task board", "Calendar & scheduling", "Contact CRM", "Document manager", "KPI dashboards"].map((f) => (
                     <div key={f} className="flex items-center gap-2 text-sm text-neutral-400">
-                      <Check size={12} className="text-[#00B050]" /> {f}
+                      <Check size={12} className="text-[#886cff]" /> {f}
                     </div>
                   ))}
                 </div>
-                <Link href="/office-admin" className="inline-flex items-center gap-1 text-xs text-[#00B050] hover:text-[#00B050]/80 transition-colors">
+                <Link href="/office-admin" className="inline-flex items-center gap-1 text-xs text-[#886cff] hover:text-[#886cff]/80 transition-colors">
                   Explore <ArrowRight size={12} />
                 </Link>
               </div>
             </SpotlightCard>
 
             {/* Portfolio Data */}
-            <SpotlightCard className="p-8" spotlightColor="rgba(0, 176, 80, 0.1)">
+            <SpotlightCard className="p-8" spotlightColor="rgba(136, 108, 255, 0.1)">
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 rounded-lg border border-white/[0.1] bg-white/[0.03] flex items-center justify-center">
-                    <LineChart className="w-5 h-5 text-[#00B050]" />
+                    <LineChart className="w-5 h-5 text-[#886cff]" />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-neutral-200">Portfolio Data</h3>
@@ -519,11 +534,11 @@ export default function LandingPage() {
                 <div className="space-y-3 mb-6">
                   {["Sales dashboard", "Financial analytics", "Operations metrics", "HR insights", "Custom reports"].map((f) => (
                     <div key={f} className="flex items-center gap-2 text-sm text-neutral-400">
-                      <Check size={12} className="text-[#00B050]" /> {f}
+                      <Check size={12} className="text-[#886cff]" /> {f}
                     </div>
                   ))}
                 </div>
-                <Link href="/portfolio-data" className="inline-flex items-center gap-1 text-xs text-[#00B050] hover:text-[#00B050]/80 transition-colors">
+                <Link href="/portfolio-data" className="inline-flex items-center gap-1 text-xs text-[#886cff] hover:text-[#886cff]/80 transition-colors">
                   Explore <ArrowRight size={12} />
                 </Link>
               </div>
@@ -541,7 +556,7 @@ export default function LandingPage() {
                     { icon: <Users size={16} />, name: "Field Commander", desc: "Team tracking" },
                   ].map((tool) => (
                     <div key={tool.name} className="flex items-center gap-3 p-3 rounded-lg border border-white/[0.05] bg-white/[0.02]">
-                      <div className="text-[#00B050]">{tool.icon}</div>
+                      <div className="text-[#886cff]">{tool.icon}</div>
                       <div>
                         <div className="text-sm font-medium text-neutral-300">{tool.name}</div>
                         <div className="text-[10px] text-neutral-600">{tool.desc}</div>
@@ -566,7 +581,7 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <p className="text-xs uppercase tracking-[0.2em] text-[#00B050]/70 mb-4">Pricing</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-[#886cff]/70 mb-4">Pricing</p>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.03em]">
               Simple pricing.
               <br />
@@ -577,13 +592,13 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {plans.map((plan) => (
-              <GlowingStarsCard key={plan.name} className={plan.popular ? "border-[#00B050]/30" : ""}>
+              <GlowingStarsCard key={plan.name} className={plan.popular ? "border-[#886cff]/30" : ""}>
                 {plan.popular && (
-                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#00B050]" />
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#886cff]" />
                 )}
                 <div className="relative z-20">
                   {plan.popular && (
-                    <span className="inline-block text-[10px] uppercase tracking-widest text-[#00B050] rounded-full border border-[#00B050]/30 px-2 py-0.5 mb-4">
+                    <span className="inline-block text-[10px] uppercase tracking-widest text-[#886cff] rounded-full border border-[#886cff]/30 px-2 py-0.5 mb-4">
                       Most Popular
                     </span>
                   )}
@@ -596,7 +611,7 @@ export default function LandingPage() {
                   <div className="mt-6 space-y-2.5">
                     {plan.features.map((f) => (
                       <div key={f} className="flex items-center gap-2 text-xs text-neutral-400">
-                        <Check size={12} className="text-[#00B050] shrink-0" /> {f}
+                        <Check size={12} className="text-[#886cff] shrink-0" /> {f}
                       </div>
                     ))}
                   </div>
@@ -604,7 +619,7 @@ export default function LandingPage() {
                     href="/login"
                     className={`mt-8 w-full inline-flex items-center justify-center text-sm font-medium py-3 ${
                       plan.popular
-                        ? "bg-[#00B050] text-black"
+                        ? "bg-[#886cff] text-white"
                         : "border border-white/[0.1] text-neutral-400 hover:text-white"
                     }`}
                   >
@@ -621,7 +636,7 @@ export default function LandingPage() {
       {/* ─── FINAL CTA ───────────────────────────────────────────── */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section className="py-28 border-t border-white/[0.05] relative overflow-hidden">
-        <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, rgba(0,176,80,0.04) 0%, transparent 70%)" }} />
+        <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, rgba(136,108,255,0.04) 0%, transparent 70%)" }} />
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
           <motion.h2
             className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.03em] mb-6"

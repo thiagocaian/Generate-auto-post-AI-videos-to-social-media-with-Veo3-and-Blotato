@@ -32,12 +32,12 @@ export function TracingBeam({
       <div className="absolute -left-4 top-3 md:-left-20">
         <motion.div
           transition={{ duration: 0.2, delay: 0.5 }}
-          animate={{ boxShadow: "0 0 15px rgba(0, 176, 80, 0.3)" }}
-          className="ml-[27px] flex h-4 w-4 items-center justify-center border border-[#00B050] bg-black shadow-sm"
+          animate={{ boxShadow: "0 0 15px rgba(136, 108, 255, 0.3)" }}
+          className="ml-[27px] flex h-4 w-4 items-center justify-center border border-[#886cff] bg-black shadow-sm"
         >
           <motion.div
             transition={{ duration: 0.2, delay: 0.5 }}
-            className="h-2 w-2 border border-[#00B050]/50 bg-[#00B050]"
+            className="h-2 w-2 border border-[#886cff]/50 bg-[#886cff]"
           />
         </motion.div>
         <svg
@@ -63,10 +63,10 @@ export function TracingBeam({
           />
           <defs>
             <linearGradient id="pulse" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1={y1} y2={y2}>
-              <stop stopColor="#00B050" stopOpacity="0" />
-              <stop stopColor="#00B050" />
-              <stop offset="0.325" stopColor="#00B050" />
-              <stop offset="1" stopColor="#00B050" stopOpacity="0" />
+              <stop stopColor="#886cff" stopOpacity="0" />
+              <stop stopColor="#886cff" />
+              <stop offset="0.325" stopColor="#886cff" />
+              <stop offset="1" stopColor="#886cff" stopOpacity="0" />
             </linearGradient>
           </defs>
         </svg>
