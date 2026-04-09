@@ -25,19 +25,16 @@ export default function Sidebar({ active }: { active: string }) {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
         setUserEmail(user.email ?? null)
-
         const { data: member } = await supabase
           .from('company_members')
           .select('companies(name)')
           .eq('user_id', user.id)
           .single()
-
         if (member?.companies) {
           const co = member.companies as unknown as { name: string }
           setCompanyName(co.name)
         }
       }
-
       const { data: items } = await supabase
         .from('warehouse_items')
         .select('current_stock, minimum_stock')
@@ -101,7 +98,6 @@ export default function Sidebar({ active }: { active: string }) {
       <div className={`md:hidden fixed top-12 left-0 bottom-0 z-50 w-72 flex flex-col transition-transform duration-200 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
         style={{ background: '#FFFFFF', borderRight: '1px solid #E8E8E8' }}>
 
-        {/* User */}
         <div className="px-5 py-4 flex items-center gap-3" style={{ borderBottom: '1px solid #F0F0F0' }}>
           <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
             style={{ background: '#1A1A1A', color: '#FFFFFF' }}>
@@ -113,7 +109,6 @@ export default function Sidebar({ active }: { active: string }) {
           </div>
         </div>
 
-        {/* Modules */}
         <div className="px-4 pt-4 pb-1">
           <div className="text-xs font-medium uppercase tracking-wider mb-2" style={{ color: '#BCBCBC' }}>Modules</div>
         </div>
@@ -141,7 +136,6 @@ export default function Sidebar({ active }: { active: string }) {
           })}
         </nav>
 
-        {/* Sign out */}
         <div className="px-4 py-4" style={{ borderTop: '1px solid #F0F0F0' }}>
           <button onClick={handleSignOut}
             className="w-full flex items-center gap-2 text-left text-sm px-3 py-2 rounded-lg transition-colors"
@@ -156,12 +150,8 @@ export default function Sidebar({ active }: { active: string }) {
 
       {/* Desktop sidebar */}
       <div className="hidden md:flex flex-shrink-0">
-
-        {/* Narrow icon strip - dark charcoal */}
         <aside className="w-[52px] flex flex-col items-center py-5 gap-1"
           style={{ background: '#1A1A1A' }}>
-
-          {/* Logo */}
           <div className="mb-4 w-9 h-9 flex items-center justify-center">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="2" x2="12" y2="22" />
@@ -170,10 +160,7 @@ export default function Sidebar({ active }: { active: string }) {
               <line x1="18.36" y1="5.64" x2="5.64" y2="18.36" />
             </svg>
           </div>
-
           <div className="w-6 mb-3" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }} />
-
-          {/* Nav icons */}
           {navWithBadge.map((item) => {
             const isActive = item.key === active
             return (
@@ -198,8 +185,6 @@ export default function Sidebar({ active }: { active: string }) {
               </Link>
             )
           })}
-
-          {/* Settings / Sign out at bottom */}
           <div className="mt-auto">
             <button onClick={handleSignOut} title="Sign out"
               className="w-9 h-9 flex items-center justify-center rounded-lg transition-all"
@@ -215,27 +200,19 @@ export default function Sidebar({ active }: { active: string }) {
           </div>
         </aside>
 
-        {/* Wide panel - WHITE like reference */}
         <aside className="w-56 flex flex-col"
           style={{ background: '#FFFFFF', borderRight: '1px solid #E8E8E8' }}>
-
-          {/* User profile */}
           <div className="px-5 py-4 flex items-center gap-3" style={{ borderBottom: '1px solid #F0F0F0' }}>
             <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
               style={{ background: '#1A1A1A', color: '#FFFFFF' }}>
               {userEmail ? userEmail[0].toUpperCase() : 'C'}
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-semibold truncate" style={{ color: '#1A1A1A' }}>
-                {companyName}
-              </div>
-              <div className="text-xs truncate" style={{ color: '#AAAAAA' }}>
-                {userEmail || ''}
-              </div>
+              <div className="text-sm font-semibold truncate" style={{ color: '#1A1A1A' }}>{companyName}</div>
+              <div className="text-xs truncate" style={{ color: '#AAAAAA' }}>{userEmail || ''}</div>
             </div>
           </div>
 
-          {/* Modules section */}
           <div className="px-5 pt-5 pb-1.5">
             <div className="text-xs font-medium uppercase tracking-wider" style={{ color: '#BCBCBC' }}>Modules</div>
           </div>
@@ -269,7 +246,6 @@ export default function Sidebar({ active }: { active: string }) {
             })}
           </nav>
 
-          {/* Status section */}
           <div className="px-5 pt-6 pb-1.5" style={{ borderTop: '1px solid #F0F0F0', marginTop: 16 }}>
             <div className="text-xs font-medium uppercase tracking-wider" style={{ color: '#BCBCBC' }}>Status</div>
           </div>
@@ -285,7 +261,6 @@ export default function Sidebar({ active }: { active: string }) {
             ))}
           </div>
 
-          {/* Plan at bottom */}
           <div className="mt-auto px-5 py-4" style={{ borderTop: '1px solid #F0F0F0' }}>
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium" style={{ color: '#AAAAAA' }}>Plan</span>

@@ -16,7 +16,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${GeistMono.className} antialiased`} style={{ backgroundColor: '#FFFFFF', color: '#0a0a0a' }}>
+      <body className={`${GeistMono.className} antialiased`} style={{ backgroundColor: '#000000', color: '#ffffff' }}>
         {children}
       </body>
     </html>
