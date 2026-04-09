@@ -117,19 +117,19 @@ const automationItems = [
 // ─── Video Hub Modes ──────────────────────────────────────────────────────────
 const videoModes = [
   {
-    icon: <Sparkles className="w-6 h-6 text-[#886cff]" />,
+    icon: <Sparkles className="w-5 h-5" strokeWidth={1.5} />,
     title: "AI Create",
     desc: "Upload a photo. AI generates a cinematic video with transitions, music, and captions — ready to publish.",
     tag: "MOST POPULAR",
   },
   {
-    icon: <FolderOpen className="w-6 h-6 text-[#886cff]" />,
+    icon: <FolderOpen className="w-5 h-5" strokeWidth={1.5} />,
     title: "Ready to Use",
     desc: "Browse our library of pre-made video templates. Pick one, customize the caption, publish instantly.",
     tag: "FASTEST",
   },
   {
-    icon: <Camera className="w-6 h-6 text-[#886cff]" />,
+    icon: <Camera className="w-5 h-5" strokeWidth={1.5} />,
     title: "Record & Post",
     desc: "Open your camera, record directly. Choose: AI-enhance with effects & captions, or quick-post raw to all platforms.",
     tag: "AUTHENTIC",
@@ -381,14 +381,21 @@ export default function LandingPage() {
               <SpotlightCard key={i} className="p-8">
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-6">
-                    <div className="w-12 h-12 rounded-lg border border-white/[0.1] bg-white/[0.03] flex items-center justify-center">
+                    <div
+                      className="w-11 h-11 rounded-xl flex items-center justify-center text-[#886cff] transition-all group-hover:border-[#886cff]/40"
+                      style={{
+                        background: "linear-gradient(135deg, rgba(136,108,255,0.12) 0%, rgba(136,108,255,0.04) 100%)",
+                        border: "1px solid rgba(136,108,255,0.18)",
+                        boxShadow: "0 0 20px rgba(136,108,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
+                      }}
+                    >
                       {mode.icon}
                     </div>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#886cff]/60 rounded-full border border-[#886cff]/20 px-2 py-0.5">
+                    <span className="text-[9px] font-mono uppercase tracking-[0.15em] text-[#886cff]/70 rounded-full border border-[#886cff]/20 bg-[#886cff]/5 px-2.5 py-1">
                       {mode.tag}
                     </span>
                   </div>
-                  <h3 className="text-xl font-bold text-neutral-200 mb-3">{mode.title}</h3>
+                  <h3 className="text-lg font-bold text-neutral-200 mb-2 tracking-tight">{mode.title}</h3>
                   <p className="text-sm text-neutral-500 leading-relaxed">{mode.desc}</p>
                 </div>
               </SpotlightCard>
@@ -438,7 +445,7 @@ export default function LandingPage() {
               className="md:col-span-2"
               title="AI Video Generation"
               description="Transform product photos into cinematic marketing videos. AI handles transitions, music, and copy."
-              icon={<Video className="w-5 h-5 text-[#886cff]" />}
+              icon={<Video className="w-5 h-5 text-[#886cff]" strokeWidth={1.5} />}
               header={
                 <div className="flex items-center gap-2 text-xs text-neutral-600">
                   <span className="w-2 h-2 bg-[#886cff] animate-pulse" />
@@ -449,25 +456,25 @@ export default function LandingPage() {
             <BentoGridItem
               title="Auto-Publish"
               description="Schedule and publish to TikTok, Instagram, Facebook, LinkedIn — all at once."
-              icon={<Share2 className="w-5 h-5 text-[#886cff]" />}
+              icon={<Share2 className="w-5 h-5 text-[#886cff]" strokeWidth={1.5} />}
               header={<div className="text-xs text-neutral-600">Distribution</div>}
             />
             <BentoGridItem
               title="Smart Automation"
               description="Connect workflows with n8n. Automate quotes, compliance, inventory alerts."
-              icon={<Zap className="w-5 h-5 text-[#886cff]" />}
+              icon={<Zap className="w-5 h-5 text-[#886cff]" strokeWidth={1.5} />}
               header={<div className="text-xs text-neutral-600">Workflows</div>}
             />
             <BentoGridItem
               title="Analytics"
               description="Real-time insights on reach, engagement, and ROI across all platforms."
-              icon={<BarChart3 className="w-5 h-5 text-[#886cff]" />}
+              icon={<BarChart3 className="w-5 h-5 text-[#886cff]" strokeWidth={1.5} />}
               header={<div className="text-xs text-neutral-600">Intelligence</div>}
             />
             <BentoGridItem
               title="AI Agents"
               description="Autonomous agents handle your content pipeline 24/7. Set it and forget it."
-              icon={<Bot className="w-5 h-5 text-[#886cff]" />}
+              icon={<Bot className="w-5 h-5 text-[#886cff]" strokeWidth={1.5} />}
               header={<div className="text-xs text-neutral-600">Automation</div>}
             />
           </BentoGrid>
@@ -498,8 +505,15 @@ export default function LandingPage() {
             <SpotlightCard className="p-8">
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-lg border border-white/[0.1] bg-white/[0.03] flex items-center justify-center">
-                    <ClipboardList className="w-5 h-5 text-[#886cff]" />
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center text-[#886cff]"
+                    style={{
+                      background: "linear-gradient(135deg, rgba(136,108,255,0.12) 0%, rgba(136,108,255,0.04) 100%)",
+                      border: "1px solid rgba(136,108,255,0.18)",
+                      boxShadow: "0 0 20px rgba(136,108,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
+                    }}
+                  >
+                    <ClipboardList className="w-5 h-5" strokeWidth={1.5} />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-neutral-200">Office Admin</h3>
@@ -520,11 +534,18 @@ export default function LandingPage() {
             </SpotlightCard>
 
             {/* Portfolio Data */}
-            <SpotlightCard className="p-8" spotlightColor="rgba(136, 108, 255, 0.1)">
+            <SpotlightCard className="p-8" spotlightColor="rgba(136, 108, 255, 0.15)">
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-lg border border-white/[0.1] bg-white/[0.03] flex items-center justify-center">
-                    <LineChart className="w-5 h-5 text-[#886cff]" />
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center text-[#886cff]"
+                    style={{
+                      background: "linear-gradient(135deg, rgba(136,108,255,0.12) 0%, rgba(136,108,255,0.04) 100%)",
+                      border: "1px solid rgba(136,108,255,0.18)",
+                      boxShadow: "0 0 20px rgba(136,108,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
+                    }}
+                  >
+                    <LineChart className="w-5 h-5" strokeWidth={1.5} />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-neutral-200">Portfolio Data</h3>
@@ -548,15 +569,30 @@ export default function LandingPage() {
             <SpotlightCard className="p-6 md:col-span-2">
               <div className="relative z-10">
                 <p className="text-xs text-neutral-600 mb-4 uppercase tracking-widest">Also included</p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
-                    { icon: <Package size={16} />, name: "Warehouse", desc: "Stock Guardian" },
-                    { icon: <FileText size={16} />, name: "Quotes", desc: "AI estimates" },
-                    { icon: <Check size={16} />, name: "Compliance", desc: "Auto-reports" },
-                    { icon: <Users size={16} />, name: "Field Commander", desc: "Team tracking" },
+                    { icon: <Package size={15} strokeWidth={1.5} />, name: "Warehouse", desc: "Stock Guardian" },
+                    { icon: <FileText size={15} strokeWidth={1.5} />, name: "Quotes", desc: "AI estimates" },
+                    { icon: <Check size={15} strokeWidth={1.5} />, name: "Compliance", desc: "Auto-reports" },
+                    { icon: <Users size={15} strokeWidth={1.5} />, name: "Field Commander", desc: "Team tracking" },
                   ].map((tool) => (
-                    <div key={tool.name} className="flex items-center gap-3 p-3 rounded-lg border border-white/[0.05] bg-white/[0.02]">
-                      <div className="text-[#886cff]">{tool.icon}</div>
+                    <div
+                      key={tool.name}
+                      className="flex items-center gap-3 p-3 rounded-lg transition-all hover:border-[#886cff]/20"
+                      style={{
+                        background: "rgba(255,255,255,0.015)",
+                        border: "1px solid rgba(255,255,255,0.06)",
+                      }}
+                    >
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-[#886cff] shrink-0"
+                        style={{
+                          background: "linear-gradient(135deg, rgba(136,108,255,0.1) 0%, rgba(136,108,255,0.03) 100%)",
+                          border: "1px solid rgba(136,108,255,0.15)",
+                        }}
+                      >
+                        {tool.icon}
+                      </div>
                       <div>
                         <div className="text-sm font-medium text-neutral-300">{tool.name}</div>
                         <div className="text-[10px] text-neutral-600">{tool.desc}</div>
