@@ -31,6 +31,7 @@ const BRAND_CONFIG: Record<string, { product_name: string; target_audience: stri
 }
 
 export default function MarketingPage() {
+  const [activeTab, setActiveTab] = useState<'ai-create' | 'ready-to-use' | 'record'>('ai-create')
   const [step, setStep] = useState<'idle' | 'uploaded' | 'uploading' | 'analysing' | 'generating' | 'ready' | 'posted'>('idle')
   const [dragOver, setDragOver]   = useState(false)
   const [previews, setPreviews]     = useState<string[]>([])
@@ -408,7 +409,7 @@ export default function MarketingPage() {
               <span>/</span>
               <span style={{ color: '#333333', fontWeight: 600 }}>Marketing AI</span>
             </div>
-            <h1 className="text-base font-semibold" style={{ color: '#000000' }}>Content Engine</h1>
+            <h1 className="text-base font-semibold" style={{ color: '#000000' }}>Video Hub</h1>
           </div>
           <div className="flex items-center gap-3">
             <div className="px-3 py-1.5 text-xs font-semibold flex items-center gap-1.5"
@@ -420,6 +421,30 @@ export default function MarketingPage() {
         </header>
 
         <div className="flex-1 overflow-y-auto p-4 md:p-6" style={{ background: '#FAFAFA' }}>
+
+          {/* ─── Video Hub Tabs ─────────────────────────────────────── */}
+          <div className="flex items-center gap-1 mb-5 p-1" style={{ background: '#F0F0F0', border: '1px solid #E5E5E5' }}>
+            {[
+              { id: 'ai-create' as const, icon: '✨', label: 'AI Create', desc: 'Photo → Video' },
+              { id: 'ready-to-use' as const, icon: '📚', label: 'Ready to Use', desc: 'Pick & Post' },
+              { id: 'record' as const, icon: '📹', label: 'Record', desc: 'Camera → Post' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 text-sm font-semibold transition-all"
+                style={{
+                  background: activeTab === tab.id ? '#FFFFFF' : 'transparent',
+                  color: activeTab === tab.id ? '#000000' : '#999999',
+                  border: activeTab === tab.id ? '1px solid #E5E5E5' : '1px solid transparent',
+                }}
+              >
+                <span>{tab.icon}</span>
+                <span className="hidden md:inline">{tab.label}</span>
+                <span className="hidden lg:inline text-xs font-normal" style={{ color: '#BBBBBB' }}>— {tab.desc}</span>
+              </button>
+            ))}
+          </div>
 
           {/* KPIs */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-5">
@@ -441,6 +466,108 @@ export default function MarketingPage() {
             ))}
           </div>
 
+          {/* ─── TAB: Ready to Use ──────────────────────────────────── */}
+          {activeTab === 'ready-to-use' && (
+            <div className="p-6 md:p-8" style={{ background: '#FFFFFF', border: '1px solid #E5E5E5' }}>
+              <div className="text-center mb-8">
+                <h2 className="text-xl font-bold mb-2" style={{ color: '#000000' }}>Video Library</h2>
+                <p className="text-sm" style={{ color: '#999999' }}>Browse ready-made videos. Pick one, customize caption, publish to all platforms.</p>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {[
+                  { title: 'Product Showcase', duration: '0:15', category: 'E-commerce' },
+                  { title: 'Before & After', duration: '0:12', category: 'Services' },
+                  { title: 'Team Introduction', duration: '0:20', category: 'Corporate' },
+                  { title: 'Customer Testimonial', duration: '0:30', category: 'Social Proof' },
+                  { title: 'Behind the Scenes', duration: '0:18', category: 'Authentic' },
+                  { title: 'Quick Tips', duration: '0:10', category: 'Educational' },
+                  { title: 'Seasonal Promo', duration: '0:15', category: 'Marketing' },
+                  { title: 'Day in the Life', duration: '0:25', category: 'Lifestyle' },
+                ].map((v, i) => (
+                  <div key={i} className="group cursor-pointer" style={{ border: '1px solid #E5E5E5' }}>
+                    <div className="aspect-[9/16] relative flex items-center justify-center" style={{ background: '#F5F5F5' }}>
+                      <div className="text-center">
+                        <span className="text-3xl block mb-2">🎬</span>
+                        <span className="text-xs font-mono" style={{ color: '#CCCCCC' }}>{v.duration}</span>
+                      </div>
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'rgba(0,0,0,0.5)' }}>
+                        <span className="text-white text-sm font-semibold">Use this</span>
+                      </div>
+                    </div>
+                    <div className="p-3">
+                      <p className="text-sm font-semibold" style={{ color: '#000000' }}>{v.title}</p>
+                      <p className="text-xs" style={{ color: '#999999' }}>{v.category}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 p-4 text-center" style={{ background: '#F9F9F9', border: '1px solid #E5E5E5' }}>
+                <p className="text-xs" style={{ color: '#999999' }}>More templates coming soon. Upload your own pre-made videos via AI Create tab.</p>
+              </div>
+            </div>
+          )}
+
+          {/* ─── TAB: Record ─────────────────────────────────────────── */}
+          {activeTab === 'record' && (
+            <div className="p-6 md:p-8" style={{ background: '#FFFFFF', border: '1px solid #E5E5E5' }}>
+              <div className="text-center mb-8">
+                <h2 className="text-xl font-bold mb-2" style={{ color: '#000000' }}>Record & Post</h2>
+                <p className="text-sm" style={{ color: '#999999' }}>Record from your camera, then choose: AI enhance or quick post raw.</p>
+              </div>
+
+              <div className="max-w-lg mx-auto">
+                {/* Camera Preview Area */}
+                <div className="aspect-[9/16] max-h-[500px] mx-auto mb-6 relative flex items-center justify-center" style={{ background: '#0a0a0a', border: '1px solid #E5E5E5' }}>
+                  <div className="text-center">
+                    <span className="text-5xl block mb-4">📹</span>
+                    <p className="text-sm font-semibold" style={{ color: '#FFFFFF' }}>Camera Preview</p>
+                    <p className="text-xs mt-1" style={{ color: '#666666' }}>Click to start recording</p>
+                  </div>
+                  {/* Record button overlay */}
+                  <div className="absolute bottom-6 left-0 right-0 flex justify-center">
+                    <button className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: '#CC0000', border: '3px solid #FFFFFF' }}>
+                      <div className="w-6 h-6 rounded-full" style={{ background: '#FFFFFF' }} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Post Options */}
+                <div className="grid grid-cols-2 gap-4">
+                  <button className="p-4 text-center transition-all hover:border-black" style={{ background: '#FFFFFF', border: '2px solid #E5E5E5' }}>
+                    <span className="text-2xl block mb-2">🤖</span>
+                    <p className="text-sm font-bold" style={{ color: '#000000' }}>AI Enhance + Post</p>
+                    <p className="text-xs mt-1" style={{ color: '#999999' }}>AI adds captions, effects, music. Then posts to all platforms.</p>
+                  </button>
+                  <button className="p-4 text-center transition-all hover:border-black" style={{ background: '#FFFFFF', border: '2px solid #E5E5E5' }}>
+                    <span className="text-2xl block mb-2">⚡</span>
+                    <p className="text-sm font-bold" style={{ color: '#000000' }}>Quick Post Raw</p>
+                    <p className="text-xs mt-1" style={{ color: '#999999' }}>Post the video as-is to all platforms. No editing.</p>
+                  </button>
+                </div>
+
+                {/* Platform Selection */}
+                <div className="mt-4 p-4" style={{ background: '#F9F9F9', border: '1px solid #E5E5E5' }}>
+                  <p className="text-xs font-semibold mb-3" style={{ color: '#666666' }}>POST TO:</p>
+                  <div className="flex items-center gap-3">
+                    {['Instagram', 'TikTok', 'Facebook', 'LinkedIn'].map((p) => (
+                      <button key={p} onClick={() => togglePlatform(p)}
+                        className="px-3 py-1.5 text-xs font-semibold transition-all"
+                        style={{
+                          background: platforms.includes(p) ? '#000000' : '#FFFFFF',
+                          color: platforms.includes(p) ? '#FFFFFF' : '#999999',
+                          border: `1px solid ${platforms.includes(p) ? '#000000' : '#E5E5E5'}`,
+                        }}>
+                        {p}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ─── TAB: AI Create (existing flow) ──────────────────────── */}
+          {activeTab === 'ai-create' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-5">
 
             {/* Upload + Flow */}
@@ -699,6 +826,7 @@ export default function MarketingPage() {
               </div>
             </div>
           </div>
+          )}
         </div>
       </main>
     </div>

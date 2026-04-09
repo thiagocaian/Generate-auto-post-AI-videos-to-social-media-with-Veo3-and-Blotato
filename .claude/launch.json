@@ -4,7 +4,7 @@
     {
       "name": "projeto-x",
       "runtimeExecutable": "/usr/local/bin/node",
-      "runtimeArgs": ["node_modules/.bin/next", "dev"],
+      "runtimeArgs": ["/usr/local/bin/npm", "run", "dev"],
       "port": 3000,
       "autoPort": true
     }
