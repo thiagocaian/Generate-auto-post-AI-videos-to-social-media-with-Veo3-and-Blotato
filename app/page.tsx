@@ -2,7 +2,22 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
-import { ArrowRight, Check, Play, Video, Share2, BarChart3, Bot, Clock, Zap, Camera, FolderOpen, Upload, Sparkles, ClipboardList, LineChart, Package, FileText, Users } from "lucide-react";
+import { ArrowRight, Check, Play } from "lucide-react";
+// Solar Icons — Modern 2026 style with BoldDuotone weight
+import {
+  MagicStick3,
+  FolderOpen,
+  Camera,
+  Videocamera,
+  Share,
+  ChartSquare,
+  Chart2,
+  Bolt,
+  ClipboardList,
+  BoxMinimalistic,
+  DocumentText,
+  UsersGroupTwoRounded,
+} from "@solar-icons/react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import BackgroundScene from "@/components/BackgroundScene";
@@ -117,19 +132,19 @@ const automationItems = [
 // ─── Video Hub Modes ──────────────────────────────────────────────────────────
 const videoModes = [
   {
-    icon: <Sparkles className="w-5 h-5" strokeWidth={1.5} />,
+    icon: <MagicStick3 weight="BoldDuotone" size={22} />,
     title: "AI Create",
     desc: "Upload a photo. AI generates a cinematic video with transitions, music, and captions — ready to publish.",
     tag: "MOST POPULAR",
   },
   {
-    icon: <FolderOpen className="w-5 h-5" strokeWidth={1.5} />,
+    icon: <FolderOpen weight="BoldDuotone" size={22} />,
     title: "Ready to Use",
     desc: "Browse our library of pre-made video templates. Pick one, customize the caption, publish instantly.",
     tag: "FASTEST",
   },
   {
-    icon: <Camera className="w-5 h-5" strokeWidth={1.5} />,
+    icon: <Camera weight="BoldDuotone" size={22} />,
     title: "Record & Post",
     desc: "Open your camera, record directly. Choose: AI-enhance with effects & captions, or quick-post raw to all platforms.",
     tag: "AUTHENTIC",
@@ -445,7 +460,7 @@ export default function LandingPage() {
               className="md:col-span-2"
               title="AI Video Generation"
               description="Transform product photos into cinematic marketing videos. AI handles transitions, music, and copy."
-              icon={<Video className="w-5 h-5 text-[#886cff]" strokeWidth={1.5} />}
+              icon={<Videocamera weight="BoldDuotone" size={22} className="text-[#886cff]" />}
               header={
                 <div className="flex items-center gap-2 text-xs text-neutral-600">
                   <span className="w-2 h-2 bg-[#886cff] animate-pulse" />
@@ -456,25 +471,25 @@ export default function LandingPage() {
             <BentoGridItem
               title="Auto-Publish"
               description="Schedule and publish to TikTok, Instagram, Facebook, LinkedIn — all at once."
-              icon={<Share2 className="w-5 h-5 text-[#886cff]" strokeWidth={1.5} />}
+              icon={<Share weight="BoldDuotone" size={22} className="text-[#886cff]" />}
               header={<div className="text-xs text-neutral-600">Distribution</div>}
             />
             <BentoGridItem
               title="Smart Automation"
               description="Connect workflows with n8n. Automate quotes, compliance, inventory alerts."
-              icon={<Zap className="w-5 h-5 text-[#886cff]" strokeWidth={1.5} />}
+              icon={<Bolt weight="BoldDuotone" size={22} className="text-[#886cff]" />}
               header={<div className="text-xs text-neutral-600">Workflows</div>}
             />
             <BentoGridItem
               title="Analytics"
               description="Real-time insights on reach, engagement, and ROI across all platforms."
-              icon={<BarChart3 className="w-5 h-5 text-[#886cff]" strokeWidth={1.5} />}
+              icon={<ChartSquare weight="BoldDuotone" size={22} className="text-[#886cff]" />}
               header={<div className="text-xs text-neutral-600">Intelligence</div>}
             />
             <BentoGridItem
               title="AI Agents"
               description="Autonomous agents handle your content pipeline 24/7. Set it and forget it."
-              icon={<Bot className="w-5 h-5 text-[#886cff]" strokeWidth={1.5} />}
+              icon={<MagicStick3 weight="BoldDuotone" size={22} className="text-[#886cff]" />}
               header={<div className="text-xs text-neutral-600">Automation</div>}
             />
           </BentoGrid>
@@ -513,7 +528,7 @@ export default function LandingPage() {
                       boxShadow: "0 0 20px rgba(136,108,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
                     }}
                   >
-                    <ClipboardList className="w-5 h-5" strokeWidth={1.5} />
+                    <ClipboardList weight="BoldDuotone" size={22} />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-neutral-200">Office Admin</h3>
@@ -545,7 +560,7 @@ export default function LandingPage() {
                       boxShadow: "0 0 20px rgba(136,108,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
                     }}
                   >
-                    <LineChart className="w-5 h-5" strokeWidth={1.5} />
+                    <Chart2 weight="BoldDuotone" size={22} />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-neutral-200">Portfolio Data</h3>
@@ -571,10 +586,10 @@ export default function LandingPage() {
                 <p className="text-xs text-neutral-600 mb-4 uppercase tracking-widest">Also included</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
-                    { icon: <Package size={15} strokeWidth={1.5} />, name: "Warehouse", desc: "Stock Guardian" },
-                    { icon: <FileText size={15} strokeWidth={1.5} />, name: "Quotes", desc: "AI estimates" },
-                    { icon: <Check size={15} strokeWidth={1.5} />, name: "Compliance", desc: "Auto-reports" },
-                    { icon: <Users size={15} strokeWidth={1.5} />, name: "Field Commander", desc: "Team tracking" },
+                    { icon: <BoxMinimalistic weight="BoldDuotone" size={18} />, name: "Warehouse", desc: "Stock Guardian" },
+                    { icon: <DocumentText weight="BoldDuotone" size={18} />, name: "Quotes", desc: "AI estimates" },
+                    { icon: <ChartSquare weight="BoldDuotone" size={18} />, name: "Compliance", desc: "Auto-reports" },
+                    { icon: <UsersGroupTwoRounded weight="BoldDuotone" size={18} />, name: "Field Commander", desc: "Team tracking" },
                   ].map((tool) => (
                     <div
                       key={tool.name}
