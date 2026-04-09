@@ -30,6 +30,434 @@ const BRAND_CONFIG: Record<string, { product_name: string; target_audience: stri
   },
 }
 
+// ─── Ready to Use Tab (upload video pronto) ─────────────────────────────────
+function ReadyToUseTab({ platforms, togglePlatform, caption, setCaption, posting, setPosting, uploadError, setUploadError, setPosts, setStats, stats }: {
+  platforms: string[]; togglePlatform: (p: string) => void; caption: string; setCaption: (c: string) => void;
+  posting: boolean; setPosting: (p: boolean) => void; uploadError: string | null; setUploadError: (e: string | null) => void;
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>; setStats: React.Dispatch<React.SetStateAction<{ total: number; published: number; totalReach: number; totalLikes: number }>>; stats: { total: number; published: number; totalReach: number; totalLikes: number };
+}) {
+  const [videoFile, setVideoFile] = useState<File | null>(null)
+  const [videoPreview, setVideoPreview] = useState<string | null>(null)
+  const [uploadedVideoUrl, setUploadedVideoUrl] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [postMode, setPostMode] = useState<'idle' | 'uploaded' | 'posting' | 'posted'>('idle')
+  const videoInputRef = useRef<HTMLInputElement>(null)
+
+  const handleVideoSelect = async (file: File) => {
+    if (!file.type.startsWith('video/') && !file.name.match(/\.(mp4|mov|webm|avi)$/i)) {
+      setUploadError('Please select a video file (MP4, MOV, WebM)')
+      return
+    }
+    setVideoFile(file)
+    setVideoPreview(URL.createObjectURL(file))
+    setUploadError(null)
+
+    // Upload to Supabase
+    setUploading(true)
+    try {
+      const form = new FormData()
+      form.append('file', file)
+      const res = await fetch('/api/upload', { method: 'POST', body: form })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Upload failed')
+      setUploadedVideoUrl(data.url)
+      setPostMode('uploaded')
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Upload failed')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const quickPost = async () => {
+    if (!uploadedVideoUrl || !caption.trim() || platforms.length === 0) {
+      setUploadError('Add a caption and select at least one platform')
+      return
+    }
+    setPosting(true)
+    setPostMode('posting')
+    setUploadError(null)
+    try {
+      const res = await fetch('/api/marketing/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: uploadedVideoUrl, caption, platforms: platforms.map(p => p.toLowerCase()) }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Post failed')
+
+      // Save to DB
+      for (const p of platforms) {
+        try {
+          const dbRes = await fetch('/api/marketing-posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image_url: uploadedVideoUrl, caption, platform: p.toLowerCase(), status: 'published' }),
+          })
+          const dbData = await dbRes.json()
+          if (dbData.post) setPosts(prev => [dbData.post, ...prev])
+        } catch { /* non-blocking */ }
+      }
+      setStats(prev => ({ ...prev, total: prev.total + 1, published: prev.published + platforms.length }))
+      setPostMode('posted')
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Post failed')
+      setPostMode('uploaded')
+    } finally {
+      setPosting(false)
+    }
+  }
+
+  return (
+    <div className="p-6 md:p-8" style={{ background: '#FFFFFF', border: '1px solid #E5E5E5' }}>
+      <div className="text-center mb-6">
+        <h2 className="text-xl font-bold mb-2" style={{ color: '#000000' }}>Upload & Post</h2>
+        <p className="text-sm" style={{ color: '#999999' }}>Upload your ready-made video. Add caption. Post to all platforms.</p>
+      </div>
+
+      <div className="max-w-2xl mx-auto">
+        {/* Upload Zone */}
+        {!videoPreview && (
+          <div
+            className="aspect-video flex flex-col items-center justify-center cursor-pointer mb-6 transition-all hover:border-black"
+            style={{ background: '#FAFAFA', border: '2px dashed #E5E5E5' }}
+            onClick={() => videoInputRef.current?.click()}
+            onDragOver={(e) => { e.preventDefault(); e.stopPropagation() }}
+            onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleVideoSelect(f) }}
+          >
+            <span className="text-4xl mb-3">📁</span>
+            <p className="text-sm font-semibold" style={{ color: '#333333' }}>Drop your video here or click to browse</p>
+            <p className="text-xs mt-1" style={{ color: '#999999' }}>MP4, MOV, WebM — Max 50MB</p>
+            <input ref={videoInputRef} type="file" accept="video/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleVideoSelect(f) }} />
+          </div>
+        )}
+
+        {/* Video Preview */}
+        {videoPreview && (
+          <div className="mb-6">
+            <div className="relative">
+              <video src={videoPreview} controls className="w-full max-h-[400px] object-contain" style={{ background: '#000', border: '1px solid #E5E5E5' }} />
+              {uploading && (
+                <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.7)' }}>
+                  <div className="text-center">
+                    <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                    <p className="text-xs text-white">Uploading...</p>
+                  </div>
+                </div>
+              )}
+              {postMode === 'posted' && (
+                <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.7)' }}>
+                  <div className="text-center">
+                    <span className="text-4xl block mb-2">✅</span>
+                    <p className="text-sm font-bold text-white">Published to {platforms.join(', ')}!</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-xs" style={{ color: '#999999' }}>{videoFile?.name} ({((videoFile?.size || 0) / 1024 / 1024).toFixed(1)}MB)</span>
+              <button onClick={() => { setVideoFile(null); setVideoPreview(null); setUploadedVideoUrl(null); setPostMode('idle'); setCaption('') }}
+                className="text-xs px-2 py-1" style={{ background: '#F5F5F5', color: '#666', border: '1px solid #E5E5E5' }}>Change</button>
+            </div>
+          </div>
+        )}
+
+        {/* Caption + Post Controls */}
+        {postMode !== 'idle' && (
+          <div className="space-y-4">
+            <div>
+              <label className="text-xs font-semibold block mb-2" style={{ color: '#333' }}>Caption</label>
+              <textarea value={caption} onChange={(e) => setCaption(e.target.value)} rows={3}
+                placeholder="Write your caption for all platforms..."
+                className="w-full text-sm px-3 py-2 resize-none outline-none"
+                style={{ border: '1px solid #E5E5E5', color: '#000', background: '#FAFAFA' }} />
+            </div>
+
+            {/* Platform Selection */}
+            <div className="p-4" style={{ background: '#F9F9F9', border: '1px solid #E5E5E5' }}>
+              <p className="text-xs font-semibold mb-3" style={{ color: '#666' }}>POST TO:</p>
+              <div className="flex items-center gap-3 flex-wrap">
+                {['Instagram', 'TikTok', 'Facebook', 'LinkedIn'].map((p) => (
+                  <button key={p} onClick={() => togglePlatform(p)}
+                    className="px-3 py-1.5 text-xs font-semibold transition-all"
+                    style={{ background: platforms.includes(p) ? '#000' : '#FFF', color: platforms.includes(p) ? '#FFF' : '#999', border: `1px solid ${platforms.includes(p) ? '#000' : '#E5E5E5'}` }}>
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {uploadError && <div className="p-3 text-xs" style={{ background: '#FFF0F0', color: '#CC0000', border: '1px solid #FFDDDD' }}>{uploadError}</div>}
+
+            <div className="flex gap-3">
+              <button onClick={quickPost} disabled={posting || postMode === 'posted' || !uploadedVideoUrl}
+                className="flex-1 text-sm font-semibold py-3 transition-all"
+                style={{ background: posting ? '#CCC' : '#000', color: '#FFF' }}>
+                {posting ? 'Publishing...' : postMode === 'posted' ? 'Published!' : `Post to ${platforms.length} platform${platforms.length !== 1 ? 's' : ''}`}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─── Record Tab (câmera real) ────────────────────────────────────────────────
+function RecordTab({ platforms, togglePlatform, caption, setCaption, posting, setPosting, uploadError, setUploadError, setPosts, setStats, stats }: {
+  platforms: string[]; togglePlatform: (p: string) => void; caption: string; setCaption: (c: string) => void;
+  posting: boolean; setPosting: (p: boolean) => void; uploadError: string | null; setUploadError: (e: string | null) => void;
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>; setStats: React.Dispatch<React.SetStateAction<{ total: number; published: number; totalReach: number; totalLikes: number }>>; stats: { total: number; published: number; totalReach: number; totalLikes: number };
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const chunksRef = useRef<Blob[]>([])
+  const [cameraActive, setCameraActive] = useState(false)
+  const [recording, setRecording] = useState(false)
+  const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null)
+  const [recordedUrl, setRecordedUrl] = useState<string | null>(null)
+  const [uploadedVideoUrl, setUploadedVideoUrl] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [recordTime, setRecordTime] = useState(0)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const [postMode, setPostMode] = useState<'idle' | 'camera' | 'recorded' | 'uploaded' | 'posting' | 'posted'>('idle')
+  const streamRef = useRef<MediaStream | null>(null)
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1080 }, height: { ideal: 1920 } }, audio: true })
+      streamRef.current = stream
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream
+        videoRef.current.play()
+      }
+      setCameraActive(true)
+      setPostMode('camera')
+      setUploadError(null)
+    } catch (err) {
+      setUploadError('Camera access denied. Please allow camera permission.')
+    }
+  }
+
+  const stopCamera = () => {
+    streamRef.current?.getTracks().forEach(t => t.stop())
+    if (videoRef.current) videoRef.current.srcObject = null
+    setCameraActive(false)
+  }
+
+  const startRecording = () => {
+    if (!streamRef.current) return
+    chunksRef.current = []
+    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm'
+    const recorder = new MediaRecorder(streamRef.current, { mimeType })
+    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data) }
+    recorder.onstop = () => {
+      const blob = new Blob(chunksRef.current, { type: 'video/webm' })
+      setRecordedBlob(blob)
+      setRecordedUrl(URL.createObjectURL(blob))
+      setPostMode('recorded')
+      stopCamera()
+    }
+    mediaRecorderRef.current = recorder
+    recorder.start(1000)
+    setRecording(true)
+    setRecordTime(0)
+    timerRef.current = setInterval(() => setRecordTime(t => t + 1), 1000)
+  }
+
+  const stopRecording = () => {
+    mediaRecorderRef.current?.stop()
+    setRecording(false)
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null }
+  }
+
+  const uploadAndPost = async (aiEnhance: boolean) => {
+    if (!recordedBlob) return
+    setUploading(true)
+    setUploadError(null)
+    try {
+      const file = new File([recordedBlob], `recording-${Date.now()}.webm`, { type: 'video/webm' })
+      const form = new FormData()
+      form.append('file', file)
+      const uploadRes = await fetch('/api/upload', { method: 'POST', body: form })
+      const uploadData = await uploadRes.json()
+      if (!uploadRes.ok) throw new Error(uploadData.error || 'Upload failed')
+      setUploadedVideoUrl(uploadData.url)
+      setPostMode('uploaded')
+
+      if (!aiEnhance) {
+        // Quick Post Raw
+        if (!caption.trim()) { setUploadError('Add a caption first'); setUploading(false); return }
+        setPosting(true)
+        setPostMode('posting')
+        const postRes = await fetch('/api/marketing/post', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageUrl: uploadData.url, caption, platforms: platforms.map(p => p.toLowerCase()) }),
+        })
+        const postData = await postRes.json()
+        if (!postRes.ok) throw new Error(postData.error || 'Post failed')
+
+        for (const p of platforms) {
+          try {
+            const dbRes = await fetch('/api/marketing-posts', {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ image_url: uploadData.url, caption, platform: p.toLowerCase(), status: 'published' }),
+            })
+            const dbData = await dbRes.json()
+            if (dbData.post) setPosts(prev => [dbData.post, ...prev])
+          } catch { /* non-blocking */ }
+        }
+        setStats(prev => ({ ...prev, total: prev.total + 1, published: prev.published + platforms.length }))
+        setPostMode('posted')
+        setPosting(false)
+      }
+      // If aiEnhance, user would need to go to AI Create tab with the uploaded URL
+      // For now, show success of upload
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Failed')
+      setPostMode('recorded')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`
+
+  const reset = () => {
+    stopCamera(); setRecordedBlob(null); setRecordedUrl(null); setUploadedVideoUrl(null); setPostMode('idle'); setCaption(''); setRecordTime(0)
+  }
+
+  return (
+    <div className="p-6 md:p-8" style={{ background: '#FFFFFF', border: '1px solid #E5E5E5' }}>
+      <div className="text-center mb-6">
+        <h2 className="text-xl font-bold mb-2" style={{ color: '#000' }}>Record & Post</h2>
+        <p className="text-sm" style={{ color: '#999' }}>Record from your camera. Choose AI enhance or quick post raw.</p>
+      </div>
+
+      <div className="max-w-lg mx-auto">
+        {/* Camera / Video Preview */}
+        <div className="aspect-[9/16] max-h-[500px] mx-auto mb-6 relative overflow-hidden" style={{ background: '#0a0a0a', border: '1px solid #E5E5E5' }}>
+          {/* Live Camera Feed */}
+          {(postMode === 'idle' || postMode === 'camera') && (
+            <>
+              <video ref={videoRef} className="w-full h-full object-cover" style={{ transform: 'scaleX(-1)' }} muted playsInline />
+              {!cameraActive && (
+                <div className="absolute inset-0 flex items-center justify-center cursor-pointer" onClick={startCamera}>
+                  <div className="text-center">
+                    <span className="text-5xl block mb-4">📹</span>
+                    <p className="text-sm font-semibold text-white">Tap to open camera</p>
+                    <p className="text-xs mt-1" style={{ color: '#666' }}>Allow camera & microphone access</p>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Recorded Playback */}
+          {recordedUrl && postMode !== 'camera' && postMode !== 'idle' && (
+            <>
+              <video src={recordedUrl} controls className="w-full h-full object-cover" />
+              {postMode === 'posted' && (
+                <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.7)' }}>
+                  <div className="text-center">
+                    <span className="text-4xl block mb-2">✅</span>
+                    <p className="text-sm font-bold text-white">Published to {platforms.join(', ')}!</p>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Recording Timer */}
+          {recording && (
+            <div className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5" style={{ background: 'rgba(0,0,0,0.6)' }}>
+              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-xs font-mono text-white">{formatTime(recordTime)}</span>
+            </div>
+          )}
+
+          {/* Upload Overlay */}
+          {uploading && (
+            <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.7)' }}>
+              <div className="text-center">
+                <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                <p className="text-xs text-white">Uploading & posting...</p>
+              </div>
+            </div>
+          )}
+
+          {/* Record / Stop Button */}
+          {cameraActive && (
+            <div className="absolute bottom-6 left-0 right-0 flex justify-center">
+              {!recording ? (
+                <button onClick={startRecording} className="w-16 h-16 rounded-full flex items-center justify-center transition-transform hover:scale-110" style={{ background: '#CC0000', border: '3px solid #FFF' }}>
+                  <div className="w-6 h-6 rounded-full" style={{ background: '#FFF' }} />
+                </button>
+              ) : (
+                <button onClick={stopRecording} className="w-16 h-16 rounded-full flex items-center justify-center transition-transform hover:scale-110" style={{ background: '#CC0000', border: '3px solid #FFF' }}>
+                  <div className="w-6 h-6" style={{ background: '#FFF' }} />
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Post Options — Show after recording */}
+        {(postMode === 'recorded' || postMode === 'uploaded') && (
+          <>
+            {/* Caption */}
+            <div className="mb-4">
+              <label className="text-xs font-semibold block mb-2" style={{ color: '#333' }}>Caption</label>
+              <textarea value={caption} onChange={(e) => setCaption(e.target.value)} rows={3}
+                placeholder="Write your caption..."
+                className="w-full text-sm px-3 py-2 resize-none outline-none"
+                style={{ border: '1px solid #E5E5E5', color: '#000', background: '#FAFAFA' }} />
+            </div>
+
+            {/* Platform Selection */}
+            <div className="p-4 mb-4" style={{ background: '#F9F9F9', border: '1px solid #E5E5E5' }}>
+              <p className="text-xs font-semibold mb-3" style={{ color: '#666' }}>POST TO:</p>
+              <div className="flex items-center gap-3 flex-wrap">
+                {['Instagram', 'TikTok', 'Facebook', 'LinkedIn'].map((p) => (
+                  <button key={p} onClick={() => togglePlatform(p)}
+                    className="px-3 py-1.5 text-xs font-semibold transition-all"
+                    style={{ background: platforms.includes(p) ? '#000' : '#FFF', color: platforms.includes(p) ? '#FFF' : '#999', border: `1px solid ${platforms.includes(p) ? '#000' : '#E5E5E5'}` }}>
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {uploadError && <div className="p-3 text-xs mb-4" style={{ background: '#FFF0F0', color: '#CC0000', border: '1px solid #FFDDDD' }}>{uploadError}</div>}
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <button onClick={() => uploadAndPost(false)} disabled={posting || uploading}
+                className="py-3 text-sm font-semibold transition-all"
+                style={{ background: '#000', color: '#FFF' }}>
+                {posting ? 'Publishing...' : '⚡ Quick Post Raw'}
+              </button>
+              <button onClick={() => uploadAndPost(true)} disabled={posting || uploading}
+                className="py-3 text-sm font-semibold transition-all"
+                style={{ background: '#FFF', color: '#000', border: '1px solid #E5E5E5' }}>
+                🤖 AI Enhance + Post
+              </button>
+            </div>
+            <button onClick={reset} className="w-full text-xs py-2" style={{ color: '#999' }}>Record again</button>
+          </>
+        )}
+
+        {postMode === 'posted' && (
+          <button onClick={reset} className="w-full text-sm font-semibold py-3 mt-4" style={{ background: '#F5F5F5', color: '#333', border: '1px solid #E5E5E5' }}>
+            Record another
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function MarketingPage() {
   const [activeTab, setActiveTab] = useState<'ai-create' | 'ready-to-use' | 'record'>('ai-create')
   const [step, setStep] = useState<'idle' | 'uploaded' | 'uploading' | 'analysing' | 'generating' | 'ready' | 'posted'>('idle')
@@ -466,104 +894,38 @@ export default function MarketingPage() {
             ))}
           </div>
 
-          {/* ─── TAB: Ready to Use ──────────────────────────────────── */}
+          {/* ─── TAB: Ready to Use (Upload video pronto) ────────────── */}
           {activeTab === 'ready-to-use' && (
-            <div className="p-6 md:p-8" style={{ background: '#FFFFFF', border: '1px solid #E5E5E5' }}>
-              <div className="text-center mb-8">
-                <h2 className="text-xl font-bold mb-2" style={{ color: '#000000' }}>Video Library</h2>
-                <p className="text-sm" style={{ color: '#999999' }}>Browse ready-made videos. Pick one, customize caption, publish to all platforms.</p>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {[
-                  { title: 'Product Showcase', duration: '0:15', category: 'E-commerce' },
-                  { title: 'Before & After', duration: '0:12', category: 'Services' },
-                  { title: 'Team Introduction', duration: '0:20', category: 'Corporate' },
-                  { title: 'Customer Testimonial', duration: '0:30', category: 'Social Proof' },
-                  { title: 'Behind the Scenes', duration: '0:18', category: 'Authentic' },
-                  { title: 'Quick Tips', duration: '0:10', category: 'Educational' },
-                  { title: 'Seasonal Promo', duration: '0:15', category: 'Marketing' },
-                  { title: 'Day in the Life', duration: '0:25', category: 'Lifestyle' },
-                ].map((v, i) => (
-                  <div key={i} className="group cursor-pointer" style={{ border: '1px solid #E5E5E5' }}>
-                    <div className="aspect-[9/16] relative flex items-center justify-center" style={{ background: '#F5F5F5' }}>
-                      <div className="text-center">
-                        <span className="text-3xl block mb-2">🎬</span>
-                        <span className="text-xs font-mono" style={{ color: '#CCCCCC' }}>{v.duration}</span>
-                      </div>
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'rgba(0,0,0,0.5)' }}>
-                        <span className="text-white text-sm font-semibold">Use this</span>
-                      </div>
-                    </div>
-                    <div className="p-3">
-                      <p className="text-sm font-semibold" style={{ color: '#000000' }}>{v.title}</p>
-                      <p className="text-xs" style={{ color: '#999999' }}>{v.category}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-6 p-4 text-center" style={{ background: '#F9F9F9', border: '1px solid #E5E5E5' }}>
-                <p className="text-xs" style={{ color: '#999999' }}>More templates coming soon. Upload your own pre-made videos via AI Create tab.</p>
-              </div>
-            </div>
+            <ReadyToUseTab
+              platforms={platforms}
+              togglePlatform={togglePlatform}
+              caption={caption}
+              setCaption={setCaption}
+              posting={posting}
+              setPosting={setPosting}
+              uploadError={uploadError}
+              setUploadError={setUploadError}
+              setPosts={setPosts}
+              setStats={setStats}
+              stats={stats}
+            />
           )}
 
-          {/* ─── TAB: Record ─────────────────────────────────────────── */}
+          {/* ─── TAB: Record (Câmera real) ───────────────────────────── */}
           {activeTab === 'record' && (
-            <div className="p-6 md:p-8" style={{ background: '#FFFFFF', border: '1px solid #E5E5E5' }}>
-              <div className="text-center mb-8">
-                <h2 className="text-xl font-bold mb-2" style={{ color: '#000000' }}>Record & Post</h2>
-                <p className="text-sm" style={{ color: '#999999' }}>Record from your camera, then choose: AI enhance or quick post raw.</p>
-              </div>
-
-              <div className="max-w-lg mx-auto">
-                {/* Camera Preview Area */}
-                <div className="aspect-[9/16] max-h-[500px] mx-auto mb-6 relative flex items-center justify-center" style={{ background: '#0a0a0a', border: '1px solid #E5E5E5' }}>
-                  <div className="text-center">
-                    <span className="text-5xl block mb-4">📹</span>
-                    <p className="text-sm font-semibold" style={{ color: '#FFFFFF' }}>Camera Preview</p>
-                    <p className="text-xs mt-1" style={{ color: '#666666' }}>Click to start recording</p>
-                  </div>
-                  {/* Record button overlay */}
-                  <div className="absolute bottom-6 left-0 right-0 flex justify-center">
-                    <button className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: '#CC0000', border: '3px solid #FFFFFF' }}>
-                      <div className="w-6 h-6 rounded-full" style={{ background: '#FFFFFF' }} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Post Options */}
-                <div className="grid grid-cols-2 gap-4">
-                  <button className="p-4 text-center transition-all hover:border-black" style={{ background: '#FFFFFF', border: '2px solid #E5E5E5' }}>
-                    <span className="text-2xl block mb-2">🤖</span>
-                    <p className="text-sm font-bold" style={{ color: '#000000' }}>AI Enhance + Post</p>
-                    <p className="text-xs mt-1" style={{ color: '#999999' }}>AI adds captions, effects, music. Then posts to all platforms.</p>
-                  </button>
-                  <button className="p-4 text-center transition-all hover:border-black" style={{ background: '#FFFFFF', border: '2px solid #E5E5E5' }}>
-                    <span className="text-2xl block mb-2">⚡</span>
-                    <p className="text-sm font-bold" style={{ color: '#000000' }}>Quick Post Raw</p>
-                    <p className="text-xs mt-1" style={{ color: '#999999' }}>Post the video as-is to all platforms. No editing.</p>
-                  </button>
-                </div>
-
-                {/* Platform Selection */}
-                <div className="mt-4 p-4" style={{ background: '#F9F9F9', border: '1px solid #E5E5E5' }}>
-                  <p className="text-xs font-semibold mb-3" style={{ color: '#666666' }}>POST TO:</p>
-                  <div className="flex items-center gap-3">
-                    {['Instagram', 'TikTok', 'Facebook', 'LinkedIn'].map((p) => (
-                      <button key={p} onClick={() => togglePlatform(p)}
-                        className="px-3 py-1.5 text-xs font-semibold transition-all"
-                        style={{
-                          background: platforms.includes(p) ? '#000000' : '#FFFFFF',
-                          color: platforms.includes(p) ? '#FFFFFF' : '#999999',
-                          border: `1px solid ${platforms.includes(p) ? '#000000' : '#E5E5E5'}`,
-                        }}>
-                        {p}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <RecordTab
+              platforms={platforms}
+              togglePlatform={togglePlatform}
+              caption={caption}
+              setCaption={setCaption}
+              posting={posting}
+              setPosting={setPosting}
+              uploadError={uploadError}
+              setUploadError={setUploadError}
+              setPosts={setPosts}
+              setStats={setStats}
+              stats={stats}
+            />
           )}
 
           {/* ─── TAB: AI Create (existing flow) ──────────────────────── */}
