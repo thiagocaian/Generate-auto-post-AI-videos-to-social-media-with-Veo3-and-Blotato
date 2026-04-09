@@ -41,8 +41,8 @@ export function FloatingNav({
         className={cn(
           "fixed inset-x-0 top-6 z-[5000] mx-auto flex max-w-fit items-center justify-center space-x-6 border px-8 py-3 font-mono",
           atTop
-            ? "border-transparent bg-transparent"
-            : "border-white/[0.08] bg-black/80 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md",
+            ? "border-transparent bg-transparent rounded-full"
+            : "border-white/[0.08] bg-black/80 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md rounded-full",
           className
         )}
       >
@@ -60,7 +60,7 @@ export function FloatingNav({
         ))}
         <Link
           href="/login"
-          className="relative border border-white/[0.15] bg-white/[0.05] px-4 py-1.5 text-xs text-neutral-300 transition-colors hover:bg-white/[0.1] hover:text-white"
+          className="relative rounded-full border border-white/[0.15] bg-white/[0.05] px-4 py-1.5 text-xs text-neutral-300 transition-colors hover:bg-white/[0.1] hover:text-white"
         >
           Login
         </Link>

@@ -27,7 +27,7 @@ function CytronLogo({ size = 32 }: { size?: number }) {
           <stop offset="100%" stopColor="#9898b0" />
         </linearGradient>
       </defs>
-      <rect x="2" y="2" width="44" height="44" rx="0" fill="url(#bgGrad)" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+      <rect x="2" y="2" width="44" height="44" rx="10" fill="url(#bgGrad)" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
       <path d="M31 15.5C29 13.8 26.3 12.5 23.5 12.5C17 12.5 11.5 18 11.5 24.5C11.5 31 17 36.5 23.5 36.5C26.3 36.5 29 35.2 31 33.5" stroke="url(#cGrad)" strokeWidth="4.5" strokeLinecap="square" fill="none" />
     </svg>
   );
@@ -203,7 +203,7 @@ function EarlyAccessForm() {
         animate={{ opacity: 1, scale: 1 }}
         className="flex items-center justify-center gap-3 mt-6"
       >
-        <div className="inline-flex items-center gap-2 px-6 py-3 border border-[#00B050]/30 bg-[#00B050]/5">
+        <div className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-[#00B050]/30 bg-[#00B050]/5">
           <Check size={16} className="text-[#00B050]" />
           <span className="text-sm text-[#00B050] font-medium">You&apos;re on the list! We&apos;ll be in touch soon.</span>
         </div>
@@ -224,13 +224,13 @@ function EarlyAccessForm() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="your@email.com"
-        className="w-full sm:w-72 px-4 py-3 text-sm bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-neutral-600 outline-none focus:border-[#00B050]/50 font-mono"
+        className="w-full sm:w-72 px-4 py-3 text-sm rounded-lg bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-neutral-600 outline-none focus:border-[#00B050]/50 font-mono"
         required
       />
       <button
         type="submit"
         disabled={status === "loading"}
-        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm font-medium px-7 py-3 bg-[#00B050] text-black transition-opacity disabled:opacity-50"
+        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm font-medium px-7 py-3 rounded-lg bg-[#00B050] text-black transition-opacity disabled:opacity-50"
       >
         {status === "loading" ? "Sending..." : "Request Early Access"} <ArrowRight size={14} />
       </button>
@@ -264,7 +264,7 @@ export default function LandingPage() {
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
           {/* Badge */}
           <motion.div
-            className="inline-flex items-center gap-2 px-4 py-1.5 border border-[#00B050]/30 bg-[#00B050]/5 text-xs text-[#00B050] mb-10"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#00B050]/30 bg-[#00B050]/5 text-xs text-[#00B050] mb-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -366,10 +366,10 @@ export default function LandingPage() {
               <SpotlightCard key={i} className="p-8">
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-6">
-                    <div className="w-12 h-12 border border-white/[0.1] bg-white/[0.03] flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-lg border border-white/[0.1] bg-white/[0.03] flex items-center justify-center">
                       {mode.icon}
                     </div>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#00B050]/60 border border-[#00B050]/20 px-2 py-0.5">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#00B050]/60 rounded-full border border-[#00B050]/20 px-2 py-0.5">
                       {mode.tag}
                     </span>
                   </div>
@@ -387,7 +387,7 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex items-center gap-4 px-6 py-3 border border-white/[0.08] bg-white/[0.02]">
+            <div className="inline-flex items-center gap-4 px-6 py-3 rounded-full border border-white/[0.08] bg-white/[0.02]">
               <span className="text-xs text-neutral-600">Then choose:</span>
               <span className="text-xs font-bold text-[#00B050]">AI Enhance + Post</span>
               <span className="text-neutral-700">or</span>
@@ -483,7 +483,7 @@ export default function LandingPage() {
             <SpotlightCard className="p-8">
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 border border-white/[0.1] bg-white/[0.03] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg border border-white/[0.1] bg-white/[0.03] flex items-center justify-center">
                     <ClipboardList className="w-5 h-5 text-[#00B050]" />
                   </div>
                   <div>
@@ -508,7 +508,7 @@ export default function LandingPage() {
             <SpotlightCard className="p-8" spotlightColor="rgba(0, 176, 80, 0.1)">
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 border border-white/[0.1] bg-white/[0.03] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg border border-white/[0.1] bg-white/[0.03] flex items-center justify-center">
                     <LineChart className="w-5 h-5 text-[#00B050]" />
                   </div>
                   <div>
@@ -540,7 +540,7 @@ export default function LandingPage() {
                     { icon: <Check size={16} />, name: "Compliance", desc: "Auto-reports" },
                     { icon: <Users size={16} />, name: "Field Commander", desc: "Team tracking" },
                   ].map((tool) => (
-                    <div key={tool.name} className="flex items-center gap-3 p-3 border border-white/[0.05] bg-white/[0.02]">
+                    <div key={tool.name} className="flex items-center gap-3 p-3 rounded-lg border border-white/[0.05] bg-white/[0.02]">
                       <div className="text-[#00B050]">{tool.icon}</div>
                       <div>
                         <div className="text-sm font-medium text-neutral-300">{tool.name}</div>
@@ -583,7 +583,7 @@ export default function LandingPage() {
                 )}
                 <div className="relative z-20">
                   {plan.popular && (
-                    <span className="inline-block text-[10px] uppercase tracking-widest text-[#00B050] border border-[#00B050]/30 px-2 py-0.5 mb-4">
+                    <span className="inline-block text-[10px] uppercase tracking-widest text-[#00B050] rounded-full border border-[#00B050]/30 px-2 py-0.5 mb-4">
                       Most Popular
                     </span>
                   )}

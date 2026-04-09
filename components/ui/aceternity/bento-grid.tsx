@@ -41,7 +41,7 @@ export function BentoGridItem({
       transition={{ duration: 0.5 }}
       viewport={{ once: true }}
       className={cn(
-        "group/bento row-span-1 flex flex-col justify-between space-y-4 rounded-none border border-white/[0.08] bg-black/50 p-6 shadow-none transition duration-200 hover:border-white/[0.15] hover:shadow-[0_0_30px_rgba(0,176,80,0.05)]",
+        "group/bento row-span-1 flex flex-col justify-between space-y-4 rounded-xl border border-white/[0.08] bg-black/50 p-6 shadow-none transition duration-200 hover:border-white/[0.15] hover:shadow-[0_0_30px_rgba(0,176,80,0.08)]",
         className
       )}
     >

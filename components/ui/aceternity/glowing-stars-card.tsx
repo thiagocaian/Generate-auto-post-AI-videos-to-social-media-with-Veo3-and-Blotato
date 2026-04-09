@@ -17,7 +17,7 @@ export function GlowingStarsCard({
       onMouseEnter={() => setMouseEnter(true)}
       onMouseLeave={() => setMouseEnter(false)}
       className={cn(
-        "relative h-full overflow-hidden border border-white/[0.08] bg-[#0a0a0a] p-6",
+        "relative h-full overflow-hidden rounded-xl border border-white/[0.08] bg-[#0a0a0a] p-6",
         className
       )}
     >

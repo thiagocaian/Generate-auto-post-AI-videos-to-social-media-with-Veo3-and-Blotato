@@ -62,7 +62,7 @@ export function InfiniteMovingCards({
         {items.map((item, idx) => (
           <li
             key={idx}
-            className="relative w-[400px] max-w-full shrink-0 border border-white/[0.08] bg-black/60 px-6 py-5"
+            className="relative w-[400px] max-w-full shrink-0 rounded-xl border border-white/[0.08] bg-black/60 px-6 py-5"
           >
             <div className="flex flex-col gap-3">
               <div className="flex items-start gap-2">
