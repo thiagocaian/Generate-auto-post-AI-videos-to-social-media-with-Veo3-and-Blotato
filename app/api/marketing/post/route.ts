@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const maxDuration = 60 // Allow up to 60s for media upload + posting
 
+const AYRSHARE_API = 'https://app.ayrshare.com/api'
 const OUTSTAND_API = 'https://api.outstand.so/v1'
 const BLOTATO_API = 'https://backend.blotato.com/v2'
 
@@ -9,10 +10,11 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const { imageUrl, caption, platforms } = body
 
+  const ayrshareKey = process.env.AYRSHARE_API_KEY
   const outstandKey = process.env.OUTSTAND_API_KEY
   const blotaloKey = process.env.BLOTATO_API_KEY
 
-  if (!outstandKey && !blotaloKey) {
+  if (!ayrshareKey && !outstandKey && !blotaloKey) {
     return NextResponse.json({ error: 'No posting API key configured' }, { status: 500 })
   }
 
@@ -43,7 +45,55 @@ export async function POST(req: NextRequest) {
 
   const isVideo = mediaContentType.includes('video') || imageUrl.includes('.mp4') || imageUrl.includes('.webm')
 
-  // === OUTSTAND (primary — instant posting) ===
+  // === AYRSHARE (primary — unified posting) ===
+  if (ayrshareKey) {
+    try {
+      const isVideo = mediaContentType.includes('video') || imageUrl.includes('.mp4') || imageUrl.includes('.webm') || imageUrl.includes('.mov')
+
+      const ayrBody: Record<string, unknown> = {
+        post: caption,
+        platforms: platforms.map((p: string) => p.toLowerCase()),
+        mediaUrls: [imageUrl],
+      }
+
+      // Video-specific params
+      if (isVideo) {
+        ayrBody.isVideo = true
+        ayrBody.isPortraitVideo = true // TikTok/Reels format
+      }
+
+      const res = await fetch(`${AYRSHARE_API}/post`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${ayrshareKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ayrBody),
+      })
+      const data = await res.json()
+      console.log('[POST] Ayrshare response:', res.status, JSON.stringify(data).substring(0, 300))
+
+      if (res.ok && (data.id || data.postIds)) {
+        return NextResponse.json({
+          successes: platforms.map((p: string) => ({
+            platform: p.toLowerCase(),
+            postId: data.postIds?.[p.toLowerCase()] || data.id,
+          })),
+          failures: [],
+          totalPosted: platforms.length,
+          provider: 'ayrshare',
+        })
+      }
+
+      // If Ayrshare fails, fall through to Outstand
+      console.log('[POST] Ayrshare failed, trying Outstand fallback...')
+    } catch (err) {
+      console.error('[POST] Ayrshare error:', err)
+      // Fall through to Outstand
+    }
+  }
+
+  // === OUTSTAND (fallback — instant posting) ===
   if (outstandKey) {
     try {
       const accRes = await fetch(`${OUTSTAND_API}/social-accounts`, {

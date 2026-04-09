@@ -167,6 +167,74 @@ const navItems = [
   { name: "Pricing", link: "#pricing" },
 ];
 
+// ─── Early Access Form ────────────────────────────────────────────────────────
+function EarlyAccessForm() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || !email.includes("@")) return;
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/early-access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (res.ok) {
+        setStatus("success");
+        setEmail("");
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  if (status === "success") {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="flex items-center justify-center gap-3 mt-6"
+      >
+        <div className="inline-flex items-center gap-2 px-6 py-3 border border-[#00B050]/30 bg-[#00B050]/5">
+          <Check size={16} className="text-[#00B050]" />
+          <span className="text-sm text-[#00B050] font-medium">You&apos;re on the list! We&apos;ll be in touch soon.</span>
+        </div>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.form
+      onSubmit={handleSubmit}
+      className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 1 }}
+    >
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="your@email.com"
+        className="w-full sm:w-72 px-4 py-3 text-sm bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-neutral-600 outline-none focus:border-[#00B050]/50 font-mono"
+        required
+      />
+      <button
+        type="submit"
+        disabled={status === "loading"}
+        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm font-medium px-7 py-3 bg-[#00B050] text-black transition-opacity disabled:opacity-50"
+      >
+        {status === "loading" ? "Sending..." : "Request Early Access"} <ArrowRight size={14} />
+      </button>
+    </motion.form>
+  );
+}
+
 // ══════════════════════════════════════════════════════════════════════════════
 // ─── MAIN PAGE ───────────────────────────────────────────────────────────────
 // ══════════════════════════════════════════════════════════════════════════════
@@ -193,7 +261,7 @@ export default function LandingPage() {
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
           {/* Badge */}
           <motion.div
-            className="inline-flex items-center gap-2 px-4 py-1.5 border border-white/[0.08] bg-white/[0.03] text-xs text-neutral-500 mb-10"
+            className="inline-flex items-center gap-2 px-4 py-1.5 border border-[#00B050]/30 bg-[#00B050]/5 text-xs text-[#00B050] mb-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -203,7 +271,7 @@ export default function LandingPage() {
               animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
-            Video Distribution Engine
+            EARLY ACCESS — Video Distribution Engine
           </motion.div>
 
           {/* Title */}
@@ -234,28 +302,8 @@ export default function LandingPage() {
             />
           </motion.div>
 
-          {/* CTAs */}
-          <motion.div
-            className="flex items-center justify-center gap-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1 }}
-          >
-            <MagneticButton
-              href="/dashboard"
-              className="inline-flex items-center gap-2 text-sm font-medium px-7 py-3.5"
-              style={{ background: "#00B050", color: "#000" }}
-            >
-              Start for free <ArrowRight size={14} />
-            </MagneticButton>
-            <MagneticButton
-              href="#video-hub"
-              className="inline-flex items-center gap-2 text-sm font-medium px-7 py-3.5 border border-white/[0.1]"
-              style={{ color: "rgba(255,255,255,0.6)" }}
-            >
-              <Play size={14} /> See how it works
-            </MagneticButton>
-          </motion.div>
+          {/* CTAs — Early Access */}
+          <EarlyAccessForm />
 
           {/* Stats */}
           <motion.div
@@ -557,7 +605,7 @@ export default function LandingPage() {
                         : "border border-white/[0.1] text-neutral-400 hover:text-white"
                     }`}
                   >
-                    Get started
+                    Request Access
                   </MagneticButton>
                 </div>
               </GlowingStarsCard>
@@ -591,12 +639,7 @@ export default function LandingPage() {
           >
             Join businesses across Gold Coast using Cytron to save 20+ hours per week on marketing, admin, and operations.
           </motion.p>
-          <MagneticButton
-            href="/login"
-            className="inline-flex items-center gap-2 text-sm font-medium px-8 py-4 bg-[#00B050] text-black"
-          >
-            Start your free trial <ArrowRight size={14} />
-          </MagneticButton>
+          <EarlyAccessForm />
         </div>
       </section>
 
