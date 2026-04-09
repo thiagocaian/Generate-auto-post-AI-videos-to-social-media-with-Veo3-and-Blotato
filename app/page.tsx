@@ -77,14 +77,17 @@ function AnimatedCounter({ value, suffix = "" }: { value: string; suffix?: strin
           setHasAnimated(true);
           const numericPart = value.replace(/[^0-9.]/g, "");
           const target = parseFloat(numericPart);
-          const prefix = value.replace(numericPart, "").replace(suffix, "");
+          const hasComma = value.includes(",");
           const duration = 2000;
           const start = performance.now();
           const animate = (now: number) => {
             const progress = Math.min((now - start) / duration, 1);
             const eased = 1 - Math.pow(1 - progress, 3);
             const current = target * eased;
-            setDisplayed(prefix + Math.floor(current) + suffix);
+            const formatted = hasComma
+              ? Math.floor(current).toLocaleString()
+              : String(Math.floor(current));
+            setDisplayed(formatted + suffix);
             if (progress < 1) requestAnimationFrame(animate);
           };
           requestAnimationFrame(animate);
