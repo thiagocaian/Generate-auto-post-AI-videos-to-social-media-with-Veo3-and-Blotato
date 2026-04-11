@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   const origin = process.env.NEXT_PUBLIC_SITE_URL || requestUrl.origin
   const searchParams = requestUrl.searchParams
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/'
+  const next = searchParams.get('next') ?? '/dashboard'
 
   if (code) {
     const cookieStore = cookies()
