@@ -62,7 +62,7 @@ export function TracingBeam({
             style={{ pathLength: scrollYProgress }}
           />
           <defs>
-            <linearGradient id="pulse" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1={y1} y2={y2}>
+            <linearGradient id="pulse" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1={y1 as unknown as number} y2={y2 as unknown as number}>
               <stop stopColor="#886cff" stopOpacity="0" />
               <stop stopColor="#886cff" />
               <stop offset="0.325" stopColor="#886cff" />
