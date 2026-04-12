@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Sidebar from '@/components/Sidebar'
+import { supabase } from '@/lib/supabase'
 import type { Job, JobStatus } from '@/lib/supabase'
 
 const statusConfig: Record<JobStatus, { label: string; color: string; bg: string }> = {
@@ -35,6 +36,8 @@ export default function JobsPage() {
     scheduled_date: '', estimated_hours: '', description: ''
   })
   const [saving, setSaving] = useState(false)
+  const [newJobPhotoBefore, setNewJobPhotoBefore] = useState<File[]>([])
+  const [newJobPhotoAfter, setNewJobPhotoAfter] = useState<File[]>([])
 
   const fetchJobs = () => {
     fetch('/api/jobs')
@@ -62,7 +65,8 @@ export default function JobsPage() {
   const handleCreate = async () => {
     setSaving(true)
     try {
-      await fetch('/api/jobs', {
+      // 1. Create the job
+      const res = await fetch('/api/jobs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -71,8 +75,46 @@ export default function JobsPage() {
           estimated_hours: form.estimated_hours ? Number(form.estimated_hours) : null,
         })
       })
+      const { job } = await res.json()
+
+      // 2. Upload photos if any
+      if (job && (newJobPhotoBefore.length > 0 || newJobPhotoAfter.length > 0)) {
+        const uploadFiles = async (files: File[], type: string) => {
+          const urls: string[] = []
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i]
+            const ext = file.name.split('.').pop()
+            const path = `${job.id}/${type}/${Date.now()}-${i}.${ext}`
+            const { error } = await supabase.storage.from('job-photos').upload(path, file, { upsert: true })
+            if (!error) {
+              const { data } = supabase.storage.from('job-photos').getPublicUrl(path)
+              urls.push(data.publicUrl)
+            }
+          }
+          return urls
+        }
+
+        const beforeUrls = newJobPhotoBefore.length > 0 ? await uploadFiles(newJobPhotoBefore, 'before') : []
+        const afterUrls = newJobPhotoAfter.length > 0 ? await uploadFiles(newJobPhotoAfter, 'after') : []
+
+        if (beforeUrls.length > 0 || afterUrls.length > 0) {
+          await fetch('/api/jobs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'update',
+              id: job.id,
+              ...(beforeUrls.length > 0 && { photos_before: beforeUrls }),
+              ...(afterUrls.length > 0 && { photos_after: afterUrls }),
+            })
+          })
+        }
+      }
+
       setNewJobOpen(false)
       setForm({ title: '', client_name: '', client_email: '', client_phone: '', site_address: '', assigned_to: '', priority: 'medium', scheduled_date: '', estimated_hours: '', description: '' })
+      setNewJobPhotoBefore([])
+      setNewJobPhotoAfter([])
       fetchJobs()
     } finally { setSaving(false) }
   }
@@ -95,6 +137,62 @@ export default function JobsPage() {
     })
     fetchJobs()
     setSelectedJob(null)
+  }
+
+  const [uploading, setUploading] = useState(false)
+
+  const handlePhotoUpload = async (jobId: string, type: 'before' | 'after', files: FileList) => {
+    setUploading(true)
+    try {
+      const job = jobs.find(j => j.id === jobId)
+      if (!job) return
+
+      const existingPhotos = type === 'before' ? (job.photos_before || []) : (job.photos_after || [])
+      const newUrls: string[] = []
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        const ext = file.name.split('.').pop()
+        const path = `${jobId}/${type}/${Date.now()}-${i}.${ext}`
+
+        const { error } = await supabase.storage
+          .from('job-photos')
+          .upload(path, file, { upsert: true })
+
+        if (!error) {
+          const { data: urlData } = supabase.storage
+            .from('job-photos')
+            .getPublicUrl(path)
+          newUrls.push(urlData.publicUrl)
+        }
+      }
+
+      const allPhotos = [...existingPhotos, ...newUrls]
+      const field = type === 'before' ? 'photos_before' : 'photos_after'
+
+      await fetch('/api/jobs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update', id: jobId, [field]: allPhotos })
+      })
+      fetchJobs()
+    } finally { setUploading(false) }
+  }
+
+  const handleDeletePhoto = async (jobId: string, type: 'before' | 'after', photoUrl: string) => {
+    const job = jobs.find(j => j.id === jobId)
+    if (!job) return
+
+    const photos = type === 'before' ? (job.photos_before || []) : (job.photos_after || [])
+    const filtered = photos.filter(p => p !== photoUrl)
+    const field = type === 'before' ? 'photos_before' : 'photos_after'
+
+    await fetch('/api/jobs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'update', id: jobId, [field]: filtered })
+    })
+    fetchJobs()
   }
 
   const handleDelete = async (jobId: string) => {
@@ -251,6 +349,93 @@ export default function JobsPage() {
                       ))}
                     </div>
 
+                    {/* Photos — Before & After */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      {/* Before photos */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-xs font-medium uppercase tracking-wider" style={{ color: '#999' }}>
+                            📷 Fotos — Antes
+                          </p>
+                          <label className="text-xs font-medium px-2 py-1 rounded cursor-pointer" style={{ background: '#F5F5F5', color: '#666', border: '1px solid #E5E5E5' }}>
+                            {uploading ? 'Uploading...' : '+ Upload'}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              className="hidden"
+                              onChange={e => e.target.files && handlePhotoUpload(job.id, 'before', e.target.files)}
+                            />
+                          </label>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {(job.photos_before || []).length === 0 ? (
+                            <p className="text-xs" style={{ color: '#CCC' }}>Nenhuma foto ainda</p>
+                          ) : (
+                            (job.photos_before || []).map((url, idx) => (
+                              <div key={idx} className="relative group">
+                                <img
+                                  src={url}
+                                  alt={`Before ${idx + 1}`}
+                                  className="w-20 h-20 object-cover rounded-lg"
+                                  style={{ border: '1px solid #E5E5E5' }}
+                                />
+                                <button
+                                  onClick={e => { e.stopPropagation(); handleDeletePhoto(job.id, 'before', url) }}
+                                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-white text-[8px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                  style={{ background: '#CC0000' }}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+
+                      {/* After photos */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-xs font-medium uppercase tracking-wider" style={{ color: '#999' }}>
+                            ✅ Fotos — Depois
+                          </p>
+                          <label className="text-xs font-medium px-2 py-1 rounded cursor-pointer" style={{ background: '#ECFDF5', color: '#059669', border: '1px solid #A7F3D0' }}>
+                            {uploading ? 'Uploading...' : '+ Upload'}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              className="hidden"
+                              onChange={e => e.target.files && handlePhotoUpload(job.id, 'after', e.target.files)}
+                            />
+                          </label>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {(job.photos_after || []).length === 0 ? (
+                            <p className="text-xs" style={{ color: '#CCC' }}>Nenhuma foto ainda</p>
+                          ) : (
+                            (job.photos_after || []).map((url, idx) => (
+                              <div key={idx} className="relative group">
+                                <img
+                                  src={url}
+                                  alt={`After ${idx + 1}`}
+                                  className="w-20 h-20 object-cover rounded-lg"
+                                  style={{ border: '1px solid #A7F3D0' }}
+                                />
+                                <button
+                                  onClick={e => { e.stopPropagation(); handleDeletePhoto(job.id, 'after', url) }}
+                                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-white text-[8px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                  style={{ background: '#CC0000' }}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Actions */}
                     <div className="flex gap-2">
                       {job.status === 'completed' && (
@@ -333,6 +518,78 @@ export default function JobsPage() {
                     className="w-full px-3 py-2 text-sm rounded-lg resize-none"
                     style={{ border: '1px solid #E5E5E5', background: '#FAFAFA', outline: 'none' }}
                   />
+                </div>
+
+                {/* Photo Upload — Before */}
+                <div>
+                  <label className="block text-[10px] font-medium uppercase tracking-wider mb-1" style={{ color: '#999' }}>
+                    📷 Fotos — Antes (vistoria)
+                  </label>
+                  <label className="flex items-center justify-center w-full py-3 rounded-lg cursor-pointer transition-colors hover:bg-gray-100"
+                    style={{ border: '2px dashed #E5E5E5', background: '#FAFAFA' }}>
+                    <span className="text-xs" style={{ color: '#999' }}>
+                      {newJobPhotoBefore.length > 0
+                        ? `${newJobPhotoBefore.length} foto(s) selecionada(s)`
+                        : 'Clique para selecionar fotos'}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={e => {
+                        if (e.target.files) setNewJobPhotoBefore(prev => [...prev, ...Array.from(e.target.files!)])
+                      }}
+                    />
+                  </label>
+                  {newJobPhotoBefore.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {newJobPhotoBefore.map((f, i) => (
+                        <div key={i} className="relative group">
+                          <img src={URL.createObjectURL(f)} alt="" className="w-14 h-14 object-cover rounded-lg" style={{ border: '1px solid #E5E5E5' }} />
+                          <button onClick={() => setNewJobPhotoBefore(prev => prev.filter((_, idx) => idx !== i))}
+                            className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-white text-[8px] flex items-center justify-center opacity-0 group-hover:opacity-100"
+                            style={{ background: '#CC0000' }}>×</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Photo Upload — After */}
+                <div>
+                  <label className="block text-[10px] font-medium uppercase tracking-wider mb-1" style={{ color: '#999' }}>
+                    ✅ Fotos — Depois (job finalizado)
+                  </label>
+                  <label className="flex items-center justify-center w-full py-3 rounded-lg cursor-pointer transition-colors hover:bg-green-50"
+                    style={{ border: '2px dashed #A7F3D0', background: '#F0FDF4' }}>
+                    <span className="text-xs" style={{ color: '#059669' }}>
+                      {newJobPhotoAfter.length > 0
+                        ? `${newJobPhotoAfter.length} foto(s) selecionada(s)`
+                        : 'Clique para selecionar fotos'}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={e => {
+                        if (e.target.files) setNewJobPhotoAfter(prev => [...prev, ...Array.from(e.target.files!)])
+                      }}
+                    />
+                  </label>
+                  {newJobPhotoAfter.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {newJobPhotoAfter.map((f, i) => (
+                        <div key={i} className="relative group">
+                          <img src={URL.createObjectURL(f)} alt="" className="w-14 h-14 object-cover rounded-lg" style={{ border: '1px solid #A7F3D0' }} />
+                          <button onClick={() => setNewJobPhotoAfter(prev => prev.filter((_, idx) => idx !== i))}
+                            className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-white text-[8px] flex items-center justify-center opacity-0 group-hover:opacity-100"
+                            style={{ background: '#CC0000' }}>×</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 

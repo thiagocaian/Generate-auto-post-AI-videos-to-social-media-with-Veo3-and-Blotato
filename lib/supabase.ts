@@ -137,6 +137,8 @@ export type Job = {
   notes?: string
   tags?: string[]
   total_value?: number
+  photos_before?: string[]
+  photos_after?: string[]
   created_at: string
   updated_at: string
 }
