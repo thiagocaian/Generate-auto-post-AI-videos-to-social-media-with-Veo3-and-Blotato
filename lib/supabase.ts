@@ -110,3 +110,67 @@ export type CompanyMember = {
   role: 'owner' | 'admin' | 'member'
   created_at: string
 }
+
+// Types for Job Management system
+export type JobStatus = 'enquiry' | 'quoted' | 'scheduled' | 'in_progress' | 'completed' | 'invoiced' | 'paid'
+
+export type Job = {
+  id: string
+  company_id: string
+  user_id?: string
+  job_number: string
+  title: string
+  description?: string
+  client_name?: string
+  client_email?: string
+  client_phone?: string
+  site_address?: string
+  status: JobStatus
+  priority: 'high' | 'medium' | 'low'
+  assigned_to?: string
+  quote_id?: string
+  scheduled_date?: string
+  scheduled_time_start?: string
+  scheduled_time_end?: string
+  estimated_hours?: number
+  actual_hours?: number
+  notes?: string
+  tags?: string[]
+  total_value?: number
+  created_at: string
+  updated_at: string
+}
+
+export type InvoiceStatus = 'draft' | 'sent' | 'viewed' | 'paid' | 'overdue' | 'void'
+
+export type Invoice = {
+  id: string
+  company_id: string
+  user_id?: string
+  invoice_number: string
+  job_id?: string
+  quote_id?: string
+  client_name: string
+  client_email?: string
+  client_address?: string
+  items: Array<{
+    description: string
+    qty: number
+    unit: string
+    unitPrice: number
+    total: number
+  }>
+  subtotal: number
+  tax_rate: number
+  tax_amount: number
+  total: number
+  amount_paid: number
+  status: InvoiceStatus
+  payment_method?: string
+  payment_date?: string
+  due_date?: string
+  notes?: string
+  issued_at?: string
+  created_at: string
+  updated_at: string
+}
