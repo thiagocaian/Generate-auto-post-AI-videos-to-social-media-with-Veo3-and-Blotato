@@ -38,18 +38,9 @@ export function CytronLogin({ onSubmit, onGoogleLogin, error, loading = false, c
       <header className="fixed top-0 left-0 right-0 z-40 h-16 flex items-center px-6"
         style={{ background: "rgba(5,5,5,0.85)", backdropFilter: "blur(16px)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         <div className="flex items-center gap-2.5">
-          <svg width="26" height="26" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="bgGradL" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#1a1a2e" /><stop offset="50%" stopColor="#0d0d1a" /><stop offset="100%" stopColor="#0a0a0a" />
-              </linearGradient>
-              <linearGradient id="cGradL" x1="12" y1="12" x2="34" y2="36" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#ffffff" /><stop offset="30%" stopColor="#e8e8f0" /><stop offset="60%" stopColor="#c8c8d8" /><stop offset="100%" stopColor="#9898b0" />
-              </linearGradient>
-            </defs>
-            <rect x="2" y="2" width="44" height="44" rx="13" fill="url(#bgGradL)" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
-            <path d="M31 15.5C29 13.8 26.3 12.5 23.5 12.5C17 12.5 11.5 18 11.5 24.5C11.5 31 17 36.5 23.5 36.5C26.3 36.5 29 35.2 31 33.5" stroke="url(#cGradL)" strokeWidth="4.5" strokeLinecap="round" fill="none" />
-          </svg>
+          <div className="w-7 h-7 rounded-lg bg-[#886cff] flex items-center justify-center">
+            <span className="text-white font-bold text-xs">C</span>
+          </div>
           <span className="text-[15px] font-semibold tracking-[0.02em]" style={{ color: "#fff" }}>Cytron</span>
         </div>
       </header>
