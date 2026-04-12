@@ -46,6 +46,13 @@ export function FloatingNav({
           className
         )}
       >
+        <Link href="/" className="flex items-center gap-1.5 mr-2">
+          <div className="w-6 h-6 rounded-md bg-[#886cff] flex items-center justify-center">
+            <span className="text-white font-bold text-[10px]">C</span>
+          </div>
+          <span className="text-sm font-semibold text-white hidden sm:block">Cytron</span>
+        </Link>
+        <div className="w-px h-4 bg-white/10 mr-2" />
         {navItems.map((navItem, idx) => (
           <Link
             key={`nav-${idx}`}
