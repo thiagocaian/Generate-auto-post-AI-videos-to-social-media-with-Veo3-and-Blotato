@@ -139,6 +139,10 @@ export type Job = {
   total_value?: number
   photos_before?: string[]
   photos_after?: string[]
+  client_signature_url?: string
+  signature_type?: 'approval' | 'completion'
+  signed_at?: string
+  signer_name?: string
   created_at: string
   updated_at: string
 }

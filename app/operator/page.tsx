@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import type { Job, JobStatus } from '@/lib/supabase'
+import SignaturePad from '@/components/SignaturePad'
 
 const statusConfig: Record<JobStatus, { label: string; color: string; bg: string }> = {
   enquiry:     { label: 'Enquiry',     color: '#D97706', bg: '#FFFBEB' },
@@ -23,6 +24,7 @@ export default function OperatorPage() {
   const [uploading, setUploading] = useState(false)
   const [hoursInput, setHoursInput] = useState('')
   const [tab, setTab] = useState<'today' | 'all'>('today')
+  const [signatureOpen, setSignatureOpen] = useState<{ jobId: string; type: 'approval' | 'completion'; title: string } | null>(null)
 
   const fetchJobs = () => {
     fetch('/api/jobs')
@@ -94,6 +96,37 @@ export default function OperatorPage() {
       })
       fetchJobs()
     } finally { setUploading(false) }
+  }
+
+  const handleSignatureSave = async (dataUrl: string, signerName: string) => {
+    if (!signatureOpen) return
+    const { jobId, type } = signatureOpen
+
+    // Convert data URL to blob and upload to Supabase Storage
+    const res = await fetch(dataUrl)
+    const blob = await res.blob()
+    const path = `${jobId}/signature-${type}-${Date.now()}.png`
+
+    const { error } = await supabase.storage.from('job-photos').upload(path, blob, { upsert: true })
+    if (error) { console.error(error); return }
+
+    const { data: urlData } = supabase.storage.from('job-photos').getPublicUrl(path)
+
+    await fetch('/api/jobs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'update',
+        id: jobId,
+        client_signature_url: urlData.publicUrl,
+        signature_type: type,
+        signed_at: new Date().toISOString(),
+        signer_name: signerName,
+      })
+    })
+
+    setSignatureOpen(null)
+    fetchJobs()
   }
 
   // Active job count
@@ -294,6 +327,42 @@ export default function OperatorPage() {
                     </div>
                   )}
 
+                  {/* Signature */}
+                  <div>
+                    {(job as any).client_signature_url ? (
+                      <div className="p-3 rounded-xl" style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-[10px] font-medium uppercase tracking-wider" style={{ color: '#059669' }}>
+                            ✅ Signed by {(job as any).signer_name || 'Client'}
+                          </p>
+                          <p className="text-[9px]" style={{ color: '#999' }}>
+                            {(job as any).signed_at ? new Date((job as any).signed_at).toLocaleDateString('en-AU') : ''}
+                          </p>
+                        </div>
+                        <img src={(job as any).client_signature_url} alt="Signature" className="w-full h-16 object-contain rounded-lg bg-white" style={{ border: '1px solid #E5E5E5' }} />
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={e => { e.stopPropagation(); setSignatureOpen({ jobId: job.id, type: 'approval', title: job.title }) }}
+                          className="py-3 rounded-xl text-xs font-medium flex flex-col items-center gap-1"
+                          style={{ background: '#F5F3FF', color: '#7C3AED', border: '1px solid #DDD6FE' }}
+                        >
+                          <span className="text-lg">✍️</span>
+                          Approval Signature
+                        </button>
+                        <button
+                          onClick={e => { e.stopPropagation(); setSignatureOpen({ jobId: job.id, type: 'completion', title: job.title }) }}
+                          className="py-3 rounded-xl text-xs font-medium flex flex-col items-center gap-1"
+                          style={{ background: '#ECFDF5', color: '#059669', border: '1px solid #A7F3D0' }}
+                        >
+                          <span className="text-lg">✅</span>
+                          Completion Sign-off
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Navigate to site */}
                   {job.site_address && (
                     <a
@@ -313,6 +382,16 @@ export default function OperatorPage() {
           ))
         )}
       </div>
+
+      {/* Signature Modal */}
+      {signatureOpen && (
+        <SignaturePad
+          type={signatureOpen.type}
+          jobTitle={signatureOpen.title}
+          onSave={handleSignatureSave}
+          onCancel={() => setSignatureOpen(null)}
+        />
+      )}
 
       {/* Bottom nav bar (mobile) */}
       <div className="fixed bottom-0 left-0 right-0 flex items-center justify-around py-2 px-4"
