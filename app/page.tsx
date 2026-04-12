@@ -21,6 +21,7 @@ import {
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import BackgroundScene from "@/components/BackgroundScene";
+import HeroPlatformAnimation from "@/components/HeroPlatformAnimation";
 import { TextGenerateEffect } from "@/components/ui/aceternity/text-generate-effect";
 import { BentoGrid, BentoGridItem } from "@/components/ui/aceternity/bento-grid";
 import { InfiniteMovingCards } from "@/components/ui/aceternity/infinite-moving-cards";
@@ -259,7 +260,7 @@ function EarlyAccessForm() {
 
 export default function LandingPage() {
   return (
-    <div className="relative min-h-screen bg-[#050505] text-white font-mono">
+    <div className="relative min-h-screen bg-[#050505] text-white">
 
       {/* ─── Top Accent Line ─────────────────────────────────────── */}
       <div className="fixed top-0 left-0 right-0 h-[1px] z-50" style={{ background: "linear-gradient(90deg, transparent, #886cff 30%, #886cff 70%, transparent)" }} />
@@ -268,96 +269,133 @@ export default function LandingPage() {
       <FloatingNav navItems={navItems} />
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* ─── HERO SECTION ────────────────────────────────────────── */}
+      {/* ─── HERO SECTION (Twingate-style split layout) ──────────── */}
       {/* ══════════════════════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <BackgroundScene />
+      <section className="relative min-h-screen flex items-center overflow-hidden">
+        <BackgroundScene particleCount={40} opacity={0.3} />
 
         {/* Radial glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(136,108,255,0.06) 0%, transparent 70%)" }} />
+        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(136,108,255,0.08) 0%, transparent 70%)" }} />
 
-        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          {/* Badge */}
-          <motion.div
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#886cff]/30 bg-[#886cff]/5 text-xs text-[#886cff] mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <motion.span
-              className="w-1.5 h-1.5 bg-[#886cff]"
-              animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            EARLY ACCESS — Video Distribution Engine
-          </motion.div>
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-12 py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
-          {/* Title */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.3 }}
-          >
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[80px] font-bold leading-[1.05] tracking-[-0.04em] mb-4">
-              Post your video to
-              <br />
-              <motion.span
-                style={{
-                  background: "linear-gradient(135deg, rgba(136,108,255,0.9), rgba(99,179,237,0.9), rgba(236,121,154,0.9))",
-                  backgroundSize: "200% 200%",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-                animate={{
-                  backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-                }}
-                transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-                className="inline-block"
+            {/* ── LEFT SIDE: Text content ── */}
+            <div className="flex flex-col gap-8">
+              {/* Badge */}
+              <motion.div
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#886cff]/30 bg-[#886cff]/5 text-xs text-[#886cff] w-fit"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
               >
-                all platforms
-              </motion.span>
-              <br />
-              at the same time.
-            </h1>
-          </motion.div>
+                <motion.span
+                  className="w-1.5 h-1.5 rounded-full bg-[#886cff]"
+                  animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                Automação Inteligente para o Seu Negócio
+              </motion.div>
 
-          {/* Subtitle */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="mb-10"
-          >
-            <TextGenerateEffect
-              words="Create with AI. Record from camera. Upload ready-made. Let AI edit your video or post it raw — you decide. Cytron distributes to every platform automatically."
-              className="text-base sm:text-lg text-neutral-500 max-w-2xl mx-auto"
-            />
-          </motion.div>
+              {/* Title */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.3 }}
+              >
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[56px] font-bold leading-[1.08] tracking-[-0.03em]">
+                  Seu negócio merece
+                  <br />
+                  um sistema que
+                  <br />
+                  trabalhe por
+                  <br />
+                  <motion.span
+                    style={{
+                      background: "linear-gradient(135deg, rgba(136,108,255,0.95), rgba(99,179,237,0.9))",
+                      backgroundSize: "200% 200%",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                    }}
+                    animate={{
+                      backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                    }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+                    className="inline-block"
+                  >
+                    você.
+                  </motion.span>
+                </h1>
+              </motion.div>
 
-          {/* CTAs — Early Access */}
-          <EarlyAccessForm />
+              {/* Subtitle */}
+              <motion.p
+                className="text-base sm:text-lg text-neutral-400 max-w-lg leading-relaxed"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+              >
+                Automatize orçamentos, atendimento, estoque, conteúdo e processos
+                — sem complicação e sem custo absurdo.
+              </motion.p>
 
-          {/* Stats */}
-          <motion.div
-            className="flex items-center justify-center gap-12 mt-16"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2 }}
-          >
-            {[
-              { value: "10,000", suffix: "+", label: "Videos generated" },
-              { value: "4", suffix: "", label: "Platforms" },
-              { value: "85", suffix: "%", label: "Time saved" },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-2xl font-bold text-white">
-                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                </div>
-                <div className="text-xs text-neutral-600 mt-1">{stat.label}</div>
-              </div>
-            ))}
-          </motion.div>
+              {/* CTAs */}
+              <motion.div
+                className="flex flex-col sm:flex-row items-start gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1 }}
+              >
+                <Link
+                  href="#pricing"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#886cff] hover:bg-[#7b5ff2] text-white text-sm font-medium transition-all hover:shadow-lg hover:shadow-[#886cff]/25"
+                >
+                  Peça uma Demonstração
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="#features"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 hover:border-white/20 text-white/70 hover:text-white text-sm transition-all"
+                >
+                  Veja como funciona
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </motion.div>
+
+              {/* Stats */}
+              <motion.div
+                className="flex items-center gap-10 pt-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.2 }}
+              >
+                {[
+                  { value: "85", suffix: "%", label: "Tempo economizado" },
+                  { value: "6", suffix: "+", label: "Plataformas" },
+                  { value: "24", suffix: "/7", label: "Automação ativa" },
+                ].map((stat) => (
+                  <div key={stat.label}>
+                    <div className="text-2xl font-bold text-white">
+                      <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                    </div>
+                    <div className="text-xs text-neutral-600 mt-1">{stat.label}</div>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* ── RIGHT SIDE: Platform animation box ── */}
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1, delay: 0.5 }}
+              className="hidden lg:block"
+            >
+              <HeroPlatformAnimation />
+            </motion.div>
+
+          </div>
         </div>
       </section>
 

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { GeistMono } from "geist/font/mono";
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"], display: "swap" });
 import dynamic from "next/dynamic";
 import "./globals.css";
 
@@ -19,7 +21,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${GeistMono.className} antialiased`} style={{ backgroundColor: '#050505', color: '#ffffff' }}>
+      <body className={`${inter.className} antialiased`} style={{ backgroundColor: '#050505', color: '#ffffff' }}>
         {/* Global animated background — same lilac particles across all pages */}
         <BackgroundScene fixed opacity={0.25} particleCount={60} />
         <div style={{ position: 'relative', zIndex: 1 }}>
