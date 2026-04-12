@@ -49,6 +49,8 @@ export async function middleware(request: NextRequest) {
       request.nextUrl.pathname === '/forgot-password' ||
       request.nextUrl.pathname === '/reset-password' ||
       request.nextUrl.pathname === '/landing' ||
+      request.nextUrl.pathname === '/booking' ||
+      request.nextUrl.pathname === '/operator' ||
       request.nextUrl.pathname === '/'
 
     // Not logged in → redirect to login
