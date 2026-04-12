@@ -21,7 +21,7 @@ import {
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import BackgroundScene from "@/components/BackgroundScene";
-import HeroPlatformAnimation from "@/components/HeroPlatformAnimation";
+import HeroDashboardMockup from "@/components/HeroDashboardMockup";
 import { TextGenerateEffect } from "@/components/ui/aceternity/text-generate-effect";
 import { BentoGrid, BentoGridItem } from "@/components/ui/aceternity/bento-grid";
 import { InfiniteMovingCards } from "@/components/ui/aceternity/infinite-moving-cards";
@@ -32,20 +32,12 @@ import { GlowingStarsCard, GlowingStarsTitle, GlowingStarsDescription } from "@/
 // ─── Logo ─────────────────────────────────────────────────────────────────────
 function CytronLogo({ size = 32 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="bgGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#1a1a2e" />
-          <stop offset="100%" stopColor="#0a0a0a" />
-        </linearGradient>
-        <linearGradient id="cGrad" x1="12" y1="12" x2="34" y2="36" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#ffffff" />
-          <stop offset="100%" stopColor="#9898b0" />
-        </linearGradient>
-      </defs>
-      <rect x="2" y="2" width="44" height="44" rx="10" fill="url(#bgGrad)" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
-      <path d="M31 15.5C29 13.8 26.3 12.5 23.5 12.5C17 12.5 11.5 18 11.5 24.5C11.5 31 17 36.5 23.5 36.5C26.3 36.5 29 35.2 31 33.5" stroke="url(#cGrad)" strokeWidth="4.5" strokeLinecap="square" fill="none" />
-    </svg>
+    <div
+      className="rounded-lg bg-[#886cff] flex items-center justify-center"
+      style={{ width: size, height: size }}
+    >
+      <span className="text-white font-bold" style={{ fontSize: size * 0.45 }}>C</span>
+    </div>
   );
 }
 
@@ -392,7 +384,7 @@ export default function LandingPage() {
               transition={{ duration: 1, delay: 0.5 }}
               className="hidden lg:block"
             >
-              <HeroPlatformAnimation />
+              <HeroDashboardMockup />
             </motion.div>
 
           </div>
