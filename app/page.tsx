@@ -348,7 +348,7 @@ export default function LandingPage() {
                 transition={{ delay: 1 }}
               >
                 <Link
-                  href="#pricing"
+                  href="/booking"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#886cff] hover:bg-[#7b5ff2] text-white text-sm font-medium transition-all hover:shadow-lg hover:shadow-[#886cff]/25"
                 >
                   Peça uma Demonstração
