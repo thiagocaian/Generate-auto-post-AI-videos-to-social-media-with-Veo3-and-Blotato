@@ -79,7 +79,7 @@ export default function BookingPage() {
           <span className="text-white font-semibold">Cytron</span>
         </Link>
         <Link href="/" className="text-sm text-white/50 hover:text-white transition-colors">
-          ← Back to home
+          ← Back home
         </Link>
       </nav>
 
@@ -98,9 +98,9 @@ export default function BookingPage() {
               <div className="w-16 h-16 rounded-full bg-[#886cff]/10 flex items-center justify-center mx-auto mb-6">
                 <span className="text-3xl">✅</span>
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Demo Agendada!</h2>
+              <h2 className="text-2xl font-bold text-white mb-2">Demo Booked!</h2>
               <p className="text-sm text-neutral-400 mb-2">
-                Entraremos em contacto em breve para confirmar o horário.
+                We'll be in touch shortly to confirm your time.
               </p>
               <p className="text-xs text-neutral-600 mb-8">
                 {form.preferred_date && `Data preferida: ${form.preferred_date}`}
@@ -110,7 +110,7 @@ export default function BookingPage() {
                 href="/"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#886cff] text-white text-sm font-medium"
               >
-                Voltar ao site
+                Back to site
               </Link>
             </motion.div>
           ) : (
@@ -122,10 +122,10 @@ export default function BookingPage() {
                 animate={{ opacity: 1, y: 0 }}
               >
                 <h1 className="text-3xl font-bold text-white mb-2">
-                  Agende uma Demonstração
+                  Book a Demo
                 </h1>
                 <p className="text-sm text-neutral-400">
-                  Veja como a Cytron pode automatizar o seu negócio. 30 minutos, sem compromisso.
+                  See how Cytron can automate your business. 30 minutes, no obligation.
                 </p>
               </motion.div>
 
@@ -142,13 +142,13 @@ export default function BookingPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[10px] font-medium uppercase tracking-wider mb-1.5 text-neutral-500">
-                        Nome *
+                        Name *
                       </label>
                       <input
                         type="text"
                         value={form.name}
                         onChange={e => setForm({ ...form, name: e.target.value })}
-                        placeholder="Seu nome"
+                        placeholder="Your name"
                         required
                         className="w-full px-3 py-2.5 text-sm rounded-lg text-white placeholder:text-neutral-600 outline-none focus:border-[#886cff]/50 transition-colors"
                         style={{ background: '#1a1a24', border: '1px solid rgba(255,255,255,0.08)' }}
@@ -174,7 +174,7 @@ export default function BookingPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[10px] font-medium uppercase tracking-wider mb-1.5 text-neutral-500">
-                        Telefone
+                        Phone
                       </label>
                       <input
                         type="tel"
@@ -187,7 +187,7 @@ export default function BookingPage() {
                     </div>
                     <div>
                       <label className="block text-[10px] font-medium uppercase tracking-wider mb-1.5 text-neutral-500">
-                        Nome do Negócio
+                        Business Name
                       </label>
                       <input
                         type="text"
@@ -203,7 +203,7 @@ export default function BookingPage() {
                   {/* Business type */}
                   <div>
                     <label className="block text-[10px] font-medium uppercase tracking-wider mb-1.5 text-neutral-500">
-                      Tipo de Negócio
+                      Business Type
                     </label>
                     <select
                       value={form.business_type}
@@ -211,7 +211,7 @@ export default function BookingPage() {
                       className="w-full px-3 py-2.5 text-sm rounded-lg text-white outline-none focus:border-[#886cff]/50 transition-colors"
                       style={{ background: '#1a1a24', border: '1px solid rgba(255,255,255,0.08)' }}
                     >
-                      <option value="">Selecione...</option>
+                      <option value="">Select...</option>
                       {businessTypes.map(t => (
                         <option key={t} value={t}>{t}</option>
                       ))}
@@ -222,7 +222,7 @@ export default function BookingPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[10px] font-medium uppercase tracking-wider mb-1.5 text-neutral-500">
-                        Data Preferida
+                        Preferred Date
                       </label>
                       <input
                         type="date"
@@ -236,7 +236,7 @@ export default function BookingPage() {
                     </div>
                     <div>
                       <label className="block text-[10px] font-medium uppercase tracking-wider mb-1.5 text-neutral-500">
-                        Horário Preferido
+                        Preferred Time
                       </label>
                       <select
                         value={form.preferred_time}
@@ -244,7 +244,7 @@ export default function BookingPage() {
                         className="w-full px-3 py-2.5 text-sm rounded-lg text-white outline-none focus:border-[#886cff]/50 transition-colors"
                         style={{ background: '#1a1a24', border: '1px solid rgba(255,255,255,0.08)' }}
                       >
-                        <option value="">Selecione...</option>
+                        <option value="">Select...</option>
                         {timeSlots.map(t => (
                           <option key={t} value={t}>{t}</option>
                         ))}
@@ -255,12 +255,12 @@ export default function BookingPage() {
                   {/* Message */}
                   <div>
                     <label className="block text-[10px] font-medium uppercase tracking-wider mb-1.5 text-neutral-500">
-                      Mensagem (opcional)
+                      Message (optional)
                     </label>
                     <textarea
                       value={form.message}
                       onChange={e => setForm({ ...form, message: e.target.value })}
-                      placeholder="Conte um pouco sobre seu negócio e o que gostaria de automatizar..."
+                      placeholder="Tell us about your business and what you'd like to automate..."
                       rows={3}
                       className="w-full px-3 py-2.5 text-sm rounded-lg text-white placeholder:text-neutral-600 outline-none focus:border-[#886cff]/50 transition-colors resize-none"
                       style={{ background: '#1a1a24', border: '1px solid rgba(255,255,255,0.08)' }}
@@ -274,11 +274,11 @@ export default function BookingPage() {
                     className="w-full py-3 text-sm font-medium text-white rounded-xl transition-all disabled:opacity-40 hover:shadow-lg hover:shadow-[#886cff]/25"
                     style={{ background: '#886cff' }}
                   >
-                    {step === 'submitting' ? 'Agendando...' : 'Agendar Demonstração Gratuita'}
+                    {step === 'submitting' ? 'Booking...' : 'Book a Free Demo'}
                   </button>
 
                   <p className="text-center text-[10px] text-neutral-600">
-                    Sem compromisso • 30 minutos • 100% gratuito
+                    No obligation • 30 minutes • 100% free
                   </p>
                 </div>
               </motion.div>

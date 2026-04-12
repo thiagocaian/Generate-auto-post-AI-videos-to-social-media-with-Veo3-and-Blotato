@@ -286,7 +286,7 @@ export default function LandingPage() {
                   animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
-                Automação Inteligente para o Seu Negócio
+                Smart Automation for Your Business
               </motion.div>
 
               {/* Title */}
@@ -296,11 +296,11 @@ export default function LandingPage() {
                 transition={{ duration: 1, delay: 0.3 }}
               >
                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[56px] font-bold leading-[1.08] tracking-[-0.03em]">
-                  Seu negócio merece
+                  Your business
                   <br />
-                  um sistema que
+                  deserves a system
                   <br />
-                  trabalhe por
+                  that works for
                   <br />
                   <motion.span
                     style={{
@@ -316,7 +316,7 @@ export default function LandingPage() {
                     transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
                     className="inline-block"
                   >
-                    você.
+                    you.
                   </motion.span>
                 </h1>
               </motion.div>
@@ -328,8 +328,8 @@ export default function LandingPage() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.8 }}
               >
-                Automatize orçamentos, atendimento, estoque, conteúdo e processos
-                — sem complicação e sem custo absurdo.
+                Automate quoting, customer service, inventory, content and
+                processes — no hassle, no ridiculous costs.
               </motion.p>
 
               {/* CTAs */}
@@ -343,14 +343,14 @@ export default function LandingPage() {
                   href="/booking"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#886cff] hover:bg-[#7b5ff2] text-white text-sm font-medium transition-all hover:shadow-lg hover:shadow-[#886cff]/25"
                 >
-                  Peça uma Demonstração
+                  Request a Demo
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   href="#features"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 hover:border-white/20 text-white/70 hover:text-white text-sm transition-all"
                 >
-                  Veja como funciona
+                  See how it works
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </motion.div>
@@ -363,9 +363,9 @@ export default function LandingPage() {
                 transition={{ delay: 1.2 }}
               >
                 {[
-                  { value: "85", suffix: "%", label: "Tempo economizado" },
-                  { value: "6", suffix: "+", label: "Plataformas" },
-                  { value: "24", suffix: "/7", label: "Automação ativa" },
+                  { value: "85", suffix: "%", label: "Time saved" },
+                  { value: "6", suffix: "+", label: "Platforms" },
+                  { value: "24", suffix: "/7", label: "Always on" },
                 ].map((stat) => (
                   <div key={stat.label}>
                     <div className="text-2xl font-bold text-white">
