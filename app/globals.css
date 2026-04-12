@@ -52,9 +52,9 @@
     --shadow-offset-y: 1px;
 
     /* Fonts */
-    --font-mono: 'Geist Mono', monospace;
-    --font-sans: 'Geist Mono', monospace;
-    --font-serif: 'Geist Mono', monospace;
+    --font-mono: 'Geist Mono', ui-monospace, monospace;
+    --font-sans: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-serif: 'Georgia', 'Times New Roman', serif;
 
     /* CYTRON brand */
     --cytron-green: #886cff;
@@ -111,7 +111,6 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
 }
