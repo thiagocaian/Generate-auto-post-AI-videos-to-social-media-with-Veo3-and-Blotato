@@ -139,6 +139,11 @@ export type Job = {
   total_value?: number
   photos_before?: string[]
   photos_after?: string[]
+  checklist?: Array<{ task: string; done: boolean }>
+  materials?: Array<{ item: string; qty: number; unit: string }>
+  documents?: Array<{ name: string; url: string }>
+  admin_notes?: string
+  instructions?: string
   client_signature_url?: string
   signature_type?: 'approval' | 'completion'
   signed_at?: string

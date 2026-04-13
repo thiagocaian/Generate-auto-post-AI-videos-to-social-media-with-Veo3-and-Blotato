@@ -237,6 +237,86 @@ export default function OperatorPage() {
                     )}
                   </div>
 
+                  {/* Instructions */}
+                  {((job as any).instructions || job.description) && (
+                    <div className="p-3 rounded-xl" style={{ background: '#EFF6FF', border: '1px solid #BFDBFE' }}>
+                      <p className="text-[10px] font-medium uppercase tracking-wider mb-1.5" style={{ color: '#1D4ED8' }}>📋 Job Instructions</p>
+                      <p className="text-xs leading-relaxed" style={{ color: '#333' }}>{(job as any).instructions || job.description}</p>
+                    </div>
+                  )}
+
+                  {/* Admin Notes */}
+                  {(job as any).admin_notes && (
+                    <div className="p-3 rounded-xl" style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}>
+                      <p className="text-[10px] font-medium uppercase tracking-wider mb-1.5" style={{ color: '#D97706' }}>📝 Admin Notes</p>
+                      <p className="text-xs leading-relaxed" style={{ color: '#333' }}>{(job as any).admin_notes}</p>
+                    </div>
+                  )}
+
+                  {/* Checklist */}
+                  {(job as any).checklist && (job as any).checklist.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-medium uppercase tracking-wider mb-2" style={{ color: '#999' }}>✅ Task Checklist</p>
+                      <div className="space-y-1.5">
+                        {(job as any).checklist.map((item: any, idx: number) => (
+                          <button
+                            key={idx}
+                            onClick={e => {
+                              e.stopPropagation();
+                              const updated = [...(job as any).checklist];
+                              updated[idx] = { ...updated[idx], done: !updated[idx].done };
+                              fetch('/api/jobs', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ action: 'update', id: job.id, checklist: updated })
+                              }).then(() => fetchJobs());
+                            }}
+                            className="flex items-center gap-2 w-full text-left p-2.5 rounded-lg transition-colors"
+                            style={{ background: item.done ? '#ECFDF5' : '#FFF', border: item.done ? '1px solid #A7F3D0' : '1px solid #E5E5E5' }}
+                          >
+                            <span className="text-sm">{item.done ? '✅' : '⬜'}</span>
+                            <span className={`text-xs ${item.done ? 'line-through' : ''}`} style={{ color: item.done ? '#059669' : '#333' }}>
+                              {item.task}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Materials needed */}
+                  {(job as any).materials && (job as any).materials.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-medium uppercase tracking-wider mb-2" style={{ color: '#999' }}>🔧 Materials Needed</p>
+                      <div className="space-y-1">
+                        {(job as any).materials.map((m: any, idx: number) => (
+                          <div key={idx} className="flex items-center justify-between p-2 rounded-lg" style={{ background: '#FAFAFA', border: '1px solid #F0F0F0' }}>
+                            <span className="text-xs" style={{ color: '#333' }}>{m.item}</span>
+                            <span className="text-[10px] font-mono" style={{ color: '#999' }}>{m.qty} {m.unit}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Documents */}
+                  {(job as any).documents && (job as any).documents.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-medium uppercase tracking-wider mb-2" style={{ color: '#999' }}>📎 Documents</p>
+                      <div className="space-y-1">
+                        {(job as any).documents.map((doc: any, idx: number) => (
+                          <a key={idx} href={doc.url} target="_blank" rel="noopener noreferrer"
+                            className="flex items-center gap-2 p-2 rounded-lg transition-colors"
+                            style={{ background: '#FAFAFA', border: '1px solid #F0F0F0' }}
+                            onClick={e => e.stopPropagation()}>
+                            <span className="text-sm">📄</span>
+                            <span className="text-xs underline" style={{ color: '#1D4ED8' }}>{doc.name}</span>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Log hours */}
                   {job.status === 'in_progress' && (
                     <div>
