@@ -41,9 +41,8 @@ const COMMON_MATERIALS = [
 ]
 
 export default function MaterialsPage() {
-  const [materials, setMaterials] = useState<MaterialItem[]>([
-    { name: '', qty: 0, unit: 'm²' }
-  ])
+  const [freeText, setFreeText] = useState('')
+  const [materials, setMaterials] = useState<MaterialItem[]>([])
   const [distributors, setDistributors] = useState<Distributor[]>([])
   const [results, setResults] = useState<SearchResults | null>(null)
   const [searching, setSearching] = useState(false)
@@ -51,6 +50,7 @@ export default function MaterialsPage() {
   const [history, setHistory] = useState<any[]>([])
   const [showHistory, setShowHistory] = useState(false)
   const [seeded, setSeeded] = useState(false)
+  const [parsing, setParsing] = useState(false)
 
   useEffect(() => {
     loadData()
@@ -89,6 +89,44 @@ export default function MaterialsPage() {
     const updated = [...materials]
     updated[i] = { ...updated[i], [field]: value }
     setMaterials(updated)
+  }
+
+  // Parse free text into structured materials using AI
+  const parseFreeText = async () => {
+    if (!freeText.trim()) return
+    setParsing(true)
+    try {
+      const res = await fetch('/api/materials/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'parse', text: freeText })
+      })
+      const data = await res.json()
+      if (data.materials?.length) {
+        setMaterials(data.materials)
+      }
+    } catch (err) {
+      // Fallback: simple parsing
+      const lines = freeText.split(/[,\n;]+/).filter(Boolean)
+      const parsed: MaterialItem[] = []
+      for (const line of lines) {
+        const match = line.trim().match(/(\d+\.?\d*)\s*(m²|m2|m linear|ml|metros?|un|unid|caixa|box|L|litro|kg|rolo|roll)?\s*(?:de\s+)?(.+)/i)
+        if (match) {
+          const qty = parseFloat(match[1])
+          let unit = (match[2] || 'm²').toLowerCase()
+          if (unit === 'm2' || unit === 'metro' || unit === 'metros') unit = 'm²'
+          if (unit === 'ml') unit = 'm linear'
+          if (unit === 'un' || unit === 'unid') unit = 'unit'
+          if (unit === 'caixa') unit = 'box'
+          if (unit === 'litro') unit = 'L'
+          if (unit === 'rolo') unit = 'roll'
+          parsed.push({ name: match[3].trim(), qty, unit })
+        }
+      }
+      if (parsed.length) setMaterials(parsed)
+    } finally {
+      setParsing(false)
+    }
   }
 
   const validMaterials = materials.filter(m => m.name.trim() && m.qty > 0)
@@ -218,65 +256,30 @@ export default function MaterialsPage() {
           </div>
         )}
 
-        {/* Materials Input */}
-        <div className="mb-6 p-5 rounded-xl" style={{ border: '1px solid #E5E5E5' }}>
-          <h2 className="text-sm font-bold uppercase tracking-wider mb-4" style={{ color: '#666' }}>
-            Materials List
-          </h2>
+        {/* Materials Input — Free Text */}
+        <div className="mb-6 p-5 rounded-xl" style={{ border: '2px solid #1A1A1A' }}>
+          <h2 className="text-lg font-bold mb-1">What materials do you need?</h2>
+          <p className="text-xs mb-4" style={{ color: '#999' }}>
+            Write your list naturally — e.g. "50m² vinyl plank, 14m rodape, 5L adhesive"
+          </p>
 
-          <div className="space-y-3">
-            {materials.map((mat, i) => (
-              <div key={i} className="flex gap-3 items-center">
-                <div className="flex-1 relative">
-                  <input
-                    type="text"
-                    list={`materials-list-${i}`}
-                    value={mat.name}
-                    onChange={e => updateMaterial(i, 'name', e.target.value)}
-                    placeholder="Material name (e.g. Vinyl Plank, Skirting Board)"
-                    className="w-full px-3 py-2.5 text-sm rounded-lg"
-                    style={{ border: '1px solid #E5E5E5', background: '#FAFAFA', color: '#1A1A1A' }}
-                  />
-                  <datalist id={`materials-list-${i}`}>
-                    {COMMON_MATERIALS.map(m => <option key={m} value={m} />)}
-                  </datalist>
-                </div>
-                <input
-                  type="number"
-                  value={mat.qty || ''}
-                  onChange={e => updateMaterial(i, 'qty', Number(e.target.value))}
-                  placeholder="Qty"
-                  min="0"
-                  step="0.5"
-                  className="w-24 px-3 py-2.5 text-sm rounded-lg text-center"
-                  style={{ border: '1px solid #E5E5E5', background: '#FAFAFA', color: '#1A1A1A' }}
-                />
-                <select
-                  value={mat.unit}
-                  onChange={e => updateMaterial(i, 'unit', e.target.value)}
-                  className="w-28 px-2 py-2.5 text-sm rounded-lg"
-                  style={{ border: '1px solid #E5E5E5', background: '#FAFAFA', color: '#1A1A1A' }}
-                >
-                  {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
-                </select>
-                <button
-                  onClick={() => removeMaterial(i)}
-                  className="w-9 h-9 flex items-center justify-center rounded-lg text-sm"
-                  style={{ color: '#CCC', border: '1px solid #E5E5E5' }}
-                >
-                  X
-                </button>
-              </div>
-            ))}
-          </div>
+          <textarea
+            value={freeText}
+            onChange={e => setFreeText(e.target.value)}
+            placeholder={"Example:\n50m² vinyl plank\n14 metros rodape\n5L cola para piso\n3 caixas underlay\n10m perfil de transicao"}
+            rows={5}
+            className="w-full px-4 py-3 text-sm rounded-lg resize-none"
+            style={{ border: '1px solid #E5E5E5', background: '#FAFAFA', color: '#1A1A1A', fontSize: 15, lineHeight: 1.7 }}
+          />
 
-          <div className="flex items-center gap-3 mt-4">
+          <div className="flex items-center gap-3 mt-3">
             <button
-              onClick={addMaterial}
-              className="px-4 py-2 text-sm font-medium rounded-lg"
-              style={{ border: '1px dashed #CCC', color: '#999' }}
+              onClick={parseFreeText}
+              disabled={parsing || !freeText.trim()}
+              className="px-5 py-2.5 text-sm font-bold rounded-lg disabled:opacity-40"
+              style={{ background: '#F5F5F5', color: '#1A1A1A', border: '1px solid #E5E5E5' }}
             >
-              + Add Material
+              {parsing ? 'Reading...' : 'Read List'}
             </button>
             <button
               onClick={handleSearch}
@@ -288,6 +291,32 @@ export default function MaterialsPage() {
             </button>
           </div>
         </div>
+
+        {/* Parsed Materials List */}
+        {materials.length > 0 && validMaterials.length > 0 && !searching && (
+          <div className="mb-6 p-4 rounded-xl" style={{ border: '1px solid #059669', background: '#F0FDF4' }}>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-bold" style={{ color: '#059669' }}>
+                Items found ({validMaterials.length})
+              </h3>
+              <button
+                onClick={() => { setMaterials([]); setFreeText('') }}
+                className="text-xs px-2 py-1 rounded"
+                style={{ color: '#999', border: '1px solid #E5E5E5' }}
+              >
+                Clear
+              </button>
+            </div>
+            <div className="space-y-1.5">
+              {validMaterials.map((m, i) => (
+                <div key={i} className="flex items-center justify-between text-sm px-3 py-2 rounded-lg" style={{ background: '#FFF' }}>
+                  <span className="font-medium">{m.name}</span>
+                  <span style={{ color: '#666' }}>{m.qty} {m.unit}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Searching Animation */}
         {searching && (

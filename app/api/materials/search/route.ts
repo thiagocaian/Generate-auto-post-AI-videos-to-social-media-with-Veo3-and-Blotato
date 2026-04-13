@@ -78,6 +78,39 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
+
+  // Action: parse free text into structured materials list
+  if (body.action === 'parse') {
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+    const aiRes = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{
+        role: 'user',
+        content: `Parse this flooring materials list into structured data. The user is a flooring installer in Gold Coast, Australia. They write in Portuguese or English.
+
+Text: "${body.text}"
+
+Return ONLY a JSON object:
+{"materials": [{"name": "Material Name in English", "qty": 50, "unit": "m²"}]}
+
+Valid units: m², m linear, unit, box, L, kg, roll
+- "metros" or "m" for floor coverings = m²
+- "metros" for rodape/skirting/profiles = m linear
+- "litros" = L
+- "caixas" = box
+- "unidades" = unit
+- Translate Portuguese material names to English (rodape = Skirting Board, cola = Adhesive, piso vinilico = Vinyl Plank, etc.)`
+      }]
+    })
+    const text = aiRes.content[0].type === 'text' ? aiRes.content[0].text : ''
+    try {
+      const match = text.match(/\{[\s\S]*\}/)
+      if (match) return NextResponse.json(JSON.parse(match[0]))
+    } catch {}
+    return NextResponse.json({ materials: [] })
+  }
+
   const { materials, distributors } = body as {
     materials: MaterialItem[]
     distributors: Distributor[]
