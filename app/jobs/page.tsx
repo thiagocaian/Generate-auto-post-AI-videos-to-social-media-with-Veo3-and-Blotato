@@ -33,7 +33,7 @@ export default function JobsPage() {
   const [form, setForm] = useState({
     title: '', client_name: '', client_email: '', client_phone: '',
     site_address: '', assigned_to: '', priority: 'medium',
-    scheduled_date: '', estimated_hours: '', description: ''
+    scheduled_date: '', estimated_hours: '', description: '', instructions: '', admin_notes: '', checklist_text: ''
   })
   const [saving, setSaving] = useState(false)
   const [newJobPhotoBefore, setNewJobPhotoBefore] = useState<File[]>([])
@@ -73,6 +73,9 @@ export default function JobsPage() {
           action: 'create',
           ...form,
           estimated_hours: form.estimated_hours ? Number(form.estimated_hours) : null,
+          instructions: form.instructions || null,
+          admin_notes: form.admin_notes || null,
+          checklist: form.checklist_text ? form.checklist_text.split('\n').filter(Boolean).map(t => ({ task: t.trim(), done: false })) : [],
         })
       })
       const { job } = await res.json()
@@ -112,7 +115,7 @@ export default function JobsPage() {
       }
 
       setNewJobOpen(false)
-      setForm({ title: '', client_name: '', client_email: '', client_phone: '', site_address: '', assigned_to: '', priority: 'medium', scheduled_date: '', estimated_hours: '', description: '' })
+      setForm({ title: '', client_name: '', client_email: '', client_phone: '', site_address: '', assigned_to: '', priority: 'medium', scheduled_date: '', estimated_hours: '', description: '', instructions: '', admin_notes: '', checklist_text: '' })
       setNewJobPhotoBefore([])
       setNewJobPhotoAfter([])
       fetchJobs()
@@ -517,6 +520,45 @@ export default function JobsPage() {
                     rows={3}
                     className="w-full px-3 py-2 text-sm rounded-lg resize-none"
                     style={{ border: '1px solid #E5E5E5', background: '#FAFAFA', outline: 'none' }}
+                  />
+                </div>
+
+                {/* Instructions for operator */}
+                <div>
+                  <label className="block text-[10px] font-medium uppercase tracking-wider mb-1" style={{ color: '#1D4ED8' }}>📋 Instructions for Operator</label>
+                  <textarea
+                    value={form.instructions}
+                    onChange={e => setForm({ ...form, instructions: e.target.value })}
+                    placeholder="Step-by-step instructions for the field operator..."
+                    rows={3}
+                    className="w-full px-3 py-2 text-sm rounded-lg resize-none"
+                    style={{ border: '1px solid #BFDBFE', background: '#EFF6FF', outline: 'none' }}
+                  />
+                </div>
+
+                {/* Admin Notes */}
+                <div>
+                  <label className="block text-[10px] font-medium uppercase tracking-wider mb-1" style={{ color: '#D97706' }}>📝 Admin Notes (internal)</label>
+                  <textarea
+                    value={form.admin_notes}
+                    onChange={e => setForm({ ...form, admin_notes: e.target.value })}
+                    placeholder="Internal notes, special requirements..."
+                    rows={2}
+                    className="w-full px-3 py-2 text-sm rounded-lg resize-none"
+                    style={{ border: '1px solid #FDE68A', background: '#FFFBEB', outline: 'none' }}
+                  />
+                </div>
+
+                {/* Checklist */}
+                <div>
+                  <label className="block text-[10px] font-medium uppercase tracking-wider mb-1" style={{ color: '#059669' }}>✅ Task Checklist (one per line)</label>
+                  <textarea
+                    value={form.checklist_text}
+                    onChange={e => setForm({ ...form, checklist_text: e.target.value })}
+                    placeholder={"Isolate power supply\nTest voltage\nInstall components\nClean work area\nClient sign-off"}
+                    rows={4}
+                    className="w-full px-3 py-2 text-sm rounded-lg resize-none font-mono"
+                    style={{ border: '1px solid #A7F3D0', background: '#F0FDF4', outline: 'none' }}
                   />
                 </div>
 
