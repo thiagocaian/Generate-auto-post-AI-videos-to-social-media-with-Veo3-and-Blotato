@@ -467,8 +467,8 @@ export default function JobsPage() {
 
         {/* ── New Job Modal ── */}
         {newJobOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.4)' }}>
-            <div className="bg-white rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}>
+          <div className="fixed inset-0 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.4)', zIndex: 9999 }} onClick={() => setNewJobOpen(false)}>
+            <div className="bg-white rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.15)', position: 'relative', zIndex: 10000 }} onClick={e => e.stopPropagation()}>
               <h2 className="text-lg font-bold mb-4">New Job</h2>
 
               <div className="space-y-3">
