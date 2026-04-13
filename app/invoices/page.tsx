@@ -72,7 +72,7 @@ export default function InvoicesPage() {
   }
 
   return (
-    <div className="flex min-h-screen" style={{ background: '#FFFFFF' }}>
+    <div className="flex min-h-screen" style={{ background: '#FFFFFF', color: '#1A1A1A' }}>
       <Sidebar active="invoices" />
 
       <main className="flex-1 p-6 md:p-8 overflow-y-auto">

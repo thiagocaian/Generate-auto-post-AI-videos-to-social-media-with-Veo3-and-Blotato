@@ -824,7 +824,7 @@ export default function MarketingPage() {
     setPlatforms(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p])
 
   return (
-    <div className="flex min-h-screen" style={{ background: '#FFFFFF', fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="flex min-h-screen" style={{ background: '#FFFFFF', color: '#1A1A1A', fontFamily: "'Inter', system-ui, sans-serif" }}>
       <Sidebar active="marketing" />
 
       <main className="flex-1 flex flex-col overflow-hidden pt-12 md:pt-0">

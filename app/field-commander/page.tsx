@@ -106,7 +106,7 @@ export default function FieldCommanderPage() {
   }
 
   return (
-    <div className="flex min-h-screen" style={{ background: '#FFFFFF', fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="flex min-h-screen" style={{ background: '#FFFFFF', color: '#1A1A1A', fontFamily: "'Inter', system-ui, sans-serif" }}>
 
       <Sidebar active="field" />
 

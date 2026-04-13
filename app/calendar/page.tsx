@@ -62,7 +62,7 @@ export default function CalendarPage() {
   const selectedDayJobs = selectedDay ? jobs.filter(j => j.scheduled_date === selectedDay) : []
 
   return (
-    <div className="flex min-h-screen" style={{ background: '#FFFFFF' }}>
+    <div className="flex min-h-screen" style={{ background: '#FFFFFF', color: '#1A1A1A' }}>
       <Sidebar active="calendar" />
 
       <main className="flex-1 p-6 md:p-8 overflow-y-auto">

@@ -30,7 +30,7 @@ export default function WarehousePage() {
   const totalValue = items.reduce((sum, i) => sum + (i.current_stock * i.unit_cost), 0)
 
   return (
-    <div className="flex min-h-screen" style={{ background: '#FFFFFF', fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="flex min-h-screen" style={{ background: '#FFFFFF', color: '#1A1A1A', fontFamily: "'Inter', system-ui, sans-serif" }}>
       <Sidebar active="warehouse" />
 
       <main className="flex-1 flex flex-col overflow-hidden pt-12 md:pt-0">

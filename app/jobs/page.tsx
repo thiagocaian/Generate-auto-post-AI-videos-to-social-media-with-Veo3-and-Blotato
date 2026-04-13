@@ -211,7 +211,7 @@ export default function JobsPage() {
   const pipelineValue = jobs.reduce((s, j) => s + (j.total_value || 0), 0)
 
   return (
-    <div className="flex min-h-screen" style={{ background: '#FFFFFF' }}>
+    <div className="flex min-h-screen" style={{ background: '#FFFFFF', color: '#1A1A1A' }}>
       <Sidebar active="jobs" />
 
       <main className="flex-1 p-6 md:p-8 overflow-y-auto">
