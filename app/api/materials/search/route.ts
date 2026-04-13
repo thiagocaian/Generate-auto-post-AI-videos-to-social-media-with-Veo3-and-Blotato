@@ -40,6 +40,33 @@ async function callOpenAI(prompt: string): Promise<string> {
   return data.choices?.[0]?.message?.content || ''
 }
 
+// Map specialty to trade context for AI prompts
+function getSpecialtyContext(specialty: string): { trade: string; priceContext: string } {
+  const map: Record<string, { trade: string; priceContext: string }> = {
+    flooring: {
+      trade: 'flooring installer',
+      priceContext: 'Use realistic 2024-2025 AUD market prices for flooring materials.',
+    },
+    electrical: {
+      trade: 'electrician',
+      priceContext: 'Use realistic 2024-2025 AUD market prices for electrical supplies (cable, conduit, switchgear, RCDs, GPOs, lights, etc.).',
+    },
+    plumbing: {
+      trade: 'plumber',
+      priceContext: 'Use realistic 2024-2025 AUD market prices for plumbing supplies (pipes, fittings, valves, fixtures, hot water, drainage, etc.).',
+    },
+    hvac: {
+      trade: 'HVAC technician',
+      priceContext: 'Use realistic 2024-2025 AUD market prices for HVAC supplies (ducting, refrigerant, compressors, filters, thermostats, insulation, etc.).',
+    },
+    general: {
+      trade: 'general construction contractor',
+      priceContext: 'Use realistic 2024-2025 AUD market prices for general construction materials (timber, concrete, steel, fasteners, etc.).',
+    },
+  }
+  return map[specialty] || map.flooring
+}
+
 export async function POST(req: NextRequest) {
   try {
     const user = await getAuthUser()
@@ -50,15 +77,17 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
+    const specialty = body.specialty || 'flooring'
+    const ctx = getSpecialtyContext(specialty)
 
     // === PARSE free text into structured list ===
     if (body.action === 'parse') {
-      const text = await callOpenAI(`Parse this flooring materials list. User is a flooring installer in Gold Coast AU. Input may be Portuguese or English.
+      const text = await callOpenAI(`Parse this ${ctx.trade} materials list. User is a ${ctx.trade} in Gold Coast AU. Input may be Portuguese or English.
 
 Text: "${body.text}"
 
-Return ONLY JSON: {"materials":[{"name":"English Name","qty":50,"unit":"m²"}]}
-Units: m², m linear, unit, box, L, kg, roll. Translate PT to EN (rodape=Skirting Board, cola=Adhesive, piso vinilico=Vinyl Plank).`)
+Return ONLY JSON: {"materials":[{"name":"English Name","qty":50,"unit":"m\u00B2"}]}
+Units: m\u00B2, m linear, unit, box, L, kg, roll. Translate PT to EN (rodape=Skirting Board, cola=Adhesive, piso vinilico=Vinyl Plank, fio=Cable, tubo=Pipe, disjuntor=Circuit Breaker).`)
 
       const match = text.match(/\{[\s\S]*\}/)
       if (match) {
@@ -76,7 +105,7 @@ Units: m², m linear, unit, box, L, kg, roll. Translate PT to EN (rodape=Skirtin
     const materialsList = materials.map((m: any) => `- ${m.name}: ${m.qty} ${m.unit}`).join('\n')
     const distList = distributors.slice(0, 4).map((d: any) => `- ${d.name} (${d.website})`).join('\n')
 
-    const aiText = await callOpenAI(`You are a flooring materials price calculator for Gold Coast, QLD, Australia. Use realistic 2024-2025 AUD market prices.
+    const aiText = await callOpenAI(`You are a ${ctx.trade} materials price calculator for Gold Coast, QLD, Australia. ${ctx.priceContext}
 
 MATERIALS:
 ${materialsList}
