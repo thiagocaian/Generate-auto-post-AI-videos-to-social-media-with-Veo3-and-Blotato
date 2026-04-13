@@ -3,8 +3,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import Anthropic from '@anthropic-ai/sdk'
 
-// Allow up to 60s for AI processing
-export const maxDuration = 60
+// Vercel hobby plan: max 10s. Haiku responds in 2-3s so this is fine.
 
 async function getAuthUser() {
   const cookieStore = await cookies()
