@@ -155,81 +155,39 @@ Valid units: m², m linear, unit, box, L, kg, roll
 
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-  // Fetch content from all distributors in parallel
-  const fetchResults = await Promise.allSettled(
-    distributors.map(async (dist) => {
-      const content = await fetchDistributorProducts(dist, materials)
-      return { distributor: dist.name, website: dist.website, content }
-    })
-  )
-
-  const distributorData = fetchResults
-    .filter((r): r is PromiseFulfilledResult<{ distributor: string; website: string; content: string }> => r.status === 'fulfilled')
-    .map(r => r.value)
-
-  // Use Claude AI to analyze all distributor data and find prices
   const materialsList = materials.map(m => `- ${m.name}: ${m.qty} ${m.unit}`).join('\n')
-
-  const distributorContext = distributorData.map(d =>
-    `=== ${d.distributor} (${d.website}) ===\n${d.content.substring(0, 8000)}`
-  ).join('\n\n')
+  const distributorList = distributors.map(d => `- ${d.name} (${d.website}) — ${d.categories.join(', ')}`).join('\n')
 
   const aiResponse = await anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 4000,
     messages: [{
       role: 'user',
-      content: `You are a flooring materials price research agent for Gold Coast, Australia.
+      content: `You are a flooring materials price calculator for Gold Coast, Queensland, Australia.
 
-I need you to find prices for these materials from flooring distributors:
+You have expert knowledge of Australian flooring material prices from major retailers and trade suppliers. Use realistic 2024-2025 Australian market prices.
 
 MATERIALS NEEDED:
 ${materialsList}
 
-DISTRIBUTOR WEBSITE DATA:
-${distributorContext}
+DISTRIBUTORS TO COMPARE:
+${distributorList}
 
-IMPORTANT INSTRUCTIONS:
-1. Search the website content for each material or similar products
-2. Extract any prices you find (per m², per linear metre, per unit, per litre, etc.)
-3. If a price is not found on the website, estimate a realistic Australian market price based on your knowledge of Gold Coast flooring trade prices. Mark estimated prices with "est."
-4. All prices must be in AUD
-5. Calculate the total for each material (price × quantity)
+INSTRUCTIONS:
+1. For each distributor, provide realistic AUD prices for each material
+2. Bunnings and Mitre 10 have public retail prices — use accurate retail pricing
+3. Trade suppliers (National Flooring Distributors, Marques, MJS, Paradise Timbers) typically have 15-30% lower trade prices
+4. Include the price per unit AND the total (price x quantity)
+5. Prices should vary realistically between distributors (not all the same)
+6. Mark prices as "estimated" source since these are market-based estimates
 
-Return ONLY a valid JSON object in this exact format:
-{
-  "results": [
-    {
-      "distributor": "Distributor Name",
-      "website": "https://...",
-      "items": [
-        {
-          "material": "Material name",
-          "unit_price": 45.00,
-          "price_unit": "per m²",
-          "qty": 50,
-          "total": 2250.00,
-          "source": "website" or "estimated",
-          "product_name": "Matched product name if found",
-          "url": "direct product URL if available"
-        }
-      ],
-      "grand_total": 2250.00
-    }
-  ],
-  "best_option": {
-    "distributor": "Name of cheapest distributor",
-    "total": 2250.00,
-    "savings": 150.00
-  },
-  "notes": "Brief summary of findings"
-}`
+Return ONLY valid JSON (no markdown, no backticks):
+{"results":[{"distributor":"Name","website":"https://...","items":[{"material":"Material name","unit_price":45.00,"price_unit":"per m2","qty":50,"total":2250.00,"source":"estimated","product_name":"Typical product name","url":""}],"grand_total":2250.00}],"best_option":{"distributor":"Cheapest name","total":2250.00,"savings":150.00},"notes":"Brief comparison summary"}`
     }]
   })
 
   const aiText = aiResponse.content[0].type === 'text' ? aiResponse.content[0].text : ''
 
-  // Extract JSON from AI response
   let parsedResults
   try {
     const jsonMatch = aiText.match(/\{[\s\S]*\}/)
@@ -237,9 +195,8 @@ Return ONLY a valid JSON object in this exact format:
       parsedResults = JSON.parse(jsonMatch[0])
     }
   } catch {
-    // If JSON parsing fails, return raw AI response
-    parsedResults = { raw: aiText, error: 'Could not parse AI response' }
+    parsedResults = { error: 'Could not parse AI response', raw: aiText.substring(0, 500) }
   }
 
-  return NextResponse.json(parsedResults)
+  return NextResponse.json(parsedResults || { error: 'No results' })
 }
