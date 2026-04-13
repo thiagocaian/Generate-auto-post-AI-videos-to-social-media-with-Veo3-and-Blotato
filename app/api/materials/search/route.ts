@@ -3,6 +3,9 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import Anthropic from '@anthropic-ai/sdk'
 
+// Allow up to 60s for AI processing
+export const maxDuration = 60
+
 async function getAuthUser() {
   const cookieStore = await cookies()
   const supabase = createServerClient(

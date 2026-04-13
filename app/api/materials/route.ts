@@ -3,6 +3,8 @@ import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
+export const maxDuration = 30
+
 async function getAuthUser() {
   const cookieStore = await cookies()
   const supabase = createServerClient(
