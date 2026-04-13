@@ -12,10 +12,13 @@ type DashboardData = {
     quotes: { total: number; totalValue: number; approved: number }
     compliance: { total: number; passed: number; failed: number; pending: number }
     workOrders: { total: number; active: number; completed: number }
+    jobs: { total: number; active: number; completed: number; pipelineValue: number }
+    invoices: { total: number; totalBilled: number; totalPaid: number; outstanding: number }
   }
   recent: {
     posts: { id: string; caption: string; platform: string; status: string; created_at: string }[]
     quotes: { id: string; quote_number: string; client_name: string; total: number; status: string; created_at: string }[]
+    jobs: { id: string; job_number: string; title: string; client_name: string; status: string; total_value: number; created_at: string }[]
   }
 }
 
@@ -77,30 +80,42 @@ export default function Home() {
         <div className="flex-1 overflow-y-auto p-4 md:p-8">
 
           {/* KPIs */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 mb-6 md:mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-6 md:mb-8">
             {[
               {
-                label: 'Posts Published',
-                value: s ? String(s.marketing.published) : '0',
-                sub: s?.marketing.published ? `${s.marketing.total} total` : 'No posts yet',
-                change: s && s.marketing.published > 0 ? '+12%' : null,
-              },
-              {
-                label: 'Quotes Value',
-                value: s ? `$${(s.quotes.totalValue / 1000).toFixed(1)}k` : '$0',
-                sub: s?.quotes.total ? `${s.quotes.total} quotes` : 'No quotes yet',
-                change: s && s.quotes.total > 0 ? '+8%' : null,
-              },
-              {
-                label: 'Compliance',
-                value: s ? String(s.compliance.total) : '0',
-                sub: s?.compliance.total ? `${s.compliance.passed} passed` : 'No reports yet',
+                label: 'Active Jobs',
+                value: s ? String(s.jobs?.active || 0) : '0',
+                sub: s?.jobs?.total ? `${s.jobs.total} total` : 'No jobs yet',
                 change: null,
               },
               {
-                label: 'Work Orders',
-                value: s ? String(s.workOrders.active) : '0',
-                sub: s?.workOrders.total ? `${s.workOrders.completed} completed` : 'No orders yet',
+                label: 'Pipeline Value',
+                value: s ? `$${((s.jobs?.pipelineValue || 0) / 1000).toFixed(1)}k` : '$0',
+                sub: s?.jobs?.completed ? `${s.jobs.completed} completed` : 'No completed jobs',
+                change: null,
+              },
+              {
+                label: 'Invoiced',
+                value: s ? `$${((s.invoices?.totalBilled || 0) / 1000).toFixed(1)}k` : '$0',
+                sub: s?.invoices?.total ? `${s.invoices.total} invoices` : 'No invoices yet',
+                change: null,
+              },
+              {
+                label: 'Quotes Value',
+                value: s ? `$${((s.quotes?.totalValue || 0) / 1000).toFixed(1)}k` : '$0',
+                sub: s?.quotes?.total ? `${s.quotes.total} quotes` : 'No quotes yet',
+                change: null,
+              },
+              {
+                label: 'Posts Published',
+                value: s ? String(s.marketing?.published || 0) : '0',
+                sub: s?.marketing?.total ? `${s.marketing.total} total` : 'No posts yet',
+                change: null,
+              },
+              {
+                label: 'Compliance',
+                value: s ? String(s.compliance?.total || 0) : '0',
+                sub: s?.compliance?.total ? `${s.compliance.passed} passed` : 'No reports yet',
                 change: null,
               },
             ].map((k, i) => (
@@ -127,16 +142,20 @@ export default function Home() {
               {/* Quick Actions */}
               <div className="p-5 md:p-6 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #EBEBEB' }}>
                 <h2 className="text-sm font-semibold mb-4 uppercase tracking-wider" style={{ color: '#1A1A1A' }}>Quick Actions</h2>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {[
-                    { label: 'Create AI Video', desc: 'Upload photo, generate video', href: '/marketing',
-                      icon: 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+                    { label: 'New Job', desc: 'Create and assign jobs', href: '/jobs',
+                      icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
+                    { label: 'Invoices', desc: 'Billing and payments', href: '/invoices',
+                      icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+                    { label: 'Calendar', desc: 'Schedule and plan', href: '/calendar',
+                      icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
                     { label: 'New Quote', desc: 'AI-powered quoting', href: '/quotes',
                       icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
-                    { label: 'Compliance', desc: 'Inspection reports', href: '/compliance',
-                      icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
                     { label: 'Warehouse', desc: 'QR scan, manage stock', href: '/warehouse',
-                      icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
+                      icon: 'M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z' },
+                    { label: 'Marketing AI', desc: 'Video and social media', href: '/marketing',
+                      icon: 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
                   ].map((a, i) => (
                     <Link key={i} href={a.href}
                       className="flex items-center gap-3 p-3.5 rounded-xl transition-all group"
@@ -161,8 +180,25 @@ export default function Home() {
               {/* Recent Activity */}
               <div className="p-5 md:p-6 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #EBEBEB' }}>
                 <h2 className="text-sm font-semibold mb-4 uppercase tracking-wider" style={{ color: '#1A1A1A' }}>Recent Activity</h2>
-                {recent && (recent.posts.length > 0 || recent.quotes.length > 0) ? (
+                {recent && (recent.posts.length > 0 || recent.quotes.length > 0 || recent.jobs?.length > 0) ? (
                   <div className="space-y-2">
+                    {recent.jobs?.map(j => (
+                      <div key={j.id} className="flex items-center justify-between py-2.5 px-3 rounded-lg"
+                        style={{ background: '#FAFAFA' }}>
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-8 h-8 flex items-center justify-center rounded-lg flex-shrink-0" style={{ background: '#F0F0F0' }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium truncate" style={{ color: '#333' }}>{j.job_number} — {j.title}</p>
+                            <p className="text-xs" style={{ color: '#AAAAAA' }}>{j.client_name || 'No client'} • {j.status}</p>
+                          </div>
+                        </div>
+                        <span className="text-xs flex-shrink-0 ml-2" style={{ color: '#CCCCCC' }}>{timeAgo(j.created_at)}</span>
+                      </div>
+                    ))}
                     {recent.posts.map(p => (
                       <div key={p.id} className="flex items-center justify-between py-2.5 px-3 rounded-lg"
                         style={{ background: '#FAFAFA' }}>

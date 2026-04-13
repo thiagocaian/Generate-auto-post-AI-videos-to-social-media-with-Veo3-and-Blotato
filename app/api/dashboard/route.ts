@@ -43,7 +43,7 @@ export async function GET() {
   const companyId = company.id as string
 
   // Fetch all stats in parallel
-  const [marketing, quotes, compliance, workOrders, recentPosts, recentQuotes] = await Promise.all([
+  const [marketing, quotes, compliance, workOrders, jobs, invoices, recentPosts, recentQuotes, recentJobs] = await Promise.all([
     // Marketing stats
     admin
       .from('marketing_posts')
@@ -66,6 +66,18 @@ export async function GET() {
       .from('work_orders')
       .select('id, status'),
 
+    // Jobs stats
+    admin
+      .from('jobs')
+      .select('id, status, total_value, scheduled_date')
+      .eq('company_id', companyId),
+
+    // Invoices stats
+    admin
+      .from('invoices')
+      .select('id, status, total, amount_paid')
+      .eq('company_id', companyId),
+
     // Recent posts (last 5)
     admin
       .from('marketing_posts')
@@ -81,12 +93,22 @@ export async function GET() {
       .eq('company_id', companyId)
       .order('created_at', { ascending: false })
       .limit(5),
+
+    // Recent jobs (last 5)
+    admin
+      .from('jobs')
+      .select('id, job_number, title, client_name, status, total_value, created_at')
+      .eq('company_id', companyId)
+      .order('created_at', { ascending: false })
+      .limit(5),
   ])
 
   const posts = marketing.data || []
   const quotesList = quotes.data || []
   const reports = compliance.data || []
   const orders = workOrders.data || []
+  const jobsList = jobs.data || []
+  const invoicesList = invoices.data || []
 
   const stats = {
     marketing: {
@@ -112,6 +134,18 @@ export async function GET() {
       active: orders.filter(o => o.status === 'active' || o.status === 'pending').length,
       completed: orders.filter(o => o.status === 'completed').length,
     },
+    jobs: {
+      total: jobsList.length,
+      active: jobsList.filter(j => j.status === 'scheduled' || j.status === 'in_progress').length,
+      completed: jobsList.filter(j => ['completed', 'invoiced', 'paid'].includes(j.status)).length,
+      pipelineValue: jobsList.reduce((sum, j) => sum + (j.total_value || 0), 0),
+    },
+    invoices: {
+      total: invoicesList.length,
+      totalBilled: invoicesList.reduce((sum, i) => sum + (i.total || 0), 0),
+      totalPaid: invoicesList.reduce((sum, i) => sum + (i.amount_paid || 0), 0),
+      outstanding: invoicesList.filter(i => ['sent', 'viewed', 'overdue'].includes(i.status)).length,
+    },
   }
 
   return NextResponse.json({
@@ -122,6 +156,7 @@ export async function GET() {
     recent: {
       posts: recentPosts.data || [],
       quotes: recentQuotes.data || [],
+      jobs: recentJobs.data || [],
     },
   })
 }
