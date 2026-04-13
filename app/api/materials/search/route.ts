@@ -35,42 +35,75 @@ type Distributor = {
   categories: string[]
 }
 
+// Build search URLs for each distributor based on material
+function getSearchUrls(distributor: Distributor, material: string): string[] {
+  const q = encodeURIComponent(material)
+  const base = distributor.website.replace(/\/$/, '')
+
+  // Bunnings has a search API
+  if (base.includes('bunnings.com.au')) {
+    return [
+      `https://www.bunnings.com.au/search/products?q=${q}&sort=BoostOrder&page=1&pageSize=5&inStockOnly=false`,
+      `https://www.bunnings.com.au/products/flooring-tiles?q=${q}`,
+    ]
+  }
+  // Mitre 10
+  if (base.includes('mitre10.com.au')) {
+    return [
+      `https://www.mitre10.com.au/catalogsearch/result/?q=${q}`,
+      `https://www.mitre10.com.au/building-materials/flooring`,
+    ]
+  }
+  // Paradise Timbers
+  if (base.includes('paradise-timbers')) {
+    return [
+      `${base}/?s=${q}`,
+      base,
+    ]
+  }
+  // Generic: try search, shop, main page
+  return [
+    `${base}/search?q=${q}`,
+    `${base}/?s=${q}`,
+    `${base}/products`,
+    base,
+  ]
+}
+
 // Fetch a distributor's website and search for products
 async function fetchDistributorProducts(distributor: Distributor, materials: MaterialItem[]): Promise<string> {
-  const materialNames = materials.map(m => m.name).join(', ')
+  let allContent = ''
 
-  // Try to fetch the distributor's product/search page
-  const urls = [
-    `${distributor.website}/products`,
-    `${distributor.website}/shop`,
-    `${distributor.website}/collections`,
-    distributor.website,
-  ]
-
-  let pageContent = ''
-  for (const url of urls) {
-    try {
-      const res = await fetch(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; CYTRON Materials Agent)' },
-        signal: AbortSignal.timeout(8000),
-      })
-      if (res.ok) {
-        const html = await res.text()
-        // Strip scripts/styles, keep text content
-        pageContent = html
-          .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-          .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-          .replace(/<[^>]+>/g, ' ')
-          .replace(/\s+/g, ' ')
-          .substring(0, 15000) // Limit to 15k chars for AI
-        break
+  // Fetch search results for each material (max 3 materials to keep fast)
+  for (const mat of materials.slice(0, 3)) {
+    const urls = getSearchUrls(distributor, mat.name)
+    for (const url of urls) {
+      try {
+        const res = await fetch(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/json',
+          },
+          signal: AbortSignal.timeout(10000),
+        })
+        if (res.ok) {
+          const text = await res.text()
+          const cleaned = text
+            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+            .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .substring(0, 10000)
+          allContent += `\n[Search: ${mat.name}]\n${cleaned}\n`
+          break
+        }
+      } catch {
+        continue
       }
-    } catch {
-      continue
     }
   }
 
-  return pageContent || `Could not fetch ${distributor.website}`
+  return allContent || `Could not fetch ${distributor.website}`
 }
 
 export async function POST(req: NextRequest) {

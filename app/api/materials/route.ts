@@ -98,14 +98,19 @@ export async function POST(req: NextRequest) {
   }
 
   if (body.action === 'seed_distributors') {
+    // First delete existing distributors for this company to refresh
+    await admin.from('distributors').delete().eq('company_id', member.company_id)
+
     const distributors = [
+      // Distributors with PUBLIC PRICES (best for agent)
+      { company_id: member.company_id, name: 'Bunnings Burleigh Waters', website: 'https://www.bunnings.com.au/products/flooring-tiles', phone: '(07) 5522 7200', location: 'Burleigh Waters QLD', categories: ['vinyl', 'timber', 'laminate', 'underlay', 'adhesive', 'skirting', 'trim'], active: true },
+      { company_id: member.company_id, name: 'Mitre 10', website: 'https://www.mitre10.com.au/building-materials/flooring', phone: '', location: 'Gold Coast QLD', categories: ['vinyl', 'underlay', 'adhesive', 'skirting', 'trim', 'timber'], active: true },
+      { company_id: member.company_id, name: 'Paradise Timbers', website: 'https://paradise-timbers.com.au', phone: '', location: 'Gold Coast QLD', categories: ['timber', 'engineered_timber', 'bamboo', 'laminate', 'accessories'], active: true },
+      // Trade/wholesale distributors
       { company_id: member.company_id, name: 'National Flooring Distributors', website: 'https://nationalflooringdistributors.com.au', phone: '(07) 3806 2666', location: 'Ormeau QLD', categories: ['vinyl', 'hybrid', 'timber', 'carpet_tile', 'laminate', 'underlay'], active: true },
       { company_id: member.company_id, name: 'Marques Flooring', website: 'https://marquesflooring.com.au', phone: '', location: 'Gold Coast', categories: ['timber', 'engineered_timber', 'laminate', 'tools', 'accessories'], active: true },
       { company_id: member.company_id, name: 'MJS Floorcoverings', website: 'https://mjsfloorcoverings.com.au', phone: '(07) 5586 9800', location: 'Burleigh Heads QLD', categories: ['vinyl', 'carpet', 'adhesives', 'underlay', 'tools'], active: true },
-      { company_id: member.company_id, name: 'Premium Floors', website: 'https://premiumfloors.com.au', phone: '', location: 'Brisbane QLD', categories: ['timber', 'laminate', 'hybrid', 'vinyl', 'bamboo', 'cork'], active: true },
       { company_id: member.company_id, name: 'Intafloors', website: 'https://intafloors.com.au', phone: '', location: 'Molendinar QLD', categories: ['adhesives', 'tools', 'accessories', 'underlay'], active: true },
-      { company_id: member.company_id, name: 'Floor Trade Supplies', website: 'https://www.floortrade.au', phone: '(07) 5523 0061', location: 'Tweed Heads South NSW', categories: ['timber', 'bamboo', 'cork', 'tools', 'adhesives'], active: true },
-      { company_id: member.company_id, name: 'Floorworld Gold Coast', website: 'https://www.floorworld.com.au', phone: '(07) 3482 2998', location: 'Gold Coast QLD', categories: ['carpet', 'timber', 'laminate', 'vinyl', 'hybrid', 'underlay'], active: true },
     ]
 
     const { data, error } = await admin
