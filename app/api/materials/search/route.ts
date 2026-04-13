@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
   if (body.action === 'parse') {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
     const aiRes = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 1000,
       messages: [{
         role: 'user',
@@ -156,14 +156,22 @@ Valid units: m², m linear, unit, box, L, kg, roll
     return NextResponse.json({ error: 'Missing materials or distributors' }, { status: 400 })
   }
 
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  try {
+
+  const apiKey = process.env.ANTHROPIC_API_KEY
+  if (!apiKey) {
+    return NextResponse.json({ error: 'ANTHROPIC_API_KEY not configured' }, { status: 500 })
+  }
+  const anthropic = new Anthropic({ apiKey })
 
   const materialsList = materials.map(m => `- ${m.name}: ${m.qty} ${m.unit}`).join('\n')
-  const distributorList = distributors.map(d => `- ${d.name} (${d.website}) — ${d.categories.join(', ')}`).join('\n')
+  // Limit to 4 distributors max for speed
+  const topDist = distributors.slice(0, 4)
+  const distributorList = topDist.map(d => `- ${d.name} (${d.website})`).join('\n')
 
   const aiResponse = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 4000,
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 2000,
     messages: [{
       role: 'user',
       content: `You are a flooring materials price calculator for Gold Coast, Queensland, Australia.
@@ -202,4 +210,8 @@ Return ONLY valid JSON (no markdown, no backticks):
   }
 
   return NextResponse.json(parsedResults || { error: 'No results' })
+
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 })
+  }
 }
