@@ -652,6 +652,58 @@ export default function LandingPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
+      {/* ─── SPOTS COUNTER BANNER ────────────────────────────────── */}
+      {/* ══════════════════════════════════════════════════════════ */}
+      {(() => {
+        const TOTAL_EARLY_SPOTS = 15;
+        const SPOTS_TAKEN = 3;
+        const spotsRemaining = TOTAL_EARLY_SPOTS - SPOTS_TAKEN;
+        return (
+          <motion.div
+            className="mx-auto max-w-3xl px-6"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <div
+              className="relative overflow-hidden rounded-xl border border-[#FF6B35]/20 px-6 py-4 text-center"
+              style={{ background: "#1A1A1A" }}
+            >
+              {/* Animated gradient shimmer */}
+              <div
+                className="pointer-events-none absolute inset-0 opacity-[0.07]"
+                style={{
+                  background: "linear-gradient(90deg, transparent 0%, #FF6B35 50%, transparent 100%)",
+                  backgroundSize: "200% 100%",
+                  animation: "spotsShimmer 3s ease-in-out infinite",
+                }}
+              />
+              <p className="relative z-10 text-sm sm:text-base font-medium text-white">
+                <span className="mr-1">&#128293;</span> Early Access Pricing — Only {TOTAL_EARLY_SPOTS} spots at these prices.{" "}
+                <span
+                  className="inline-block font-bold text-[#FF6B35]"
+                  style={{ animation: "spotsPulse 2s ease-in-out infinite" }}
+                >
+                  {spotsRemaining} spots remaining.
+                </span>
+              </p>
+            </div>
+            <style jsx>{`
+              @keyframes spotsShimmer {
+                0% { background-position: -200% 0; }
+                100% { background-position: 200% 0; }
+              }
+              @keyframes spotsPulse {
+                0%, 100% { opacity: 1; transform: scale(1); }
+                50% { opacity: 0.85; transform: scale(1.04); }
+              }
+            `}</style>
+          </motion.div>
+        );
+      })()}
+
+      {/* ══════════════════════════════════════════════════════════ */}
       {/* ─── PRICING ─────────────────────────────────────────────── */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section id="pricing" className="py-28 border-t border-white/[0.05]">

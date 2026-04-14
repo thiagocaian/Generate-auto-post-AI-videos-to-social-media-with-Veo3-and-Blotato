@@ -1,0 +1,13 @@
+{
+  "name": "CYTRON — Intelligent Automation",
+  "short_name": "CYTRON",
+  "description": "AI-powered job management for tradies",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#886cff",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
