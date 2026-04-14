@@ -3,7 +3,8 @@ import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-// Admin access: any user with 'owner' or 'admin' role in their company
+// Super admin emails — CYTRON team, can see ALL companies
+const SUPER_ADMINS = ['labofantasma@gmail.com']
 
 async function getAuthUser() {
   const cookieStore = await cookies()
@@ -36,17 +37,21 @@ export async function GET(req: NextRequest) {
   const user = await getAuthUser()
   if (!user) return NextResponse.json({ error: 'Not logged in' }, { status: 401 })
 
+  // Super admin check — CYTRON team only
+  const isSuperAdmin = SUPER_ADMINS.includes(user.email || '')
+
+  // If not super admin, check company role
   const admin = getAdmin()
+  if (!isSuperAdmin) {
+    const { data: member } = await admin
+      .from('company_members')
+      .select('role')
+      .eq('user_id', user.id)
+      .single()
 
-  // Check user has owner or admin role
-  const { data: member } = await admin
-    .from('company_members')
-    .select('role')
-    .eq('user_id', user.id)
-    .single()
-
-  if (!member || !['owner', 'admin'].includes(member.role)) {
-    return NextResponse.json({ error: 'Admin access only' }, { status: 403 })
+    if (!member || !['owner', 'admin'].includes(member.role)) {
+      return NextResponse.json({ error: 'Admin access only. Login with your CYTRON admin account.' }, { status: 403 })
+    }
   }
 
   // Fetch all data in parallel
