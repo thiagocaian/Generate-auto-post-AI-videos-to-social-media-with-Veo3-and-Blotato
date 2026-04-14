@@ -31,8 +31,8 @@ const schedule = [
 export default function IPadMockup() {
   return (
     <motion.div
-      className="relative mx-auto"
-      style={{ width: "100%", maxWidth: 620, aspectRatio: "4/3" }}
+      className="relative mx-auto overflow-hidden"
+      style={{ width: "100%", maxWidth: 620, aspectRatio: "4/3", minHeight: 220 }}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}

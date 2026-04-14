@@ -20,7 +20,7 @@ export default function PhoneMockup() {
   return (
     <motion.div
       className="relative mx-auto"
-      style={{ width: 280, height: 580 }}
+      style={{ width: "100%", maxWidth: 280, aspectRatio: "280/580" }}
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}

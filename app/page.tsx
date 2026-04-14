@@ -379,12 +379,13 @@ export default function LandingPage() {
               </motion.div>
             </div>
 
-            {/* ── RIGHT SIDE: Platform animation box ── */}
+            {/* ── RIGHT SIDE: iPhone mockup ── */}
             <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.5 }}
-              className="hidden lg:block"
+              className="flex justify-center lg:justify-end"
+              style={{ transform: 'scale(0.85)' }}
             >
               <PhoneMockup />
             </motion.div>
@@ -412,13 +413,10 @@ export default function LandingPage() {
             </h2>
           </motion.div>
 
-          <div className="flex flex-col lg:flex-row items-center gap-12">
-            {/* Devices */}
-            <div className="flex-1 flex items-end justify-center gap-4">
-              {/* iPad */}
-              <div style={{ width: "100%", maxWidth: 520 }}>
-                <IPadMockup />
-              </div>
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+            {/* iPad */}
+            <div className="flex-1 w-full" style={{ maxWidth: 540 }}>
+              <IPadMockup />
             </div>
 
             {/* Feature Checklist */}
