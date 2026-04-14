@@ -4,7 +4,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 // Admin emails allowed to access this endpoint
-const ADMIN_EMAILS = ['labofantasma@gmail.com', 'thiago@cytronai.com']
+const ADMIN_EMAILS = ['labofantasma@gmail.com', 'thiago@cytronai.com', 'info@inkwellprinting.com.au']
 
 async function getAuthUser() {
   const cookieStore = await cookies()
