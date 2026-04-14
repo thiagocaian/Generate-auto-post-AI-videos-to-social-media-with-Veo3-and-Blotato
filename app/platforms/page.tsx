@@ -24,6 +24,10 @@ export default function PlatformsPage() {
   const [platforms, setPlatforms] = useState<Platform[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+  const [connectModal, setConnectModal] = useState<string | null>(null)
+  const [connectHandle, setConnectHandle] = useState('')
+  const [connectSent, setConnectSent] = useState(false)
+  const [connectSending, setConnectSending] = useState(false)
 
   const fetchPlatforms = async () => {
     try {
@@ -47,8 +51,23 @@ export default function PlatformsPage() {
     fetchPlatforms()
   }
 
-  const handleConnect = () => {
-    window.open('https://my.blotato.com/settings', '_blank', 'noopener,noreferrer')
+  const handleConnect = (platformName: string) => {
+    setConnectModal(platformName)
+    setConnectHandle('')
+    setConnectSent(false)
+  }
+
+  const handleSendRequest = async () => {
+    if (!connectHandle.trim() || !connectModal) return
+    setConnectSending(true)
+    try {
+      await fetch('/api/platforms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'request_connection', platform: connectModal, handle: connectHandle.trim() })
+      })
+      setConnectSent(true)
+    } catch {} finally { setConnectSending(false) }
   }
 
   const connectedCount = platforms.filter(p => p.connected).length
@@ -116,7 +135,7 @@ export default function PlatformsPage() {
                   border: p.connected ? `2px solid ${p.color}` : '1px solid #E5E5E5',
                   background: p.connected ? '#FAFAFA' : '#FFF',
                 }}
-                onClick={p.connected ? undefined : handleConnect}
+                onClick={p.connected ? undefined : () => handleConnect(p.name)}
               >
                 {/* Icon */}
                 <div className="flex justify-center mb-2">
@@ -168,10 +187,10 @@ export default function PlatformsPage() {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[
-              { step: '1', title: 'Click Connect', desc: 'Opens the official platform authorization page' },
-              { step: '2', title: 'Log in with YOUR account', desc: 'You log in directly with the platform — not through CYTRON' },
-              { step: '3', title: 'Authorize posting', desc: 'Allow CYTRON to publish content on your behalf' },
-              { step: '4', title: 'Refresh & Done', desc: 'Come back to CYTRON and click "Refresh Status"' },
+              { step: '1', title: 'Click Connect', desc: 'Select the platform you want to connect' },
+              { step: '2', title: 'Enter your @username', desc: 'Tell us which account to connect' },
+              { step: '3', title: 'We handle the rest', desc: 'Our team securely connects your account within 24h' },
+              { step: '4', title: 'Refresh & Done', desc: 'Click "Refresh Status" to see it connected' },
             ].map(s => (
               <div key={s.step} className="text-center">
                 <div className="w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-bold text-white" style={{ background: '#1A1A1A' }}>
@@ -204,6 +223,92 @@ export default function PlatformsPage() {
             ))}
           </div>
         </div>
+        {/* Connection Request Modal */}
+        {connectModal && (
+          <div className="fixed inset-0 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.4)', zIndex: 9999 }} onClick={() => setConnectModal(null)}>
+            <div className="bg-white rounded-2xl p-6 w-full max-w-md" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.15)', position: 'relative', zIndex: 10000 }} onClick={e => e.stopPropagation()}>
+
+              {connectSent ? (
+                <div className="text-center py-4">
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#F0FDF4' }}>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-bold mb-2">Request Sent!</h3>
+                  <p className="text-sm mb-4" style={{ color: '#666' }}>
+                    Our team will connect your {connectModal} account shortly. You will be notified when it is ready.
+                  </p>
+                  <p className="text-xs mb-4" style={{ color: '#999' }}>
+                    Click "Refresh Status" on the main page to check.
+                  </p>
+                  <button
+                    onClick={() => { setConnectModal(null); handleRefresh() }}
+                    className="px-6 py-2.5 text-sm font-bold text-white rounded-lg"
+                    style={{ background: '#1A1A1A' }}
+                  >
+                    Done
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <h3 className="text-lg font-bold mb-1">Connect {connectModal}</h3>
+                  <p className="text-sm mb-4" style={{ color: '#666' }}>
+                    Enter your {connectModal} username below. Our team will securely connect your account within 24 hours.
+                  </p>
+
+                  <div className="mb-4">
+                    <label className="block text-xs font-medium uppercase tracking-wider mb-1.5" style={{ color: '#999' }}>
+                      Your {connectModal} Username
+                    </label>
+                    <div className="flex items-center rounded-lg" style={{ border: '1px solid #E5E5E5', background: '#FAFAFA' }}>
+                      <span className="pl-3 text-sm" style={{ color: '#999' }}>@</span>
+                      <input
+                        type="text"
+                        value={connectHandle}
+                        onChange={e => setConnectHandle(e.target.value)}
+                        placeholder="your_username"
+                        className="flex-1 px-2 py-3 text-sm rounded-lg bg-transparent"
+                        style={{ border: 'none', outline: 'none', color: '#1A1A1A' }}
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-lg mb-4" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
+                    <div className="flex items-start gap-2">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 flex-shrink-0">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0110 0v4"/>
+                      </svg>
+                      <p className="text-xs" style={{ color: '#059669' }}>
+                        We will NEVER ask for your password. Connection is done via official platform authorization.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setConnectModal(null)}
+                      className="flex-1 py-2.5 text-sm font-medium rounded-lg"
+                      style={{ border: '1px solid #E5E5E5', color: '#666' }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleSendRequest}
+                      disabled={!connectHandle.trim() || connectSending}
+                      className="flex-1 py-2.5 text-sm font-bold text-white rounded-lg disabled:opacity-40"
+                      style={{ background: '#1A1A1A' }}
+                    >
+                      {connectSending ? 'Sending...' : 'Request Connection'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </main>
     </div>
   )
