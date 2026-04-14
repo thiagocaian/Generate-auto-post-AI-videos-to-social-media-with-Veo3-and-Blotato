@@ -386,7 +386,7 @@ export default function LandingPage() {
               transition={{ duration: 1, delay: 0.5 }}
               className="hidden lg:block"
             >
-              <HeroDashboardMockup />
+              <PhoneMockup />
             </motion.div>
 
           </div>
@@ -416,13 +416,8 @@ export default function LandingPage() {
             {/* Devices */}
             <div className="flex-1 flex items-end justify-center gap-4">
               {/* iPad */}
-              <div className="hidden md:block" style={{ width: 420 }}>
+              <div style={{ width: "100%", maxWidth: 520 }}>
                 <IPadMockup />
-              </div>
-
-              {/* iPhone */}
-              <div style={{ width: 180, marginBottom: -20 }}>
-                <PhoneMockup />
               </div>
             </div>
 
