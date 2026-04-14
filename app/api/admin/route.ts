@@ -3,8 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-// Admin emails allowed to access this endpoint
-const ADMIN_EMAILS = ['labofantasma@gmail.com', 'thiago@cytronai.com', 'info@inkwellprinting.com.au']
+// Admin access: any user with 'owner' or 'admin' role in their company
 
 async function getAuthUser() {
   const cookieStore = await cookies()
@@ -35,11 +34,20 @@ function getAdmin() {
 
 export async function GET(req: NextRequest) {
   const user = await getAuthUser()
-  if (!user || !ADMIN_EMAILS.includes(user.email || '')) {
-    return NextResponse.json({ error: 'Admin access only' }, { status: 403 })
-  }
+  if (!user) return NextResponse.json({ error: 'Not logged in' }, { status: 401 })
 
   const admin = getAdmin()
+
+  // Check user has owner or admin role
+  const { data: member } = await admin
+    .from('company_members')
+    .select('role')
+    .eq('user_id', user.id)
+    .single()
+
+  if (!member || !['owner', 'admin'].includes(member.role)) {
+    return NextResponse.json({ error: 'Admin access only' }, { status: 403 })
+  }
 
   // Fetch all data in parallel
   const [companiesRes, connectionReqsRes, recentJobsRes, recentPostsRes, platformsRes] = await Promise.all([
