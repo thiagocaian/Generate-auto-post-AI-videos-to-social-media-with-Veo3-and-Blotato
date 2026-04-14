@@ -22,6 +22,8 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import BackgroundScene from "@/components/BackgroundScene";
 import HeroDashboardMockup from "@/components/HeroDashboardMockup";
+import PhoneMockup from "@/components/PhoneMockup";
+import IPadMockup from "@/components/iPadMockup";
 import { TextGenerateEffect } from "@/components/ui/aceternity/text-generate-effect";
 import { BentoGrid, BentoGridItem } from "@/components/ui/aceternity/bento-grid";
 import { InfiniteMovingCards } from "@/components/ui/aceternity/infinite-moving-cards";
@@ -387,6 +389,94 @@ export default function LandingPage() {
               <HeroDashboardMockup />
             </motion.div>
 
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════ */}
+      {/* ─── DEVICE SHOWCASE — iPad + iPhone ───────────────────── */}
+      {/* ══════════════════════════════════════════════════════════ */}
+      <section className="py-24 border-t border-white/[0.05]" style={{ background: "linear-gradient(180deg, rgba(136,108,255,0.03) 0%, transparent 100%)" }}>
+        <div className="max-w-6xl mx-auto px-6">
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <p className="text-xs uppercase tracking-[0.2em] text-[#886cff]/70 mb-4">Simplify and streamline your operations</p>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.03em]">
+              Take control from first call
+              <br />
+              <span className="text-neutral-500">through to payment.</span>
+            </h2>
+          </motion.div>
+
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            {/* Devices */}
+            <div className="flex-1 flex items-end justify-center gap-4">
+              {/* iPad */}
+              <div className="hidden md:block" style={{ width: 420 }}>
+                <IPadMockup />
+              </div>
+
+              {/* iPhone */}
+              <div style={{ width: 180, marginBottom: -20 }}>
+                <PhoneMockup />
+              </div>
+            </div>
+
+            {/* Feature Checklist */}
+            <motion.div
+              className="flex-1 max-w-md"
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <div className="space-y-4">
+                {[
+                  { title: "Manage jobs & team", desc: "Full lifecycle from enquiry to paid" },
+                  { title: "AI-powered quotes", desc: "Generate professional quotes in seconds" },
+                  { title: "Smart invoicing & payments", desc: "Accept credit cards via Stripe" },
+                  { title: "AI video generation", desc: "Turn photos into marketing videos" },
+                  { title: "Auto-post to 9 platforms", desc: "Instagram, TikTok, Facebook & more" },
+                  { title: "Materials price comparison", desc: "Compare prices across distributors" },
+                  { title: "Compliance PDF reports", desc: "AS3012, RCD testing, emergency lighting" },
+                  { title: "Real-time scheduling", desc: "Calendar with timeline & team tracking" },
+                ].map((feature, i) => (
+                  <motion.div
+                    key={i}
+                    className="flex items-start gap-3"
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.4 + i * 0.08 }}
+                  >
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: "#059669" }}>
+                      <Check size={14} className="text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-white">{feature.title}</p>
+                      <p className="text-xs text-neutral-400">{feature.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+              <div className="mt-8">
+                <Link href="/login?tab=signup">
+                  <motion.button
+                    className="px-6 py-3 rounded-lg text-sm font-bold text-white flex items-center gap-2"
+                    style={{ background: "#886cff" }}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Start Free Trial <ArrowRight size={16} />
+                  </motion.button>
+                </Link>
+                <p className="text-xs text-neutral-500 mt-2">Free for 30 days, no credit card required</p>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
