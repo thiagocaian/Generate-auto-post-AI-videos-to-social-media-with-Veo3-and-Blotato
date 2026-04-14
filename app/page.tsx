@@ -178,6 +178,7 @@ const navItems = [
   { name: "Features", link: "#features" },
   { name: "Projects", link: "#projects" },
   { name: "Pricing", link: "#pricing" },
+  { name: "Login", link: "/login" },
 ];
 
 // ─── Early Access Form ────────────────────────────────────────────────────────

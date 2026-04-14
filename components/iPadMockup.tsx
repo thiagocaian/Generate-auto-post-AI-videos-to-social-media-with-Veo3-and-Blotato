@@ -32,7 +32,7 @@ export default function IPadMockup() {
   return (
     <motion.div
       className="relative mx-auto overflow-hidden"
-      style={{ width: "100%", maxWidth: 620, aspectRatio: "4/3", minHeight: 220 }}
+      style={{ width: "100%", maxWidth: 620, minHeight: 280 }}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -49,8 +49,8 @@ export default function IPadMockup() {
       >
         {/* Screen */}
         <div className="w-full h-full rounded-[16px] overflow-hidden flex" style={{ background: "#FFF" }}>
-          {/* Sidebar */}
-          <div className="flex-shrink-0 flex flex-col py-3" style={{ width: 48, background: "#1A1A1A" }}>
+          {/* Sidebar — hidden on small screens */}
+          <div className="hidden sm:flex flex-shrink-0 flex-col py-3" style={{ width: 48, background: "#1A1A1A" }}>
             <div className="w-7 h-7 rounded-lg mx-auto mb-3 flex items-center justify-center" style={{ background: "#886cff" }}>
               <span style={{ color: "#FFF", fontSize: 9, fontWeight: 800 }}>C</span>
             </div>
@@ -62,8 +62,8 @@ export default function IPadMockup() {
             ))}
           </div>
 
-          {/* Secondary Nav */}
-          <div className="flex-shrink-0 py-3 px-2" style={{ width: 120, background: "#FFF", borderRight: "1px solid #F0F0F0" }}>
+          {/* Secondary Nav — hidden on small screens */}
+          <div className="hidden sm:block flex-shrink-0 py-3 px-2" style={{ width: 120, background: "#FFF", borderRight: "1px solid #F0F0F0" }}>
             <div className="flex items-center gap-1.5 mb-1 px-2">
               <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "#1A1A1A" }}>
                 <span style={{ color: "#FFF", fontSize: 7, fontWeight: 700 }}>I</span>
@@ -141,8 +141,8 @@ export default function IPadMockup() {
                 </div>
               </div>
 
-              {/* Schedule Timeline */}
-              <div style={{ width: 100 }}>
+              {/* Schedule Timeline — hidden on small */}
+              <div className="hidden sm:block" style={{ width: 100 }}>
                 <p style={{ fontSize: 7, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4 }}>Today</p>
                 <div className="space-y-0">
                   {schedule.map((s, i) => (
