@@ -48,7 +48,7 @@ export default function PlatformsPage() {
   }
 
   const handleConnect = () => {
-    window.open('https://blotato.com/app', '_blank', 'noopener,noreferrer')
+    window.open('https://my.blotato.com/settings', '_blank', 'noopener,noreferrer')
   }
 
   const connectedCount = platforms.filter(p => p.connected).length
