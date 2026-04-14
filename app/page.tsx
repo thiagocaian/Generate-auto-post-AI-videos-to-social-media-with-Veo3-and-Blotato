@@ -147,26 +147,26 @@ const videoModes = [
 // ─── Pricing ──────────────────────────────────────────────────────────────────
 const plans = [
   {
-    name: "Spark",
-    price: "$297",
-    period: "/mo",
+    name: "Starter",
+    price: "$19",
+    period: "/mo AUD",
     desc: "For tradies & small businesses getting started.",
-    features: ["8 AI videos/month", "16 auto-posts", "2 platforms (IG + TikTok)", "AI captions", "Auto-scheduling", "Monthly analytics report"],
+    features: ["50 jobs/month", "10 AI videos/month", "30 auto-posts", "2 platforms (IG + TikTok)", "Materials Agent", "AI captions"],
   },
   {
-    name: "Growth",
-    price: "$597",
-    period: "/mo",
+    name: "Pro",
+    price: "$49",
+    period: "/mo AUD",
     popular: true,
     desc: "For growing businesses that need scale.",
-    features: ["20 AI videos/month", "40 auto-posts", "3 platforms + Facebook", "GHL integration", "2 custom n8n workflows", "Weekly analytics", "Priority support"],
+    features: ["200 jobs/month", "50 AI videos/month", "150 auto-posts", "All platforms", "Materials Agent", "Priority support"],
   },
   {
-    name: "Scale",
-    price: "$997",
-    period: "/mo",
+    name: "Enterprise",
+    price: "$99",
+    period: "/mo AUD",
     desc: "For teams that need unlimited power.",
-    features: ["40 AI videos/month", "80 auto-posts", "All platforms + LinkedIn", "Unlimited n8n workflows", "Real-time dashboard", "Dedicated account manager", "24/7 support"],
+    features: ["Unlimited jobs", "Unlimited AI videos", "Unlimited posts", "All platforms", "Custom branding", "Dedicated support", "24/7 priority"],
   },
 ];
 
