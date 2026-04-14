@@ -174,9 +174,7 @@ const plans = [
 
 // ─── Nav Items ────────────────────────────────────────────────────────────────
 const navItems = [
-  { name: "Video Hub", link: "#video-hub" },
   { name: "Features", link: "#features" },
-  { name: "Projects", link: "#projects" },
   { name: "Pricing", link: "#pricing" },
   { name: "Login", link: "/login" },
 ];
