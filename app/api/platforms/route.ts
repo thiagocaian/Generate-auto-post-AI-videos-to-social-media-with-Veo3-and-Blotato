@@ -41,12 +41,17 @@ export async function GET(req: NextRequest) {
     const data = await res.json()
     const accounts = (data.items || []) as Array<{ id: string; platform: string; username: string }>
 
-    // Map to platform status
+    // Map to platform status — 9 social networks
     const platforms = [
-      { key: 'instagram', name: 'Instagram', icon: 'camera', color: '#E4405F' },
-      { key: 'tiktok', name: 'TikTok', icon: 'music', color: '#000000' },
-      { key: 'facebook', name: 'Facebook', icon: 'facebook', color: '#1877F2' },
-      { key: 'linkedin', name: 'LinkedIn', icon: 'linkedin', color: '#0A66C2' },
+      { key: 'instagram', name: 'Instagram', color: '#E4405F' },
+      { key: 'tiktok', name: 'TikTok', color: '#000000' },
+      { key: 'facebook', name: 'Facebook', color: '#1877F2' },
+      { key: 'linkedin', name: 'LinkedIn', color: '#0A66C2' },
+      { key: 'youtube', name: 'YouTube', color: '#FF0000' },
+      { key: 'twitter', name: 'X (Twitter)', color: '#000000' },
+      { key: 'pinterest', name: 'Pinterest', color: '#E60023' },
+      { key: 'threads', name: 'Threads', color: '#000000' },
+      { key: 'gmb', name: 'Google Business', color: '#4285F4' },
     ].map(p => {
       const account = accounts.find(a => a.platform?.toLowerCase() === p.key)
       return {

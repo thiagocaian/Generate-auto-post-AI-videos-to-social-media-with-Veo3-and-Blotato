@@ -48,7 +48,7 @@ export default function PlatformsPage() {
   }
 
   const handleConnect = () => {
-    window.open('https://app.blotato.com', '_blank', 'noopener,noreferrer')
+    window.open('https://blotato.com/app', '_blank', 'noopener,noreferrer')
   }
 
   const connectedCount = platforms.filter(p => p.connected).length
@@ -107,63 +107,49 @@ export default function PlatformsPage() {
             <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: '#1A1A1A', borderTopColor: 'transparent' }} />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
             {platforms.map(p => (
               <div
                 key={p.key}
-                className="p-5 rounded-xl text-center transition-all"
+                className="p-3 rounded-xl text-center transition-all cursor-pointer"
                 style={{
-                  border: p.connected ? `2px solid ${p.color}` : '2px solid #E5E5E5',
+                  border: p.connected ? `2px solid ${p.color}` : '1px solid #E5E5E5',
                   background: p.connected ? '#FAFAFA' : '#FFF',
                 }}
+                onClick={p.connected ? undefined : handleConnect}
               >
                 {/* Icon */}
-                <div className="flex justify-center mb-3">
+                <div className="flex justify-center mb-2">
                   <div
-                    className="w-14 h-14 rounded-full flex items-center justify-center"
+                    className="w-10 h-10 rounded-full flex items-center justify-center"
                     style={{ background: p.connected ? p.color : '#F0F0F0' }}
                   >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                       stroke={p.connected ? '#FFF' : '#999'}
                       strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <path d={PLATFORM_ICONS[p.key] || ''} />
+                      <path d={PLATFORM_ICONS[p.key] || 'M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71'} />
                     </svg>
                   </div>
                 </div>
 
                 {/* Name */}
-                <h3 className="text-base font-bold mb-1">{p.name}</h3>
+                <h3 className="text-xs font-bold mb-1">{p.name}</h3>
 
                 {/* Status */}
                 {p.connected ? (
                   <div>
-                    <div className="flex items-center justify-center gap-1.5 mb-2">
-                      <div className="w-2 h-2 rounded-full" style={{ background: '#22C55E' }} />
-                      <span className="text-sm font-medium" style={{ color: '#059669' }}>Connected</span>
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#22C55E' }} />
+                      <span className="text-xs font-medium" style={{ color: '#059669' }}>Connected</span>
                     </div>
-                    <p className="text-xs mb-3" style={{ color: '#666' }}>@{p.username}</p>
-                    <button
-                      className="w-full py-2 text-xs font-medium rounded-lg"
-                      style={{ background: '#F5F5F5', color: '#999' }}
-                      onClick={handleConnect}
-                    >
-                      Manage
-                    </button>
+                    <p className="text-xs truncate" style={{ color: '#999' }}>@{p.username}</p>
                   </div>
                 ) : (
                   <div>
-                    <div className="flex items-center justify-center gap-1.5 mb-2">
-                      <div className="w-2 h-2 rounded-full" style={{ background: '#D1D5DB' }} />
-                      <span className="text-sm" style={{ color: '#999' }}>Not Connected</span>
+                    <div className="flex items-center justify-center gap-1">
+                      <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#D1D5DB' }} />
+                      <span className="text-xs" style={{ color: '#CCC' }}>Connect</span>
                     </div>
-                    <p className="text-xs mb-3" style={{ color: '#CCC' }}>Click below to connect</p>
-                    <button
-                      className="w-full py-2.5 text-sm font-bold text-white rounded-lg"
-                      style={{ background: p.color }}
-                      onClick={handleConnect}
-                    >
-                      Connect {p.name}
-                    </button>
                   </div>
                 )}
               </div>
