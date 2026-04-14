@@ -81,8 +81,11 @@ function Navbar() {
               {l.label}
             </a>
           ))}
-          <Link href="/login" className="text-xs uppercase tracking-[0.2em] px-6 py-2.5 bg-white text-black font-semibold hover:bg-neutral-200 transition-colors">
-            LOGIN
+          <Link href="/login" className="text-xs uppercase tracking-[0.2em] px-5 py-2.5 text-neutral-400 hover:text-white font-medium transition-colors">
+            LOG IN
+          </Link>
+          <Link href="/login?tab=signup" className="text-xs uppercase tracking-[0.2em] px-6 py-2.5 bg-white text-black font-semibold hover:bg-neutral-200 transition-colors">
+            START FREE TRIAL
           </Link>
         </div>
 
@@ -102,8 +105,11 @@ function Navbar() {
               {l.label}
             </a>
           ))}
-          <Link href="/login" className="text-sm uppercase tracking-wider px-6 py-2.5 bg-white text-black font-semibold text-center">
-            LOGIN
+          <Link href="/login" className="text-sm uppercase tracking-wider px-6 py-2.5 text-neutral-400 hover:text-white font-medium text-center">
+            LOG IN
+          </Link>
+          <Link href="/login?tab=signup" className="text-sm uppercase tracking-wider px-6 py-2.5 bg-white text-black font-semibold text-center">
+            START FREE TRIAL
           </Link>
         </div>
       )}
@@ -144,8 +150,8 @@ function Hero() {
           <div
             className="mt-10 flex flex-wrap gap-4"
           >
-            <Link href="/login" className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] px-8 py-3.5 bg-white text-black font-semibold hover:bg-neutral-200 transition-colors">
-              GET STARTED <ArrowRight size={14} />
+            <Link href="/login?tab=signup" className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] px-8 py-3.5 bg-white text-black font-semibold hover:bg-neutral-200 transition-colors">
+              START FREE TRIAL <ArrowRight size={14} />
             </Link>
             <a href="#features" className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] px-8 py-3.5 border border-neutral-800 text-neutral-400 hover:text-white hover:border-white transition-colors">
               LEARN MORE
@@ -338,14 +344,14 @@ function Pricing() {
                 ))}
               </ul>
               <Link
-                href="/login"
+                href="/login?tab=signup"
                 className={`block text-center text-xs uppercase tracking-[0.2em] py-3 font-semibold transition-colors ${
                   plan.popular
                     ? "bg-white text-black hover:bg-neutral-200"
                     : "border border-neutral-800 text-neutral-400 hover:text-white hover:border-white"
                 }`}
               >
-                GET STARTED
+                START FREE TRIAL
               </Link>
             </div>
           ))}

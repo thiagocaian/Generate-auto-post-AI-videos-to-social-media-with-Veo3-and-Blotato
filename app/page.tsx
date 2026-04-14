@@ -340,17 +340,17 @@ export default function LandingPage() {
                 transition={{ delay: 1 }}
               >
                 <Link
-                  href="/booking"
+                  href="/login?tab=signup"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#886cff] hover:bg-[#7b5ff2] text-white text-sm font-medium transition-all hover:shadow-lg hover:shadow-[#886cff]/25"
                 >
-                  Request a Demo
+                  Start Free Trial
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
-                  href="#features"
+                  href="/booking"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 hover:border-white/20 text-white/70 hover:text-white text-sm transition-all"
                 >
-                  See how it works
+                  Request a Demo
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </motion.div>
@@ -697,14 +697,14 @@ export default function LandingPage() {
                     ))}
                   </div>
                   <MagneticButton
-                    href="/login"
+                    href="/login?tab=signup"
                     className={`mt-8 w-full inline-flex items-center justify-center text-sm font-medium py-3 ${
                       plan.popular
                         ? "bg-[#886cff] text-white"
                         : "border border-white/[0.1] text-neutral-400 hover:text-white"
                     }`}
                   >
-                    Request Access
+                    Start Free Trial
                   </MagneticButton>
                 </div>
               </GlowingStarsCard>
@@ -738,7 +738,21 @@ export default function LandingPage() {
           >
             Join businesses across Gold Coast using Cytron to save 20+ hours per week on marketing, admin, and operations.
           </motion.p>
-          <EarlyAccessForm />
+          <motion.div
+            className="flex flex-col items-center gap-3"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            <MagneticButton
+              href="/login?tab=signup"
+              className="inline-flex items-center justify-center gap-2 text-sm font-medium px-8 py-3.5 rounded-lg bg-[#886cff] text-white"
+            >
+              Start Free Trial <ArrowRight size={14} />
+            </MagneticButton>
+            <span className="text-xs text-neutral-600">Free for 30 days, no credit card required</span>
+          </motion.div>
         </div>
       </section>
 

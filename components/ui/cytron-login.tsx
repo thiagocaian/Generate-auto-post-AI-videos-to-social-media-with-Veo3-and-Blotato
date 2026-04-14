@@ -2,25 +2,48 @@
 
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
 
 interface CytronLoginProps {
   onSubmit: (email: string, password: string) => void;
+  onSignUp?: (email: string, password: string, fullName: string) => void;
   onGoogleLogin?: () => void;
   error?: string;
   loading?: boolean;
   className?: string;
+  defaultTab?: "signin" | "signup";
 }
 
-export function CytronLogin({ onSubmit, onGoogleLogin, error, loading = false, className }: CytronLoginProps) {
+export function CytronLogin({ onSubmit, onSignUp, onGoogleLogin, error, loading = false, className, defaultTab = "signin" }: CytronLoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [activeTab, setActiveTab] = useState<"signin" | "signup">(defaultTab);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(email, password);
+    setTabSwitched(false); // Allow new errors to show
+    if (activeTab === "signup" && onSignUp) {
+      onSignUp(email, password, fullName);
+    } else {
+      onSubmit(email, password);
+    }
   };
+
+  // Track whether user has switched tabs (to hide stale parent error)
+  const [tabSwitched, setTabSwitched] = useState(false);
+
+  const switchTab = (tab: "signin" | "signup") => {
+    setActiveTab(tab);
+    setTabSwitched(true);
+    setEmail("");
+    setPassword("");
+    setFullName("");
+  };
+
+  // Reset tabSwitched flag when parent error changes
+  const displayError = tabSwitched ? "" : error;
 
   return (
     <div className={cn("flex w-full flex-col min-h-screen relative overflow-hidden", className)}
@@ -49,12 +72,41 @@ export function CytronLogin({ onSubmit, onGoogleLogin, error, loading = false, c
       <div className="flex-1 flex flex-col justify-center items-center pt-16">
         <div className="w-full max-w-sm px-4">
           <div className="space-y-6 text-center">
+            {/* Tab switcher */}
+            <div className="flex items-center justify-center gap-1 p-1 rounded-xl"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <button
+                type="button"
+                onClick={() => switchTab("signin")}
+                className="flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all"
+                style={{
+                  background: activeTab === "signin" ? "rgba(136,108,255,0.15)" : "transparent",
+                  color: activeTab === "signin" ? "#fff" : "rgba(255,255,255,0.35)",
+                  border: activeTab === "signin" ? "1px solid rgba(136,108,255,0.3)" : "1px solid transparent",
+                }}
+              >
+                Sign In
+              </button>
+              <button
+                type="button"
+                onClick={() => switchTab("signup")}
+                className="flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all"
+                style={{
+                  background: activeTab === "signup" ? "rgba(136,108,255,0.15)" : "transparent",
+                  color: activeTab === "signup" ? "#fff" : "rgba(255,255,255,0.35)",
+                  border: activeTab === "signup" ? "1px solid rgba(136,108,255,0.3)" : "1px solid transparent",
+                }}
+              >
+                Start Free Trial
+              </button>
+            </div>
+
             <div className="space-y-2">
               <h1 className="text-4xl font-bold tracking-[-0.02em]" style={{ color: "#fff" }}>
-                Welcome back
+                {activeTab === "signin" ? "Welcome back" : "Start your free trial"}
               </h1>
               <p className="text-base" style={{ color: "rgba(255,255,255,0.4)" }}>
-                Sign in to your workspace
+                {activeTab === "signin" ? "Sign in to your workspace" : "Free for 30 days, no credit card required"}
               </p>
             </div>
 
@@ -77,7 +129,7 @@ export function CytronLogin({ onSubmit, onGoogleLogin, error, loading = false, c
                       <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                       <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                     </svg>
-                    <span>Sign in with Google</span>
+                    <span>{activeTab === "signin" ? "Sign in with Google" : "Sign up with Google"}</span>
                   </button>
 
                   <div className="flex items-center gap-4">
@@ -88,8 +140,28 @@ export function CytronLogin({ onSubmit, onGoogleLogin, error, loading = false, c
                 </>
               )}
 
-              {/* Login form */}
+              {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Full Name - only for signup */}
+                {activeTab === "signup" && (
+                  <div className="text-left space-y-1.5">
+                    <label className="text-xs font-medium uppercase tracking-wider pl-1" style={{ color: "rgba(255,255,255,0.3)" }}>
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="John Smith"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="w-full py-3 px-4 rounded-xl text-sm focus:outline-none transition-colors"
+                      style={{ background: "rgba(255,255,255,0.05)", color: "#fff", border: "1px solid rgba(255,255,255,0.1)" }}
+                      onFocus={e => e.currentTarget.style.borderColor = "rgba(136,108,255,0.4)"}
+                      onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
+                      required
+                    />
+                  </div>
+                )}
+
                 <div className="text-left space-y-1.5">
                   <label className="text-xs font-medium uppercase tracking-wider pl-1" style={{ color: "rgba(255,255,255,0.3)" }}>
                     Email
@@ -112,22 +184,25 @@ export function CytronLogin({ onSubmit, onGoogleLogin, error, loading = false, c
                     <label className="text-xs font-medium uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.3)" }}>
                       Password
                     </label>
-                    <a href="/forgot-password" className="text-xs transition-colors" style={{ color: "rgba(136,108,255,0.7)" }}
-                      onMouseEnter={e => e.currentTarget.style.color = "rgba(136,108,255,1)"}
-                      onMouseLeave={e => e.currentTarget.style.color = "rgba(136,108,255,0.7)"}>
-                      Forgot?
-                    </a>
+                    {activeTab === "signin" && (
+                      <a href="/forgot-password" className="text-xs transition-colors" style={{ color: "rgba(136,108,255,0.7)" }}
+                        onMouseEnter={e => e.currentTarget.style.color = "rgba(136,108,255,1)"}
+                        onMouseLeave={e => e.currentTarget.style.color = "rgba(136,108,255,0.7)"}>
+                        Forgot?
+                      </a>
+                    )}
                   </div>
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
+                      placeholder={activeTab === "signin" ? "Enter your password" : "Create a password (min. 6 characters)"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="w-full py-3 px-4 pr-12 rounded-xl text-sm focus:outline-none transition-colors"
                       style={{ background: "rgba(255,255,255,0.05)", color: "#fff", border: "1px solid rgba(255,255,255,0.1)" }}
                       onFocus={e => e.currentTarget.style.borderColor = "rgba(136,108,255,0.4)"}
                       onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
+                      minLength={activeTab === "signup" ? 6 : undefined}
                       required
                     />
                     <button
@@ -141,10 +216,10 @@ export function CytronLogin({ onSubmit, onGoogleLogin, error, loading = false, c
                   </div>
                 </div>
 
-                {error && (
+                {displayError && (
                   <div className="rounded-xl px-4 py-2.5 text-sm text-center"
                     style={{ background: "rgba(239,68,68,0.1)", color: "#f87171", border: "1px solid rgba(239,68,68,0.2)" }}>
-                    {error}
+                    {displayError}
                   </div>
                 )}
 
@@ -152,7 +227,7 @@ export function CytronLogin({ onSubmit, onGoogleLogin, error, loading = false, c
                   type="submit"
                   disabled={loading}
                   className="w-full rounded-xl font-semibold py-3 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
-                  style={{ background: "#fff", color: "#000" }}
+                  style={{ background: activeTab === "signup" ? "#886cff" : "#fff", color: activeTab === "signup" ? "#fff" : "#000" }}
                   onMouseEnter={e => e.currentTarget.style.opacity = "0.9"}
                   onMouseLeave={e => e.currentTarget.style.opacity = "1"}
                 >
@@ -162,24 +237,38 @@ export function CytronLogin({ onSubmit, onGoogleLogin, error, loading = false, c
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
-                      Signing in...
+                      {activeTab === "signin" ? "Signing in..." : "Creating account..."}
                     </>
                   ) : (
-                    "Sign in"
+                    <>
+                      {activeTab === "signin" ? "Sign in" : "Start Free Trial"}
+                      {activeTab === "signup" && <ArrowRight size={16} />}
+                    </>
                   )}
                 </button>
               </form>
             </div>
 
             <div className="pt-6 space-y-4">
-              <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
-                Don&apos;t have access?{" "}
-                <a href="mailto:admin@cytron.io" className="transition-colors" style={{ color: "rgba(136,108,255,0.6)" }}
-                  onMouseEnter={e => e.currentTarget.style.color = "rgba(136,108,255,1)"}
-                  onMouseLeave={e => e.currentTarget.style.color = "rgba(136,108,255,0.6)"}>
-                  Contact your administrator
-                </a>
-              </p>
+              {activeTab === "signin" ? (
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
+                  Don&apos;t have an account?{" "}
+                  <button onClick={() => switchTab("signup")} className="transition-colors" style={{ color: "rgba(136,108,255,0.6)" }}
+                    onMouseEnter={e => e.currentTarget.style.color = "rgba(136,108,255,1)"}
+                    onMouseLeave={e => e.currentTarget.style.color = "rgba(136,108,255,0.6)"}>
+                    Start your free trial
+                  </button>
+                </p>
+              ) : (
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
+                  Already have an account?{" "}
+                  <button onClick={() => switchTab("signin")} className="transition-colors" style={{ color: "rgba(136,108,255,0.6)" }}
+                    onMouseEnter={e => e.currentTarget.style.color = "rgba(136,108,255,1)"}
+                    onMouseLeave={e => e.currentTarget.style.color = "rgba(136,108,255,0.6)"}>
+                    Sign in
+                  </button>
+                </p>
+              )}
               <div className="flex justify-center gap-2">
                 {["Starter", "Pro", "Enterprise"].map((p) => (
                   <span key={p} className="text-[10px] px-2.5 py-0.5 rounded-full font-medium"
