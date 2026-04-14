@@ -274,25 +274,38 @@ function Process() {
 // ─── Pricing ──────────────────────────────────────────────────────────────────
 
 function Pricing() {
-  const [annual, setAnnual] = useState(false);
-
   const plans = [
     {
       name: "Starter",
-      price: annual ? 49 : 59,
-      features: ["10 AI videos/month", "1 brand", "Instagram auto-post", "Basic analytics", "Email support"],
+      price: 19,
+      limits: { jobs: "50/mo", videos: "10/mo", posts: "30/mo" },
+      features: [
+        { label: "Materials Agent", included: true },
+        { label: "Priority Support", included: false },
+        { label: "Custom Branding", included: false },
+      ],
       popular: false,
     },
     {
       name: "Pro",
-      price: annual ? 149 : 179,
-      features: ["50 AI videos/month", "5 brands", "Instagram + TikTok", "Advanced analytics", "Compliance reports", "Warehouse system", "Priority support"],
+      price: 49,
+      limits: { jobs: "200/mo", videos: "50/mo", posts: "150/mo" },
+      features: [
+        { label: "Materials Agent", included: true },
+        { label: "Priority Support", included: true },
+        { label: "Custom Branding", included: false },
+      ],
       popular: true,
     },
     {
       name: "Enterprise",
-      price: annual ? 399 : 499,
-      features: ["Unlimited videos", "Unlimited brands", "All platforms", "Custom AI models", "Full compliance suite", "Warehouse + Field Commander", "Dedicated account manager", "SLA guarantee"],
+      price: 99,
+      limits: { jobs: "Unlimited", videos: "Unlimited", posts: "Unlimited" },
+      features: [
+        { label: "Materials Agent", included: true },
+        { label: "Priority Support", included: true },
+        { label: "Custom Branding", included: true },
+      ],
       popular: false,
     },
   ];
@@ -300,24 +313,7 @@ function Pricing() {
   return (
     <section id="pricing" className="py-24 md:py-32">
       <div className="max-w-7xl mx-auto px-6">
-        <SectionHeader label="Plans" title="Pricing" subtitle="Scale your automation. No contracts, cancel anytime." />
-
-        <div className="flex justify-center mb-12">
-          <div className="flex items-center gap-4 border border-white/10 p-1">
-            <button
-              onClick={() => setAnnual(false)}
-              className={`text-xs uppercase tracking-wider px-5 py-2 transition-colors ${!annual ? "bg-white text-black" : "text-neutral-500 hover:text-white"}`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setAnnual(true)}
-              className={`text-xs uppercase tracking-wider px-5 py-2 transition-colors ${annual ? "bg-white text-black" : "text-neutral-500 hover:text-white"}`}
-            >
-              Annual
-            </button>
-          </div>
-        </div>
+        <SectionHeader label="Plans" title="Pricing" subtitle="All prices in AUD. 30-day free trial on every plan. No credit card required." />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10">
           {plans.map((plan) => (
@@ -333,13 +329,37 @@ function Pricing() {
               <h3 className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-4">{plan.name}</h3>
               <div className="mb-8">
                 <span className="text-4xl md:text-5xl font-bold text-white tracking-tight">${plan.price}</span>
-                <span className="text-neutral-600 text-sm ml-1">/mo</span>
+                <span className="text-neutral-600 text-sm ml-1">AUD/mo</span>
               </div>
+
+              {/* Limits */}
+              <div className="space-y-2 mb-6 pb-6 border-b border-white/10">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-neutral-500">Jobs</span>
+                  <span className="text-white font-medium">{plan.limits.jobs}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-neutral-500">AI Videos</span>
+                  <span className="text-white font-medium">{plan.limits.videos}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-neutral-500">Social Posts</span>
+                  <span className="text-white font-medium">{plan.limits.posts}</span>
+                </div>
+              </div>
+
+              {/* Features */}
               <ul className="space-y-3 mb-10">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-center gap-3 text-sm text-neutral-400">
-                    <Check size={14} className="text-neutral-600 flex-shrink-0" />
-                    {f}
+                  <li key={f.label} className="flex items-center gap-3 text-sm text-neutral-400">
+                    {f.included ? (
+                      <Check size={14} className="text-green-500 flex-shrink-0" />
+                    ) : (
+                      <span className="w-3.5 h-3.5 flex items-center justify-center flex-shrink-0">
+                        <span className="block w-2 h-0.5 bg-neutral-700" />
+                      </span>
+                    )}
+                    <span className={f.included ? "text-neutral-300" : "text-neutral-600"}>{f.label}</span>
                   </li>
                 ))}
               </ul>

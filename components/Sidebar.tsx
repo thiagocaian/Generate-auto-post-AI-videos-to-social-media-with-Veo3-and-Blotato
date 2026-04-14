@@ -17,12 +17,15 @@ const navItems: NavItem[] = [
   { label: 'Compliance',     href: '/compliance',      key: 'compliance',   iconPath: 'M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11' },
   { label: 'Marketing AI',   href: '/marketing',       key: 'marketing',    iconPath: 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
   { label: 'Platforms',     href: '/platforms',       key: 'platforms',    iconPath: 'M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71' },
+  { label: 'Billing',      href: '/billing',         key: 'billing',      iconPath: 'M21 4H3a2 2 0 00-2 2v12a2 2 0 002 2h18a2 2 0 002-2V6a2 2 0 00-2-2zM1 10h22' },
 ]
 
 export default function Sidebar({ active }: { active: string }) {
   const [userEmail, setUserEmail] = useState<string | null>(null)
   const [companyName, setCompanyName] = useState('Loading...')
   const [lowStockCount, setLowStockCount] = useState(0)
+  const [plan, setPlan] = useState('starter')
+  const [planStatus, setPlanStatus] = useState('trial')
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
@@ -32,12 +35,14 @@ export default function Sidebar({ active }: { active: string }) {
         setUserEmail(user.email ?? null)
         const { data: member } = await supabase
           .from('company_members')
-          .select('companies(name)')
+          .select('companies(name, plan, plan_status)')
           .eq('user_id', user.id)
           .single()
         if (member?.companies) {
-          const co = member.companies as unknown as { name: string }
+          const co = member.companies as unknown as { name: string; plan?: string; plan_status?: string }
           setCompanyName(co.name)
+          if (co.plan) setPlan(co.plan)
+          if (co.plan_status) setPlanStatus(co.plan_status)
         }
       }
       const { data: items } = await supabase
@@ -267,13 +272,17 @@ export default function Sidebar({ active }: { active: string }) {
           </div>
 
           <div className="mt-auto px-5 py-4" style={{ borderTop: '1px solid #F0F0F0' }}>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-medium" style={{ color: '#AAAAAA' }}>Plan</span>
+            <Link href="/billing" className="flex items-center justify-between mb-1 group cursor-pointer">
+              <span className="text-xs font-medium group-hover:text-[#886cff] transition-colors" style={{ color: '#AAAAAA' }}>Plan</span>
               <span className="text-xs font-bold uppercase px-2 py-0.5 rounded"
-                style={{ background: '#1A1A1A', color: '#FFFFFF', letterSpacing: '0.05em' }}>
-                Starter
+                style={{
+                  background: planStatus === 'trial' ? '#886cff' : '#1A1A1A',
+                  color: '#FFFFFF',
+                  letterSpacing: '0.05em',
+                }}>
+                {plan} {planStatus === 'trial' ? '(trial)' : ''}
               </span>
-            </div>
+            </Link>
             <button onClick={handleSignOut}
               className="w-full flex items-center gap-2 text-left text-xs mt-3 px-0 py-1.5 transition-colors"
               style={{ color: '#CCCCCC' }}
