@@ -176,7 +176,6 @@ const plans = [
 const navItems = [
   { name: "Features", link: "#features" },
   { name: "Pricing", link: "#pricing" },
-  { name: "Login", link: "/login" },
 ];
 
 // ─── Early Access Form ────────────────────────────────────────────────────────

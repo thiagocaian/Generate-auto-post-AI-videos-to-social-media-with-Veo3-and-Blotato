@@ -50,7 +50,7 @@ export function FloatingNav({
           <div className="w-6 h-6 rounded-md bg-[#886cff] flex items-center justify-center">
             <span className="text-white font-bold text-[10px]">C</span>
           </div>
-          <span className="text-sm font-semibold text-white hidden sm:block">Cytron</span>
+          <span className="text-sm font-semibold text-white">Cytron</span>
         </Link>
         <div className="w-px h-4 bg-white/10 mr-2" />
         {navItems.map((navItem, idx) => (
