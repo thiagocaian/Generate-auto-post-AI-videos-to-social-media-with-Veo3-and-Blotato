@@ -39,12 +39,20 @@ function timeAgo(dateStr: string) {
 
 export default function Home() {
   const [data, setData] = useState<DashboardData | null>(null)
+  const [platformStatus, setPlatformStatus] = useState<Array<{ name: string; connected: boolean; username?: string }>>([])
 
   useEffect(() => {
     fetch('/api/dashboard')
       .then(r => r.json())
       .then(d => { if (d.company) setData(d) })
       .catch(() => {})
+    // Fetch real platform status from Blotato
+    fetch('/api/platforms')
+      .then(r => r.json())
+      .then(d => {
+        if (d.platforms) setPlatformStatus(d.platforms.map((p: any) => ({ name: p.name, connected: p.connected, username: p.username })))
+      })
+      .catch(() => setPlatformStatus([{ name: 'Instagram', connected: false }, { name: 'TikTok', connected: false }]))
   }, [])
 
   const company = data?.company
@@ -281,12 +289,9 @@ export default function Home() {
               {/* Connected Platforms */}
               <div className="p-5 md:p-6 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #EBEBEB' }}>
                 <h2 className="text-sm font-semibold mb-3 uppercase tracking-wider" style={{ color: '#1A1A1A' }}>Platforms</h2>
-                {[
-                  { name: 'Instagram',  connected: false },
-                  { name: 'TikTok',     connected: true  },
-                ].map((p, i) => (
+                {(platformStatus.length > 0 ? platformStatus : [{ name: 'Instagram', connected: false }, { name: 'TikTok', connected: false }]).map((p, i) => (
                   <div key={i} className="flex items-center justify-between py-2.5"
-                    style={{ borderBottom: i < 1 ? '1px solid #F5F5F5' : 'none' }}>
+                    style={{ borderBottom: i < (platformStatus.length || 2) - 1 ? '1px solid #F5F5F5' : 'none' }}>
                     <span className="text-sm" style={{ color: '#444' }}>{p.name}</span>
                     <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: p.connected ? '#22C55E' : '#CCCCCC' }}>
                       {p.connected ? 'Connected' : 'Not connected'}
