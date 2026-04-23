@@ -54,7 +54,8 @@ export async function middleware(request: NextRequest) {
       request.nextUrl.pathname === '/onboarding' ||
       request.nextUrl.pathname === '/terms' ||
       request.nextUrl.pathname === '/privacy' ||
-      request.nextUrl.pathname === '/'
+      request.nextUrl.pathname === '/' ||
+      request.nextUrl.pathname.startsWith('/warehouse/pick')
 
     // Not logged in → redirect to login
     if (!session && !isLoginPage && !isPublicPath) {
