@@ -37,9 +37,12 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(hrs / 24)}d ago`
 }
 
+type StockSummary = { totalItems: number; totalValue: number; lowStockCount: number; healthScore: number; lowStockItems: { name: string; current: number; minimum: number }[] }
+
 export default function Home() {
   const [data, setData] = useState<DashboardData | null>(null)
   const [platformStatus, setPlatformStatus] = useState<Array<{ name: string; connected: boolean; username?: string }>>([])
+  const [stock, setStock] = useState<StockSummary | null>(null)
 
   useEffect(() => {
     fetch('/api/dashboard')
@@ -47,6 +50,10 @@ export default function Home() {
       .then(d => { if (d.company) setData(d) })
       .catch(() => {})
     // Fetch real platform status from Blotato
+    fetch('/api/reports?period=month')
+      .then(r => r.json())
+      .then(d => { if (d.inventory) setStock(d.inventory) })
+      .catch(() => {})
     fetch('/api/platforms')
       .then(r => r.json())
       .then(d => {
@@ -184,6 +191,53 @@ export default function Home() {
                   ))}
                 </div>
               </div>
+
+              {/* Stock Report Widget */}
+              {stock && (
+                <div className="p-5 md:p-6 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #EBEBEB' }}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 20V10M12 20V4M6 20v-6"/>
+                      </svg>
+                      <h2 className="text-sm font-semibold uppercase tracking-wider" style={{ color: '#1A1A1A' }}>Stock Report</h2>
+                      {stock.lowStockCount > 0 && (
+                        <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: '#FF4444', color: '#fff' }}>
+                          {stock.lowStockCount} crítico{stock.lowStockCount > 1 ? 's' : ''}
+                        </span>
+                      )}
+                    </div>
+                    <Link href="/reports" className="text-xs font-semibold" style={{ color: '#886cff' }}>Ver relatório →</Link>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    {[
+                      { label: 'Itens', value: String(stock.totalItems) },
+                      { label: 'Valor', value: `$${(stock.totalValue / 1000).toFixed(1)}k` },
+                      { label: 'Saúde', value: stock.healthScore + '%', color: stock.healthScore >= 80 ? '#22C55E' : '#F59E0B' },
+                    ].map((m, i) => (
+                      <div key={i} className="rounded-lg p-3 text-center" style={{ background: '#F8F8F8' }}>
+                        <div className="text-xs mb-1" style={{ color: '#AAAAAA' }}>{m.label}</div>
+                        <div className="text-lg font-bold" style={{ color: m.color || '#1A1A1A' }}>{m.value}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {stock.lowStockItems.length > 0 && (
+                    <div className="space-y-2">
+                      {stock.lowStockItems.slice(0, 2).map((item, i) => (
+                        <div key={i} className="flex items-center justify-between px-3 py-2 rounded-lg"
+                          style={{ background: '#FFF5F5', border: '1px solid #FFE0E0' }}>
+                          <span className="text-xs font-medium truncate" style={{ color: '#1A1A1A' }}>{item.name}</span>
+                          <span className="text-xs font-bold ml-2 flex-shrink-0" style={{ color: '#FF4444' }}>
+                            {item.current} / {item.minimum} mín
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Recent Activity */}
               <div className="p-5 md:p-6 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #EBEBEB' }}>
