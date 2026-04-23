@@ -18,6 +18,7 @@ const navItems: NavItem[] = [
   { label: 'Marketing AI',   href: '/marketing',       key: 'marketing',    iconPath: 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
   { label: 'Platforms',     href: '/platforms',       key: 'platforms',    iconPath: 'M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71' },
   { label: 'Billing',      href: '/billing',         key: 'billing',      iconPath: 'M21 4H3a2 2 0 00-2 2v12a2 2 0 002 2h18a2 2 0 002-2V6a2 2 0 00-2-2zM1 10h22' },
+  { label: 'Reports',     href: '/reports',         key: 'reports',      iconPath: 'M18 20V10M12 20V4M6 20v-6' },
 ]
 
 export default function Sidebar({ active }: { active: string }) {
