@@ -1,0 +1,96 @@
+{
+  "_meta": {
+    "descricao": "Regras de validação automática aplicadas pelo workflow 02 ANTES de enviar para aprovação humana. Carregado via HTTP do GitHub a cada execução.",
+    "ultima_revisao": "2026-04-26",
+    "responsavel_revisao": "Compliance + Marketing"
+  },
+
+  "palavras_proibidas": {
+    "regulatorio_cfo": [
+      "garantido",
+      "garantia de resultado",
+      "100% de sucesso",
+      "milagre",
+      "milagroso",
+      "transformação completa",
+      "antes e depois",
+      "preço imbatível",
+      "menor preço da cidade",
+      "promoção imperdível",
+      "vagas limitadas",
+      "última chance",
+      "só hoje",
+      "corra"
+    ],
+    "vendas_agressivas": [
+      "imperdível",
+      "incrível oportunidade",
+      "não perca tempo",
+      "ofertão",
+      "queima de estoque",
+      "preço de fábrica"
+    ],
+    "termos_excludentes": [
+      "feio",
+      "horrível",
+      "gosma",
+      "asqueroso",
+      "vergonhoso",
+      "constrangedor"
+    ]
+  },
+
+  "regras_estruturais": {
+    "max_emojis_por_post": 4,
+    "max_hashtags_feed": 12,
+    "min_hashtags_feed": 6,
+    "max_hashtags_reel": 6,
+    "min_hashtags_reel": 3,
+    "max_caracteres_legenda_feed": 2200,
+    "min_caracteres_legenda_feed": 300,
+    "exigir_cta": true,
+    "exigir_link_rastreavel": true,
+    "padrao_link_rastreavel": "^https?://(hom\\.link|wa\\.me)/",
+    "exigir_alt_text": true
+  },
+
+  "claims_proibidos": {
+    "saude_geral": [
+      "cura",
+      "previne câncer",
+      "previne todas as doenças",
+      "tratamento definitivo"
+    ],
+    "comparativos": [
+      "melhor da cidade",
+      "melhor do brasil",
+      "melhor que clínica X",
+      "único que faz"
+    ]
+  },
+
+  "exigencias_obrigatorias_por_canal": {
+    "instagram_feed": ["legenda", "hashtags", "alt_text", "cta_link"],
+    "instagram_story": ["legenda_curta", "cta_link"],
+    "instagram_reel": ["roteiro", "hook_3s", "cta_final", "hashtags"],
+    "tiktok": ["roteiro", "hook_1s", "cta_final", "hashtags"],
+    "facebook": ["legenda", "cta_link"],
+    "gbp": ["titulo", "descricao", "cta_botao", "cta_link"]
+  },
+
+  "alertas_sem_bloquear": [
+    "tratamento",
+    "procedimento",
+    "cirurgia"
+  ],
+
+  "regulatorio_geral": {
+    "cro_obrigatorio_em": ["imagem_feed", "imagem_story", "video_reel", "video_tiktok"],
+    "cro_formato_esperado": "CRO-XX 00000",
+    "responsavel_tecnico_obrigatorio_em": ["bio_perfil"],
+    "publicidade_de_procedimento": {
+      "permitido": false,
+      "observacao": "CFO proíbe propaganda de procedimento isolado. Permitido falar do trabalho da clínica e da abordagem, não vender procedimento como produto."
+    }
+  }
+}
