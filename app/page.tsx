@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import { track } from "@vercel/analytics";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import {
   ArrowRight,
@@ -62,12 +63,6 @@ function MagneticButton({ children, className = "", style = {}, href = "" }: { c
   );
 }
 
-// ─── Analytics helper ─────────────────────────────────────────────────────────
-function track(event: string, props?: Record<string, string>) {
-  if (typeof window !== "undefined" && (window as any).gtag) {
-    (window as any).gtag("event", event, props);
-  }
-}
 
 // ─── Pricing ──────────────────────────────────────────────────────────────────
 const plans = [
