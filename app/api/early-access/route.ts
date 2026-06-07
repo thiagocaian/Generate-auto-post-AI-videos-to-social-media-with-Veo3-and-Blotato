@@ -24,10 +24,8 @@ export async function POST(req: NextRequest) {
     )
 
   if (error) {
-    console.error('[EARLY ACCESS] Error:', error)
-    // If table doesn't exist, still return success (we'll create it)
-    // The email intent is captured in server logs at minimum
-    return NextResponse.json({ success: true, note: 'logged' })
+    console.error('[EARLY ACCESS] Error:', error.message)
+    return NextResponse.json({ error: 'Failed to register. Please try again.' }, { status: 500 })
   }
 
   return NextResponse.json({ success: true })

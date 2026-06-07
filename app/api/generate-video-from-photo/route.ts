@@ -1,14 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { getRequestUser, unauthorized } from '@/lib/auth'
+import { isAllowedUrl } from '@/lib/ssrf'
 
 export const maxDuration = 60 // Allow up to 60s for GPT-4o Vision + base64 conversion
 
 const FAL_API = 'https://queue.fal.run'
 
+const GenerateSchema = z.object({
+  imageUrl: z.string().url().optional(),
+  imageUrls: z.array(z.string().url()).max(10).optional(),
+  brief: z.string().max(2000).optional(),
+  brandConfig: z.record(z.string(), z.unknown()).optional(),
+})
+
 export async function POST(req: NextRequest) {
-  const body = await req.json()
+  const user = await getRequestUser()
+  if (!user) return unauthorized()
+
+  const raw = await req.json()
+  const parsed = GenerateSchema.safeParse(raw)
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
+  }
+
+  const body = parsed.data
   const { imageUrl, imageUrls, brandConfig, brief } = body
   // Support both single and multiple images
-  const allImages: string[] = imageUrls?.length > 0 ? imageUrls : (imageUrl ? [imageUrl] : [])
+  const allImages: string[] = imageUrls?.length ? imageUrls : (imageUrl ? [imageUrl] : [])
+
+  // SSRF: validate all image URLs
+  for (const url of allImages) {
+    if (!isAllowedUrl(url)) {
+      return NextResponse.json({ error: `Image URL not from an allowed domain: ${url.substring(0, 60)}` }, { status: 400 })
+    }
+  }
 
   const openaiKey = process.env.OPENAI_API_KEY
   const falKey = process.env.FAL_KEY

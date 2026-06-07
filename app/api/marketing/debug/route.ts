@@ -1,14 +1,21 @@
 import { NextResponse } from 'next/server'
+import { getRequestUser, unauthorized, forbidden } from '@/lib/auth'
+
+const SUPER_ADMINS = ['labofantasma@gmail.com']
 
 const OUTSTAND_API = 'https://api.outstand.so/v1'
 const BLOTATO_API = 'https://backend.blotato.com/v2'
 
 export async function GET() {
+  const user = await getRequestUser()
+  if (!user) return unauthorized()
+  if (!SUPER_ADMINS.includes(user.email ?? '')) return forbidden()
+
   const results: Record<string, unknown> = {
     timestamp: new Date().toISOString(),
     keys: {
-      OUTSTAND_API_KEY: process.env.OUTSTAND_API_KEY ? `${process.env.OUTSTAND_API_KEY.substring(0, 8)}...` : 'NOT SET',
-      BLOTATO_API_KEY: process.env.BLOTATO_API_KEY ? `${process.env.BLOTATO_API_KEY.substring(0, 8)}...` : 'NOT SET',
+      OUTSTAND_API_KEY: process.env.OUTSTAND_API_KEY ? 'SET' : 'NOT SET',
+      BLOTATO_API_KEY: process.env.BLOTATO_API_KEY ? 'SET' : 'NOT SET',
       OPENAI_API_KEY: process.env.OPENAI_API_KEY ? 'SET' : 'NOT SET',
       FAL_KEY: process.env.FAL_KEY ? 'SET' : 'NOT SET',
     },
@@ -16,7 +23,6 @@ export async function GET() {
     blotato: null,
   }
 
-  // Test Outstand
   const outstandKey = process.env.OUTSTAND_API_KEY
   if (outstandKey) {
     try {
@@ -32,14 +38,12 @@ export async function GET() {
           username: a.username,
           id: a.id,
         })),
-        raw: JSON.stringify(data).substring(0, 300),
       }
     } catch (err) {
       results.outstand = { error: err instanceof Error ? err.message : 'Unknown error' }
     }
   }
 
-  // Test Blotato (using correct auth header)
   const blotaloKey = process.env.BLOTATO_API_KEY
   if (blotaloKey) {
     try {
@@ -55,7 +59,6 @@ export async function GET() {
           username: a.username,
           id: a.id,
         })),
-        raw: JSON.stringify(data).substring(0, 300),
       }
     } catch (err) {
       results.blotato = { error: err instanceof Error ? err.message : 'Unknown error' }

@@ -494,7 +494,7 @@ export default function MaterialsPage() {
         <div className="mb-6 p-5 rounded-xl" style={{ border: '2px solid #1A1A1A' }}>
           <h2 className="text-lg font-bold mb-1">What materials do you need?</h2>
           <p className="text-xs mb-3" style={{ color: '#999' }}>
-            Write your list naturally -- e.g. "50m2 vinyl plank, 14m rodape, 5L adhesive"
+            Write your list naturally -- e.g. &quot;50m2 vinyl plank, 14m rodape, 5L adhesive&quot;
           </p>
 
           {/* Feature 1: Recent materials chips */}

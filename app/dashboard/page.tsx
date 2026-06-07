@@ -44,20 +44,29 @@ export default function Home() {
   const [platformStatus, setPlatformStatus] = useState<Array<{ name: string; connected: boolean; username?: string }>>([])
   const [stock, setStock] = useState<StockSummary | null>(null)
 
+  const [loadError, setLoadError] = useState<string | null>(null)
+
   useEffect(() => {
     fetch('/api/dashboard')
       .then(r => r.json())
-      .then(d => { if (d.company) setData(d) })
-      .catch(() => {})
-    // Fetch real platform status from Blotato
+      .then(d => {
+        if (d.company) {
+          setData(d)
+        } else if (d.error) {
+          setLoadError(d.error)
+        }
+      })
+      .catch(() => setLoadError('Could not load dashboard data.'))
+
     fetch('/api/reports?period=month')
       .then(r => r.json())
       .then(d => { if (d.inventory) setStock(d.inventory) })
       .catch(() => {})
+
     fetch('/api/platforms')
       .then(r => r.json())
       .then(d => {
-        if (d.platforms) setPlatformStatus(d.platforms.map((p: any) => ({ name: p.name, connected: p.connected, username: p.username })))
+        if (d.platforms) setPlatformStatus(d.platforms.map((p: { name: string; connected: boolean; username?: string }) => ({ name: p.name, connected: p.connected, username: p.username })))
       })
       .catch(() => setPlatformStatus([{ name: 'Instagram', connected: false }, { name: 'TikTok', connected: false }]))
   }, [])
@@ -67,6 +76,34 @@ export default function Home() {
   const recent = data?.recent
   const plan = company?.plan || 'starter'
   const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.starter
+
+  // No company found — show setup prompt
+  if (loadError && !data) {
+    return (
+      <div className="flex min-h-screen" style={{ background: '#F7F7F7', fontFamily: "'Inter', system-ui, sans-serif" }}>
+        <Sidebar active="dashboard" />
+        <main className="flex-1 flex items-center justify-center p-8">
+          <div className="max-w-md w-full text-center">
+            <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-2xl" style={{ background: '#1A1A1A' }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold mb-2" style={{ color: '#1A1A1A' }}>Set up your workspace</h1>
+            <p className="text-sm mb-6" style={{ color: '#888' }}>
+              Your account isn&apos;t linked to a company yet. Complete onboarding to get started.
+            </p>
+            <Link href="/onboarding"
+              className="inline-block px-6 py-3 rounded-xl font-semibold text-sm transition-all"
+              style={{ background: '#1A1A1A', color: '#FFFFFF' }}>
+              Start Onboarding →
+            </Link>
+          </div>
+        </main>
+      </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen" style={{ background: '#F7F7F7', fontFamily: "'Inter', system-ui, sans-serif" }}>

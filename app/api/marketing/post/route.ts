@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { getRequestUser, unauthorized } from '@/lib/auth'
+import { isAllowedUrl } from '@/lib/ssrf'
 
 export const maxDuration = 60 // Allow up to 60s for media upload + posting
 
@@ -6,9 +9,30 @@ const AYRSHARE_API = 'https://app.ayrshare.com/api'
 const OUTSTAND_API = 'https://api.outstand.so/v1'
 const BLOTATO_API = 'https://backend.blotato.com/v2'
 
+const PostSchema = z.object({
+  imageUrl: z.string().url(),
+  caption: z.string().min(1).max(3000),
+  platforms: z.array(z.string().min(1).max(50)).min(1).max(10),
+})
+
 export async function POST(req: NextRequest) {
-  const body = await req.json()
-  const { imageUrl, caption, platforms } = body
+  const user = await getRequestUser()
+  if (!user) return unauthorized()
+
+  const raw = await req.json()
+  const parsed = PostSchema.safeParse(raw)
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
+  }
+
+  const { imageUrl, caption, platforms } = parsed.data
+
+  // SSRF guard: only allow media from known domains
+  if (!isAllowedUrl(imageUrl)) {
+    return NextResponse.json({ error: 'Media URL not from an allowed domain.' }, { status: 400 })
+  }
+
+  const body = parsed.data
 
   const ayrshareKey = process.env.AYRSHARE_API_KEY
   const outstandKey = process.env.OUTSTAND_API_KEY

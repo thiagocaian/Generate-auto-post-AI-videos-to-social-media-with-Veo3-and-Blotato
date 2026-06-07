@@ -59,12 +59,14 @@ export async function GET() {
     // Compliance stats
     admin
       .from('compliance_reports')
-      .select('id, result'),
+      .select('id, result')
+      .eq('company_id', companyId),
 
     // Work orders stats
     admin
       .from('work_orders')
-      .select('id, status'),
+      .select('id, status')
+      .eq('company_id', companyId),
 
     // Jobs stats
     admin

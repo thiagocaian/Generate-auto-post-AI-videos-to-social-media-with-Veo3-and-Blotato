@@ -100,7 +100,7 @@ export default function BookingPage() {
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">Demo Booked!</h2>
               <p className="text-sm text-neutral-400 mb-2">
-                We'll be in touch shortly to confirm your time.
+                We&apos;ll be in touch shortly to confirm your time.
               </p>
               <p className="text-xs text-neutral-600 mb-8">
                 {form.preferred_date && `Data preferida: ${form.preferred_date}`}

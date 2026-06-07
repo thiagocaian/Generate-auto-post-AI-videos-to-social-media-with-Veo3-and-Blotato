@@ -2,7 +2,18 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+function verifyCallbackSecret(req: NextRequest): boolean {
+  const secret = process.env.N8N_CALLBACK_SECRET
+  if (!secret) return false
+  const header = req.headers.get('x-callback-secret') ?? req.headers.get('authorization')?.replace('Bearer ', '')
+  return header === secret
+}
+
 export async function POST(request: NextRequest) {
+  if (!verifyCallbackSecret(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const body = await request.json()
   const { post_id, video_url, caption } = body
 

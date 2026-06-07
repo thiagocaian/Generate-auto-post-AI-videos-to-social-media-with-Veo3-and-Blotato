@@ -240,7 +240,7 @@ export default function PlatformsPage() {
                     Our team will connect your {connectModal} account shortly. You will be notified when it is ready.
                   </p>
                   <p className="text-xs mb-4" style={{ color: '#999' }}>
-                    Click "Refresh Status" on the main page to check.
+                    Click &quot;Refresh Status&quot; on the main page to check.
                   </p>
                   <button
                     onClick={() => { setConnectModal(null); handleRefresh() }}

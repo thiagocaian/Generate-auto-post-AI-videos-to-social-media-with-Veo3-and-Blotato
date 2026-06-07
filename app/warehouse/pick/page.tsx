@@ -114,8 +114,7 @@ function PickPageInner() {
   async function confirmPack() {
     setConfirming(true)
     try {
-      // Fire n8n pack-confirm webhook
-      await fetch('https://labofantasma.app.n8n.cloud/webhook/pack-confirm', {
+      await fetch('/api/warehouse/pack-confirm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -126,7 +125,7 @@ function PickPageInner() {
           missingItems: [],
           confirmedAt: new Date().toISOString()
         })
-      }).catch(() => {}) // non-blocking
+      }).catch(() => {})
     } finally {
       setConfirming(false)
       setDispatched(true)
