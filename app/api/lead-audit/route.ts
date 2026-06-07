@@ -108,16 +108,25 @@ export async function POST(req: NextRequest) {
       }),
     ])
 
+    // Resend returns { error } without rejecting — check both settled status and response body.
+    let emailSent = true
     results.forEach((r, i) => {
+      const label = i === 0 ? 'confirmation' : 'notification'
       if (r.status === 'rejected') {
-        console.error(`[lead-audit] Email ${i === 0 ? 'confirmation' : 'notification'} failed:`, r.reason)
+        console.error(`[lead-audit] Email ${label} rejected:`, r.reason)
+        if (i === 0) emailSent = false
+      } else if (r.value?.error) {
+        console.error(`[lead-audit] Email ${label} error:`, r.value.error)
+        if (i === 0) emailSent = false
       }
     })
+
+    return NextResponse.json({ success: true, emailSent })
   } else {
     console.warn('[lead-audit] RESEND_API_KEY not configured — emails skipped')
   }
 
-  return NextResponse.json({ success: true })
+  return NextResponse.json({ success: true, emailSent: false })
 }
 
 function confirmationEmailHtml(data: { name: string; businessName: string }) {

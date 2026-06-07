@@ -153,7 +153,6 @@ function LeadAuditForm() {
     e.preventDefault();
     if (!form.name || !form.businessName || !form.email) return;
     setStatus("loading");
-    track("lead_audit_submitted", { industry: form.industry });
     try {
       const res = await fetch("/api/lead-audit", {
         method: "POST",
@@ -161,6 +160,8 @@ function LeadAuditForm() {
         body: JSON.stringify(form),
       });
       if (res.ok) {
+        // Fire analytics only on confirmed success
+        track("lead_audit_submitted", { industry: form.industry });
         setStatus("success");
       } else {
         const data = await res.json().catch(() => ({}));
@@ -186,11 +187,10 @@ function LeadAuditForm() {
         <div className="w-14 h-14 rounded-full bg-[#886cff]/10 border border-[#886cff]/30 flex items-center justify-center mx-auto mb-6">
           <Check size={24} className="text-[#886cff]" />
         </div>
-        <h3 className="text-2xl font-bold text-white mb-3">Audit request received</h3>
+        <h3 className="text-2xl font-bold text-white mb-3">Request received</h3>
         <p className="text-neutral-400 mb-2 max-w-sm mx-auto text-sm">
-          We&apos;ll analyse your lead flow and send you a personalised report within 24 hours.
+          We&apos;ll analyse your lead flow and get back to you within 24 hours.
         </p>
-        <p className="text-neutral-600 text-xs">Check your inbox — a confirmation is on its way.</p>
       </motion.div>
     );
   }
