@@ -18,6 +18,32 @@ export default function ScanPage() {
   const [manualCode, setManualCode] = useState('')
   const scannerRef = useRef<HTMLDivElement>(null)
   const html5QrRef = useRef<any>(null)
+  const wakeLockRef = useRef<WakeLockSentinel | null>(null)
+
+  // Keep screen awake while on this page (prevents device sleep during scanning)
+  useEffect(() => {
+    async function requestWakeLock() {
+      if (!('wakeLock' in navigator)) return
+      try {
+        wakeLockRef.current = await navigator.wakeLock.request('screen')
+      } catch {
+        // Wake lock not supported or denied — silent fail
+      }
+    }
+
+    requestWakeLock()
+
+    // Re-acquire wake lock when tab becomes visible again
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') requestWakeLock()
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      wakeLockRef.current?.release().catch(() => {})
+    }
+  }, [])
 
   useEffect(() => {
     supabase.from('projects').select('id, name').eq('status', 'active').then(({ data }) => {
