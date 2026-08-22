@@ -288,6 +288,7 @@ export default function LandingPage() {
           <a href="#lead-engine" className="px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-full hover:bg-white/[0.05] transition-all">Lead Engine</a>
           <Link href="/solutions/ecommerce-automation" className="px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-full hover:bg-white/[0.05] transition-all" onClick={() => track("fulfillment_viewed")}>E-commerce</Link>
           <a href="#how-it-works" className="px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-full hover:bg-white/[0.05] transition-all">How It Works</a>
+          <a href="#security-insight" className="px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-full hover:bg-white/[0.05] transition-all">Security</a>
           <a href="#pricing" className="px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-full hover:bg-white/[0.05] transition-all" onClick={() => track("pricing_viewed")}>Pricing</a>
           <a
             href="#lead-audit"
@@ -846,6 +847,55 @@ export default function LandingPage() {
             </MagneticButton>
             <span className="text-xs text-neutral-600">No credit card. No commitment. Just answers.</span>
           </motion.div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════ */}
+      {/* ─── SECURITY INSIGHT (informational) ───────────────────── */}
+      {/* ══════════════════════════════════════════════════════════ */}
+      <section id="security-insight" className="py-24 border-t border-white/[0.05]">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <p className="text-xs uppercase tracking-[0.2em] text-[#886cff]/70 mb-4">Security Insight</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.03em] mb-6">
+              Why keeping your home
+              <br />
+              <span className="text-neutral-500">or business secure matters.</span>
+            </h2>
+            <p className="text-neutral-400 text-lg max-w-2xl mx-auto mb-14">
+              A quick look at what&apos;s driving demand for CCTV and security systems across the Gold Coast.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+            {[
+              { stat: "12%", title: "Rise in home invasions", desc: "Gold Coast home invasions have risen over the past year." },
+              { stat: "20 min", title: "A break-in every 20 minutes", desc: "That's how often a break-in occurs somewhere in Queensland." },
+              { stat: "80%", title: "Fewer break-ins", desc: "Homes with security cameras and screens installed see far fewer break-ins." },
+              { stat: "20%", title: "Rise in business crime", desc: "Growing crime rates are pushing more businesses to strengthen security." },
+            ].map((s, i) => (
+              <motion.div
+                key={i}
+                className="p-5 rounded-xl border border-white/[0.06] bg-white/[0.02]"
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.07 }}
+              >
+                <div className="text-2xl font-bold text-[#886cff] mb-2">{s.stat}</div>
+                <h3 className="text-sm font-semibold text-white mb-1">{s.title}</h3>
+                <p className="text-xs text-neutral-500 leading-relaxed">{s.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <p className="text-xs text-neutral-700 mt-10">
+            Informational only — figures reflect general Gold Coast &amp; Queensland security trends.
+          </p>
         </div>
       </section>
 
