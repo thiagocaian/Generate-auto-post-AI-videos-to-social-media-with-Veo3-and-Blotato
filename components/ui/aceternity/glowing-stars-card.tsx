@@ -34,10 +34,14 @@ function Illustration({ mouseEnter }: { mouseEnter: boolean }) {
   const columns = 10;
 
   const [glowingStars, setGlowingStars] = useState<number[]>([]);
+  const [staticGlowStars, setStaticGlowStars] = useState<number[]>([]);
 
   const highlightedStars = useRef<number[]>([]);
 
   useEffect(() => {
+    setStaticGlowStars(
+      Array.from({ length: stars * columns }, (_, i) => i).filter(() => Math.random() > 0.97)
+    );
     const interval = setInterval(() => {
       highlightedStars.current = Array.from({ length: 5 }, () =>
         Math.floor(Math.random() * stars * columns)
@@ -59,7 +63,7 @@ function Illustration({ mouseEnter }: { mouseEnter: boolean }) {
       {[...Array(stars * columns)].map((_, starIdx) => {
         const isGlowing = glowingStars.includes(starIdx);
         const delay = (starIdx % 10) * 0.1;
-        const staticGlow = Math.random() > 0.97;
+        const staticGlow = staticGlowStars.includes(starIdx);
         return (
           <div key={`star-${starIdx}`} className="relative flex items-center justify-center">
             <AnimatePresence mode="wait">

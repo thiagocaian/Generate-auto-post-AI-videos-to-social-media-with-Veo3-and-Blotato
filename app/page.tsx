@@ -18,6 +18,7 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import BackgroundScene from "@/components/BackgroundScene";
 import { SpotlightCard } from "@/components/ui/aceternity/spotlight-card";
 import { GlowingStarsCard, GlowingStarsTitle, GlowingStarsDescription } from "@/components/ui/aceternity/glowing-stars-card";
@@ -854,8 +855,9 @@ export default function LandingPage() {
       {/* ─── SECURITY INSIGHT (informational) ───────────────────── */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section id="security-insight" className="py-24 border-t border-white/[0.05]">
-        <div className="max-w-4xl mx-auto px-6 text-center">
+        <div className="max-w-5xl mx-auto px-6">
           <motion.div
+            className="text-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -866,12 +868,30 @@ export default function LandingPage() {
               <br />
               <span className="text-neutral-500">or business secure matters.</span>
             </h2>
-            <p className="text-neutral-400 text-lg max-w-2xl mx-auto mb-14">
+            <p className="text-neutral-400 text-lg max-w-2xl mx-auto mb-12">
               A quick look at what&apos;s driving demand for CCTV and security systems across the Gold Coast.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+          <motion.div
+            className="relative rounded-2xl overflow-hidden border border-white/[0.08] mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <Image
+              src="/images/cctv/gold-coast-commercial-cctv-hero.png"
+              alt="CCTV security camera installed on a commercial building along the Gold Coast beachfront at dusk"
+              width={1672}
+              height={941}
+              className="w-full h-auto"
+              sizes="(max-width: 1024px) 100vw, 1024px"
+            />
+            <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 40%, rgba(5,5,5,0.85) 100%)" }} />
+            <p className="absolute bottom-4 left-5 text-xs text-neutral-300">Commercial CCTV overlooking the Gold Coast beachfront</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left mb-6">
             {[
               { stat: "12%", title: "Rise in home invasions", desc: "Gold Coast home invasions have risen over the past year." },
               { stat: "20 min", title: "A break-in every 20 minutes", desc: "That's how often a break-in occurs somewhere in Queensland." },
@@ -893,7 +913,33 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <p className="text-xs text-neutral-700 mt-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              { src: "/images/cctv/gold-coast-home-cctv.png", w: 1672, h: 941, alt: "A security camera mounted under the eaves of a modern Gold Coast home", caption: "Residential CCTV, discreetly mounted" },
+              { src: "/images/cctv/commercial-cctv-close-up.png", w: 1448, h: 1086, alt: "Close-up of a dome security camera overlooking a Gold Coast business precinct at night", caption: "Dome camera covering a business precinct" },
+            ].map((img) => (
+              <motion.div
+                key={img.src}
+                className="relative rounded-xl overflow-hidden border border-white/[0.06]"
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  width={img.w}
+                  height={img.h}
+                  className="w-full h-auto"
+                  sizes="(max-width: 640px) 100vw, 512px"
+                />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 55%, rgba(5,5,5,0.85) 100%)" }} />
+                <p className="absolute bottom-3 left-4 text-xs text-neutral-300">{img.caption}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <p className="text-center text-xs text-neutral-700 mt-10">
             Informational only — figures reflect general Gold Coast &amp; Queensland security trends.
           </p>
         </div>

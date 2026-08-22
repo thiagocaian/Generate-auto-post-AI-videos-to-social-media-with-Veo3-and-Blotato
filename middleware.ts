@@ -6,12 +6,18 @@ export async function middleware(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
+  // Missing env vars → deny, do not silently allow
+  if (!supabaseUrl || !supabaseKey) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
   const isLoginPage = request.nextUrl.pathname === '/login'
   const isPublicPath =
     request.nextUrl.pathname.startsWith('/api') ||
     request.nextUrl.pathname.startsWith('/_next') ||
     request.nextUrl.pathname.startsWith('/favicon') ||
     request.nextUrl.pathname.startsWith('/auth/callback') ||
+    request.nextUrl.pathname.startsWith('/images') ||
     request.nextUrl.pathname === '/forgot-password' ||
     request.nextUrl.pathname === '/reset-password' ||
     request.nextUrl.pathname === '/landing' ||
@@ -20,20 +26,12 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname === '/onboarding' ||
     request.nextUrl.pathname === '/terms' ||
     request.nextUrl.pathname === '/privacy' ||
-    request.nextUrl.pathname === '/icon' ||
     request.nextUrl.pathname === '/' ||
-    request.nextUrl.pathname.startsWith('/solutions/') ||
     request.nextUrl.pathname.startsWith('/warehouse/pick')
 
   // Skip auth check for public paths (API routes protect themselves)
   if (isPublicPath) {
     return NextResponse.next({ request: { headers: request.headers } })
-  }
-
-  // Missing env vars → deny protected paths without trapping users in a login loop.
-  if (!supabaseUrl || !supabaseKey) {
-    if (isLoginPage) return NextResponse.next()
-    return NextResponse.redirect(new URL('/login', request.url))
   }
 
   try {
