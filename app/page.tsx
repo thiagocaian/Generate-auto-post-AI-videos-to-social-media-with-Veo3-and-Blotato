@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import BackgroundScene from "@/components/BackgroundScene";
+import SecurityHeroScene from "@/components/SecurityHeroScene";
 import { SpotlightCard } from "@/components/ui/aceternity/spotlight-card";
 import { GlowingStarsCard, GlowingStarsTitle, GlowingStarsDescription } from "@/components/ui/aceternity/glowing-stars-card";
 
@@ -267,7 +267,7 @@ export default function LandingPage() {
       {/* ─── HERO ────────────────────────────────────────────────── */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
-        <BackgroundScene particleCount={40} opacity={0.3} />
+        <SecurityHeroScene />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[500px] pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(136,108,255,0.07) 0%, transparent 70%)" }} />
 
         <div className="relative z-10 w-full max-w-4xl mx-auto px-6 py-32 text-center">
