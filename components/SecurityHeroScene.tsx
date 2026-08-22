@@ -28,16 +28,16 @@ export default function SecurityHeroScene() {
   const personAnimation = prefersReducedMotion
     ? { opacity: 0.5, x: "42vw" }
     : {
-        opacity: [0, 0.55, 0.82, 0.82, 0],
-        scale: [0.78, 0.88, 1.55, 1.55, 0.78],
-        x: ["-20vw", "10vw", "70vw", "70vw", "110vw"],
+        opacity: [0, 0.55, 0.85, 0.85, 0],
+        scale: [0.78, 0.88, 1.9, 1.9, 0.78],
+        x: ["-20vw", "10vw", "68vw", "68vw", "110vw"],
       };
 
   return (
     <div aria-hidden="true" className="absolute inset-0 overflow-hidden pointer-events-none">
       <motion.div
-        className="absolute inset-0 origin-[78%_48%]"
-        animate={prefersReducedMotion ? undefined : { scale: [1, 1, 1.1, 1.1, 1] }}
+        className="absolute inset-0 origin-[70%_62%]"
+        animate={prefersReducedMotion ? undefined : { scale: [1, 1, 1.22, 1.22, 1] }}
         transition={{ ...patrolTransition, times: [0, 0.18, 0.4, 0.62, 1] }}
       >
         <Image
@@ -78,9 +78,10 @@ export default function SecurityHeroScene() {
         4K · NIGHT VISION · RECORDING
       </div>
 
-      {/* A stylised, non-identifying analysis panel appears during the zoom. */}
+      {/* A stylised, non-identifying analysis panel appears during the zoom, anchored
+          clear of the hero copy so it never collides with the headline. */}
       <motion.div
-        className="absolute right-6 top-[25%] hidden w-44 border border-[#9ab7ff]/50 bg-[#080b14]/70 p-3 font-mono text-[8px] tracking-[0.12em] text-[#d2dcff] shadow-[0_0_32px_rgba(79,116,255,0.18)] backdrop-blur-md lg:block"
+        className="absolute right-6 bottom-[6%] hidden w-44 border border-[#9ab7ff]/50 bg-[#080b14]/70 p-3 font-mono text-[8px] tracking-[0.12em] text-[#d2dcff] shadow-[0_0_32px_rgba(79,116,255,0.18)] backdrop-blur-md lg:block"
         animate={prefersReducedMotion
           ? { opacity: 0 }
           : { opacity: [0, 0, 1, 1, 0], x: [20, 20, 0, 0, 20] }}
@@ -139,12 +140,25 @@ export default function SecurityHeroScene() {
           </motion.div>
 
           <motion.div
-            className="absolute left-[22%] top-[4%] h-[27%] w-[54%] border border-[#d7e0ff] shadow-[0_0_22px_rgba(176,197,255,0.65)]"
+            className="absolute left-[22%] top-[4%] h-[27%] w-[54%]"
             animate={prefersReducedMotion
               ? { opacity: 0 }
-              : { opacity: [0, 0, 1, 1, 0], scale: [0.86, 0.86, 1, 1, 0.86] }}
-            transition={{ ...patrolTransition, times: [0, 0.22, 0.4, 0.62, 1] }}
+              : { opacity: [0, 0, 1, 1, 0], scale: [1.6, 1.6, 1, 1, 1.6] }}
+              transition={{ ...patrolTransition, times: [0, 0.22, 0.4, 0.62, 1] }}
           >
+            {/* Camera-style autofocus corner brackets — the "locking on" reticle. */}
+            {[
+              "left-0 top-0 border-l border-t",
+              "right-0 top-0 border-r border-t",
+              "left-0 bottom-0 border-l border-b",
+              "right-0 bottom-0 border-r border-b",
+            ].map((pos) => (
+              <span
+                key={pos}
+                className={`absolute h-[22%] w-[22%] border-[#d7e0ff] ${pos}`}
+                style={{ filter: "drop-shadow(0 0 4px rgba(215,224,255,0.8))" }}
+              />
+            ))}
             <span className="absolute -left-px -top-4 whitespace-nowrap bg-[#d7e0ff] px-1 py-0.5 font-mono text-[6px] font-semibold tracking-[0.11em] text-[#08080b] sm:text-[7px]">
               FACE SCAN
             </span>
