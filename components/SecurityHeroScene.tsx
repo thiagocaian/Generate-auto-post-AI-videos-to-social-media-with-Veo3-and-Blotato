@@ -17,6 +17,39 @@ const scanTransition = {
   repeatType: "reverse" as const,
 };
 
+// Approximate facial landmark points (percent coordinates within the face-scan
+// box) used to draw a Face-ID-style biometric mesh over the tracked subject.
+const FACE_LANDMARKS = {
+  forehead: [50, 14] as const,
+  eyeL: [34, 34] as const,
+  eyeR: [66, 34] as const,
+  cheekL: [23, 56] as const,
+  cheekR: [77, 56] as const,
+  nose: [50, 50] as const,
+  mouthL: [37, 70] as const,
+  mouthR: [63, 70] as const,
+  chin: [50, 84] as const,
+};
+
+type FaceLandmarkKey = keyof typeof FACE_LANDMARKS;
+
+const FACE_MESH_EDGES: [FaceLandmarkKey, FaceLandmarkKey][] = [
+  ["forehead", "eyeL"],
+  ["forehead", "eyeR"],
+  ["eyeL", "eyeR"],
+  ["eyeL", "cheekL"],
+  ["eyeR", "cheekR"],
+  ["eyeL", "nose"],
+  ["eyeR", "nose"],
+  ["nose", "mouthL"],
+  ["nose", "mouthR"],
+  ["mouthL", "mouthR"],
+  ["cheekL", "mouthL"],
+  ["cheekR", "mouthR"],
+  ["mouthL", "chin"],
+  ["mouthR", "chin"],
+];
+
 /**
  * A decorative, CCTV-style scene for the homepage. It is intentionally hidden
  * from assistive technology: the nearby heading and copy convey the real page
@@ -140,7 +173,7 @@ export default function SecurityHeroScene() {
           </motion.div>
 
           <motion.div
-            className="absolute left-[22%] top-[4%] h-[27%] w-[54%]"
+            className="absolute left-[57%] top-[6%] h-[17%] w-[21%]"
             animate={prefersReducedMotion
               ? { opacity: 0 }
               : { opacity: [0, 0, 1, 1, 0], scale: [1.6, 1.6, 1, 1, 1.6] }}
@@ -167,6 +200,57 @@ export default function SecurityHeroScene() {
               animate={prefersReducedMotion ? { top: "0%" } : { top: ["0%", "100%", "0%"] }}
               transition={{ duration: 1.1, ease: "easeInOut", repeat: Infinity }}
             />
+
+            {/* Biometric landmark mesh — the system tries to map the face but
+                never resolves a match, echoing FACE: OBSCURED above. */}
+            {!prefersReducedMotion && (
+              <svg
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                className="absolute inset-0 h-full w-full overflow-visible"
+              >
+                {FACE_MESH_EDGES.map(([fromKey, toKey], i) => {
+                  const from = FACE_LANDMARKS[fromKey];
+                  const to = FACE_LANDMARKS[toKey];
+                  return (
+                    <motion.line
+                      key={`${fromKey}-${toKey}`}
+                      x1={from[0]}
+                      y1={from[1]}
+                      x2={to[0]}
+                      y2={to[1]}
+                      stroke="#d7e0ff"
+                      strokeWidth={0.4}
+                      animate={{ opacity: [0, 0, 0.5, 0.15, 0.5, 0, 0] }}
+                      transition={{
+                        ...patrolTransition,
+                        times: [0, 0.24, 0.32, 0.44, 0.52, 0.62, 1],
+                        delay: i * 0.015,
+                      }}
+                    />
+                  );
+                })}
+                {Object.entries(FACE_LANDMARKS).map(([key, [cx, cy]], i) => (
+                  <motion.circle
+                    key={key}
+                    cx={cx}
+                    cy={cy}
+                    r={1.1}
+                    fill="#d7e0ff"
+                    animate={{
+                      opacity: [0, 0, 1, 0.3, 1, 0, 0],
+                      scale: [0.4, 0.4, 1, 0.85, 1, 0.4, 0.4],
+                    }}
+                    transition={{
+                      ...patrolTransition,
+                      times: [0, 0.22, 0.3, 0.44, 0.52, 0.62, 1],
+                      delay: i * 0.02,
+                    }}
+                    style={{ transformOrigin: `${cx}px ${cy}px` }}
+                  />
+                ))}
+              </svg>
+            )}
           </motion.div>
         </motion.div>
       </motion.div>
