@@ -250,6 +250,7 @@ export default function LandingPage() {
             <span className="text-sm font-semibold text-white">CYTRON</span>
           </div>
           <a href="#services" className="px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-full hover:bg-white/[0.05] transition-all">Services</a>
+          <a href="#projects" className="px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-full hover:bg-white/[0.05] transition-all">Projects</a>
           <a href="#how-it-works" className="px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-full hover:bg-white/[0.05] transition-all">How It Works</a>
           <a href="#why-it-matters" className="px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-full hover:bg-white/[0.05] transition-all">Why It Matters</a>
           <a href="#pricing" className="px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-full hover:bg-white/[0.05] transition-all" onClick={() => track("pricing_viewed")}>Pricing</a>
@@ -533,6 +534,61 @@ export default function LandingPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
+      {/* ─── PROJECTS ────────────────────────────────────────────── */}
+      {/* ══════════════════════════════════════════════════════════ */}
+      <section id="projects" className="py-28 border-t border-white/[0.05]">
+        <div className="max-w-5xl mx-auto px-6">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <p className="text-xs uppercase tracking-[0.2em] text-[#886cff]/70 mb-4">Where We Work</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.03em] mb-4">
+              From beachfront homes
+              <br />
+              <span className="text-neutral-500">to city offices.</span>
+            </h2>
+            <p className="text-neutral-400 text-lg max-w-xl mx-auto">
+              The kind of residential and commercial properties CYTRON designs security systems for, right across the Gold Coast.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              { src: "/images/projects/gold-coast-skyline.jpg", w: 1024, h: 768, alt: "Aerial view of Surfers Paradise skyline and beach on the Gold Coast", caption: "Surfers Paradise, Gold Coast" },
+              { src: "/images/projects/modern-residential.jpg", w: 1024, h: 768, alt: "A modern two-storey house with large windows", caption: "Homes &amp; townhouses" },
+              { src: "/images/projects/commercial-office.jpg", w: 768, h: 1024, alt: "A modern glass-fronted office building", caption: "Offices &amp; commercial premises" },
+            ].map((img, i) => (
+              <motion.div
+                key={img.src}
+                className="relative rounded-xl overflow-hidden border border-white/[0.06] aspect-[4/5]"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+              >
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 55%, rgba(5,5,5,0.85) 100%)" }} />
+                <p className="absolute bottom-3 left-4 text-xs text-neutral-300" dangerouslySetInnerHTML={{ __html: img.caption }} />
+              </motion.div>
+            ))}
+          </div>
+
+          <p className="text-center text-xs text-neutral-700 mt-8">
+            Illustrative photos, not completed CYTRON installations. Surfers Paradise photo by Tatters (CC BY 2.0) via Flickr; home photo by pnwra (CC BY 2.0) via Flickr; office photo by ricardodiaz11 (CC BY 2.0) via Flickr.
+          </p>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════ */}
       {/* ─── HOW IT WORKS ────────────────────────────────────────── */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section id="how-it-works" className="py-28 border-t border-white/[0.05]">
@@ -785,6 +841,7 @@ export default function LandingPage() {
             </div>
             <div className="flex items-center gap-6 text-xs text-neutral-600">
               <a href="#services" className="hover:text-neutral-400 transition-colors">Services</a>
+              <a href="#projects" className="hover:text-neutral-400 transition-colors">Projects</a>
               <a href="#how-it-works" className="hover:text-neutral-400 transition-colors">How It Works</a>
               <a href="#why-it-matters" className="hover:text-neutral-400 transition-colors">Why It Matters</a>
               <a href="#pricing" className="hover:text-neutral-400 transition-colors">Pricing</a>
