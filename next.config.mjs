@@ -2,13 +2,15 @@
 const nextConfig = {
   generateBuildId: () => 'build-' + Date.now(),
   headers: async () => [
-    // Immutable static assets
-    {
-      source: '/_next/static/:path*',
-      headers: [
-        { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
-      ],
-    },
+    // Immutable static assets (production only: in dev the chunk names don't change, so the browser would keep stale code)
+    ...(process.env.NODE_ENV === 'production'
+      ? [{
+          source: '/_next/static/:path*',
+          headers: [
+            { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          ],
+        }]
+      : []),
     // API routes — no cache
     {
       source: '/api/:path*',

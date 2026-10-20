@@ -1,126 +1,158 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
+import { Outfit } from "next/font/google";
 import { track } from "@vercel/analytics";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
   Check,
-  Camera,
-  Building2,
-  Lock,
-  Bell,
-  Wrench,
+  ChevronRight,
   ClipboardCheck,
+  FileText,
+  MapPin,
+  MessageSquare,
+  Package,
+  Printer,
   ShieldCheck,
+  Sparkles,
+  Truck,
+  BarChart3,
   Eye,
+  Lock,
 } from "lucide-react";
-import Link from "next/link";
-import Image from "next/image";
-import SecurityHeroScene from "@/components/SecurityHeroScene";
-import { SpotlightCard } from "@/components/ui/aceternity/spotlight-card";
-import { GlowingStarsCard, GlowingStarsTitle, GlowingStarsDescription } from "@/components/ui/aceternity/glowing-stars-card";
+import LedTunnel from "@/components/LedTunnel";
+
+const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600", "700"], display: "swap" });
+
+const ACCENT = "#5b5cf6";
 
 // ─── Logo ─────────────────────────────────────────────────────────────────────
-function CytronLogo({ size = 32 }: { size?: number }) {
+function CytronLogo({ size = 30 }: { size?: number }) {
   return (
-    <div
-      className="rounded-lg bg-[#886cff] flex items-center justify-center"
-      style={{ width: size, height: size }}
-    >
-      <span className="text-white font-bold" style={{ fontSize: size * 0.45 }}>C</span>
+    <div className="flex items-center justify-center rounded-lg shadow-[0_0_18px_rgba(91,92,246,0.45)]" style={{ width: size, height: size, background: ACCENT }}>
+      <span className="font-bold text-white" style={{ fontSize: size * 0.48 }}>C</span>
     </div>
   );
 }
 
-// ─── Magnetic Button ──────────────────────────────────────────────────────────
-function MagneticButton({ children, className = "", style = {}, href = "" }: { children: React.ReactNode; className?: string; style?: React.CSSProperties; href?: string }) {
-  const ref = useRef<HTMLAnchorElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 200, damping: 20 });
-  const springY = useSpring(y, { stiffness: 200, damping: 20 });
+const cta = (label: string, href = "#audit", event = "lead_audit_started") => (
+  <a
+    href={href}
+    onClick={() => track(event)}
+    className="group inline-flex items-center gap-2 rounded-2xl px-6 py-3.5 text-[15px] font-semibold text-white shadow-[0_10px_30px_-8px_rgba(91,92,246,0.7)] transition-transform hover:-translate-y-0.5"
+    style={{ background: ACCENT }}
+  >
+    {label}
+    <ChevronRight size={18} className="transition-transform group-hover:translate-x-0.5" />
+  </a>
+);
 
+// ─── Live workflow card (hero) ────────────────────────────────────────────────
+const STEPS = [
+  { icon: Package, label: "New order #1042 received", detail: "3 items · Express" },
+  { icon: ClipboardCheck, label: "Address and items checked", detail: "Postcode matches state" },
+  { icon: Package, label: "Box chosen", detail: "B-SML · 18 × 13 × 5 cm" },
+  { icon: Truck, label: "Cheapest carrier picked", detail: "Express Post · $13.20" },
+  { icon: Printer, label: "Label and packing slip printed", detail: "Warehouse printer · 8:10 am" },
+];
+
+function WorkflowCard() {
+  const [step, setStep] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setStep((s) => (s + 1) % (STEPS.length + 2)), 1300);
+    return () => clearInterval(t);
+  }, []);
   return (
-    <motion.a
-      ref={ref}
-      href={href}
-      className={className}
-      style={{ ...style, x: springX, y: springY }}
-      onMouseMove={(e) => {
-        const rect = ref.current?.getBoundingClientRect();
-        if (!rect) return;
-        x.set((e.clientX - rect.left - rect.width / 2) * 0.15);
-        y.set((e.clientY - rect.top - rect.height / 2) * 0.15);
-      }}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.97 }}
-    >
-      {children}
-    </motion.a>
+    <div className="relative w-full max-w-md rounded-3xl border border-white bg-white/80 p-5 shadow-[0_30px_80px_-30px_rgba(40,60,120,0.35),0_0_0_1px_rgba(91,92,246,0.06)] backdrop-blur-xl">
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-[13px] font-semibold text-slate-800">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: ACCENT }} />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full" style={{ background: ACCENT }} />
+          </span>
+          Dispatch automation · live
+        </div>
+        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500">no one touched this</span>
+      </div>
+      <ul className="space-y-2.5">
+        {STEPS.map((s, i) => {
+          const done = i < step;
+          const active = i === step;
+          const Icon = s.icon;
+          return (
+            <li key={s.label} className={`flex items-center gap-3 rounded-2xl border px-3.5 py-3 transition-all duration-500 ${done ? "border-slate-100 bg-white" : active ? "border-[#5b5cf6]/30 bg-[#5b5cf6]/[0.06]" : "border-transparent bg-slate-50/60 opacity-50"}`}>
+              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${done ? "bg-emerald-50 text-emerald-600" : active ? "text-white" : "bg-slate-100 text-slate-400"}`} style={active ? { background: ACCENT } : undefined}>
+                {done ? <Check size={17} /> : <Icon size={17} />}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-[13.5px] font-semibold text-slate-800">{s.label}</p>
+                <p className="truncate text-[12px] text-slate-500">{s.detail}</p>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <AnimatePresence>
+        {step >= STEPS.length && (
+          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-3 rounded-2xl bg-emerald-50 px-4 py-2.5 text-[12.5px] font-medium text-emerald-700">
+            Order ready to pack in 9 seconds. Anything unusual goes to a person first.
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
-
-// ─── Packages ─────────────────────────────────────────────────────────────────
-const packages = [
-  {
-    name: "Residential",
-    desc: "For homes and townhouses.",
-    features: [
-      "2–8 camera systems",
-      "Mobile app access & alerts",
-      "Free on-site assessment",
-      "Standard warranty",
-      "Local Gold Coast support",
-    ],
-  },
-  {
-    name: "Commercial",
-    desc: "For shops, offices and warehouses.",
-    popular: true,
-    features: [
-      "Everything in Residential",
-      "Multi-camera & access control",
-      "Remote viewing for multiple staff",
-      "Priority installation",
-      "Maintenance plans available",
-    ],
-  },
-  {
-    name: "Enterprise / Multi-Site",
-    desc: "For larger operations and multi-location businesses.",
-    features: [
-      "Everything in Commercial",
-      "24/7 monitoring integration",
-      "Custom NVR & cloud storage",
-      "Multi-site management",
-      "Dedicated account support",
-    ],
-  },
+// ─── Content ──────────────────────────────────────────────────────────────────
+const SERVICES = [
+  { icon: Truck, title: "Orders & fulfilment", text: "Pending orders checked, box and cheapest carrier chosen, labels and packing slips printed before the team arrives." },
+  { icon: MapPin, title: "Address & data checks", text: "Wrong postcodes, missing unit numbers and duplicate records caught before they cost you a re-delivery." },
+  { icon: FileText, title: "Quotes, invoices & paperwork", text: "Documents generated from your own data, sent to the right person, filed where you can find them." },
+  { icon: MessageSquare, title: "AI assistant for your team", text: "Ask in Telegram or chat: “what's held today and why?”. The assistant answers from your systems, not from guesses." },
+  { icon: BarChart3, title: "Daily reports", text: "A short summary every morning: what shipped, what's stuck, what it cost. No spreadsheet hunting." },
+  { icon: Printer, title: "Printing & warehouse devices", text: "Your office and label printers receive jobs automatically, with a queue if a printer is offline." },
 ];
 
-const PROPERTY_TYPES = [
-  "Residential",
-  "Commercial",
-  "Multi-site / Enterprise",
-  "Other",
+const STEPS_HOW = [
+  { n: "01", t: "Free audit", d: "We sit with your team and map the tasks that eat the most hours." },
+  { n: "02", t: "Rules first", d: "We write down how your best person decides, so the automation decides the same way." },
+  { n: "03", t: "Build", d: "Workflows connected to the tools you already use. Fixed rules for the maths, AI only where judgment helps." },
+  { n: "04", t: "Shadow test", d: "It runs in read-only mode next to your team. We compare every decision before anything goes live." },
+  { n: "05", t: "Go live", d: "Switched on one step at a time, with a one-click way back to manual." },
+  { n: "06", t: "Improve", d: "We watch the exceptions and keep tuning the rules every month." },
 ];
 
-// ─── Quote Form ────────────────────────────────────────────────────────────────
-function QuoteForm() {
-  const [form, setForm] = useState({
-    name: "",
-    businessName: "",
-    email: "",
-    phone: "",
-    industry: "",
-    responseProcess: "",
-  });
+const PRINCIPLES = [
+  { icon: ShieldCheck, t: "Rules decide, AI assists", d: "Prices, weights and boxes come from fixed rules you can audit. AI handles text and judgment calls." },
+  { icon: Eye, t: "Read-only first", d: "Every automation starts by watching, not acting. You see its decisions before it makes any." },
+  { icon: Lock, t: "Nothing goes out on a guess", d: "Unclear address? Missing weight? The job is held for a person, with the reason written down." },
+  { icon: Sparkles, t: "You own it", d: "Your workflows, your data, your accounts. No black box and no lock-in." },
+];
+
+const CASE = [
+  { k: "100 orders", v: "checked, boxed and quoted in under 3 minutes" },
+  { k: "47%", v: "lower freight in a test batch, by always picking the cheapest carrier that fits" },
+  { k: "8:10 am", v: "labels and packing slips waiting at the printer" },
+  { k: "0", v: "orders shipped with an unclear address: they go to review" },
+];
+
+const TOOLS = ["n8n", "Starshipit", "WooCommerce", "Shopify", "Australia Post", "Aramex", "Telegram", "Google Sheets", "Gemini", "Grok"];
+
+const FAQ = [
+  { q: "Do I need to change the software I use?", a: "No. We connect to the tools you already have, like your online store, shipping platform, spreadsheets and chat." },
+  { q: "What if the automation gets something wrong?", a: "It is built to stop rather than guess. Anything outside the rules is held for a person, and every decision is logged." },
+  { q: "How long until it runs?", a: "A first workflow usually goes from audit to shadow test in a few weeks, depending on access to your systems." },
+  { q: "Is it only for e-commerce?", a: "No. Fulfilment is our showcase, but the same approach works for quotes, bookings, invoicing, reporting and admin in any small business." },
+];
+
+// ─── Audit form ───────────────────────────────────────────────────────────────
+const BUSINESS_TYPES = ["E-commerce / online store", "Trades & services", "Clinic / health", "Professional services", "Wholesale / distribution", "Other"];
+
+function AuditForm() {
+  const [form, setForm] = useState({ name: "", businessName: "", email: "", phone: "", industry: "", responseProcess: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
-
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
@@ -129,18 +161,13 @@ function QuoteForm() {
     if (!form.name || !form.businessName || !form.email) return;
     setStatus("loading");
     try {
-      const res = await fetch("/api/lead-audit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      const res = await fetch("/api/lead-audit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
       if (res.ok) {
-        // Fire analytics only on confirmed success
         track("lead_audit_submitted", { industry: form.industry });
         setStatus("success");
       } else {
         const data = await res.json().catch(() => ({}));
-        setErrorMsg(data.error || "Something went wrong. Please try again.");
+        setErrorMsg(typeof data.error === "string" ? data.error : "Something went wrong. Please try again.");
         setStatus("error");
       }
     } catch {
@@ -149,706 +176,252 @@ function QuoteForm() {
     }
   };
 
-  const inputClass = "w-full px-4 py-3 text-sm rounded-lg bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-neutral-600 outline-none focus:border-[#886cff]/50 transition-colors";
-  const labelClass = "block text-xs font-medium text-neutral-400 mb-1.5";
+  const input = "w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#5b5cf6] focus:ring-4 focus:ring-[#5b5cf6]/10";
+  const label = "mb-1.5 block text-xs font-semibold text-slate-600";
 
   if (status === "success") {
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="text-center py-16 px-6"
-      >
-        <div className="w-14 h-14 rounded-full bg-[#886cff]/10 border border-[#886cff]/30 flex items-center justify-center mx-auto mb-6">
-          <Check size={24} className="text-[#886cff]" />
-        </div>
-        <h3 className="text-2xl font-bold text-white mb-3">Request received</h3>
-        <p className="text-neutral-400 mb-2 max-w-sm mx-auto text-sm">
-          We&apos;ll review your details and get back to you with a quote within 24 hours.
-        </p>
-      </motion.div>
+      <div className="py-14 text-center">
+        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600"><Check size={26} /></div>
+        <h3 className="mb-2 text-2xl font-semibold text-slate-900">Request received</h3>
+        <p className="mx-auto max-w-sm text-sm text-slate-500">We&apos;ll look at your details and get back to you within one business day to book the audit.</p>
+      </div>
     );
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <div>
-          <label className={labelClass}>Your name *</label>
-          <input type="text" placeholder="Jane Smith" value={form.name} onChange={set("name")} required className={inputClass} />
-        </div>
-        <div>
-          <label className={labelClass}>Property / business name *</label>
-          <input type="text" placeholder="Smith Residence or Acme Pty Ltd" value={form.businessName} onChange={set("businessName")} required className={inputClass} />
-        </div>
-        <div>
-          <label className={labelClass}>Email *</label>
-          <input type="email" placeholder="jane@example.com" value={form.email} onChange={set("email")} required className={inputClass} />
-        </div>
-        <div>
-          <label className={labelClass}>Phone</label>
-          <input type="tel" placeholder="0400 000 000" value={form.phone} onChange={set("phone")} className={inputClass} />
-        </div>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div><label className={label}>Your name *</label><input className={input} placeholder="Jane Smith" value={form.name} onChange={set("name")} required /></div>
+        <div><label className={label}>Business name *</label><input className={input} placeholder="Acme Pty Ltd" value={form.businessName} onChange={set("businessName")} required /></div>
+        <div><label className={label}>Email *</label><input type="email" className={input} placeholder="jane@acme.com.au" value={form.email} onChange={set("email")} required /></div>
+        <div><label className={label}>Phone</label><input type="tel" className={input} placeholder="0400 000 000" value={form.phone} onChange={set("phone")} /></div>
         <div className="sm:col-span-2">
-          <label className={labelClass}>Property type</label>
-          <select value={form.industry} onChange={set("industry")} className={inputClass + " appearance-none"}>
-            <option value="">Select property type</option>
-            {PROPERTY_TYPES.map((i) => <option key={i} value={i}>{i}</option>)}
+          <label className={label}>Type of business</label>
+          <select className={input + " appearance-none"} value={form.industry} onChange={set("industry")}>
+            <option value="">Select one</option>
+            {BUSINESS_TYPES.map((b) => <option key={b} value={b}>{b}</option>)}
           </select>
         </div>
       </div>
       <div>
-        <label className={labelClass}>Tell us about your property and security needs</label>
-        <textarea
-          placeholder="e.g. 4-bedroom home, two entry points to cover, want mobile alerts and a doorbell camera..."
-          value={form.responseProcess}
-          onChange={set("responseProcess")}
-          rows={3}
-          className={inputClass + " resize-none"}
-        />
+        <label className={label}>Which task takes your team the most time?</label>
+        <textarea className={input + " resize-none"} rows={3} placeholder="e.g. we print and check 200 orders by hand every morning, and pick the courier manually..." value={form.responseProcess} onChange={set("responseProcess")} />
       </div>
-      {status === "error" && (
-        <p className="text-red-400 text-xs">{errorMsg}</p>
-      )}
-      <motion.button
-        type="submit"
-        disabled={status === "loading"}
-        className="w-full inline-flex items-center justify-center gap-2 text-sm font-semibold px-8 py-4 rounded-lg bg-[#886cff] text-white transition-opacity disabled:opacity-50"
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={() => track("lead_audit_started")}
-      >
-        {status === "loading" ? "Sending..." : "Get My Free Quote"} <ArrowRight size={16} />
-      </motion.button>
-      <p className="text-center text-xs text-neutral-600">No obligation. We&apos;ll respond within 24 hours.</p>
+      {status === "error" && <p className="text-xs text-red-500">{errorMsg}</p>}
+      <button type="submit" disabled={status === "loading"} className="flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[15px] font-semibold text-white shadow-[0_10px_30px_-8px_rgba(91,92,246,0.7)] transition disabled:opacity-60" style={{ background: ACCENT }}>
+        {status === "loading" ? "Sending..." : <>Book my free audit <ArrowRight size={17} /></>}
+      </button>
+      <p className="text-center text-xs text-slate-400">No obligation. We reply within one business day.</p>
     </form>
   );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// ─── MAIN PAGE ───────────────────────────────────────────────────────────────
-// ══════════════════════════════════════════════════════════════════════════════
-
-export default function LandingPage() {
+// ─── Section helpers ──────────────────────────────────────────────────────────
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: ACCENT }}>{children}</p>;
+}
+function Heading({ children }: { children: React.ReactNode }) {
+  return <h2 className="text-3xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-[42px]">{children}</h2>;
+}
+function Accent({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative min-h-screen bg-[#050505] text-white">
+    <span className="relative whitespace-nowrap" style={{ color: ACCENT }}>
+      {children}
+      <span className="absolute inset-x-0 -bottom-1 h-[3px] rounded-full" style={{ background: ACCENT }} />
+    </span>
+  );
+}
 
-      {/* ─── Top Accent Line ─────────────────────────────────────── */}
-      <div className="fixed top-0 left-0 right-0 h-[1px] z-50" style={{ background: "linear-gradient(90deg, transparent, #886cff 30%, #886cff 70%, transparent)" }} />
-
-      {/* ─── Nav ─────────────────────────────────────────────────── */}
-      <nav className="fixed top-2 left-0 right-0 z-40 flex justify-center pointer-events-none">
-        <motion.div
-          className="pointer-events-auto flex items-center gap-1 px-4 py-2 rounded-full border border-white/[0.08] backdrop-blur-md"
-          style={{ background: "rgba(10,10,10,0.85)" }}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="flex items-center gap-2 mr-4">
-            <CytronLogo size={20} />
-            <span className="text-sm font-semibold text-white">CYTRON</span>
-          </div>
-          <a href="#services" className="px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-full hover:bg-white/[0.05] transition-all">Services</a>
-          <a href="#projects" className="px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-full hover:bg-white/[0.05] transition-all">Projects</a>
-          <a href="#how-it-works" className="px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-full hover:bg-white/[0.05] transition-all">How It Works</a>
-          <a href="#why-it-matters" className="px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-full hover:bg-white/[0.05] transition-all">Why It Matters</a>
-          <a href="#pricing" className="px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-full hover:bg-white/[0.05] transition-all" onClick={() => track("pricing_viewed")}>Pricing</a>
-          <a
-            href="#quote"
-            className="ml-2 px-4 py-1.5 text-xs font-semibold text-white rounded-full bg-[#886cff] hover:bg-[#7b5ff2] transition-colors"
-            onClick={() => track("lead_audit_started")}
-          >
-            Free Quote
-          </a>
-        </motion.div>
-      </nav>
-
-      {/* ══════════════════════════════════════════════════════════ */}
-      {/* ─── HERO ────────────────────────────────────────────────── */}
-      {/* ══════════════════════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center overflow-hidden">
-        <SecurityHeroScene />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[500px] pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(136,108,255,0.07) 0%, transparent 70%)" }} />
-
-        <div className="relative z-10 w-full max-w-4xl mx-auto px-6 py-32 text-center">
-          <motion.div
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#886cff]/30 bg-[#886cff]/5 text-xs text-[#886cff] mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <motion.span
-              className="w-1.5 h-1.5 rounded-full bg-[#886cff]"
-              animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            CCTV &amp; Security Installation — Gold Coast
-          </motion.div>
-
-          <motion.h1
-            className="text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.05] tracking-[-0.03em] mb-6"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            Protect what matters,
-            <br />
-            <motion.span
-              style={{
-                background: "linear-gradient(135deg, rgba(136,108,255,0.95), rgba(99,179,237,0.9))",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              day and night.
-            </motion.span>
-          </motion.h1>
-
-          <motion.p
-            className="text-lg sm:text-xl text-neutral-400 max-w-2xl mx-auto leading-relaxed mb-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-          >
-            CYTRON designs, installs and maintains CCTV and security systems for homes and businesses across the Gold Coast — from a free site assessment to ongoing support.
-          </motion.p>
-
-          <motion.div
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-          >
-            <a
-              href="#quote"
-              className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-[#886cff] hover:bg-[#7b5ff2] text-white text-sm font-semibold transition-all hover:shadow-lg hover:shadow-[#886cff]/25"
-              onClick={() => track("lead_audit_started")}
-            >
-              Get Your Free Quote
-              <ArrowRight className="w-4 h-4" />
-            </a>
-            <a
-              href="#how-it-works"
-              className="inline-flex items-center gap-2 px-7 py-4 rounded-full border border-white/10 hover:border-white/20 text-white/70 hover:text-white text-sm transition-all"
-            >
-              See How It Works
-              <ArrowRight className="w-4 h-4" />
-            </a>
-          </motion.div>
-
-          <motion.div
-            className="flex items-center justify-center gap-10 mt-14"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.1 }}
-          >
-            {[
-              { value: "Free", label: "Site assessment" },
-              { value: "24/7", label: "Monitoring ready" },
-              { value: "Fast", label: "Turnaround" },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-2xl font-bold text-white">{stat.value}</div>
-                <div className="text-xs text-neutral-600 mt-1">{stat.label}</div>
-              </div>
+// ─── Page ─────────────────────────────────────────────────────────────────────
+export default function Home() {
+  return (
+    <div className={`${outfit.className} min-h-screen bg-[#f4f7fb] text-slate-900`}>
+      {/* Nav */}
+      <header className="fixed inset-x-0 top-0 z-50">
+        <div className="mx-auto mt-3 flex max-w-6xl items-center justify-between rounded-2xl border border-white/80 bg-white/70 px-4 py-2.5 shadow-[0_8px_30px_-12px_rgba(30,50,100,0.2)] backdrop-blur-xl sm:px-5">
+          <a href="#" className="flex items-center gap-2.5"><CytronLogo /><span className="text-[15px] font-bold tracking-wide">CYTRON</span></a>
+          <nav className="hidden items-center gap-1 text-sm text-slate-600 md:flex">
+            {[["What we automate", "#services"], ["How it works", "#how"], ["Case study", "#case"], ["FAQ", "#faq"]].map(([l, h]) => (
+              <a key={h} href={h} className="rounded-full px-3 py-1.5 transition hover:bg-slate-100 hover:text-slate-900">{l}</a>
             ))}
-          </motion.div>
+          </nav>
+          <a href="#audit" onClick={() => track("lead_audit_started")} className="rounded-xl px-4 py-2 text-sm font-semibold text-white" style={{ background: ACCENT }}>Free audit</a>
         </div>
-      </section>
+      </header>
 
-      {/* ══════════════════════════════════════════════════════════ */}
-      {/* ─── WHY IT MATTERS ──────────────────────────────────────── */}
-      {/* ══════════════════════════════════════════════════════════ */}
-      <section id="why-it-matters" className="py-24 border-t border-white/[0.05]">
-        <div className="max-w-5xl mx-auto px-6">
-          <motion.div
-            className="text-center"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <p className="text-xs uppercase tracking-[0.2em] text-[#886cff]/70 mb-4">Why It Matters</p>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.03em] mb-6">
-              Break-ins don&apos;t wait.
-              <br />
-              <span className="text-neutral-500">Neither should your security.</span>
-            </h2>
-            <p className="text-neutral-400 text-lg max-w-2xl mx-auto mb-12">
-              A quick look at what&apos;s driving demand for CCTV and security systems across the Gold Coast.
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="relative rounded-2xl overflow-hidden border border-white/[0.08] mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <Image
-              src="/images/cctv/gold-coast-commercial-cctv-hero.png"
-              alt="CCTV security camera installed on a commercial building along the Gold Coast beachfront at dusk"
-              width={1672}
-              height={941}
-              className="w-full h-auto"
-              sizes="(max-width: 1024px) 100vw, 1024px"
-            />
-            <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 40%, rgba(5,5,5,0.85) 100%)" }} />
-            <p className="absolute bottom-4 left-5 text-xs text-neutral-300">Commercial CCTV overlooking the Gold Coast beachfront</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left mb-6">
-            {[
-              { stat: "12%", title: "Rise in home invasions", desc: "Gold Coast home invasions have risen over the past year." },
-              { stat: "20 min", title: "A break-in every 20 minutes", desc: "That's how often a break-in occurs somewhere in Queensland." },
-              { stat: "80%", title: "Fewer break-ins", desc: "Homes with security cameras and screens installed see far fewer break-ins." },
-              { stat: "20%", title: "Rise in business crime", desc: "Growing crime rates are pushing more businesses to strengthen security." },
-            ].map((s, i) => (
-              <motion.div
-                key={i}
-                className="p-5 rounded-xl border border-white/[0.06] bg-white/[0.02]"
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.07 }}
-              >
-                <div className="text-2xl font-bold text-[#886cff] mb-2">{s.stat}</div>
-                <h3 className="text-sm font-semibold text-white mb-1">{s.title}</h3>
-                <p className="text-xs text-neutral-500 leading-relaxed">{s.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[
-              { src: "/images/cctv/gold-coast-home-cctv.png", w: 1672, h: 941, alt: "A security camera mounted under the eaves of a modern Gold Coast home", caption: "Residential CCTV, discreetly mounted" },
-              { src: "/images/cctv/commercial-cctv-close-up.png", w: 1448, h: 1086, alt: "Close-up of a dome security camera overlooking a Gold Coast business precinct at night", caption: "Dome camera covering a business precinct" },
-            ].map((img) => (
-              <motion.div
-                key={img.src}
-                className="relative rounded-xl overflow-hidden border border-white/[0.06]"
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-              >
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  width={img.w}
-                  height={img.h}
-                  className="w-full h-auto"
-                  sizes="(max-width: 640px) 100vw, 512px"
-                />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 55%, rgba(5,5,5,0.85) 100%)" }} />
-                <p className="absolute bottom-3 left-4 text-xs text-neutral-300">{img.caption}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <p className="text-center text-xs text-neutral-700 mt-10">
-            Informational only — figures reflect general Gold Coast &amp; Queensland security trends.
-          </p>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════ */}
-      {/* ─── SERVICES ────────────────────────────────────────────── */}
-      {/* ══════════════════════════════════════════════════════════ */}
-      <section id="services" className="py-28 border-t border-white/[0.05]" style={{ background: "linear-gradient(180deg, rgba(136,108,255,0.03) 0%, transparent 100%)" }}>
-        <div className="max-w-5xl mx-auto px-6">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <p className="text-xs uppercase tracking-[0.2em] text-[#886cff]/70 mb-4">Services</p>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.03em] mb-4">
-              What we install &amp; support
-            </h2>
-            <p className="text-neutral-400 text-lg max-w-xl mx-auto">
-              From a single home camera to multi-site commercial systems — we design, install and support all of it.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[
-              {
-                icon: <Camera size={20} />,
-                title: "Residential CCTV",
-                desc: "Discreet, high-definition cameras covering entry points, driveways and blind spots around your home.",
-              },
-              {
-                icon: <Building2 size={20} />,
-                title: "Commercial &amp; Business Security",
-                desc: "Multi-camera systems for shops, offices and warehouses, with remote viewing from anywhere.",
-              },
-              {
-                icon: <Lock size={20} />,
-                title: "Access Control",
-                desc: "Keypads, fobs and video intercoms that control who comes and goes from your property.",
-              },
-              {
-                icon: <Bell size={20} />,
-                title: "Alarm &amp; Monitoring",
-                desc: "AI-powered motion alerts and integration with 24/7 monitoring services.",
-              },
-              {
-                icon: <Wrench size={20} />,
-                title: "Maintenance &amp; Support",
-                desc: "Firmware updates, camera realignment and fast repairs whenever something needs attention.",
-              },
-              {
-                icon: <ClipboardCheck size={20} />,
-                title: "Free Site Assessment",
-                desc: "We walk your property, map coverage and blind spots, and quote before any work begins.",
-              },
-            ].map((module, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-              >
-                <SpotlightCard className="p-7 h-full">
-                  <div className="relative z-10">
-                    <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center text-[#886cff] mb-5"
-                      style={{
-                        background: "linear-gradient(135deg, rgba(136,108,255,0.12) 0%, rgba(136,108,255,0.04) 100%)",
-                        border: "1px solid rgba(136,108,255,0.18)",
-                      }}
-                    >
-                      {module.icon}
-                    </div>
-                    <h3 className="text-base font-bold text-neutral-200 mb-2" dangerouslySetInnerHTML={{ __html: module.title }} />
-                    <p className="text-sm text-neutral-500 leading-relaxed" dangerouslySetInnerHTML={{ __html: module.desc }} />
-                  </div>
-                </SpotlightCard>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════ */}
-      {/* ─── PROJECTS ────────────────────────────────────────────── */}
-      {/* ══════════════════════════════════════════════════════════ */}
-      <section id="projects" className="py-28 border-t border-white/[0.05]">
-        <div className="max-w-5xl mx-auto px-6">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <p className="text-xs uppercase tracking-[0.2em] text-[#886cff]/70 mb-4">Where We Work</p>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.03em] mb-4">
-              From beachfront homes
-              <br />
-              <span className="text-neutral-500">to city offices.</span>
-            </h2>
-            <p className="text-neutral-400 text-lg max-w-xl mx-auto">
-              The kind of residential and commercial properties CYTRON designs security systems for, right across the Gold Coast.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {[
-              { src: "/images/projects/gold-coast-skyline.jpg", w: 1024, h: 768, alt: "Aerial view of Surfers Paradise skyline and beach on the Gold Coast", caption: "Surfers Paradise, Gold Coast" },
-              { src: "/images/projects/modern-residential.jpg", w: 1024, h: 768, alt: "A modern two-storey house with large windows", caption: "Homes &amp; townhouses" },
-              { src: "/images/projects/commercial-office.jpg", w: 768, h: 1024, alt: "A modern glass-fronted office building", caption: "Offices &amp; commercial premises" },
-            ].map((img, i) => (
-              <motion.div
-                key={img.src}
-                className="relative rounded-xl overflow-hidden border border-white/[0.06] aspect-[4/5]"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-              >
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover"
-                />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 55%, rgba(5,5,5,0.85) 100%)" }} />
-                <p className="absolute bottom-3 left-4 text-xs text-neutral-300" dangerouslySetInnerHTML={{ __html: img.caption }} />
-              </motion.div>
-            ))}
-          </div>
-
-          <p className="text-center text-xs text-neutral-700 mt-8">
-            Illustrative photos, not completed CYTRON installations. Surfers Paradise photo by Tatters (CC BY 2.0) via Flickr; home photo by pnwra (CC BY 2.0) via Flickr; office photo by ricardodiaz11 (CC BY 2.0) via Flickr.
-          </p>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════ */}
-      {/* ─── HOW IT WORKS ────────────────────────────────────────── */}
-      {/* ══════════════════════════════════════════════════════════ */}
-      <section id="how-it-works" className="py-28 border-t border-white/[0.05]">
-        <div className="max-w-4xl mx-auto px-6">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <p className="text-xs uppercase tracking-[0.2em] text-[#886cff]/70 mb-4">How It Works</p>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.03em]">
-              From free quote
-              <br />
-              <span className="text-neutral-500">to fully installed and supported.</span>
-            </h2>
-          </motion.div>
-
-          <div className="relative">
-            {/* Connector line */}
-            <div className="absolute left-[23px] top-10 bottom-10 w-[1px] bg-gradient-to-b from-[#886cff]/40 via-[#886cff]/20 to-transparent hidden sm:block" />
-
-            <div className="space-y-6">
-              {[
-                { step: "01", label: "Free consultation", desc: "Tell us about your property and what you're trying to protect.", color: "#886cff" },
-                { step: "02", label: "Site assessment", desc: "We visit in person to map camera placement, cabling runs and blind spots.", color: "#886cff" },
-                { step: "03", label: "Custom quote", desc: "A clear, itemised quote — no hidden fees, no obligation.", color: "#886cff" },
-                { step: "04", label: "Professional installation", desc: "Licensed technicians install your system with minimal disruption.", color: "#886cff" },
-                { step: "05", label: "Handover &amp; training", desc: "We walk you through the app, footage access and alerts before we leave.", color: "#886cff" },
-                { step: "06", label: "Ongoing support", desc: "Maintenance, upgrades and support whenever you need it.", color: "#059669" },
-              ].map((s, i) => (
-                <motion.div
-                  key={i}
-                  className="flex items-start gap-6"
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                >
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center text-xs font-bold shrink-0 relative z-10"
-                    style={{ background: `${s.color}15`, border: `1px solid ${s.color}40`, color: s.color }}
-                  >
-                    {s.step}
-                  </div>
-                  <div className="pt-3">
-                    <h3 className="text-base font-semibold text-white mb-1" dangerouslySetInnerHTML={{ __html: s.label }} />
-                    <p className="text-sm text-neutral-500">{s.desc}</p>
-                  </div>
-                </motion.div>
+      {/* Hero */}
+      <section className="relative isolate overflow-hidden pb-20 pt-32 sm:pb-28 sm:pt-40">
+        <LedTunnel />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mb-6 inline-flex items-center gap-2 rounded-full border border-white bg-white/70 px-3.5 py-1.5 text-[13px] font-medium text-slate-600 shadow-sm backdrop-blur">
+              <Sparkles size={14} style={{ color: ACCENT }} /> AI process automation for small businesses
+            </motion.p>
+            <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="text-[44px] font-semibold leading-[1.05] tracking-tight text-slate-950 sm:text-[68px]">
+              <Accent>Automate</Accent> the busywork.<br />Keep the judgment.
+            </motion.h1>
+            <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">
+              Cytron builds automations that do the repetitive work in your business: checking orders, choosing couriers, printing labels, chasing paperwork. Your team only steps in when something actually needs a person.
+            </motion.p>
+            <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }} className="mt-9 flex flex-wrap items-center gap-3">
+              {cta("Book a free automation audit")}
+              <a href="#case" className="inline-flex items-center gap-2 rounded-2xl border border-white bg-white/70 px-6 py-3.5 text-[15px] font-semibold text-slate-700 backdrop-blur transition hover:bg-white">See a real example</a>
+            </motion.div>
+            <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-slate-500">
+              {["Works with your current tools", "Read-only pilot first", "Based in Australia"].map((t) => (
+                <span key={t} className="flex items-center gap-2"><Check size={15} className="text-emerald-500" />{t}</span>
               ))}
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════ */}
-      {/* ─── RESULTS ─────────────────────────────────────────────── */}
-      {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-20 border-t border-white/[0.05]" style={{ background: "linear-gradient(180deg, rgba(136,108,255,0.03) 0%, transparent 100%)" }}>
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <p className="text-xs uppercase tracking-[0.2em] text-[#886cff]/70 mb-4">Results</p>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.03em] mb-12">
-              What changes when your property is covered.
-            </h2>
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="flex justify-center lg:justify-end">
+            <WorkflowCard />
           </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {[
-              { headline: "Fewer break-ins.", detail: "Visible cameras and monitored systems are a proven deterrent against opportunistic crime.", icon: <ShieldCheck size={22} /> },
-              { headline: "Eyes on your property, 24/7.", detail: "Check live footage and get alerts from your phone, wherever you are.", icon: <Eye size={22} /> },
-              { headline: "Faster response when it matters.", detail: "Motion alerts and monitoring mean you know the moment something happens.", icon: <Bell size={22} /> },
-            ].map((r, i) => (
-              <motion.div
-                key={i}
-                className="p-8 rounded-2xl border border-white/[0.08] bg-white/[0.02] text-left"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[#886cff] mb-5"
-                  style={{ background: "rgba(136,108,255,0.1)", border: "1px solid rgba(136,108,255,0.2)" }}>
-                  {r.icon}
-                </div>
-                <h3 className="text-lg font-bold text-white mb-2">{r.headline}</h3>
-                <p className="text-sm text-neutral-500 leading-relaxed">{r.detail}</p>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════ */}
-      {/* ─── QUOTE FORM ──────────────────────────────────────────── */}
-      {/* ══════════════════════════════════════════════════════════ */}
-      <section id="quote" className="py-28 border-t border-white/[0.05]">
-        <div className="max-w-2xl mx-auto px-6">
-          <motion.div
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <p className="text-xs uppercase tracking-[0.2em] text-[#886cff]/70 mb-4">Free Security Assessment</p>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.03em] mb-4">
-              Get a free,
-              <br />
-              <span className="text-neutral-500">no-obligation quote.</span>
-            </h2>
-            <p className="text-neutral-400 text-sm max-w-md mx-auto">
-              Tell us about your property and what you need protected — we&apos;ll get back to you within 24 hours with next steps.
+      {/* Tools */}
+      <section className="border-y border-white bg-white/60 py-8">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-3 px-5 text-[15px] font-medium text-slate-400">
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Works with</span>
+          {TOOLS.map((t) => <span key={t}>{t}</span>)}
+        </div>
+      </section>
+
+      {/* Services */}
+      <section id="services" className="mx-auto max-w-6xl px-5 py-24">
+        <Eyebrow>What we automate</Eyebrow>
+        <Heading>The work nobody hired you to do.</Heading>
+        <p className="mt-4 max-w-2xl text-slate-600">If a task follows the same steps every day, it can usually run on its own. These are the ones we build most.</p>
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {SERVICES.map(({ icon: Icon, title, text }) => (
+            <div key={title} className="group rounded-3xl border border-white bg-white/80 p-6 shadow-[0_20px_50px_-30px_rgba(40,60,120,0.35)] transition hover:-translate-y-1 hover:shadow-[0_25px_60px_-25px_rgba(91,92,246,0.35)]">
+              <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl text-white shadow-[0_0_20px_rgba(91,92,246,0.45)]" style={{ background: ACCENT }}><Icon size={20} /></div>
+              <h3 className="mb-2 text-lg font-semibold text-slate-900">{title}</h3>
+              <p className="text-[15px] leading-relaxed text-slate-600">{text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Case study */}
+      <section id="case" className="relative isolate overflow-hidden py-24">
+        <LedTunnel className="opacity-70" />
+        <div className="relative mx-auto max-w-6xl px-5">
+          <div className="rounded-[32px] border border-white bg-white/75 p-8 shadow-[0_40px_100px_-40px_rgba(40,60,120,0.45)] backdrop-blur-xl sm:p-12">
+            <Eyebrow>Case study · online retailer, Gold Coast</Eyebrow>
+            <Heading>From 200 orders by hand to <Accent>labels at 8:10</Accent>.</Heading>
+            <p className="mt-4 max-w-3xl text-slate-600">
+              An Australian oral-care retailer printed every packing slip by hand, highlighted the details with a marker and picked a box and courier from a chart on the wall. We built a dispatch automation on top of their store and shipping platform:
             </p>
-          </motion.div>
-
-          <motion.div
-            className="p-8 rounded-2xl border border-white/[0.08] bg-white/[0.02]"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-          >
-            <QuoteForm />
-          </motion.div>
+            <div className="mt-8 grid gap-3 text-[15px] text-slate-700 sm:grid-cols-2">
+              {["Reads every pending order and checks the address, postcode, items and shipping method", "Picks the box from the warehouse packaging table and the real product weights", "Quotes every courier and takes the cheapest one that fits the shipping method", "Prints labels and packing slips on the warehouse printers before the shift starts", "Holds anything unclear for a person, with the reason written down", "Answers the team in Telegram: “what's held today?”"].map((t) => (
+                <div key={t} className="flex gap-3"><Check size={18} className="mt-0.5 shrink-0 text-emerald-500" />{t}</div>
+              ))}
+            </div>
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {CASE.map((c) => (
+                <div key={c.k} className="rounded-2xl border border-slate-100 bg-white p-5">
+                  <p className="text-3xl font-semibold tracking-tight" style={{ color: ACCENT }}>{c.k}</p>
+                  <p className="mt-1.5 text-sm text-slate-600">{c.v}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-5 text-xs text-slate-400">Figures from pilot tests on a test account and reference courier prices, before go-live.</p>
+          </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════ */}
-      {/* ─── PRICING ─────────────────────────────────────────────── */}
-      {/* ══════════════════════════════════════════════════════════ */}
-      <section id="pricing" className="py-28 border-t border-white/[0.05]">
-        <div className="max-w-5xl mx-auto px-6">
-          <motion.div
-            className="text-center mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <p className="text-xs uppercase tracking-[0.2em] text-[#886cff]/70 mb-4">Pricing</p>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.03em]">
-              Straightforward packages.
-              <br />
-              <span className="text-neutral-500">Tailored to your property.</span>
-            </h2>
-          </motion.div>
-          <p className="text-center text-sm text-neutral-600 mb-12">
-            Every property is different — get a free, no-obligation quote and we&apos;ll recommend the right package.
-          </p>
+      {/* How it works */}
+      <section id="how" className="mx-auto max-w-6xl px-5 py-24">
+        <Eyebrow>How it works</Eyebrow>
+        <Heading>Safe by design, live in weeks.</Heading>
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {STEPS_HOW.map((s) => (
+            <div key={s.n} className="rounded-3xl border border-white bg-white/80 p-6 shadow-[0_20px_50px_-30px_rgba(40,60,120,0.3)]">
+              <p className="mb-4 text-sm font-semibold" style={{ color: ACCENT }}>{s.n}</p>
+              <h3 className="mb-2 text-lg font-semibold">{s.t}</h3>
+              <p className="text-[15px] leading-relaxed text-slate-600">{s.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {packages.map((pkg, i) => (
-              <motion.div
-                key={pkg.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <GlowingStarsCard className={pkg.popular ? "border-[#886cff]/30" : ""}>
-                  {pkg.popular && (
-                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#886cff]" />
-                  )}
-                  <div className="relative z-20">
-                    {pkg.popular && (
-                      <span className="inline-block text-[10px] uppercase tracking-widest text-[#886cff] rounded-full border border-[#886cff]/30 px-2 py-0.5 mb-4">
-                        Most Popular
-                      </span>
-                    )}
-                    <GlowingStarsTitle>{pkg.name}</GlowingStarsTitle>
-                    <GlowingStarsDescription>{pkg.desc}</GlowingStarsDescription>
-                    <div className="mt-6 space-y-2.5">
-                      {pkg.features.map((f) => (
-                        <div key={f} className="flex items-center gap-2 text-xs text-neutral-400">
-                          <Check size={12} className="text-[#886cff] shrink-0" /> {f}
-                        </div>
-                      ))}
-                    </div>
-                    <MagneticButton
-                      href="#quote"
-                      className={`mt-8 w-full inline-flex items-center justify-center text-sm font-medium py-3 rounded-lg ${
-                        pkg.popular
-                          ? "bg-[#886cff] text-white"
-                          : "border border-white/[0.1] text-neutral-400 hover:text-white"
-                      }`}
-                    >
-                      Get a Free Quote
-                    </MagneticButton>
-                  </div>
-                </GlowingStarsCard>
-              </motion.div>
+      {/* Principles */}
+      <section className="bg-white/70 py-24">
+        <div className="mx-auto max-w-6xl px-5">
+          <Eyebrow>Our principles</Eyebrow>
+          <Heading>Automation you can trust with real customers.</Heading>
+          <div className="mt-12 grid gap-8 sm:grid-cols-2">
+            {PRINCIPLES.map(({ icon: Icon, t, d }) => (
+              <div key={t} className="flex gap-4">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#5b5cf6]/10" style={{ color: ACCENT }}><Icon size={20} /></div>
+                <div><h3 className="mb-1.5 text-lg font-semibold">{t}</h3><p className="text-[15px] leading-relaxed text-slate-600">{d}</p></div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════ */}
-      {/* ─── FINAL CTA ───────────────────────────────────────────── */}
-      {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-28 border-t border-white/[0.05] relative overflow-hidden">
-        <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, rgba(136,108,255,0.04) 0%, transparent 70%)" }} />
-        <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
-          <motion.h2
-            className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.03em] mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            Protect what matters most.
-          </motion.h2>
-          <motion.p
-            className="text-sm text-neutral-500 mb-10 max-w-lg mx-auto"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-          >
-            Get a free, no-obligation quote for your home or business — most quotes are ready within 24 hours.
-          </motion.p>
-          <motion.div
-            className="flex flex-col items-center gap-3"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-          >
-            <MagneticButton
-              href="#quote"
-              className="inline-flex items-center justify-center gap-2 text-sm font-semibold px-8 py-4 rounded-lg bg-[#886cff] text-white"
-            >
-              Get Your Free Quote <ArrowRight size={14} />
-            </MagneticButton>
-            <span className="text-xs text-neutral-600">No obligation. Just a clear plan to keep your property safe.</span>
-          </motion.div>
+      {/* Pricing */}
+      <section id="pricing" className="mx-auto max-w-6xl px-5 py-24">
+        <Eyebrow>Getting started</Eyebrow>
+        <Heading>Start small. Pay for what works.</Heading>
+        <div className="mt-12 grid gap-5 lg:grid-cols-3">
+          {[
+            { t: "Automation audit", p: "Free", d: "One session to map your processes and find the tasks worth automating first.", f: ["Process map", "Top 3 automation opportunities", "Rough time and cost saved"] },
+            { t: "Pilot", p: "Fixed quote", d: "One workflow built and tested in read-only mode next to your team.", f: ["Rules written with your team", "Shadow test with a daily comparison", "Go-live plan"], hot: true },
+            { t: "Run & improve", p: "Monthly", d: "We keep it running, watch the exceptions and add the next automations.", f: ["Monitoring and alerts", "Monthly rule tuning", "New workflows as you grow"] },
+          ].map((p) => (
+            <div key={p.t} className={`rounded-3xl border p-7 ${p.hot ? "border-[#5b5cf6]/30 bg-white shadow-[0_30px_80px_-30px_rgba(91,92,246,0.5)]" : "border-white bg-white/80 shadow-[0_20px_50px_-30px_rgba(40,60,120,0.3)]"}`}>
+              {p.hot && <span className="mb-4 inline-block rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white" style={{ background: ACCENT }}>Most chosen</span>}
+              <h3 className="text-lg font-semibold">{p.t}</h3>
+              <p className="mt-1 text-3xl font-semibold tracking-tight">{p.p}</p>
+              <p className="mt-3 text-[15px] text-slate-600">{p.d}</p>
+              <ul className="mt-6 space-y-2.5 text-[15px] text-slate-700">
+                {p.f.map((f) => <li key={f} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-500" />{f}</li>)}
+              </ul>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════ */}
-      {/* ─── FOOTER ──────────────────────────────────────────────── */}
-      {/* ══════════════════════════════════════════════════════════ */}
-      <footer className="py-12 border-t border-white/[0.05]">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2">
-              <CytronLogo size={20} />
-              <span className="text-sm font-semibold text-white">CYTRON</span>
-            </div>
-            <div className="flex items-center gap-6 text-xs text-neutral-600">
-              <a href="#services" className="hover:text-neutral-400 transition-colors">Services</a>
-              <a href="#projects" className="hover:text-neutral-400 transition-colors">Projects</a>
-              <a href="#how-it-works" className="hover:text-neutral-400 transition-colors">How It Works</a>
-              <a href="#why-it-matters" className="hover:text-neutral-400 transition-colors">Why It Matters</a>
-              <a href="#pricing" className="hover:text-neutral-400 transition-colors">Pricing</a>
-              <Link href="/login" className="hover:text-neutral-400 transition-colors">Login</Link>
-            </div>
-            <p className="text-xs text-neutral-700">&copy; 2026 CYTRON. Gold Coast, Australia.</p>
+      {/* FAQ */}
+      <section id="faq" className="mx-auto max-w-3xl px-5 pb-24">
+        <Eyebrow>FAQ</Eyebrow>
+        <Heading>Questions we hear a lot.</Heading>
+        <div className="mt-10 divide-y divide-slate-200 rounded-3xl border border-white bg-white/80 px-6">
+          {FAQ.map((f) => (
+            <details key={f.q} className="group py-5">
+              <summary className="flex cursor-pointer list-none items-center justify-between text-[16px] font-semibold text-slate-900">
+                {f.q}<ChevronRight size={18} className="text-slate-400 transition group-open:rotate-90" />
+              </summary>
+              <p className="mt-3 text-[15px] leading-relaxed text-slate-600">{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      {/* Audit form */}
+      <section id="audit" className="relative isolate overflow-hidden py-24">
+        <LedTunnel />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 lg:grid-cols-2">
+          <div>
+            <Eyebrow>Free automation audit</Eyebrow>
+            <h2 className="text-4xl font-semibold leading-tight tracking-tight sm:text-[52px]"><Accent>One</Accent> call and you&apos;ll know what to automate first.</h2>
+            <p className="mt-5 max-w-md text-lg text-slate-600">Tell us which task eats your team&apos;s day. We&apos;ll come back with a clear plan, no obligation.</p>
           </div>
+          <div className="rounded-[28px] border border-white bg-white/85 p-7 shadow-[0_40px_100px_-40px_rgba(40,60,120,0.45)] backdrop-blur-xl sm:p-9">
+            <AuditForm />
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-white bg-white/70">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 text-sm text-slate-500 sm:flex-row">
+          <div className="flex items-center gap-2.5"><CytronLogo size={24} /><span className="font-semibold text-slate-700">CYTRON</span><span>· AI process automation · Gold Coast, Australia</span></div>
+          <div className="flex gap-5"><a href="/privacy" className="hover:text-slate-800">Privacy</a><a href="/terms" className="hover:text-slate-800">Terms</a><a href="/login" className="hover:text-slate-800">Client login</a></div>
         </div>
       </footer>
     </div>
