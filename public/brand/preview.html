@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cytron logo options</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#0b1020; --accent:#5b5cf6; --soft:#a5a6ff; --bg:#f4f7fb; }
+  * { box-sizing:border-box; margin:0; }
+  body { font-family:Outfit, system-ui, sans-serif; background:var(--bg); color:var(--ink); padding:40px 24px; }
+  h1 { font-size:22px; font-weight:600; margin-bottom:6px; }
+  p.sub { color:#5b6475; margin-bottom:28px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; max-width:1100px; }
+  .card { background:#fff; border:1px solid #e3e9f2; border-radius:20px; padding:22px; }
+  .card h2 { font-size:15px; font-weight:600; margin-bottom:4px; }
+  .card .why { font-size:13px; color:#5b6475; margin-bottom:18px; min-height:36px; }
+  .row { display:flex; align-items:center; gap:14px; padding:16px; border-radius:14px; margin-bottom:10px; }
+  .light { background:radial-gradient(ellipse at 50% 40%,#fff,#e6edf6); }
+  .dark { background:#0b1020; }
+  .word { font-weight:600; font-size:26px; letter-spacing:.12em; }
+  .dark .word { color:#fff; }
+  .icons { display:flex; gap:12px; align-items:center; }
+  .app { width:56px; height:56px; border-radius:16px; background:var(--accent); display:grid; place-items:center; box-shadow:0 8px 24px -8px rgba(91,92,246,.6); }
+  .fav { width:20px; height:20px; }
+  .glow { filter:drop-shadow(0 0 6px rgba(255,255,255,.9)) drop-shadow(0 0 14px rgba(165,166,255,.7)); }
+</style>
+</head>
+<body>
+<h1>CYTRON: logo options</h1>
+<p class="sub">Three directions built from the site's style: chamfered LED frames, indigo #5b5cf6, Outfit type.</p>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- A: LED frame C + node -->
+    <symbol id="a" viewBox="0 0 64 64">
+      <path d="M50 14H23L13 24V40L23 50H50" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="49" cy="32" r="5.5" fill="var(--dot, currentColor)"/>
+    </symbol>
+    <!-- B: tunnel C (two nested frames) -->
+    <symbol id="b" viewBox="0 0 64 64">
+      <path d="M52 10H21L9 22V42L21 54H52" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M44 22H27L22 27V37L27 42H44" fill="none" stroke="var(--inner, currentColor)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>
+    </symbol>
+    <!-- C: workflow C (arc with input/output nodes) -->
+    <symbol id="c" viewBox="0 0 64 64">
+      <path d="M46.1 17.9A20 20 0 1 0 46.1 46.1" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="46.1" cy="17.9" r="5.5" fill="var(--node, #fff)" stroke="currentColor" stroke-width="3.5"/>
+      <circle cx="46.1" cy="46.1" r="5.5" fill="currentColor"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="grid">
+  <div class="card">
+    <h2>A: LED Frame</h2>
+    <div class="why">A "C" drawn like one of the tunnel's light frames. The dot is the person who still makes the call.</div>
+    <div class="row light"><svg width="44" height="44" style="color:var(--accent)"><use href="#a"/></svg><span class="word">CYTRON</span></div>
+    <div class="row dark"><svg width="44" height="44" class="glow" style="color:#fff;--dot:#a5a6ff"><use href="#a"/></svg><span class="word">CYTRON</span></div>
+    <div class="icons"><div class="app"><svg width="34" height="34" style="color:#fff"><use href="#a"/></svg></div><svg class="fav" style="color:var(--accent)"><use href="#a"/></svg><span style="font-size:12px;color:#5b6475">app icon / favicon</span></div>
+  </div>
+
+  <div class="card">
+    <h2>B: Tunnel</h2>
+    <div class="why">Two nested frames, echoing the hero's tunnel. Gives depth: process going in, result coming out.</div>
+    <div class="row light"><svg width="44" height="44" style="color:var(--accent);--inner:var(--accent)"><use href="#b"/></svg><span class="word">CYTRON</span></div>
+    <div class="row dark"><svg width="44" height="44" class="glow" style="color:#fff;--inner:#a5a6ff"><use href="#b"/></svg><span class="word">CYTRON</span></div>
+    <div class="icons"><div class="app"><svg width="36" height="36" style="color:#fff"><use href="#b"/></svg></div><svg class="fav" style="color:var(--accent)"><use href="#b"/></svg><span style="font-size:12px;color:#5b6475">app icon / favicon</span></div>
+  </div>
+
+  <div class="card">
+    <h2>C: Workflow</h2>
+    <div class="why">A round "C" with an input node and an output node, like a flow in n8n. Friendlier, less tech-heavy.</div>
+    <div class="row light"><svg width="44" height="44" style="color:var(--accent)"><use href="#c"/></svg><span class="word">CYTRON</span></div>
+    <div class="row dark"><svg width="44" height="44" class="glow" style="color:#fff;--node:#0b1020"><use href="#c"/></svg><span class="word">CYTRON</span></div>
+    <div class="icons"><div class="app"><svg width="34" height="34" style="color:#fff;--node:var(--accent)"><use href="#c"/></svg></div><svg class="fav" style="color:var(--accent)"><use href="#c"/></svg><span style="font-size:12px;color:#5b6475">app icon / favicon</span></div>
+  </div>
+</div>
+</body>
+</html>
