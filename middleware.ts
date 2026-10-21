@@ -20,14 +20,12 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/images') ||
     request.nextUrl.pathname === '/forgot-password' ||
     request.nextUrl.pathname === '/reset-password' ||
-    request.nextUrl.pathname === '/landing' ||
     request.nextUrl.pathname === '/booking' ||
-    request.nextUrl.pathname === '/operator' ||
     request.nextUrl.pathname === '/onboarding' ||
     request.nextUrl.pathname === '/terms' ||
     request.nextUrl.pathname === '/privacy' ||
-    request.nextUrl.pathname === '/' ||
-    request.nextUrl.pathname.startsWith('/warehouse/pick')
+    ['/trades', '/clinics', '/real-estate', '/hospitality', '/retail', '/professional-services', '/sitemap.xml', '/robots.txt'].includes(request.nextUrl.pathname) ||
+    request.nextUrl.pathname === '/'
 
   // Skip auth check for public paths (API routes protect themselves)
   if (isPublicPath) {

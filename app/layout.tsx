@@ -10,8 +10,9 @@ import "./globals.css";
 const BackgroundScene = dynamic(() => import("@/components/BackgroundScene"), { ssr: false });
 
 export const metadata: Metadata = {
-  title: "CYTRON — AI process automation for small businesses",
-  description: "Cytron builds automations that do the repetitive work in your business: orders, fulfilment, paperwork and reporting. Free automation audit, read-only pilot first.",
+  metadataBase: new URL("https://cytron.com.au"),
+  title: "CYTRON — Business automation for Gold Coast small businesses",
+  description: "Cytron automates enquiries, missed calls, bookings, reminders, quotes and invoices for Gold Coast trades, clinics, property, hospitality and retail. Free automation audit, read-only pilot first.",
   icons: {
     icon: "/icon.svg",
     apple: "/icon.svg",

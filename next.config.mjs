@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   generateBuildId: () => 'build-' + Date.now(),
+  // Retired public pages: send visitors to the home page
+  redirects: async () => [
+    { source: '/landing', destination: '/', permanent: true },
+    { source: '/solutions/:path*', destination: '/', permanent: true },
+  ],
   headers: async () => [
     // Immutable static assets (production only: in dev the chunk names don't change, so the browser would keep stale code)
     ...(process.env.NODE_ENV === 'production'

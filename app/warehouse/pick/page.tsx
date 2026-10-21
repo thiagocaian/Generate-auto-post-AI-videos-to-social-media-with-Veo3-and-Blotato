@@ -14,7 +14,7 @@ type PickItem = {
 
 // Demo order shown when no real order is passed
 const DEMO_ORDER = {
-  orderName: '#HOM-1042',
+  orderName: '#CY-1042',
   customer: 'Sarah Mitchell',
   totalItems: 6,
   estimatedMinutes: 9,
@@ -142,7 +142,7 @@ function PickPageInner() {
           <p className="text-gray-400 text-lg">{order.orderName}</p>
           <p className="text-gray-500">{items.length} items packed</p>
           <div className="mt-6 bg-teal-900/40 border border-teal-500/40 rounded-2xl p-4 text-sm text-teal-300">
-            🚚 Starshipit is printing the label<br />
+            🚚 The shipping label is printing<br />
             📬 Shopify will update automatically
           </div>
           <Link
