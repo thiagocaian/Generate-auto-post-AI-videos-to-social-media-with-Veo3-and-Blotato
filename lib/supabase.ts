@@ -1,14 +1,57 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { createBrowserClient } from '@supabase/ssr'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+function createConfiguredBrowserClient(url: string, key: string) {
+  return createBrowserClient(url, key)
+}
 
-// Browser client with session persistence (for 'use client' pages)
-export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
+type BrowserClient = ReturnType<typeof createConfiguredBrowserClient>
 
-// Server-side only client (no session)
-export const supabaseAdmin = createClient(supabaseUrl, supabaseAnonKey)
+function publicSupabaseConfig(): { url: string; key: string } {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (!url || !key) {
+    throw new Error('Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.')
+  }
+  return { url, key }
+}
+
+let browserClient: BrowserClient | null = null
+
+function getBrowserClient(): BrowserClient {
+  if (!browserClient) {
+    const { url, key } = publicSupabaseConfig()
+    browserClient = createConfiguredBrowserClient(url, key)
+  }
+  return browserClient
+}
+
+function lazyClient<T extends object>(getClient: () => T): T {
+  return new Proxy({} as T, {
+    get(_target, prop) {
+      const client = getClient()
+      const value = Reflect.get(client, prop)
+      return typeof value === 'function' ? value.bind(client) : value
+    },
+  })
+}
+
+// Browser client with session persistence (for 'use client' pages).
+// Created on first use so importing this module does not require env vars.
+export const supabase: BrowserClient = lazyClient(getBrowserClient)
+
+let adminClient: SupabaseClient | null = null
+
+function getAdminClient(): SupabaseClient {
+  if (!adminClient) {
+    const { url, key } = publicSupabaseConfig()
+    adminClient = createClient(url, key)
+  }
+  return adminClient
+}
+
+// Server-side only client (no session). Created on first use.
+export const supabaseAdmin: SupabaseClient = lazyClient(getAdminClient)
 
 // Auth helpers
 export async function getSession() {
