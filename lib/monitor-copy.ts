@@ -1,6 +1,7 @@
 /**
- * Always-on monitor wording.
- * "How it works" step 9 and the safeguards line are edited here only.
+ * Around-the-clock wording.
+ * How it works step 9, the safeguards line, and onboarding "Go live"
+ * are edited here only.
  */
 export const MONITOR_COPY = {
   step: {
@@ -10,5 +11,9 @@ export const MONITOR_COPY = {
   safeguard: {
     title: "Round-the-clock checks and alerts",
     body: "If something stalls, you hear about it.",
+  },
+  goLive: {
+    title: "Go live.",
+    body: "Round-the-clock monitoring, with a person reviewing every exception.",
   },
 } as const;
