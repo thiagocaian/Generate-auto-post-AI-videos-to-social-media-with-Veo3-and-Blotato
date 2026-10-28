@@ -2,15 +2,15 @@ import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
-import Stripe from 'stripe'
-
-// ─── Stripe init ────────────────────────────────────────────────────────────
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-03-25.dahlia',
-})
+import { getStripe } from '@/lib/stripe'
 
 // ─── POST /api/stripe/portal ────────────────────────────────────────────────
 export async function POST(request: Request) {
+  const stripe = getStripe()
+  if (!stripe) {
+    return NextResponse.json({ error: 'Stripe is not configured' }, { status: 503 })
+  }
+
   try {
     // 1. Auth
     const cookieStore = await cookies()
