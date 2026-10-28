@@ -481,7 +481,7 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section id="how" className="mx-auto max-w-6xl px-5 py-24">
+      <section id="safe-by-design" className="mx-auto max-w-6xl px-5 py-24">
         <Eyebrow>How it works</Eyebrow>
         <Heading>Safe by design, live in weeks.</Heading>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

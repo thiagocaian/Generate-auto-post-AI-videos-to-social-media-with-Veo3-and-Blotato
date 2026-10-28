@@ -157,7 +157,7 @@ function SectionHeading({
 
 export default function FulfilmentSections() {
   return (
-    <div className="relative bg-[#050507] text-white">
+    <div id="how" className="relative bg-[#050507] text-white">
       <div
         className="pointer-events-none absolute inset-x-0 top-0 h-[480px] bg-[radial-gradient(ellipse_at_top,rgba(91,92,246,0.28),transparent_62%)]"
         aria-hidden
