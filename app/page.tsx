@@ -26,6 +26,7 @@ import {
   Eye,
   Lock,
 } from "lucide-react";
+import FulfilmentSections from "@/components/FulfilmentSections";
 import LedTunnel from "@/components/LedTunnel";
 import { Accent, ACCENT, cta, Eyebrow, GRADIENT, Heading, LILAC, outfit, SiteFooter, SiteNav } from "@/components/site";
 
@@ -294,6 +295,8 @@ export default function Home() {
         </div>
       </section>
 
+      <FulfilmentSections />
+
       {/* Tools */}
       <section className="border-y border-white bg-white/60 py-8">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-3 px-5 text-[15px] font-medium text-slate-400">
@@ -356,7 +359,7 @@ export default function Home() {
       </section>
 
       {/* Agents */}
-      <section id="agents" className="relative isolate overflow-hidden bg-[#050507] py-28 text-white">
+      <section id="agent-care" className="relative isolate overflow-hidden bg-[#050507] py-28 text-white">
         <LedTunnel dark className="bottom-auto h-[820px] opacity-60 [mask-image:linear-gradient(to_bottom,black_55%,transparent)]" />
         <div className="absolute inset-0 -z-0 bg-[radial-gradient(ellipse_at_top,rgba(91,92,246,0.28),transparent_60%)]" />
         <div className="absolute inset-0 bg-gradient-to-b from-[#050507]/80 via-[#050507]/30 to-[#050507]/85" />
