@@ -3,11 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
-
-// ─── Stripe init ────────────────────────────────────────────────────────────
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-03-25.dahlia',
-})
+import { getStripe } from '@/lib/stripe'
 
 // ─── Plan → price mapping (AUD) ─────────────────────────────────────────────
 // Prices in cents
@@ -21,7 +17,7 @@ const PLAN_PRICES: Record<string, { amount: number; name: string }> = {
  * Finds or creates a Stripe Price for a given plan.
  * Uses metadata lookup so we don't duplicate products on every call.
  */
-async function getOrCreatePrice(plan: string): Promise<string> {
+async function getOrCreatePrice(stripe: Stripe, plan: string): Promise<string> {
   const config = PLAN_PRICES[plan]
   if (!config) throw new Error(`Unknown plan: ${plan}`)
 
@@ -53,6 +49,11 @@ async function getOrCreatePrice(plan: string): Promise<string> {
 
 // ─── POST /api/stripe/checkout ──────────────────────────────────────────────
 export async function POST(request: Request) {
+  const stripe = getStripe()
+  if (!stripe) {
+    return NextResponse.json({ error: 'Stripe is not configured' }, { status: 503 })
+  }
+
   try {
     // 1. Auth
     const cookieStore = await cookies()
@@ -108,7 +109,7 @@ export async function POST(request: Request) {
     }
 
     // 4. Get or create Stripe price
-    const priceId = await getOrCreatePrice(plan)
+    const priceId = await getOrCreatePrice(stripe, plan)
 
     // 5. Get or create Stripe customer
     let customerId = company.stripe_customer_id

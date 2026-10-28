@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { track } from "@vercel/analytics";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
-  BellRing,
   Briefcase,
   Building2,
   CalendarCheck,
@@ -26,64 +25,9 @@ import {
   Eye,
   Lock,
 } from "lucide-react";
+import HomeHero from "@/components/HomeHero";
 import LedTunnel from "@/components/LedTunnel";
-import { Accent, ACCENT, cta, Eyebrow, GRADIENT, Heading, LILAC, outfit, SiteFooter, SiteNav } from "@/components/site";
-
-// ─── Live workflow card (hero) ────────────────────────────────────────────────
-const STEPS = [
-  { icon: PhoneCall, label: "Missed call from a new customer", detail: "Tue 6:42 pm · after hours" },
-  { icon: MessageSquare, label: "Text reply sent in 40 seconds", detail: "“Sorry we missed you, book a time here”" },
-  { icon: CalendarCheck, label: "Job booked into the calendar", detail: "Thu 9:00 am · Burleigh Heads" },
-  { icon: BellRing, label: "Reminder sent the day before", detail: "Confirmed by the customer" },
-  { icon: Receipt, label: "Invoice sent and synced to Xero", detail: "Paid by link · same day" },
-];
-
-function WorkflowCard() {
-  const [step, setStep] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setStep((s) => (s + 1) % (STEPS.length + 2)), 1300);
-    return () => clearInterval(t);
-  }, []);
-  return (
-    <div className="relative w-full max-w-md rounded-3xl border border-white bg-white/80 p-5 shadow-[0_30px_80px_-30px_rgba(40,60,120,0.35),0_0_0_1px_rgba(91,92,246,0.06)] backdrop-blur-xl">
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-[13px] font-semibold text-slate-800">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: ACCENT }} />
-            <span className="relative inline-flex h-2.5 w-2.5 rounded-full" style={{ background: ACCENT }} />
-          </span>
-          Enquiry to invoice · live
-        </div>
-        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500">no one touched this</span>
-      </div>
-      <ul className="space-y-2.5">
-        {STEPS.map((s, i) => {
-          const done = i < step;
-          const active = i === step;
-          const Icon = s.icon;
-          return (
-            <li key={s.label} className={`flex items-center gap-3 rounded-2xl border px-3.5 py-3 transition-all duration-500 ${done ? "border-slate-100 bg-white" : active ? "border-[#5b5cf6]/30 bg-[#5b5cf6]/[0.06]" : "border-transparent bg-slate-50/60 opacity-50"}`}>
-              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${done ? "bg-emerald-50 text-emerald-600" : active ? "text-white" : "bg-slate-100 text-slate-400"}`} style={active ? { background: ACCENT } : undefined}>
-                {done ? <Check size={17} /> : <Icon size={17} />}
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-[13.5px] font-semibold text-slate-800">{s.label}</p>
-                <p className="truncate text-[12px] text-slate-500">{s.detail}</p>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-      <AnimatePresence>
-        {step >= STEPS.length && (
-          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-3 rounded-2xl bg-emerald-50 px-4 py-2.5 text-[12.5px] font-medium text-emerald-700">
-            Booked, reminded and paid while the team was on the tools. Anything unusual goes to a person first.
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
+import { Accent, ACCENT, Eyebrow, GRADIENT, Heading, LILAC, outfit, SiteFooter, SiteNav } from "@/components/site";
 
 // ─── Content ──────────────────────────────────────────────────────────────────
 const SERVICES = [
@@ -264,35 +208,7 @@ export default function Home() {
     <div className={`${outfit.className} min-h-screen bg-[#f4f7fb] text-slate-900`}>
       <SiteNav onHome />
 
-      {/* Hero */}
-      <section className="relative isolate overflow-hidden pb-20 pt-32 sm:pb-28 sm:pt-40">
-        <LedTunnel />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 lg:grid-cols-[1.1fr_0.9fr]">
-          <div>
-            <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mb-6 inline-flex items-center gap-2 rounded-full border border-white bg-white/70 px-3.5 py-1.5 text-[13px] font-medium text-slate-600 shadow-sm backdrop-blur">
-              <Sparkles size={14} style={{ color: ACCENT }} /> AI automation for Gold Coast small businesses
-            </motion.p>
-            <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="text-[44px] font-semibold leading-[1.05] tracking-tight text-slate-950 sm:text-[68px]">
-              <Accent>Automate</Accent> the busywork.<br />Keep the judgment.
-            </motion.h1>
-            <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">
-              Every enquiry answered, every booking reminded, every invoice chased. Cytron builds automations that give your customers a faster, smoother experience and give your team their evenings back. People only step in when something actually needs a person.
-            </motion.p>
-            <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }} className="mt-9 flex flex-wrap items-center gap-3">
-              {cta("Book a free automation audit")}
-              <a href="#week" className="inline-flex items-center gap-2 rounded-2xl border border-white bg-white/70 px-6 py-3.5 text-[15px] font-semibold text-slate-700 backdrop-blur transition hover:bg-white">See a week with Cytron</a>
-            </motion.div>
-            <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-slate-500">
-              {["Works with your current tools", "Read-only pilot first", "Local to the Gold Coast"].map((t) => (
-                <span key={t} className="flex items-center gap-2"><Check size={15} className="text-emerald-500" />{t}</span>
-              ))}
-            </div>
-          </div>
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="flex justify-center lg:justify-end">
-            <WorkflowCard />
-          </motion.div>
-        </div>
-      </section>
+      <HomeHero />
 
       {/* Tools */}
       <section className="border-y border-white bg-white/60 py-8">

@@ -1,18 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
-
-// ─── Stripe init ────────────────────────────────────────────────────────────
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-03-25.dahlia',
-})
+import { getStripe } from '@/lib/stripe'
 
 // ─── Supabase admin (service role) ──────────────────────────────────────────
 function getAdmin() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) return null
+  return createClient(url, key)
 }
 
 // ─── Webhook handler ────────────────────────────────────────────────────────
@@ -26,6 +22,15 @@ function getAdmin() {
 */
 
 export async function POST(request: Request) {
+  const stripe = getStripe()
+  if (!stripe) {
+    return NextResponse.json({ error: 'Stripe is not configured' }, { status: 503 })
+  }
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+  if (!webhookSecret) {
+    return NextResponse.json({ error: 'Stripe webhook secret is not configured' }, { status: 503 })
+  }
+
   try {
     // 1. Read raw body for signature verification
     const body = await request.text()
@@ -38,17 +43,16 @@ export async function POST(request: Request) {
     // 2. Verify webhook signature
     let event: Stripe.Event
     try {
-      event = stripe.webhooks.constructEvent(
-        body,
-        sig,
-        process.env.STRIPE_WEBHOOK_SECRET!
-      )
+      event = stripe.webhooks.constructEvent(body, sig, webhookSecret)
     } catch (err) {
       console.error('Webhook signature verification failed:', err)
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
     }
 
     const admin = getAdmin()
+    if (!admin) {
+      return NextResponse.json({ error: 'Supabase is not configured' }, { status: 503 })
+    }
 
     // 3. Handle events
     switch (event.type) {
