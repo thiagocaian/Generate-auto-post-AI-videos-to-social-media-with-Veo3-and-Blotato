@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import {
   BellRing,
   Eye,
@@ -11,11 +12,16 @@ import {
   Truck,
   type LucideIcon,
 } from "lucide-react";
-import { cta, Eyebrow, GRADIENT, LILAC } from "@/components/site";
+import { ACCENT } from "@/components/site";
 import { MONITOR_COPY } from "@/lib/monitor-copy";
 
-const card =
-  "h-full rounded-3xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl transition hover:border-[#8b8cff]/40 hover:bg-white/[0.07]";
+const primaryButton =
+  "inline-flex w-full items-center justify-center rounded-md bg-white px-5 py-3 text-sm font-medium text-black transition-colors hover:bg-white/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:w-auto";
+
+const panel =
+  "mt-14 grid gap-px overflow-hidden rounded-xl border border-white/15 bg-white/15 shadow-[0_1px_2px_rgba(0,0,0,0.45)] sm:mt-16";
+
+const cell = "bg-black p-6 text-left sm:p-8";
 
 const HOW_IT_WORKS = [
   {
@@ -122,17 +128,6 @@ const SAFEGUARDS: { icon: LucideIcon; title: string; body: string }[] = [
   },
 ];
 
-function IconTile({ icon: Icon }: { icon: LucideIcon }) {
-  return (
-    <div
-      className="flex h-11 w-11 items-center justify-center rounded-2xl text-white shadow-[0_0_24px_rgba(124,125,255,0.55)]"
-      style={{ background: GRADIENT }}
-    >
-      <Icon size={20} aria-hidden />
-    </div>
-  );
-}
-
 function SectionHeading({
   id,
   eyebrow,
@@ -145,25 +140,34 @@ function SectionHeading({
   intro?: string;
 }) {
   return (
-    <div className="max-w-3xl">
-      <Eyebrow dark>{eyebrow}</Eyebrow>
-      <h2 id={id} className="text-3xl font-semibold leading-tight tracking-tight sm:text-[42px]">
+    <div className="max-w-3xl text-left">
+      <p className="text-[13px] font-medium tracking-[-0.01em]" style={{ color: ACCENT }}>
+        {eyebrow}
+      </p>
+      <h2 id={id} className="mt-4 text-3xl font-semibold leading-[1.1] tracking-[-0.035em] text-balance sm:text-4xl">
         {title}
       </h2>
-      {intro ? <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/65 sm:text-lg">{intro}</p> : null}
+      {intro ? <p className="mt-5 max-w-2xl text-base leading-7 text-white/70 sm:text-lg">{intro}</p> : null}
     </div>
   );
 }
 
+function StepIndex({ index }: { index: number }) {
+  return (
+    <span aria-hidden="true" className="text-[13px] font-medium tabular-nums" style={{ color: ACCENT }}>
+      {String(index + 1).padStart(2, "0")}
+    </span>
+  );
+}
+
+function LineIcon({ icon: Icon }: { icon: LucideIcon }) {
+  return <Icon size={20} strokeWidth={1.5} aria-hidden style={{ color: ACCENT }} />;
+}
+
 export default function FulfilmentSections() {
   return (
-    <div id="how" className="relative bg-[#050507] text-white">
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-[480px] bg-[radial-gradient(ellipse_at_top,rgba(91,92,246,0.28),transparent_62%)]"
-        aria-hidden
-      />
-
-      <section id="how-it-works" aria-labelledby="how-it-works-title" className="relative px-5 py-20 sm:py-28">
+    <div id="how" className="bg-black text-white">
+      <section id="how-it-works" aria-labelledby="how-it-works-title" className="px-6 py-20 sm:py-28">
         <div className="mx-auto max-w-6xl">
           <SectionHeading
             id="how-it-works-title"
@@ -171,25 +175,19 @@ export default function FulfilmentSections() {
             title="From checkout to doorstep, handled."
             intro="Here's what happens to every order once your team of agents is on the job."
           />
-          <ol className="mt-12 grid list-none gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <ol className={`${panel} list-none sm:grid-cols-2 lg:grid-cols-3`}>
             {HOW_IT_WORKS.map((step, index) => (
-              <li key={step.title} className={card}>
-                <span
-                  aria-hidden="true"
-                  className="mb-4 flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-sm font-semibold"
-                  style={{ color: LILAC }}
-                >
-                  {index + 1}
-                </span>
-                <h3 className="text-lg font-semibold">{step.title}</h3>
-                <p className="mt-2 text-[15px] leading-relaxed text-white/65">{step.body}</p>
+              <li key={step.title} className={cell}>
+                <StepIndex index={index} />
+                <h3 className="mt-4 text-base font-medium tracking-[-0.02em]">{step.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-white/65">{step.body}</p>
               </li>
             ))}
           </ol>
         </div>
       </section>
 
-      <section id="agents" aria-labelledby="agents-title" className="relative border-t border-white/10 px-5 py-20 sm:py-28">
+      <section id="agents" aria-labelledby="agents-title" className="border-t border-white/15 px-6 py-20 sm:py-28">
         <div className="mx-auto max-w-6xl">
           <SectionHeading
             id="agents-title"
@@ -197,19 +195,19 @@ export default function FulfilmentSections() {
             title="Meet your agents."
             intro="Each one has a single job, and does it the way your store does things."
           />
-          <ul className="mt-12 grid list-none gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className={`${panel} list-none sm:grid-cols-2 lg:grid-cols-4`}>
             {AGENTS.map(({ icon, title, body }) => (
-              <li key={title} className={card}>
-                <IconTile icon={icon} />
-                <h3 className="mb-2 mt-5 text-lg font-semibold">{title}</h3>
-                <p className="text-[15px] leading-relaxed text-white/65">{body}</p>
+              <li key={title} className={cell}>
+                <LineIcon icon={icon} />
+                <h3 className="mt-5 text-[15px] font-medium tracking-[-0.02em]">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-white/65">{body}</p>
               </li>
             ))}
           </ul>
         </div>
       </section>
 
-      <section id="onboarding" aria-labelledby="onboarding-title" className="relative border-t border-white/10 px-5 py-20 sm:py-28">
+      <section id="onboarding" aria-labelledby="onboarding-title" className="border-t border-white/15 px-6 py-20 sm:py-28">
         <div className="mx-auto max-w-6xl">
           <SectionHeading
             id="onboarding-title"
@@ -217,56 +215,46 @@ export default function FulfilmentSections() {
             title="How we get you set up."
             intro="No big switch-over. We build trust step by step."
           />
-          <ol className="mt-12 grid list-none gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <ol className={`${panel} list-none sm:grid-cols-2 lg:grid-cols-3`}>
             {ONBOARDING.map((step, index) => (
-              <li key={step.title} className={card}>
-                <span
-                  aria-hidden="true"
-                  className="mb-4 block bg-clip-text text-3xl font-semibold text-transparent"
-                  style={{ backgroundImage: GRADIENT }}
-                >
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <h3 className="text-lg font-semibold">{step.title}</h3>
-                <p className="mt-2 text-[15px] leading-relaxed text-white/65">{step.body}</p>
+              <li key={step.title} className={cell}>
+                <StepIndex index={index} />
+                <h3 className="mt-4 text-base font-medium tracking-[-0.02em]">{step.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-white/65">{step.body}</p>
               </li>
             ))}
           </ol>
         </div>
       </section>
 
-      <section id="safeguards" aria-labelledby="safeguards-title" className="relative border-t border-white/10 px-5 py-20 sm:py-28">
+      <section id="safeguards" aria-labelledby="safeguards-title" className="border-t border-white/15 px-6 py-20 sm:py-28">
         <div className="mx-auto max-w-6xl">
           <SectionHeading id="safeguards-title" eyebrow="Built-in safeguards" title="You stay in control." />
-          <ul className="mt-12 grid list-none gap-5 sm:grid-cols-2">
+          <ul className={`${panel} list-none sm:grid-cols-2`}>
             {SAFEGUARDS.map(({ icon, title, body }) => (
-              <li key={title} className={`${card} flex gap-4`}>
-                <div className="shrink-0">
-                  <IconTile icon={icon} />
-                </div>
-                <div className="min-w-0">
-                <h3 className="text-lg font-semibold">{title}:</h3>
-                <p className="mt-2 text-[15px] leading-relaxed text-white/65">{body}</p>
-                </div>
+              <li key={title} className={cell}>
+                <LineIcon icon={icon} />
+                <h3 className="mt-5 text-[15px] font-medium tracking-[-0.02em]">{title}:</h3>
+                <p className="mt-2 text-sm leading-6 text-white/65">{body}</p>
               </li>
             ))}
           </ul>
         </div>
       </section>
 
-      <section id="demo" aria-labelledby="demo-title" className="relative isolate overflow-hidden border-t border-white/10 px-5 py-20 sm:py-28">
-        <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(91,92,246,0.22),transparent_62%)]"
-          aria-hidden
-        />
-        <div className="relative mx-auto max-w-3xl text-center">
-          <h2 id="demo-title" className="text-3xl font-semibold leading-tight tracking-tight sm:text-[46px]">
+      <section id="demo" aria-labelledby="demo-title" className="border-t border-white/15 px-6 py-20 sm:py-28">
+        <div className="mx-auto max-w-6xl text-left">
+          <h2 id="demo-title" className="max-w-3xl text-3xl font-semibold leading-[1.1] tracking-[-0.035em] text-balance sm:text-4xl">
             Ready to hand over the busywork?
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/65 sm:text-lg">
+          <p className="mt-5 max-w-xl text-base leading-7 text-white/70 sm:text-lg">
             Tell us how your store ships today and we&apos;ll show you what your fulfilment team would look like.
           </p>
-          <div className="mt-9 flex justify-center">{cta("Book a free demo")}</div>
+          <div className="mt-8">
+            <a href="#audit" onClick={() => track("lead_audit_started")} className={primaryButton}>
+              Book a free demo
+            </a>
+          </div>
         </div>
       </section>
     </div>
