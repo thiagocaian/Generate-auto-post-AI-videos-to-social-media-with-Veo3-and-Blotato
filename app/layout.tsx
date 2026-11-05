@@ -2,17 +2,15 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-
-const inter = Inter({ subsets: ["latin"], display: "swap" });
-import dynamic from "next/dynamic";
+import { SiteChrome } from "@/components/site-chrome";
 import "./globals.css";
 
-const BackgroundScene = dynamic(() => import("@/components/BackgroundScene"), { ssr: false });
+const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://cytron.com.au"),
-  title: "CYTRON — Business automation for Gold Coast small businesses",
-  description: "Cytron automates enquiries, missed calls, bookings, reminders, quotes and invoices for Gold Coast trades, clinics, property, hospitality and retail. Free automation audit, read-only pilot first.",
+  title: "Cytron — Process automation for Gold Coast small businesses",
+  description: "Process automation for Gold Coast small businesses. Enquiries, bookings, quotes and invoices run as workflows. Free automation audit, read-only pilot first.",
   icons: {
     icon: "/icon.svg",
     apple: "/icon.svg",
@@ -23,7 +21,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en-AU">
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,11 +30,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
       <body className={`${inter.className} antialiased`} style={{ backgroundColor: '#050505', color: '#ffffff' }}>
-        {/* Global animated background — same lilac particles across all pages */}
-        <BackgroundScene fixed opacity={0.25} particleCount={60} />
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          {children}
-        </div>
+        <SiteChrome>{children}</SiteChrome>
         <Analytics />
         <SpeedInsights />
       </body>

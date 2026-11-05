@@ -2,10 +2,12 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
-// ─── Stripe init ────────────────────────────────────────────────────────────
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-03-25.dahlia',
-})
+// Created inside the request so a missing key fails the route, not `next build`.
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key) return null
+  return new Stripe(key, { apiVersion: '2026-03-25.dahlia' })
+}
 
 // ─── Supabase admin (service role) ──────────────────────────────────────────
 function getAdmin() {
@@ -27,6 +29,11 @@ function getAdmin() {
 
 export async function POST(request: Request) {
   try {
+    const stripe = getStripe()
+    if (!stripe || !process.env.STRIPE_WEBHOOK_SECRET) {
+      return NextResponse.json({ error: 'Service unavailable' }, { status: 503 })
+    }
+
     // 1. Read raw body for signature verification
     const body = await request.text()
     const sig = request.headers.get('stripe-signature')

@@ -4,10 +4,12 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
-// ─── Stripe init ────────────────────────────────────────────────────────────
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-03-25.dahlia',
-})
+// Created inside the request so a missing key fails the route, not `next build`.
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key) return null
+  return new Stripe(key, { apiVersion: '2026-03-25.dahlia' })
+}
 
 // ─── Plan → price mapping (AUD) ─────────────────────────────────────────────
 // Prices in cents
@@ -22,6 +24,8 @@ const PLAN_PRICES: Record<string, { amount: number; name: string }> = {
  * Uses metadata lookup so we don't duplicate products on every call.
  */
 async function getOrCreatePrice(plan: string): Promise<string> {
+  const stripe = getStripe()
+  if (!stripe) throw new Error('Service unavailable')
   const config = PLAN_PRICES[plan]
   if (!config) throw new Error(`Unknown plan: ${plan}`)
 
@@ -54,6 +58,11 @@ async function getOrCreatePrice(plan: string): Promise<string> {
 // ─── POST /api/stripe/checkout ──────────────────────────────────────────────
 export async function POST(request: Request) {
   try {
+    const stripe = getStripe()
+    if (!stripe) {
+      return NextResponse.json({ error: 'Service unavailable' }, { status: 503 })
+    }
+
     // 1. Auth
     const cookieStore = await cookies()
     const supabase = createServerClient(
