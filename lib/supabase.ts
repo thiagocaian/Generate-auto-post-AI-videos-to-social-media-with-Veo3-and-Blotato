@@ -1,14 +1,54 @@
 import { createClient } from '@supabase/supabase-js'
 import { createBrowserClient } from '@supabase/ssr'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+function publicSupabaseEnv() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Supabase env missing')
+  }
+  return { supabaseUrl, supabaseAnonKey }
+}
 
-// Browser client with session persistence (for 'use client' pages)
-export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
+function createBrowser() {
+  const { supabaseUrl, supabaseAnonKey } = publicSupabaseEnv()
+  return createBrowserClient(supabaseUrl, supabaseAnonKey)
+}
 
-// Server-side only client (no session)
-export const supabaseAdmin = createClient(supabaseUrl, supabaseAnonKey)
+function createAdmin() {
+  const { supabaseUrl, supabaseAnonKey } = publicSupabaseEnv()
+  return createClient(supabaseUrl, supabaseAnonKey)
+}
+
+type BrowserClient = ReturnType<typeof createBrowser>
+type AdminClient = ReturnType<typeof createAdmin>
+
+let browserClient: BrowserClient | undefined
+let adminClient: AdminClient | undefined
+
+function getBrowserClient() {
+  if (!browserClient) browserClient = createBrowser()
+  return browserClient
+}
+
+function getAdminClient() {
+  if (!adminClient) adminClient = createAdmin()
+  return adminClient
+}
+
+function lazyClient<T extends object>(getClient: () => T): T {
+  return new Proxy({} as T, {
+    get(_target, prop) {
+      const client = getClient()
+      const value = Reflect.get(client, prop, client)
+      return typeof value === "function" ? value.bind(client) : value
+    },
+  })
+}
+
+// Clients are created on first use so `next build` does not require env vars.
+export const supabase: BrowserClient = lazyClient(getBrowserClient)
+export const supabaseAdmin: AdminClient = lazyClient(getAdminClient)
 
 // Auth helpers
 export async function getSession() {
