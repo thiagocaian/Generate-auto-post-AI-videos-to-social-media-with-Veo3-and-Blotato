@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { COMPANY_ADMIN_EMAIL } from "@/lib/company-admin";
 
 export const metadata: Metadata = {
   title: "Terms of Service — CYTRON",
@@ -84,8 +85,8 @@ export default function TermsOfServicePage() {
           </p>
           <p>
             You agree to notify us immediately at{" "}
-            <a href="mailto:labofantasma@gmail.com" style={linkStyle}>
-              labofantasma@gmail.com
+            <a href={`mailto:${COMPANY_ADMIN_EMAIL}`} style={linkStyle}>
+              {COMPANY_ADMIN_EMAIL}
             </a>{" "}
             if you suspect any unauthorised use of your account.
           </p>
@@ -329,8 +330,8 @@ export default function TermsOfServicePage() {
           </p>
           <p>
             You may terminate your account at any time by contacting us at{" "}
-            <a href="mailto:labofantasma@gmail.com" style={linkStyle}>
-              labofantasma@gmail.com
+            <a href={`mailto:${COMPANY_ADMIN_EMAIL}`} style={linkStyle}>
+              {COMPANY_ADMIN_EMAIL}
             </a>{" "}
             or through your account settings.
           </p>
@@ -392,8 +393,8 @@ export default function TermsOfServicePage() {
             <li>Gold Coast, Queensland, Australia</li>
             <li>
               Email:{" "}
-              <a href="mailto:labofantasma@gmail.com" style={linkStyle}>
-                labofantasma@gmail.com
+              <a href={`mailto:${COMPANY_ADMIN_EMAIL}`} style={linkStyle}>
+                {COMPANY_ADMIN_EMAIL}
               </a>
             </li>
             <li>

@@ -53,13 +53,7 @@ export function forbidden() {
   return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 }
 
-/** Company admin login. Compared case-insensitively. */
-export const COMPANY_ADMIN_EMAILS = ['admin@cytroncorporation.com']
-
-export function isCompanyAdminEmail(email: string | null | undefined): boolean {
-  if (!email) return false
-  return COMPANY_ADMIN_EMAILS.includes(email.toLowerCase())
-}
+export { COMPANY_ADMIN_EMAIL, COMPANY_ADMIN_EMAILS, isCompanyAdminEmail } from '@/lib/company-admin'
 
 // ─── Service-role client ─────────────────────────────────────────────────────
 
