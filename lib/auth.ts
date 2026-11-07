@@ -53,6 +53,14 @@ export function forbidden() {
   return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 }
 
+/** Company admin login. Compared case-insensitively. */
+export const COMPANY_ADMIN_EMAILS = ['admin@cytroncorporation.com']
+
+export function isCompanyAdminEmail(email: string | null | undefined): boolean {
+  if (!email) return false
+  return COMPANY_ADMIN_EMAILS.includes(email.toLowerCase())
+}
+
 // ─── Service-role client ─────────────────────────────────────────────────────
 
 /** Supabase admin client — only for server-side use. */
