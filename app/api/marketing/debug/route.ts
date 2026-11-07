@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getRequestUser, unauthorized, forbidden } from '@/lib/auth'
-
-const SUPER_ADMINS = ['labofantasma@gmail.com']
+import { getRequestUser, unauthorized, forbidden, isCompanyAdminEmail } from '@/lib/auth'
 
 const OUTSTAND_API = 'https://api.outstand.so/v1'
 const BLOTATO_API = 'https://backend.blotato.com/v2'
@@ -9,7 +7,7 @@ const BLOTATO_API = 'https://backend.blotato.com/v2'
 export async function GET() {
   const user = await getRequestUser()
   if (!user) return unauthorized()
-  if (!SUPER_ADMINS.includes(user.email ?? '')) return forbidden()
+  if (!isCompanyAdminEmail(user.email)) return forbidden()
 
   const results: Record<string, unknown> = {
     timestamp: new Date().toISOString(),
