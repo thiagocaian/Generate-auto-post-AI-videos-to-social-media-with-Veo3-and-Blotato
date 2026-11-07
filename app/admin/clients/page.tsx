@@ -1,13 +1,16 @@
 'use client'
 
+import Link from 'next/link'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
-import { CLIENT_STATUSES, type Client, type ClientInput, type ClientStatus } from '@/lib/clients/types'
+import { ClientEditor } from '@/components/admin/client-editor'
+import { CLIENT_STATUSES, clientToForm, labelClientStatus, type Client, type ClientInput, type ClientStatus } from '@/lib/clients/types'
 
 const EMPTY_FORM: ClientInput = {
   name: '',
   email: '',
   phone: '',
   company: '',
+  address: '',
   status: 'lead',
   notes: '',
 }
@@ -77,7 +80,7 @@ export default function AdminClientsPage() {
     return clients.filter(client => {
       if (status && client.status !== status) return false
       if (!q) return true
-      return [client.name, client.email, client.phone, client.company, client.notes]
+      return [client.name, client.email, client.phone, client.company, client.address, client.notes]
         .join(' ')
         .toLowerCase()
         .includes(q)
@@ -91,14 +94,7 @@ export default function AdminClientsPage() {
   }
 
   function openEdit(client: Client) {
-    setForm({
-      name: client.name,
-      email: client.email,
-      phone: client.phone,
-      company: client.company,
-      status: client.status,
-      notes: client.notes,
-    })
+    setForm(clientToForm(client))
     setFormError('')
     setEditor({ mode: 'edit', client })
   }
@@ -197,13 +193,15 @@ export default function AdminClientsPage() {
         </p>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
-          <Stat label="Clients" value={clients.length} color="#886cff" />
+          <Stat label="Clients" value={clients.length} color="#886cff" pressed={status === ''} onClick={() => setStatus('')} />
           {CLIENT_STATUSES.map(item => (
             <Stat
               key={item}
-              label={labelStatus(item)}
+              label={labelClientStatus(item)}
               value={clients.filter(client => client.status === item).length}
               color={STATUS_COLOR[item]}
+              pressed={status === item}
+              onClick={() => setStatus(current => current === item ? '' : item)}
             />
           ))}
         </div>
@@ -214,7 +212,7 @@ export default function AdminClientsPage() {
             <input
               value={query}
               onChange={event => setQuery(event.target.value)}
-              placeholder="Name, company, email, phone"
+              placeholder="Name, company, email, phone, address"
               className="mt-1 w-full rounded-lg px-3 py-2 text-sm outline-none"
               style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#FFF' }}
             />
@@ -229,7 +227,7 @@ export default function AdminClientsPage() {
             >
               <option value="">All statuses</option>
               {CLIENT_STATUSES.map(item => (
-                <option key={item} value={item}>{labelStatus(item)}</option>
+                <option key={item} value={item}>{labelClientStatus(item)}</option>
               ))}
             </select>
           </label>
@@ -276,10 +274,13 @@ export default function AdminClientsPage() {
               ) : visible.map(client => (
                 <tr key={client.id} style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                   <td className="px-4 py-3 align-top">
-                    <p className="font-semibold">{client.name}</p>
-                    {client.notes && <p className="text-xs mt-1 max-w-xs" style={{ color: '#777' }}>{client.notes}</p>}
+                    <Link href={`/admin/clients/${client.id}`} className="font-semibold hover:underline">{client.name}</Link>
+                    {client.notes ? <p className="text-xs mt-1 max-w-xs" style={{ color: '#777' }}>{client.notes}</p> : null}
                   </td>
-                  <td className="px-4 py-3 align-top" style={{ color: '#CCC' }}>{client.company || '—'}</td>
+                  <td className="px-4 py-3 align-top" style={{ color: '#CCC' }}>
+                    <p>{client.company || '—'}</p>
+                    {client.address ? <p className="text-xs mt-1" style={{ color: '#777' }}>{client.address}</p> : null}
+                  </td>
                   <td className="px-4 py-3 align-top">
                     <p>{client.email}</p>
                     <p className="text-xs mt-1" style={{ color: '#777' }}>{client.phone || 'No phone'}</p>
@@ -307,53 +308,17 @@ export default function AdminClientsPage() {
         </div>
       </div>
 
-      {editor && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="client-editor-title">
-          <button type="button" aria-label="Close editor" className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.65)' }} onClick={() => { if (!saving) setEditor(null) }} />
-          <form onSubmit={onSubmit} className="relative w-full max-w-lg rounded-xl p-5 max-h-[90vh] overflow-y-auto" style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <h2 id="client-editor-title" className="text-lg font-bold mb-4">{editor.mode === 'create' ? 'Add client' : 'Edit client'}</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Field label="Name" value={form.name} onChange={value => setForm({ ...form, name: value })} required />
-              <Field label="Email" type="email" value={form.email} onChange={value => setForm({ ...form, email: value })} required />
-              <Field label="Phone" value={form.phone} onChange={value => setForm({ ...form, phone: value })} />
-              <Field label="Company" value={form.company} onChange={value => setForm({ ...form, company: value })} />
-              <label className="text-xs sm:col-span-2" style={{ color: '#888' }}>
-                Status
-                <select
-                  value={form.status}
-                  onChange={event => setForm({ ...form, status: event.target.value as ClientStatus })}
-                  className="mt-1 w-full rounded-lg px-3 py-2 text-sm outline-none"
-                  style={{ background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.1)', color: '#FFF' }}
-                >
-                  {CLIENT_STATUSES.map(item => (
-                    <option key={item} value={item}>{labelStatus(item)}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="text-xs sm:col-span-2" style={{ color: '#888' }}>
-                Notes
-                <textarea
-                  value={form.notes}
-                  onChange={event => setForm({ ...form, notes: event.target.value })}
-                  rows={3}
-                  maxLength={2000}
-                  className="mt-1 w-full rounded-lg px-3 py-2 text-sm outline-none"
-                  style={{ background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.1)', color: '#FFF' }}
-                />
-              </label>
-            </div>
-            {formError && <p className="text-sm mt-3" style={{ color: '#FF8A8A' }} role="alert">{formError}</p>}
-            <div className="flex justify-end gap-2 mt-5">
-              <button type="button" disabled={saving} onClick={() => setEditor(null)} className="text-sm px-3 py-2 rounded-lg" style={{ color: '#AAA' }}>
-                Cancel
-              </button>
-              <button type="submit" disabled={saving} className="text-sm font-bold px-4 py-2 rounded-lg" style={{ background: '#886cff', color: '#FFF', opacity: saving ? 0.7 : 1 }}>
-                {saving ? 'Saving…' : 'Save client'}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+      {editor ? (
+        <ClientEditor
+          title={editor.mode === 'create' ? 'Add client' : `Edit ${editor.client.name}`}
+          form={form}
+          onChange={setForm}
+          saving={saving}
+          formError={formError}
+          onSubmit={onSubmit}
+          onClose={() => { if (!saving) setEditor(null) }}
+        />
+      ) : null}
 
       {pendingDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="alertdialog" aria-modal="true" aria-labelledby="delete-client-title">
@@ -376,43 +341,32 @@ export default function AdminClientsPage() {
   )
 }
 
-function Stat({ label, value, color }: { label: string; value: number; color: string }) {
-  return (
-    <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-      <p className="text-xs mb-1" style={{ color: '#666' }}>{label}</p>
-      <p className="text-2xl font-bold" style={{ color }}>{value}</p>
-    </div>
-  )
-}
-
-function Field({
+function Stat({
   label,
   value,
-  onChange,
-  type = 'text',
-  required = false,
+  color,
+  pressed,
+  onClick,
 }: {
   label: string
-  value: string
-  onChange: (value: string) => void
-  type?: string
-  required?: boolean
+  value: number
+  color: string
+  pressed: boolean
+  onClick: () => void
 }) {
   return (
-    <label className="text-xs" style={{ color: '#888' }}>
-      {label}
-      <input
-        type={type}
-        required={required}
-        value={value}
-        onChange={event => onChange(event.target.value)}
-        className="mt-1 w-full rounded-lg px-3 py-2 text-sm outline-none"
-        style={{ background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.1)', color: '#FFF' }}
-      />
-    </label>
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={pressed}
+      className="p-4 rounded-xl text-left"
+      style={{
+        background: 'rgba(255,255,255,0.04)',
+        border: pressed ? `1px solid ${color}` : '1px solid rgba(255,255,255,0.08)',
+      }}
+    >
+      <p className="text-xs mb-1" style={{ color: '#666' }}>{label}</p>
+      <p className="text-2xl font-bold" style={{ color }}>{value}</p>
+    </button>
   )
-}
-
-function labelStatus(status: ClientStatus): string {
-  return status.charAt(0).toUpperCase() + status.slice(1)
 }

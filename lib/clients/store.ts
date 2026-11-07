@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { randomUUID } from 'crypto'
 import { parseCreateClient, parseUpdateClient } from './schema'
-import type { Client, ClientQuery } from './types'
+import { CLIENT_STATUSES, type Client, type ClientQuery, type ClientStatus } from './types'
 
 export type StoreFailure = { ok: false; status: number; error: string }
 export type StoreSuccess<T> = { ok: true; data: T }
@@ -14,6 +14,7 @@ const SEED: Client[] = [
     email: 'ada.north@example.com',
     phone: '+61 400 000 001',
     company: 'Northwind Demo Electrical',
+    address: '1 Sample Circuit, Southport QLD 4215',
     status: 'active',
     notes: 'Fictional sample record. Not a real customer.',
     createdAt: '2026-01-15T00:00:00.000Z',
@@ -25,6 +26,7 @@ const SEED: Client[] = [
     email: 'ben.harbour@example.com',
     phone: '+61 400 000 002',
     company: 'Harbour Sample Plumbing',
+    address: '2 Example Lane, Broadbeach QLD 4218',
     status: 'lead',
     notes: 'Fictional sample record. Not a real customer.',
     createdAt: '2026-03-04T00:00:00.000Z',
@@ -36,6 +38,7 @@ const SEED: Client[] = [
     email: 'casey.ridge@example.com',
     phone: '+61 400 000 003',
     company: 'Example Ridge Solar',
+    address: '3 Demo Rise, Burleigh Heads QLD 4220',
     status: 'paused',
     notes: 'Fictional sample record. Not a real customer.',
     createdAt: '2026-04-11T00:00:00.000Z',
@@ -51,11 +54,34 @@ function sortClients(clients: Client[]): Client[] {
   })
 }
 
+function normalizeClient(value: unknown): Client {
+  if (!value || typeof value !== 'object') throw new Error('Client store is unreadable')
+  const row = value as Partial<Client>
+  if (typeof row.id !== 'string' || typeof row.name !== 'string' || typeof row.email !== 'string') {
+    throw new Error('Client store is unreadable')
+  }
+  if (!row.status || !CLIENT_STATUSES.includes(row.status as ClientStatus)) {
+    throw new Error('Client store is unreadable')
+  }
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    phone: row.phone ?? '',
+    company: row.company ?? '',
+    address: row.address ?? '',
+    status: row.status,
+    notes: row.notes ?? '',
+    createdAt: row.createdAt ?? '',
+    updatedAt: row.updatedAt ?? '',
+  }
+}
+
 function matchesQuery(client: Client, query: ClientQuery): boolean {
   if (query.status && client.status !== query.status) return false
   const q = query.q?.trim().toLowerCase()
   if (!q) return true
-  const haystack = [client.name, client.email, client.phone, client.company, client.notes]
+  const haystack = [client.name, client.email, client.phone, client.company, client.address, client.notes]
     .join(' ')
     .toLowerCase()
   return haystack.includes(q)
@@ -98,7 +124,7 @@ export function createClientsStore(filePath: string) {
     try {
       const parsed = JSON.parse(raw) as unknown
       if (!Array.isArray(parsed)) throw new Error('not an array')
-      return parsed as Client[]
+      return parsed.map(normalizeClient)
     } catch {
       throw new Error('Client store is unreadable')
     }

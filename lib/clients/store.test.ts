@@ -28,6 +28,11 @@ test('seeds fictional clients and filters them', async () => {
   if (!search.ok) return
   assert.equal(search.data.length, 1)
   assert.equal(search.data[0].company, 'Northwind Demo Electrical')
+
+  const byAddress = await store.list({ q: 'burleigh' })
+  assert.equal(byAddress.ok, true)
+  if (!byAddress.ok) return
+  assert.equal(byAddress.data[0].name, 'Casey Ridge')
 })
 
 test('creates, updates, and deletes a client', async () => {
@@ -53,11 +58,16 @@ test('creates, updates, and deletes a client', async () => {
   if (duplicate.ok) return
   assert.equal(duplicate.status, 409)
 
-  const updated = await store.update(created.data.id, { status: 'archived', notes: 'Closed sample' })
+  const updated = await store.update(created.data.id, {
+    status: 'archived',
+    notes: 'Closed sample',
+    address: '9 Fixture Road, Surfers Paradise QLD 4217',
+  })
   assert.equal(updated.ok, true)
   if (!updated.ok) return
   assert.equal(updated.data.status, 'archived')
   assert.equal(updated.data.name, 'Demo Person')
+  assert.equal(updated.data.address, '9 Fixture Road, Surfers Paradise QLD 4217')
 
   const removed = await store.remove(created.data.id)
   assert.equal(removed.ok, true)
@@ -78,4 +88,23 @@ test('rejects invalid writes', async () => {
   assert.equal(updated.ok, false)
   if (updated.ok) return
   assert.equal(updated.status, 400)
+})
+
+test('fills a missing address when reading older records', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'admin-clients-'))
+  const file = path.join(dir, 'clients.json')
+  fs.writeFileSync(file, JSON.stringify([{
+    id: '44444444-4444-4444-8444-444444444444',
+    name: 'Old Record',
+    email: 'old.record@example.com',
+    status: 'active',
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+  }]))
+  const store = createClientsStore(file)
+  const listed = await store.list()
+  assert.equal(listed.ok, true)
+  if (!listed.ok) return
+  assert.equal(listed.data[0].address, '')
+  assert.equal(listed.data[0].phone, '')
 })

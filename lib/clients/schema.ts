@@ -12,6 +12,7 @@ const clientFields = {
   email: z.string().trim().email('Enter a valid email').max(200),
   phone: phone.optional().default(''),
   company: z.string().trim().max(160).optional().default(''),
+  address: z.string().trim().max(300).optional().default(''),
   status: z.enum(CLIENT_STATUSES).optional().default('lead'),
   notes: z.string().trim().max(2000).optional().default(''),
 }
@@ -24,6 +25,7 @@ export const UpdateClientSchema = z
     email: clientFields.email.optional(),
     phone: phone.optional(),
     company: z.string().trim().max(160).optional(),
+    address: z.string().trim().max(300).optional(),
     status: z.enum(CLIENT_STATUSES).optional(),
     notes: z.string().trim().max(2000).optional(),
   })
