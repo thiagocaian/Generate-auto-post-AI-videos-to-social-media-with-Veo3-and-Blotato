@@ -71,6 +71,10 @@ test('creates, updates, and deletes a client', async () => {
 
   const removed = await store.remove(created.data.id)
   assert.equal(removed.ok, true)
+  const afterDelete = await store.list({ q: 'demo.person@example.com' })
+  assert.equal(afterDelete.ok, true)
+  if (!afterDelete.ok) return
+  assert.equal(afterDelete.data.length, 0)
   const missing = await store.get(created.data.id)
   assert.equal(missing.ok, false)
   if (missing.ok) return

@@ -39,6 +39,7 @@ export default function AdminClientsPage() {
   const [form, setForm] = useState<ClientInput>(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState('')
+  const [notice, setNotice] = useState('')
   const [pendingDelete, setPendingDelete] = useState<Client | null>(null)
 
   async function loadClients() {
@@ -118,6 +119,8 @@ export default function AdminClientsPage() {
         setFormError(typeof body.error === 'string' ? body.error : 'Could not save client')
         return
       }
+      const savedName = typeof body.client?.name === 'string' ? body.client.name : form.name
+      setNotice(editor.mode === 'create' ? `${savedName} added.` : `${savedName} saved.`)
       setEditor(null)
       await loadClients()
     } catch {
@@ -138,6 +141,7 @@ export default function AdminClientsPage() {
         setError(typeof body.error === 'string' ? body.error : 'Could not delete client')
         return
       }
+      setNotice(`${pendingDelete.name} deleted.`)
       setPendingDelete(null)
       await loadClients()
     } catch {
@@ -231,7 +235,17 @@ export default function AdminClientsPage() {
               ))}
             </select>
           </label>
-          <div className="md:self-end">
+          <div className="md:self-end flex gap-2">
+            {(query || status) ? (
+              <button
+                type="button"
+                onClick={() => { setQuery(''); setStatus('') }}
+                className="text-sm px-4 py-2 rounded-lg"
+                style={{ border: '1px solid rgba(255,255,255,0.15)', color: '#CCC' }}
+              >
+                Clear filters
+              </button>
+            ) : null}
             <button
               type="button"
               onClick={openCreate}
@@ -242,6 +256,17 @@ export default function AdminClientsPage() {
             </button>
           </div>
         </div>
+
+        <p className="text-xs mb-3" style={{ color: '#777' }}>
+          Showing {visible.length} of {clients.length}
+        </p>
+
+        {notice ? (
+          <div className="mb-4 rounded-lg px-3 py-2 text-sm flex items-center justify-between gap-3" style={{ background: 'rgba(34,197,94,0.12)', color: '#86EFAC' }} role="status">
+            <span>{notice}</span>
+            <button type="button" onClick={() => setNotice('')} className="text-xs underline">Dismiss</button>
+          </div>
+        ) : null}
 
         {error && (
           <div className="mb-4 rounded-lg px-3 py-2 text-sm flex items-center justify-between gap-3" style={{ background: 'rgba(255,68,68,0.12)', color: '#FF8A8A' }} role="alert">
@@ -268,7 +293,7 @@ export default function AdminClientsPage() {
               {visible.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-10 text-center" style={{ color: '#666' }}>
-                    {clients.length === 0 ? 'No clients yet. Add the first sample record.' : 'No clients match this search.'}
+                    {clients.length === 0 ? 'No clients yet. Add the first sample record.' : 'No clients match this search. Clear the filters to see every record.'}
                   </td>
                 </tr>
               ) : visible.map(client => (

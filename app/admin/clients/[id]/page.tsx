@@ -36,6 +36,7 @@ export default function AdminClientDetailPage() {
   const [form, setForm] = useState<ClientInput>(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState('')
+  const [notice, setNotice] = useState('')
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   useEffect(() => {
@@ -107,6 +108,7 @@ export default function AdminClientDetailPage() {
       }
       setClient(body.client)
       setForm(clientToForm(body.client))
+      setNotice(`${body.client.name} saved.`)
       setEditing(false)
     } catch {
       setFormError('Could not save client')
@@ -171,6 +173,9 @@ export default function AdminClientDetailPage() {
         </Link>
       </header>
       <div className="p-6 max-w-3xl mx-auto">
+        {notice ? (
+          <p className="mb-4 rounded-lg px-3 py-2 text-sm" style={{ background: 'rgba(34,197,94,0.12)', color: '#86EFAC' }} role="status">{notice}</p>
+        ) : null}
         {error ? (
           <p className="mb-4 rounded-lg px-3 py-2 text-sm" style={{ background: 'rgba(255,68,68,0.12)', color: '#FF8A8A' }} role="alert">{error}</p>
         ) : null}
