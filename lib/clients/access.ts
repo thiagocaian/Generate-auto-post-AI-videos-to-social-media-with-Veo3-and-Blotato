@@ -6,11 +6,12 @@ export async function requireClientsAdmin(): Promise<
 > {
   try {
     const user = await getRequestUser()
-    if (!user) return { ok: false, response: unauthorized() }
-    if (!isCompanyAdminEmail(user.email)) {
+    const email = user?.email
+    if (!user || !email) return { ok: false, response: unauthorized() }
+    if (!isCompanyAdminEmail(email)) {
       return { ok: false, response: forbidden() }
     }
-    return { ok: true, email: user.email }
+    return { ok: true, email }
   } catch {
     return { ok: false, response: unauthorized() }
   }
