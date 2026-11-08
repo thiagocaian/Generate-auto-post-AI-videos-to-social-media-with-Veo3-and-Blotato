@@ -53,6 +53,8 @@ export function forbidden() {
   return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 }
 
+export { COMPANY_ADMIN_EMAIL, COMPANY_ADMIN_EMAILS, isCompanyAdminEmail } from '@/lib/company-admin'
+
 // ─── Service-role client ─────────────────────────────────────────────────────
 
 /** Supabase admin client — only for server-side use. */
