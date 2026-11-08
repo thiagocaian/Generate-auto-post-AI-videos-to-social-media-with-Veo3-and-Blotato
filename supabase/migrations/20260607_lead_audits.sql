@@ -10,6 +10,8 @@ create table if not exists lead_audits (
   website           text,
   monthly_enquiries text,
   response_process  text,
+  preferred_date    date,
+  preferred_time    text,
   status            text default 'new',   -- new | contacted | converted | closed
   notes             text
 );

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { COMPANY_ADMIN_EMAIL } from "@/lib/company-admin";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — CYTRON",
@@ -333,8 +334,8 @@ export default function PrivacyPolicyPage() {
           </ul>
           <p>
             To exercise any of these rights, please contact us at{" "}
-            <a href="mailto:labofantasma@gmail.com" style={linkStyle}>
-              labofantasma@gmail.com
+            <a href={`mailto:${COMPANY_ADMIN_EMAIL}`} style={linkStyle}>
+              {COMPANY_ADMIN_EMAIL}
             </a>
             . We will respond to your request within thirty (30) days.
           </p>
@@ -424,8 +425,8 @@ export default function PrivacyPolicyPage() {
             <li>
               <strong>Data Protection Officer:</strong> For GDPR-related enquiries,
               contact us at{" "}
-              <a href="mailto:labofantasma@gmail.com" style={linkStyle}>
-                labofantasma@gmail.com
+              <a href={`mailto:${COMPANY_ADMIN_EMAIL}`} style={linkStyle}>
+                {COMPANY_ADMIN_EMAIL}
               </a>
             </li>
             <li>
@@ -483,8 +484,8 @@ export default function PrivacyPolicyPage() {
             <li>Gold Coast, Queensland, Australia</li>
             <li>
               Email:{" "}
-              <a href="mailto:labofantasma@gmail.com" style={linkStyle}>
-                labofantasma@gmail.com
+              <a href={`mailto:${COMPANY_ADMIN_EMAIL}`} style={linkStyle}>
+                {COMPANY_ADMIN_EMAIL}
               </a>
             </li>
             <li>

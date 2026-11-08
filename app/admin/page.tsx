@@ -69,9 +69,14 @@ export default function AdminPage() {
             <p className="text-xs" style={{ color: '#666' }}>{data?.admin_email}</p>
           </div>
         </div>
-        <a href="/dashboard" className="text-xs px-3 py-1.5 rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', color: '#999' }}>
-          Back to Dashboard
-        </a>
+        <div className="flex items-center gap-2">
+          <a href="/admin/clients" className="text-xs px-3 py-1.5 rounded font-bold" style={{ background: '#886cff', color: '#FFF' }}>
+            Clients
+          </a>
+          <a href="/dashboard" className="text-xs px-3 py-1.5 rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', color: '#999' }}>
+            Back to Dashboard
+          </a>
+        </div>
       </div>
 
       <div className="p-6 max-w-7xl mx-auto">
