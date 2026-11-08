@@ -3,6 +3,18 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { z } from 'zod'
 
+const TIME_SLOTS = [
+  '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM',
+  '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM',
+  '1:00 PM', '1:30 PM', '2:00 PM', '2:30 PM',
+  '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM',
+] as const
+
+function brisbaneDate(offsetDays = 0): string {
+  const shifted = new Date(Date.now() + (10 * 60 + offsetDays * 24 * 60) * 60 * 1000)
+  return shifted.toISOString().slice(0, 10)
+}
+
 const LeadAuditSchema = z.object({
   name: z.string().min(1).max(100),
   businessName: z.string().min(1).max(200),
@@ -12,6 +24,14 @@ const LeadAuditSchema = z.object({
   website: z.string().url().optional().or(z.literal('')),
   monthlyEnquiries: z.string().max(50).optional(),
   responseProcess: z.string().max(1000).optional(),
+  preferredDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Choose a date'),
+  preferredTime: z.enum(TIME_SLOTS),
+}).superRefine((value, ctx) => {
+  const min = brisbaneDate(0)
+  const max = brisbaneDate(14)
+  if (value.preferredDate < min || value.preferredDate > max) {
+    ctx.addIssue({ code: 'custom', path: ['preferredDate'], message: 'Choose a date in the next 14 days' })
+  }
 })
 
 // ─── Simple in-memory rate limiter (per IP, max 3 requests per hour) ──────────
@@ -55,7 +75,8 @@ export async function POST(req: NextRequest) {
 
   const parsed = LeadAuditSchema.safeParse(raw)
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
+    const message = parsed.error.issues[0]?.message || 'Check the form and try again.'
+    return NextResponse.json({ error: message }, { status: 422 })
   }
 
   const data = parsed.data
@@ -78,6 +99,8 @@ export async function POST(req: NextRequest) {
     website: data.website || null,
     monthly_enquiries: data.monthlyEnquiries || null,
     response_process: data.responseProcess || null,
+    preferred_date: data.preferredDate,
+    preferred_time: data.preferredTime,
     status: 'new',
   })
 
@@ -129,7 +152,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ success: true, emailSent: false })
 }
 
-function confirmationEmailHtml(data: { name: string; businessName: string }) {
+function confirmationEmailHtml(data: { name: string; businessName: string; preferredDate: string; preferredTime: string }) {
   return `<!DOCTYPE html>
 <html>
 <body style="font-family:sans-serif;background:#0a0a0a;color:#e5e5e5;padding:40px 20px;max-width:560px;margin:0 auto;">
@@ -139,8 +162,9 @@ function confirmationEmailHtml(data: { name: string; businessName: string }) {
     </div>
     <h1 style="color:#fff;font-size:22px;margin:0 0 12px 0;">We received your request, ${esc(data.name)}.</h1>
     <p style="color:#888;font-size:15px;line-height:1.6;margin:0 0 20px 0;">
-      We&apos;re reviewing the lead flow for <strong style="color:#ccc;">${esc(data.businessName)}</strong>
-      and will send you a personalised audit report within 24 hours.
+      We&apos;re reviewing the request for <strong style="color:#ccc;">${esc(data.businessName)}</strong>.
+      Your preferred time is <strong style="color:#ccc;">${esc(data.preferredDate)} at ${esc(data.preferredTime)}</strong>.
+      We&apos;ll confirm the audit within one business day.
     </p>
     <p style="color:#888;font-size:15px;line-height:1.6;margin:0 0 28px 0;">
       In the meantime, reply to this email if you have any questions.
@@ -164,6 +188,8 @@ function internalNotificationHtml(data: {
   website?: string
   monthlyEnquiries?: string
   responseProcess?: string
+  preferredDate: string
+  preferredTime: string
 }) {
   const rows: [string, string][] = [
     ['Name', data.name],
@@ -173,6 +199,8 @@ function internalNotificationHtml(data: {
     ['Industry', data.industry || '—'],
     ['Website', data.website || '—'],
     ['Monthly enquiries', data.monthlyEnquiries || '—'],
+    ['Preferred date', data.preferredDate],
+    ['Preferred time', data.preferredTime],
     ['Current process', data.responseProcess || '—'],
   ]
   const tableRows = rows

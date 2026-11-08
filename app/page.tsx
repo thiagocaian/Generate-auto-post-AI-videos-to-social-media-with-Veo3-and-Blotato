@@ -189,9 +189,15 @@ const FAQ = [
 
 // ─── Audit form ───────────────────────────────────────────────────────────────
 const BUSINESS_TYPES = ["Trades & construction", "Clinic / allied health", "Real estate / property", "Hospitality / tourism / short-stay", "Retail / online store", "Professional services", "Other"];
+const AUDIT_TIMES = ["9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM"];
+
+function brisbaneDay(offsetDays = 0): string {
+  const shifted = new Date(Date.now() + (10 * 60 + offsetDays * 24 * 60) * 60 * 1000);
+  return shifted.toISOString().slice(0, 10);
+}
 
 function AuditForm() {
-  const [form, setForm] = useState({ name: "", businessName: "", email: "", phone: "", industry: "", responseProcess: "" });
+  const [form, setForm] = useState({ name: "", businessName: "", email: "", phone: "", industry: "", responseProcess: "", preferredDate: "", preferredTime: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
@@ -199,7 +205,7 @@ function AuditForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.businessName || !form.email) return;
+    if (!form.name || !form.businessName || !form.email || !form.preferredDate || !form.preferredTime) return;
     setStatus("loading");
     try {
       const res = await fetch("/api/lead-audit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
@@ -224,8 +230,8 @@ function AuditForm() {
     return (
       <div className="py-14 text-center">
         <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600"><Check size={26} /></div>
-        <h3 className="mb-2 text-2xl font-semibold text-slate-900">Request received</h3>
-        <p className="mx-auto max-w-sm text-sm text-slate-500">We&apos;ll look at your details and get back to you within one business day to book the audit.</p>
+        <h3 className="mb-2 text-2xl font-semibold text-slate-900">Audit requested</h3>
+        <p className="mx-auto max-w-sm text-sm text-slate-500">We have your preferred time, {form.preferredDate} at {form.preferredTime}. We&apos;ll confirm it within one business day.</p>
       </div>
     );
   }
@@ -244,6 +250,17 @@ function AuditForm() {
             {BUSINESS_TYPES.map((b) => <option key={b} value={b}>{b}</option>)}
           </select>
         </div>
+        <div>
+          <label className={label}>Preferred date *</label>
+          <input type="date" className={input} value={form.preferredDate} onChange={set("preferredDate")} required min={brisbaneDay(0)} max={brisbaneDay(14)} />
+        </div>
+        <div>
+          <label className={label}>Preferred time *</label>
+          <select className={input + " appearance-none"} value={form.preferredTime} onChange={set("preferredTime")} required>
+            <option value="">Select a time</option>
+            {AUDIT_TIMES.map((time) => <option key={time} value={time}>{time}</option>)}
+          </select>
+        </div>
       </div>
       <div>
         <label className={label}>Which task takes your team the most time?</label>
@@ -253,7 +270,7 @@ function AuditForm() {
       <button type="submit" disabled={status === "loading"} className="flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[15px] font-semibold text-white shadow-[0_10px_30px_-8px_rgba(91,92,246,0.7)] transition disabled:opacity-60" style={{ background: GRADIENT }}>
         {status === "loading" ? "Sending..." : <>Book my free audit <ArrowRight size={17} /></>}
       </button>
-      <p className="text-center text-xs text-slate-400">No obligation. We reply within one business day.</p>
+      <p className="text-center text-xs text-slate-400">Pick a time in the next 14 days. We confirm within one business day.</p>
     </form>
   );
 }
