@@ -108,6 +108,18 @@ const PROPERTY_TYPES = [
   "Other",
 ];
 
+const ASSESSMENT_TIMES = [
+  "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM",
+  "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM",
+  "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM",
+  "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM",
+];
+
+function brisbaneDay(offsetDays = 0): string {
+  const shifted = new Date(Date.now() + (10 * 60 + offsetDays * 24 * 60) * 60 * 1000);
+  return shifted.toISOString().slice(0, 10);
+}
+
 // ─── Quote Form ────────────────────────────────────────────────────────────────
 function QuoteForm() {
   const [form, setForm] = useState({
@@ -117,6 +129,8 @@ function QuoteForm() {
     phone: "",
     industry: "",
     responseProcess: "",
+    preferredDate: "",
+    preferredTime: "",
   });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -126,7 +140,7 @@ function QuoteForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.businessName || !form.email) return;
+    if (!form.name || !form.businessName || !form.email || !form.preferredDate || !form.preferredTime) return;
     setStatus("loading");
     try {
       const res = await fetch("/api/lead-audit", {
@@ -162,9 +176,9 @@ function QuoteForm() {
         <div className="w-14 h-14 rounded-full bg-[#886cff]/10 border border-[#886cff]/30 flex items-center justify-center mx-auto mb-6">
           <Check size={24} className="text-[#886cff]" />
         </div>
-        <h3 className="text-2xl font-bold text-white mb-3">Request received</h3>
+        <h3 className="text-2xl font-bold text-white mb-3">Assessment requested</h3>
         <p className="text-neutral-400 mb-2 max-w-sm mx-auto text-sm">
-          We&apos;ll review your details and get back to you with a quote within 24 hours.
+          We received your preferred time, {form.preferredDate} at {form.preferredTime}. We&apos;ll confirm the visit within 24 hours.
         </p>
       </motion.div>
     );
@@ -196,6 +210,17 @@ function QuoteForm() {
             {PROPERTY_TYPES.map((i) => <option key={i} value={i}>{i}</option>)}
           </select>
         </div>
+        <div>
+          <label className={labelClass}>Preferred date *</label>
+          <input type="date" value={form.preferredDate} onChange={set("preferredDate")} required min={brisbaneDay(0)} max={brisbaneDay(14)} className={inputClass} style={{ colorScheme: "dark" }} />
+        </div>
+        <div>
+          <label className={labelClass}>Preferred time *</label>
+          <select value={form.preferredTime} onChange={set("preferredTime")} required className={inputClass + " appearance-none"}>
+            <option value="">Select a time</option>
+            {ASSESSMENT_TIMES.map((time) => <option key={time} value={time}>{time}</option>)}
+          </select>
+        </div>
       </div>
       <div>
         <label className={labelClass}>Tell us about your property and security needs</label>
@@ -218,9 +243,9 @@ function QuoteForm() {
         whileTap={{ scale: 0.98 }}
         onClick={() => track("lead_audit_started")}
       >
-        {status === "loading" ? "Sending..." : "Get My Free Quote"} <ArrowRight size={16} />
+        {status === "loading" ? "Sending..." : "Book my free assessment"} <ArrowRight size={16} />
       </motion.button>
-      <p className="text-center text-xs text-neutral-600">No obligation. We&apos;ll respond within 24 hours.</p>
+      <p className="text-center text-xs text-neutral-600">Pick a time in the next 14 days. We&apos;ll confirm within 24 hours.</p>
     </form>
   );
 }
