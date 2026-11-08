@@ -96,7 +96,7 @@ export function SiteFooter() {
         </div>
         <div>
           <p className={col}>Account</p>
-          {[["Client login", "/login"], ["Admin", "/admin/clients"], ["Privacy", "/privacy"], ["Terms", "/terms"]].map(([l, h]) => <a key={h} href={h} className={link}>{l}</a>)}
+          {[["Client login", "/login"], ["Audits", "/admin/audits"], ["Privacy", "/privacy"], ["Terms", "/terms"]].map(([l, h]) => <a key={h} href={h} className={link}>{l}</a>)}
         </div>
       </div>
       <div className="border-t border-white/10">

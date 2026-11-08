@@ -70,7 +70,10 @@ export default function AdminPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <a href="/admin/clients" className="text-xs px-3 py-1.5 rounded font-bold" style={{ background: '#886cff', color: '#FFF' }}>
+          <a href="/admin/audits" className="text-xs px-3 py-1.5 rounded font-bold" style={{ background: '#886cff', color: '#FFF' }}>
+            Audits
+          </a>
+          <a href="/admin/clients" className="text-xs px-3 py-1.5 rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', color: '#CCC' }}>
             Clients
           </a>
           <a href="/dashboard" className="text-xs px-3 py-1.5 rounded" style={{ border: '1px solid rgba(255,255,255,0.15)', color: '#999' }}>

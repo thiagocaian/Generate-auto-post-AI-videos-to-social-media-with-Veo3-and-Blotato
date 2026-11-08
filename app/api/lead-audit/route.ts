@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { z } from 'zod'
+import { COMPANY_ADMIN_EMAILS } from '@/lib/company-admin'
 
 const TIME_SLOTS = [
   '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM',
@@ -114,7 +115,7 @@ export async function POST(req: NextRequest) {
   if (resendKey && resendKey !== 're_CHANGE_ME') {
     const resend = new Resend(resendKey)
     const fromAddress = process.env.RESEND_FROM_ADDRESS || 'CYTRON <hello@cytronai.com>'
-    const notifyAddress = process.env.CYTRON_NOTIFY_EMAIL || 'labofantasma@gmail.com'
+    const notifyAddress = process.env.CYTRON_NOTIFY_EMAIL || COMPANY_ADMIN_EMAILS[0]
 
     const results = await Promise.allSettled([
       resend.emails.send({
