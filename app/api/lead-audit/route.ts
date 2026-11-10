@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { z } from 'zod'
 import { COMPANY_ADMIN_EMAILS } from '@/lib/company-admin'
+import { PUBLIC_RATE_LIMIT, PUBLIC_RATE_WINDOW_MS, clientIp, createRateLimiter } from '@/lib/rate-limit'
 
 const TIME_SLOTS = [
   '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM',
@@ -35,23 +36,9 @@ const LeadAuditSchema = z.object({
   }
 })
 
-// ─── Simple in-memory rate limiter (per IP, max 3 requests per hour) ──────────
+// In-memory limiter (per IP, max 3 requests per hour).
 // Note: resets on cold start. Provides basic abuse prevention, not a hard guarantee.
-const rateMap = new Map<string, { count: number; resetAt: number }>()
-const RATE_LIMIT = 3
-const RATE_WINDOW_MS = 60 * 60 * 1000 // 1 hour
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const entry = rateMap.get(ip)
-  if (!entry || now > entry.resetAt) {
-    rateMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS })
-    return true
-  }
-  if (entry.count >= RATE_LIMIT) return false
-  entry.count++
-  return true
-}
+const checkRateLimit = createRateLimiter(PUBLIC_RATE_LIMIT, PUBLIC_RATE_WINDOW_MS)
 
 // ─── HTML escaping (prevent HTML injection in emails) ─────────────────────────
 function esc(str: string | undefined | null): string {
@@ -66,7 +53,7 @@ function esc(str: string | undefined | null): string {
 
 export async function POST(req: NextRequest) {
   // Rate limiting
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  const ip = clientIp(req.headers.get('x-forwarded-for'))
   if (!checkRateLimit(ip)) {
     return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
   }

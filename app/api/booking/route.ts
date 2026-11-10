@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { PUBLIC_RATE_LIMIT, PUBLIC_RATE_WINDOW_MS, clientIp, createRateLimiter } from '@/lib/rate-limit'
+import { parseBooking } from '@/lib/validation/booking'
+
+// In-memory limiter. Resets on cold start — basic abuse prevention, not a hard guarantee.
+const checkRateLimit = createRateLimiter(PUBLIC_RATE_LIMIT, PUBLIC_RATE_WINDOW_MS)
 
 function getAdmin() {
   return createClient(
@@ -10,24 +15,27 @@ function getAdmin() {
 
 // POST — create a demo request (public, no auth required)
 export async function POST(req: NextRequest) {
-  const admin = getAdmin()
-  const body = await req.json()
-
-  const { name, email, phone, business_name, business_type, preferred_date, preferred_time, message } = body
-
-  if (!name || !email) {
-    return NextResponse.json({ error: 'Name and email are required' }, { status: 400 })
+  const ip = clientIp(req.headers.get('x-forwarded-for'))
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
   }
 
+  const raw = await req.json().catch(() => null)
+  const parsed = parseBooking(raw)
+  if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 })
+
+  const admin = getAdmin()
+  const booking = parsed.data
+
   const { data, error } = await admin.from('demo_requests').insert({
-    name,
-    email,
-    phone: phone || null,
-    business_name: business_name || null,
-    business_type: business_type || null,
-    preferred_date: preferred_date || null,
-    preferred_time: preferred_time || null,
-    message: message || null,
+    name: booking.name,
+    email: booking.email,
+    phone: booking.phone,
+    business_name: booking.business_name,
+    business_type: booking.business_type,
+    preferred_date: booking.preferred_date,
+    preferred_time: booking.preferred_time,
+    message: booking.message,
     status: 'pending',
   }).select().single()
 
@@ -41,7 +49,7 @@ export async function POST(req: NextRequest) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...data, type: 'demo_request' }),
       })
-    } catch (e) {
+    } catch {
       // Don't fail the request if webhook fails
     }
   }
