@@ -1,90 +1,192 @@
 "use client";
 
-import React from "react";
-import { Outfit } from "next/font/google";
+import React, { useEffect, useState } from "react";
 import { track } from "@vercel/analytics";
-import { ChevronRight } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ChevronRight, Menu, X } from "lucide-react";
 import { INDUSTRY_LINKS } from "@/lib/industries";
-
-// Shared look of the public marketing site (home + industry pages).
-export const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600", "700"], display: "swap" });
 
 export const ACCENT = "#5b5cf6";
 export const LILAC = "#8b8cff";
-export const GRADIENT = "linear-gradient(135deg, #5b5cf6 0%, #6667f8 60%, #7778ff 100%)";
+export const GRADIENT = "#5b5cf6"; // solid accent — kept so existing style={{ background: GRADIENT }} stays valid
 
-// ─── Logo ─────────────────────────────────────────────────────────────────────
-export function CytronLogo({ size = 30 }: { size?: number }) {
+export const CARD = "rounded-xl border border-[#e5e7eb] bg-white shadow-sm";
+export const BTN_PRIMARY =
+  "inline-flex items-center justify-center gap-2 rounded-lg bg-[#5b5cf6] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#4f46e5]";
+export const BTN_SECONDARY =
+  "inline-flex items-center justify-center gap-2 rounded-lg border border-[#e5e7eb] bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50";
+
+export function CytronLogo({ size = 28 }: { size?: number }) {
   return (
-    <div className="flex items-center justify-center rounded-lg shadow-[0_0_18px_rgba(91,92,246,0.45)]" style={{ width: size, height: size, background: GRADIENT }}>
+    <div className="flex items-center justify-center rounded-md bg-[#5b5cf6]" style={{ width: size, height: size }}>
       <span className="font-bold text-white" style={{ fontSize: size * 0.48 }}>C</span>
     </div>
   );
 }
 
 export const cta = (label: string, href = "#audit", event = "lead_audit_started") => (
-  <a
-    href={href}
-    onClick={() => track(event)}
-    className="group inline-flex items-center gap-2 rounded-2xl px-6 py-3.5 text-[15px] font-semibold text-white shadow-[0_10px_30px_-8px_rgba(91,92,246,0.7),inset_0_1px_0_rgba(255,255,255,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_40px_-10px_rgba(91,92,246,0.85),inset_0_1px_0_rgba(255,255,255,0.25)]"
-    style={{ background: GRADIENT }}
-  >
+  <a href={href} onClick={() => track(event)} className={BTN_PRIMARY}>
     {label}
-    <ChevronRight size={18} className="transition-transform group-hover:translate-x-0.5" />
+    <ChevronRight size={16} />
   </a>
 );
 
-// ─── Section helpers ──────────────────────────────────────────────────────────
 export function Eyebrow({ children, dark = false }: { children: React.ReactNode; dark?: boolean }) {
   return (
-    <p className={`mb-4 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${dark ? "border-white/15 bg-white/5" : "border-[#5b5cf6]/15 bg-[#5b5cf6]/[0.06]"}`} style={{ color: dark ? LILAC : ACCENT }}>
-      <span className="h-1.5 w-1.5 rounded-full shadow-[0_0_8px_currentColor]" style={{ background: "currentColor" }} />
+    <p className={`mb-3 text-xs font-semibold uppercase tracking-[0.14em] ${dark ? "text-slate-300" : "text-slate-600"}`}>
       {children}
     </p>
   );
 }
+
 export function Heading({ children }: { children: React.ReactNode }) {
-  return <h2 className="text-3xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-[42px]">{children}</h2>;
-}
-export function Accent({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="relative whitespace-nowrap">
-      <span style={{ color: ACCENT }}>{children}</span>
-      <span className="absolute inset-x-0 -bottom-1 h-[3px] rounded-full shadow-[0_0_10px_rgba(91,92,246,0.55)]" style={{ background: ACCENT }} />
-    </span>
-  );
+  return <h2 className="max-w-3xl text-[28px] font-semibold leading-snug tracking-tight text-slate-900 sm:text-[36px]">{children}</h2>;
 }
 
-// ─── Nav & footer ─────────────────────────────────────────────────────────────
-// On the home page the links are in-page anchors; elsewhere they point back to the home sections.
+export function Accent({ children }: { children: React.ReactNode }) {
+  return <span className="text-[#5b5cf6]">{children}</span>;
+}
+
 export function SiteNav({ onHome = false }: { onHome?: boolean }) {
   const base = onHome ? "" : "/";
   const links = [["What we automate", "#services"], ["Agents", "#agents"], ["Industries", "#industries"], ["How it works", "#how"], ["FAQ", "#faq"]];
+  const [open, setOpen] = useState(false);
+  const [afterHero, setAfterHero] = useState(false);
+  const reduced = useReducedMotion() === true;
+  const ease = { duration: reduced ? 0 : 0.2, ease: "easeOut" as const };
+
+  useEffect(() => {
+    const hero = document.getElementById("hero");
+    if (!hero) return;
+    const io = new IntersectionObserver(([e]) => setAfterHero(!e.isIntersecting), { threshold: 0.2 });
+    io.observe(hero);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-3">
-      <div className="mx-auto mt-3 flex max-w-6xl items-center justify-between rounded-2xl border border-white/80 bg-white/70 px-4 py-2.5 shadow-[0_8px_30px_-12px_rgba(30,50,100,0.2)] backdrop-blur-xl sm:px-5">
-        <a href={onHome ? "#" : "/"} className="flex items-center gap-2.5"><CytronLogo /><span className="text-[15px] font-bold tracking-wide">CYTRON</span></a>
-        <nav className="hidden items-center gap-1 text-sm text-slate-600 md:flex">
-          {links.map(([l, h]) => (
-            <a key={h} href={base + h} className="rounded-full px-3 py-1.5 transition hover:bg-slate-100 hover:text-slate-900">{l}</a>
-          ))}
-        </nav>
-        <a href={base + "#audit"} onClick={() => track("lead_audit_started")} className="rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-[0_6px_20px_-6px_rgba(91,92,246,0.7)] transition hover:-translate-y-px" style={{ background: GRADIENT }}>Free audit</a>
-      </div>
-    </header>
+    <>
+      <header className="sticky top-0 z-50 border-b border-[#e5e7eb] bg-white">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
+          <a href={onHome ? "#" : "/"} className="flex items-center gap-2.5">
+            <CytronLogo />
+            <span className="text-[15px] font-semibold tracking-wide text-slate-900">CYTRON</span>
+          </a>
+          <nav className="hidden items-center gap-1 text-sm text-slate-600 md:flex" aria-label="Primary">
+            {links.map(([l, h]) => (
+              <a key={h} href={base + h} className="rounded-md px-3 py-1.5 transition-colors hover:bg-slate-50 hover:text-slate-900">
+                {l}
+              </a>
+            ))}
+          </nav>
+          <div className="flex items-center gap-2">
+            <a href={base + "#audit"} onClick={() => track("lead_audit_started")} className={`hidden sm:inline-flex ${BTN_PRIMARY} !px-4 !py-2`}>
+              Free audit
+            </a>
+            <button
+              type="button"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-[#e5e7eb] bg-white text-slate-800 md:hidden"
+              aria-expanded={open}
+              aria-controls="site-menu"
+              aria-label={open ? "Close menu" : "Open menu"}
+              onClick={() => setOpen((v) => !v)}
+            >
+              {open ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            id="site-menu"
+            className="fixed inset-0 z-40 md:hidden"
+            initial={reduced ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={reduced ? undefined : { opacity: 0 }}
+            transition={ease}
+          >
+            <button type="button" className="absolute inset-0 bg-slate-900/30" aria-label="Close menu" onClick={() => setOpen(false)} />
+            <motion.nav
+              aria-label="Mobile"
+              className="absolute inset-x-0 top-16 border-b border-[#e5e7eb] bg-white p-4 shadow-sm"
+              initial={reduced ? false : { opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduced ? undefined : { opacity: 0, y: -8 }}
+              transition={ease}
+            >
+              {links.map(([l, h]) => (
+                <a
+                  key={h}
+                  href={base + h}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-between px-2 py-3 text-[15px] font-medium text-slate-800 hover:bg-slate-50"
+                >
+                  {l}
+                  <ChevronRight size={16} className="text-slate-400" />
+                </a>
+              ))}
+              <a
+                href={base + "#audit"}
+                onClick={() => { track("lead_audit_started"); setOpen(false); }}
+                className={`${BTN_PRIMARY} mt-2 w-full`}
+              >
+                Book a free audit
+              </a>
+            </motion.nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {afterHero && (
+          <motion.div
+            className="fixed inset-x-0 bottom-0 z-40 border-t border-[#e5e7eb] bg-white p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden"
+            initial={reduced ? false : { y: 64, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={reduced ? undefined : { y: 64, opacity: 0 }}
+            transition={ease}
+          >
+            <a
+              href={base + "#audit"}
+              onClick={() => track("lead_audit_started")}
+              className={`${BTN_PRIMARY} w-full py-3`}
+            >
+              Book a free audit
+              <ChevronRight size={16} />
+            </a>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
 export function SiteFooter() {
-  const col = "mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-white/40";
-  const link = "block py-1 text-sm text-white/60 transition hover:text-white";
+  const col = "mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400";
+  const link = "block py-1 text-sm text-slate-300 transition-colors hover:text-white";
   return (
-    <footer className="bg-[#050507] text-white">
+    <footer className="bg-slate-900 pb-24 text-white md:pb-0">
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2.5"><CytronLogo size={28} /><span className="font-semibold">CYTRON</span></div>
-          <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/50">AI process automation for small businesses. Built and looked after by agents running on our own servers. Gold Coast, Australia.</p>
-          <a href="/#audit" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold" style={{ color: LILAC }}>Book a free audit <ChevronRight size={16} /></a>
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-300">AI process automation for small businesses. Built and looked after by agents running on our own servers. Gold Coast, Australia.</p>
+          <a href="/#audit" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:underline">Book a free audit <ChevronRight size={16} /></a>
         </div>
         <div>
           <p className={col}>Industries</p>
@@ -96,11 +198,11 @@ export function SiteFooter() {
         </div>
         <div>
           <p className={col}>Account</p>
-          {[["Client login", "/login"], ["Audits", "/admin/audits"], ["Privacy", "/privacy"], ["Terms", "/terms"]].map(([l, h]) => <a key={h} href={h} className={link}>{l}</a>)}
+          {[["Client login", "/login"], ["Privacy", "/privacy"], ["Terms", "/terms"]].map(([l, h]) => <a key={h} href={h} className={link}>{l}</a>)}
         </div>
       </div>
       <div className="border-t border-white/10">
-        <p className="mx-auto max-w-6xl px-5 py-6 text-xs text-white/35">© {new Date().getFullYear()} Cytron · Gold Coast, Queensland, Australia</p>
+        <p className="mx-auto max-w-6xl px-5 py-6 text-xs text-slate-400">© {new Date().getFullYear()} Cytron · Gold Coast, Queensland, Australia</p>
       </div>
     </footer>
   );

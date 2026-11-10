@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { INDUSTRIES } from "@/lib/industries";
 
-const BASE = "https://cytron.com.au";
+const BASE = "https://cytronai.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
