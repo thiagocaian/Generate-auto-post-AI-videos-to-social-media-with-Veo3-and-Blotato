@@ -25,8 +25,8 @@ const TransitionCtx = createContext<Ctx>({ phase: "idle", origin: "50% 50vh", na
 
 export const useSiteNavigate = () => useContext(TransitionCtx).navigate;
 
-const EXIT_MS = 300;
-const ENTER_MS = 420;
+const EXIT_MS = 320;
+const ENTER_MS = 480;
 
 export function TransitionProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -100,26 +100,29 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
   );
 }
 
-const PERSPECTIVE = 1600;
+const PERSPECTIVE = 1400;
+const SHADOW_ON = "0 24px 70px -20px rgba(15, 23, 42, 0.28)";
+const SHADOW_OFF = "0 0px 0px 0px rgba(15, 23, 42, 0)";
 
 const variants3d: Variants = {
-  // incoming page: turned slightly away and a touch deeper, then settles flat
-  enter: { opacity: 0, scale: 0.965, rotateY: -7, rotateX: 2, y: 18, transformPerspective: PERSPECTIVE },
+  // incoming page: turned away and slightly deeper, then settles flat
+  enter: { opacity: 0, scale: 0.94, rotateY: -12, rotateX: 3, x: 36, y: 16, transformPerspective: PERSPECTIVE, boxShadow: SHADOW_ON },
   center: {
-    opacity: 1, scale: 1, rotateY: 0, rotateX: 0, y: 0, transformPerspective: PERSPECTIVE,
+    opacity: 1, scale: 1, rotateY: 0, rotateX: 0, x: 0, y: 0, transformPerspective: PERSPECTIVE, boxShadow: SHADOW_OFF,
     transition: { duration: ENTER_MS / 1000, ease: [0.22, 1, 0.36, 1] },
   },
-  // outgoing page: recedes in depth with a slight turn and fades
+  // outgoing page: recedes into the grey stage with a turn, then fades
   exit: {
-    opacity: 0, scale: 0.92, rotateY: 7, rotateX: 3, y: -10, transformPerspective: PERSPECTIVE,
-    transition: { duration: EXIT_MS / 1000, ease: [0.4, 0, 0.9, 0.6] },
+    opacity: 0, scale: 0.88, rotateY: 10, rotateX: 4, x: -24, y: -8, transformPerspective: PERSPECTIVE, boxShadow: SHADOW_ON,
+    transition: { duration: EXIT_MS / 1000, ease: [0.4, 0, 0.9, 0.6], opacity: { duration: EXIT_MS / 1000, ease: [0.6, 0, 1, 1] } },
   },
 };
 
+// Reduced motion: no depth or rotation, just a short fade with a small slide.
 const variantsFade: Variants = {
-  enter: { opacity: 0 },
-  center: { opacity: 1, transition: { duration: 0.15 } },
-  exit: { opacity: 0, transition: { duration: 0.12 } },
+  enter: { opacity: 0, y: 10 },
+  center: { opacity: 1, y: 0, transition: { duration: 0.26, ease: "easeOut" } },
+  exit: { opacity: 0, y: -6, transition: { duration: 0.18, ease: "easeIn" } },
 };
 
 let firstMount = true;
@@ -152,8 +155,12 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
         if (def === "exit") onExitDone();
         // Settled: drop the leftover perspective() so the page has no transform
         // (keeps position:fixed/sticky children and compositing exactly as without the transition).
-        else if (def === "center" && ref.current) ref.current.style.transform = "none";
+        else if (def === "center" && ref.current) {
+          ref.current.style.transform = "none";
+          ref.current.style.boxShadow = "none";
+        }
       }}
+      className="relative flex flex-1 flex-col bg-white"
       style={{ transformOrigin: phase === "exit" ? origin : "50% 50vh", backfaceVisibility: "hidden" }}
     >
       {children}

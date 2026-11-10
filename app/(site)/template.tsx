@@ -4,7 +4,7 @@ import { SiteFooter } from "@/components/site";
 export default function Template({ children }: { children: React.ReactNode }) {
   return (
     <PageTransition>
-      <main id="main">{children}</main>
+      <main id="main" className="flex-1">{children}</main>
       <SiteFooter />
     </PageTransition>
   );

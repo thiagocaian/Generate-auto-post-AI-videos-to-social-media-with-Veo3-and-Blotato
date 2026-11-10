@@ -35,13 +35,13 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
       id="hero"
       className="relative overflow-hidden bg-gradient-to-b from-white to-[#f3f4f7]"
     >
-      <div className="relative mx-auto flex max-w-6xl flex-col lg:min-h-[calc(90vh-4rem)] lg:flex-row lg:items-center">
-        <div className="relative z-10 w-full px-5 pb-8 pt-14 lg:w-[46%] lg:py-16">
+      <div className="relative mx-auto flex max-w-6xl flex-col xl:min-h-[calc(90vh-4rem)] xl:flex-row xl:items-center">
+        <div className="relative z-10 w-full px-5 pb-8 pt-14 md:pb-4 xl:w-[47%] xl:shrink-0 xl:py-16">
           <motion.h1
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="text-[clamp(2.25rem,8vw,3rem)] font-semibold leading-[1.05] tracking-tight text-slate-900 lg:text-[clamp(3.5rem,5.2vw,4.75rem)]"
+            className="text-[clamp(2.25rem,8vw,3rem)] font-semibold leading-[1.05] tracking-tight text-slate-900 lg:text-[clamp(3.5rem,5.2vw,4.75rem)] xl:text-[clamp(3.5rem,4.4vw,4.25rem)]"
           >
             Automate the busywork.
             <br />
@@ -100,7 +100,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
         </div>
 
         <motion.div
-          className="relative h-[28rem] w-full sm:h-[32rem] lg:absolute lg:inset-y-0 lg:right-0 lg:h-full lg:w-[60%]"
+          className="relative w-full px-5 pb-12 pt-2 md:pb-16 xl:min-w-0 xl:flex-1 xl:py-16 xl:pl-6"
           style={reduced ? undefined : { y: lift }}
         >
           <p className="sr-only">{HERO_FLOW_SUMMARY}</p>
@@ -108,17 +108,14 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             <Image
               src={resolvedArt}
               alt=""
-              fill
+              width={1280}
+              height={880}
               priority
-              className="object-contain object-right"
+              className="h-auto w-full object-contain"
               sizes="(min-width: 1024px) 58vw, 100vw"
             />
           ) : (
-            <div className="absolute inset-0 flex items-center lg:items-center">
-              <div className="h-full w-full lg:-translate-x-1">
-                <HeroFlow reduced={reduced} />
-              </div>
-            </div>
+            <HeroFlow reduced={reduced} />
           )}
         </motion.div>
       </div>
