@@ -1,8 +1,10 @@
 import { createClient } from '@supabase/supabase-js'
 import { createBrowserClient } from '@supabase/ssr'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// Placeholders let `next build` import client pages when the public env is unset.
+// A real Vercel build inlines NEXT_PUBLIC_SUPABASE_* and these fallbacks are unused.
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'build-placeholder-anon-key'
 
 // Browser client with session persistence (for 'use client' pages)
 export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)

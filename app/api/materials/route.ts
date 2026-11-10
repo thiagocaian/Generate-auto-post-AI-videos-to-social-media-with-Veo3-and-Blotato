@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
+import { companyRecordFilters, scopedRowMissing } from '@/lib/security/company-scope'
+import { parseMaterialsPost } from '@/lib/validation/materials'
 
 // Vercel hobby plan: max 10s
 
@@ -121,7 +123,10 @@ export async function POST(req: NextRequest) {
 
   if (!member) return NextResponse.json({ error: 'No company' }, { status: 403 })
 
-  const body = await req.json()
+  const raw = await req.json().catch(() => null)
+  const parsed = parseMaterialsPost(raw)
+  if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 })
+  const body = parsed.data
 
   // === Save Search ===
   if (body.action === 'save_search') {
@@ -193,27 +198,32 @@ export async function POST(req: NextRequest) {
     if (body.categories !== undefined) updates.categories = body.categories
     if (body.active !== undefined) updates.active = body.active
 
+    const record = companyRecordFilters(member.company_id, body.id)
     const { data, error } = await admin
       .from('distributors')
       .update(updates)
-      .eq('id', body.id)
-      .eq('company_id', member.company_id)
+      .eq('id', record.id)
+      .eq('company_id', record.company_id)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (scopedRowMissing(data)) return NextResponse.json({ error: 'Not found' }, { status: 404 })
     return NextResponse.json({ distributor: data })
   }
 
   // === Feature 2: Delete Distributor ===
   if (body.action === 'delete_distributor') {
-    const { error } = await admin
+    const record = companyRecordFilters(member.company_id, body.id)
+    const { data, error } = await admin
       .from('distributors')
       .delete()
-      .eq('id', body.id)
-      .eq('company_id', member.company_id)
+      .eq('id', record.id)
+      .eq('company_id', record.company_id)
+      .select('id')
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (scopedRowMissing(data)) return NextResponse.json({ error: 'Not found' }, { status: 404 })
     return NextResponse.json({ ok: true })
   }
 
@@ -257,15 +267,17 @@ export async function POST(req: NextRequest) {
     if (body.status) updates.status = body.status
     if (body.notes !== undefined) updates.notes = body.notes
 
+    const record = companyRecordFilters(member.company_id, body.id)
     const { data, error } = await admin
       .from('purchase_orders')
       .update(updates)
-      .eq('id', body.id)
-      .eq('company_id', member.company_id)
+      .eq('id', record.id)
+      .eq('company_id', record.company_id)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (scopedRowMissing(data)) return NextResponse.json({ error: 'Not found' }, { status: 404 })
     return NextResponse.json({ purchase_order: data })
   }
 

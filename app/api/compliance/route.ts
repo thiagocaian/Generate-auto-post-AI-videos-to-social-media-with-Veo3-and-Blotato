@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { getRequestUserCompany, getAdminClient, unauthorized, forbidden } from '@/lib/auth'
+import { getRequestUserCompany, getAdminClient, unauthorized } from '@/lib/auth'
+import { companyRecordFilters, scopedRowMissing } from '@/lib/security/company-scope'
+import { parseUuid } from '@/lib/validation/ids'
 
 const CreateReportSchema = z.object({
   reportType: z.string().min(1).max(100),
@@ -74,21 +76,20 @@ export async function DELETE(req: NextRequest) {
   const auth = await getRequestUserCompany()
   if (!auth) return unauthorized()
 
-  const { id } = await req.json()
-  if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
+  const raw = await req.json().catch(() => null)
+  const id = parseUuid(raw && typeof raw === 'object' ? (raw as { id?: unknown }).id : undefined)
+  if (!id.ok) return NextResponse.json({ error: id.error }, { status: 400 })
 
   const admin = getAdminClient()
-
-  // Verify ownership before deleting
-  const { data: existing } = await admin
+  const record = companyRecordFilters(auth.companyId, id.id)
+  const { data, error } = await admin
     .from('compliance_reports')
-    .select('company_id')
-    .eq('id', id)
-    .single()
+    .delete()
+    .eq('id', record.id)
+    .eq('company_id', record.company_id)
+    .select('id')
 
-  if (!existing || existing.company_id !== auth.companyId) return forbidden()
-
-  const { error } = await admin.from('compliance_reports').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (scopedRowMissing(data)) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   return NextResponse.json({ success: true })
 }
