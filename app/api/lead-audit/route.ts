@@ -4,6 +4,13 @@ import { Resend } from 'resend'
 import { z } from 'zod'
 import { COMPANY_ADMIN_EMAILS } from '@/lib/company-admin'
 import { PUBLIC_RATE_LIMIT, PUBLIC_RATE_WINDOW_MS, clientIp, createRateLimiter } from '@/lib/rate-limit'
+import {
+  ALREADY_REQUESTED_CODE,
+  ALREADY_REQUESTED_MESSAGE,
+  findExistingAudit,
+  isUniqueViolation,
+  type AuditColumn,
+} from '@/lib/validation/lead-audit-limit'
 
 const TIME_SLOTS = [
   '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM',
@@ -18,9 +25,9 @@ function brisbaneDate(offsetDays = 0): string {
 }
 
 const LeadAuditSchema = z.object({
-  name: z.string().min(1).max(100),
-  businessName: z.string().min(1).max(200),
-  email: z.string().email(),
+  name: z.string().trim().min(1).max(100),
+  businessName: z.string().trim().min(1).max(200),
+  email: z.string().trim().email().max(200),
   phone: z.string().max(30).optional(),
   industry: z.string().max(100).optional(),
   website: z.string().url().optional().or(z.literal('')),
@@ -78,6 +85,23 @@ export async function POST(req: NextRequest) {
   }
 
   const admin = createClient(supabaseUrl, serviceKey)
+
+  // One free audit per email OR per business (normalised). Fail closed on storage errors.
+  const lookup = async (column: AuditColumn, value: string) => {
+    const { data: rows, error } = await admin.from('lead_audits').select('id').eq(column, value).limit(1)
+    if (error) throw new Error(error.message)
+    return (rows?.length ?? 0) > 0
+  }
+  try {
+    const existing = await findExistingAudit(lookup, data.email, data.businessName)
+    if (existing.blocked) {
+      return NextResponse.json({ error: ALREADY_REQUESTED_MESSAGE, code: ALREADY_REQUESTED_CODE }, { status: 409 })
+    }
+  } catch (err) {
+    console.error('[lead-audit] Duplicate check failed:', err instanceof Error ? err.message : err)
+    return NextResponse.json({ error: 'Could not save your request. Please try again.' }, { status: 500 })
+  }
+
   const { error: dbError } = await admin.from('lead_audits').insert({
     name: data.name,
     business_name: data.businessName,
@@ -92,6 +116,9 @@ export async function POST(req: NextRequest) {
     status: 'new',
   })
 
+  if (isUniqueViolation(dbError)) {
+    return NextResponse.json({ error: ALREADY_REQUESTED_MESSAGE, code: ALREADY_REQUESTED_CODE }, { status: 409 })
+  }
   if (dbError) {
     console.error('[lead-audit] DB insert failed:', dbError.message)
     return NextResponse.json({ error: 'Could not save your request. Please try again.' }, { status: 500 })
