@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Briefcase, Building2, Check, ChevronRight, ShieldCheck, ShoppingBag, Stethoscope, UtensilsCrossed, Wrench } from "lucide-react";
-import { Accent, ACCENT, cta, Eyebrow, Heading, SiteFooter, SiteNav } from "@/components/site";
+import { Accent, ACCENT, cta, Eyebrow, Heading } from "@/components/site";
 import { INDUSTRIES, type Industry } from "@/lib/industries";
 
 const ICONS = { wrench: Wrench, stethoscope: Stethoscope, building: Building2, utensils: UtensilsCrossed, bag: ShoppingBag, briefcase: Briefcase };
@@ -22,8 +22,7 @@ export default function IndustryPage({ industry }: { industry: Industry }) {
   const others = INDUSTRIES.filter((i) => i.slug !== industry.slug);
 
   return (
-    <div className="min-h-screen bg-white text-slate-900">
-      <SiteNav />
+    <div className="bg-white text-slate-900">
 
       {/* Hero */}
       <section className="bg-white pb-16 pt-16 sm:pb-24 sm:pt-20">
@@ -31,7 +30,7 @@ export default function IndustryPage({ industry }: { industry: Industry }) {
           <div>
             <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-1.5 text-[13px] text-slate-600">
               <a href="/" className="hover:text-slate-800">Home</a><ChevronRight size={14} />
-              <a href="/#industries" className="hover:text-slate-800">Industries</a><ChevronRight size={14} />
+              <a href="/use-cases" className="hover:text-slate-800">Use cases</a><ChevronRight size={14} />
               <span className="text-slate-800">{industry.name}</span>
             </nav>
             <Eyebrow>{industry.eyebrow} · Gold Coast</Eyebrow>
@@ -42,7 +41,7 @@ export default function IndustryPage({ industry }: { industry: Industry }) {
               {industry.intro}
             </motion.p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
-              {cta("Book a free automation audit", "/#audit")}
+              {cta("Book a free automation audit", "/contact")}
               <a href="#automations" className="inline-flex items-center gap-2 rounded-lg border border-[#e5e7eb] bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50">What we automate</a>
             </div>
           </div>
@@ -99,7 +98,7 @@ export default function IndustryPage({ industry }: { industry: Industry }) {
             <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-md border border-[#e5e7eb] text-slate-700"><ShieldCheck size={18} /></div>
             <h3 className="text-2xl font-semibold text-slate-900">Checked every day by our agents.</h3>
             <p className="mt-3 text-[15px] leading-relaxed text-slate-600">Every automation we build is watched by Cytron agents running on our own servers. Each area is checked on its own schedule, and you get a plain-English report. If an agent stays quiet, everything passed.</p>
-            <a href="/#agents" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[#5b5cf6]">How our agents work <ChevronRight size={16} /></a>
+            <a href="/services#agents" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[#5b5cf6]">How our agents work <ChevronRight size={16} /></a>
           </div>
         </div>
       </section>
@@ -162,7 +161,7 @@ export default function IndustryPage({ industry }: { industry: Industry }) {
         <div className="mx-auto max-w-3xl px-5 text-center">
           <h2 className="text-[28px] font-semibold leading-snug tracking-tight text-slate-900 sm:text-[36px]"><Accent>One</Accent> call and you&apos;ll know what to automate first.</h2>
           <p className="mx-auto mt-5 max-w-lg text-lg text-slate-600">A free audit for your business. No obligation, and a clear plan within one business day.</p>
-          <div className="mt-9 flex justify-center">{cta("Book my free audit", "/#audit")}</div>
+          <div className="mt-9 flex justify-center">{cta("Book my free audit", "/contact")}</div>
           <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-600">
             {["Works with your current tools", "Read-only pilot first", "Local to the Gold Coast"].map((t) => (
               <span key={t} className="flex items-center gap-2"><Check size={15} className="text-emerald-500" />{t}</span>
@@ -181,7 +180,6 @@ export default function IndustryPage({ industry }: { industry: Industry }) {
         </div>
       </section>
 
-      <SiteFooter />
     </div>
   );
 }

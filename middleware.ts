@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { PUBLIC_MARKETING_ROUTES } from '@/lib/site-routes'
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
@@ -35,10 +36,8 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname === '/reset-password' ||
     request.nextUrl.pathname === '/booking' ||
     request.nextUrl.pathname === '/onboarding' ||
-    request.nextUrl.pathname === '/terms' ||
-    request.nextUrl.pathname === '/privacy' ||
-    ['/trades', '/clinics', '/real-estate', '/hospitality', '/retail', '/professional-services', '/sitemap.xml', '/robots.txt'].includes(request.nextUrl.pathname) ||
-    request.nextUrl.pathname === '/'
+    PUBLIC_MARKETING_ROUTES.includes(request.nextUrl.pathname) ||
+    ['/sitemap.xml', '/robots.txt'].includes(request.nextUrl.pathname)
 
   // Skip auth check for public paths (API routes protect themselves)
   if (isPublicPath) {

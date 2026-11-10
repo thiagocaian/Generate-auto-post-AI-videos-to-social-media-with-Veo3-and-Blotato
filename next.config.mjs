@@ -5,6 +5,12 @@ const nextConfig = {
   redirects: async () => [
     { source: '/landing', destination: '/', permanent: true },
     { source: '/solutions/:path*', destination: '/', permanent: true },
+    // Short links into the multi-page site (temporary while the structure settles)
+    { source: '/audit', destination: '/contact', permanent: false },
+    { source: '/free-audit', destination: '/contact', permanent: false },
+    { source: '/industries', destination: '/use-cases', permanent: false },
+    { source: '/faq', destination: '/pricing#faq', permanent: false },
+    { source: '/how', destination: '/how-it-works', permanent: false },
   ],
   headers: async () => [
     // Immutable static assets (production only: in dev the chunk names don't change, so the browser would keep stale code)

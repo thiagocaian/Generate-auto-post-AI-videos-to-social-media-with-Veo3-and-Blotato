@@ -54,6 +54,9 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
 
   useEffect(() => {
     setDays(weekdayChips(10));
+    // Email typed in the home hero arrives as ?email=
+    const fromHero = new URLSearchParams(window.location.search).get("email");
+    if (fromHero) setForm((prev) => (prev.email ? prev : { ...prev, email: fromHero.slice(0, 200) }));
   }, []);
 
   const goTimes = (e: React.FormEvent) => {
