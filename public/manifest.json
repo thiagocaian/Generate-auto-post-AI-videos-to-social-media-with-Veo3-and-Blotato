@@ -1,13 +1,13 @@
 {
-  "name": "CYTRON — Intelligent Automation",
+  "name": "CYTRON — Business automation",
   "short_name": "CYTRON",
-  "description": "AI-powered job management for tradies",
-  "start_url": "/dashboard",
+  "description": "Business automation for Gold Coast small businesses. Enquiries, bookings, reminders, quotes and invoices.",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#050505",
-  "theme_color": "#886cff",
+  "background_color": "#f4f7fb",
+  "theme_color": "#5b5cf6",
   "orientation": "portrait-primary",
   "icons": [
-    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ]
 }
