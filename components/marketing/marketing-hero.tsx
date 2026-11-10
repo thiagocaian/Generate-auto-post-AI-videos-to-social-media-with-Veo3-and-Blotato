@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { Play } from "lucide-react";
@@ -18,23 +18,8 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
   const reduced = useReducedMotion() === true;
   const sectionRef = useRef<HTMLElement>(null);
   const [email, setEmail] = useState("");
-  const [resolvedArt, setResolvedArt] = useState<string | null>(artSrc ?? null);
-
-  useEffect(() => {
-    if (artSrc) {
-      setResolvedArt(artSrc);
-      return;
-    }
-    let cancelled = false;
-    fetch("/cytron-art/hero.png", { method: "HEAD" })
-      .then((r) => {
-        if (!cancelled && r.ok) setResolvedArt("/cytron-art/hero.png");
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [artSrc]);
+  // Optional static art; the coded automation flow renders when none is passed.
+  const resolvedArt = artSrc ?? null;
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
