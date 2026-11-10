@@ -6,16 +6,35 @@ import {
   Bell,
   CalendarCheck,
   Check,
+  Cpu,
   Database,
+  FileText,
   MessageSquare,
+  Package,
   PhoneMissed,
   Receipt,
+  Truck,
   UserRound,
   type LucideIcon,
 } from "lucide-react";
 
-type NodeId = "trigger" | "sms" | "booked" | "crm" | "reminder" | "invoice" | "paid" | "human";
+type NodeId =
+  | "hub"
+  | "missed"
+  | "reply"
+  | "booked"
+  | "reminder"
+  | "lead"
+  | "documents"
+  | "order"
+  | "shipping"
+  | "invoice"
+  | "paid"
+  | "human";
+
 type NodeState = "idle" | "running" | "done";
+type Side = "left" | "right" | "top" | "bottom";
+type NodeKind = "hub" | "task" | "human";
 
 type FlowNode = {
   id: NodeId;
@@ -24,116 +43,207 @@ type FlowNode = {
   title: string;
   sub: string;
   icon: LucideIcon;
+  kind?: NodeKind;
+  w?: number;
+  h?: number;
 };
 
 type FlowEdge = {
   id: string;
   from: NodeId;
   to: NodeId;
-  /** Leaves from the bottom of `from` and enters the top of `to`. */
-  vertical?: boolean;
+  fromSide: Side;
+  toSide: Side;
+  /** Shift the port along the side, -0.5 to 0.5, so several spokes can leave the hub cleanly. */
+  fromAlong?: number;
+  toAlong?: number;
   dashed?: boolean;
 };
 
-// Flat, grid-aligned canvas: 4 columns × 4 rows. Everything is on the same plane
-// (no rotate / translateZ), so the connector lines always meet the cards exactly.
+type LaneLabel = { id: string; label: string; x: number; y: number; w: number };
+
+// Flat, grid-aligned canvas. No rotate / translateZ, so connectors meet the cards exactly.
 const NODE_W = 148;
 const NODE_H = 64;
-const COL = 172; // column pitch
-const PAD = 12; // room for the port dots on the outer edges
+const HUB_W = 172;
+const HUB_H = 72;
+const COL = 172;
+const PAD = 12;
+
+const TOP_Y = 30;
+const HUB_X = (PAD * 2 + COL * 3 + NODE_W - HUB_W) / 2; // centered in the 688-wide canvas
+const HUB_Y = 156;
+const BOT_Y1 = 296;
+const BOT_Y2 = 380;
+const HUMAN_Y = 492;
+const LEFT_X = PAD;
+const COL1_X = PAD + COL;
+const COL2_X = PAD + COL * 2;
+const RIGHT_X = PAD + COL * 3;
+const MID_X = (PAD * 2 + COL * 3 + NODE_W - NODE_W) / 2; // 270
+const HUMAN_X = MID_X;
 
 const NODES: FlowNode[] = [
-  { id: "trigger", x: PAD, y: 150, title: "Missed call", sub: "Tue 6:42 pm", icon: PhoneMissed },
-  { id: "sms", x: PAD + COL, y: 150, title: "AI reply", sub: "Sent in 40s", icon: MessageSquare },
-  { id: "booked", x: PAD + COL * 2, y: 40, title: "Booked", sub: "Thu 9:00 am", icon: CalendarCheck },
-  { id: "crm", x: PAD + COL * 2, y: 260, title: "Lead saved", sub: "CRM", icon: Database },
-  { id: "reminder", x: PAD + COL * 3, y: 40, title: "Reminder", sub: "Day before", icon: Bell },
-  { id: "invoice", x: PAD + COL * 3, y: 260, title: "Invoice sent", sub: "Xero", icon: Receipt },
-  { id: "paid", x: PAD + COL * 3, y: 376, title: "Paid", sub: "Same day", icon: Check },
-  { id: "human", x: PAD + COL, y: 300, title: "Human review", sub: "When needed", icon: UserRound },
+  { id: "hub", x: HUB_X, y: HUB_Y, w: HUB_W, h: HUB_H, title: "Cytron agents", sub: "On our servers", icon: Cpu, kind: "hub" },
+  // Enquiries — /services "Missed calls & messages"
+  { id: "missed", x: LEFT_X, y: TOP_Y, title: "Missed call", sub: "After hours", icon: PhoneMissed },
+  { id: "reply", x: COL1_X, y: TOP_Y, title: "Instant reply", sub: "Under a minute", icon: MessageSquare },
+  // Bookings — /services "Bookings" + "Reminders"
+  { id: "booked", x: COL2_X, y: TOP_Y, title: "Booked", sub: "In the calendar", icon: CalendarCheck },
+  { id: "reminder", x: RIGHT_X, y: TOP_Y, title: "Reminder", sub: "Day before", icon: Bell },
+  // Office — /services "Lead capture" + /professional-services documents
+  { id: "lead", x: LEFT_X, y: BOT_Y1, title: "Lead saved", sub: "CRM", icon: Database },
+  { id: "documents", x: LEFT_X, y: BOT_Y2, title: "Documents in", sub: "Collected", icon: FileText },
+  // Fulfilment — /retail + /use-cases retailer case study
+  { id: "order", x: MID_X, y: BOT_Y1, title: "Order check", sub: "Shopify", icon: Package },
+  { id: "shipping", x: MID_X, y: BOT_Y2, title: "Shipping docs", sub: "Ready to pack", icon: Truck },
+  // Finance — /services "Invoices & payments"
+  { id: "invoice", x: RIGHT_X, y: BOT_Y1, title: "Invoice sent", sub: "Xero", icon: Receipt },
+  { id: "paid", x: RIGHT_X, y: BOT_Y2, title: "Paid", sub: "Pay-by-link", icon: Check },
+  // Human review — /services "Human review"
+  { id: "human", x: HUMAN_X, y: HUMAN_Y, title: "Human review", sub: "When needed", icon: UserRound, kind: "human" },
+];
+
+const LANES: LaneLabel[] = [
+  { id: "enquiries", label: "Enquiries", x: LEFT_X, y: 8, w: COL + NODE_W },
+  { id: "bookings", label: "Bookings", x: COL2_X, y: 8, w: COL + NODE_W },
+  { id: "office", label: "Office", x: LEFT_X, y: 276, w: NODE_W },
+  { id: "fulfilment", label: "Fulfilment", x: MID_X, y: 276, w: NODE_W },
+  { id: "finance", label: "Finance", x: RIGHT_X, y: 276, w: NODE_W },
+  { id: "exceptions", label: "Exceptions", x: HUMAN_X, y: 472, w: NODE_W },
 ];
 
 const EDGES: FlowEdge[] = [
-  { id: "e-trigger-sms", from: "trigger", to: "sms" },
-  { id: "e-sms-booked", from: "sms", to: "booked" },
-  { id: "e-sms-crm", from: "sms", to: "crm" },
-  { id: "e-sms-human", from: "sms", to: "human", vertical: true, dashed: true },
-  { id: "e-booked-reminder", from: "booked", to: "reminder" },
-  { id: "e-reminder-invoice", from: "reminder", to: "invoice", vertical: true },
-  { id: "e-crm-invoice", from: "crm", to: "invoice" },
-  { id: "e-invoice-paid", from: "invoice", to: "paid", vertical: true },
+  // Hub to each lane, then the two steps inside the lane
+  { id: "e-hub-missed", from: "hub", to: "missed", fromSide: "top", toSide: "bottom", fromAlong: -0.32 },
+  { id: "e-missed-reply", from: "missed", to: "reply", fromSide: "right", toSide: "left" },
+  { id: "e-hub-booked", from: "hub", to: "booked", fromSide: "top", toSide: "bottom", fromAlong: 0.32 },
+  { id: "e-booked-reminder", from: "booked", to: "reminder", fromSide: "right", toSide: "left" },
+  { id: "e-hub-lead", from: "hub", to: "lead", fromSide: "bottom", toSide: "top", fromAlong: -0.36 },
+  { id: "e-lead-documents", from: "lead", to: "documents", fromSide: "bottom", toSide: "top" },
+  { id: "e-hub-order", from: "hub", to: "order", fromSide: "bottom", toSide: "top" },
+  { id: "e-order-shipping", from: "order", to: "shipping", fromSide: "bottom", toSide: "top" },
+  { id: "e-hub-invoice", from: "hub", to: "invoice", fromSide: "bottom", toSide: "top", fromAlong: 0.36 },
+  { id: "e-invoice-paid", from: "invoice", to: "paid", fromSide: "bottom", toSide: "top" },
+  // Dashed exception path, routed around the fulfilment column
+  { id: "e-hub-human", from: "hub", to: "human", fromSide: "left", toSide: "left", fromAlong: 0.28, dashed: true },
 ];
 
 const MAIN_PULSE: { edge: string; fromMs: number; toMs: number }[] = [
-  { edge: "e-trigger-sms", fromMs: 500, toMs: 1500 },
-  { edge: "e-sms-booked", fromMs: 2100, toMs: 3000 },
-  { edge: "e-sms-crm", fromMs: 2100, toMs: 3000 },
-  { edge: "e-booked-reminder", fromMs: 3500, toMs: 4400 },
-  { edge: "e-reminder-invoice", fromMs: 4900, toMs: 5800 },
-  { edge: "e-crm-invoice", fromMs: 3500, toMs: 4900 },
-  { edge: "e-invoice-paid", fromMs: 6300, toMs: 7200 },
+  { edge: "e-hub-missed", fromMs: 900, toMs: 1600 },
+  { edge: "e-missed-reply", fromMs: 1700, toMs: 2300 },
+  { edge: "e-hub-booked", fromMs: 2500, toMs: 3200 },
+  { edge: "e-booked-reminder", fromMs: 3300, toMs: 3900 },
+  { edge: "e-hub-lead", fromMs: 4100, toMs: 4800 },
+  { edge: "e-lead-documents", fromMs: 4900, toMs: 5500 },
+  { edge: "e-hub-order", fromMs: 5700, toMs: 6400 },
+  { edge: "e-order-shipping", fromMs: 6500, toMs: 7100 },
+  { edge: "e-hub-invoice", fromMs: 7300, toMs: 8000 },
+  { edge: "e-invoice-paid", fromMs: 8100, toMs: 8700 },
+  { edge: "e-hub-human", fromMs: 8900, toMs: 9800 },
 ];
 
-const NODE_TIMES: Record<NodeId, { run: number; done: number }> = {
-  trigger: { run: 0, done: 500 },
-  sms: { run: 1500, done: 2100 },
-  booked: { run: 3000, done: 3500 },
-  crm: { run: 3000, done: 3500 },
-  reminder: { run: 4400, done: 4900 },
-  invoice: { run: 5800, done: 6300 },
-  paid: { run: 7200, done: 7700 },
-  human: { run: -1, done: -1 },
+const NODE_TIMES: Record<NodeId, { run: number; done: number; appear: number }> = {
+  hub: { appear: 0, run: 0, done: 700 },
+  missed: { appear: 900, run: 1600, done: 1700 },
+  reply: { appear: 1700, run: 2300, done: 2500 },
+  booked: { appear: 2500, run: 3200, done: 3300 },
+  reminder: { appear: 3300, run: 3900, done: 4100 },
+  lead: { appear: 4100, run: 4800, done: 4900 },
+  documents: { appear: 4900, run: 5500, done: 5700 },
+  order: { appear: 5700, run: 6400, done: 6500 },
+  shipping: { appear: 6500, run: 7100, done: 7300 },
+  invoice: { appear: 7300, run: 8000, done: 8100 },
+  paid: { appear: 8100, run: 8700, done: 8900 },
+  human: { appear: 8900, run: -1, done: -1 },
 };
 
-const LOOP_MS = 9500;
+const LOOP_MS = 12000;
 export const VIEW_W = PAD * 2 + COL * 3 + NODE_W; // 688
-export const VIEW_H = 376 + NODE_H + 16; // 456
+export const VIEW_H = HUMAN_Y + NODE_H + 16; // 572
 
 function nodeById(id: NodeId) {
   return NODES.find((n) => n.id === id)!;
 }
 
+function sizeOf(node: FlowNode) {
+  return { w: node.w ?? NODE_W, h: node.h ?? NODE_H };
+}
+
+function portPoint(node: FlowNode, side: Side, along = 0) {
+  const { w, h } = sizeOf(node);
+  const clamped = Math.max(-0.45, Math.min(0.45, along));
+  switch (side) {
+    case "left":
+      return { x: node.x, y: node.y + h / 2 + clamped * h };
+    case "right":
+      return { x: node.x + w, y: node.y + h / 2 + clamped * h };
+    case "top":
+      return { x: node.x + w / 2 + clamped * w, y: node.y };
+    case "bottom":
+      return { x: node.x + w / 2 + clamped * w, y: node.y + h };
+  }
+}
+
+function control(pt: { x: number; y: number }, side: Side, dist: number) {
+  switch (side) {
+    case "left":
+      return { x: pt.x - dist, y: pt.y };
+    case "right":
+      return { x: pt.x + dist, y: pt.y };
+    case "top":
+      return { x: pt.x, y: pt.y - dist };
+    case "bottom":
+      return { x: pt.x, y: pt.y + dist };
+  }
+}
+
 export function edgeEnds(edge: FlowEdge) {
   const from = nodeById(edge.from);
   const to = nodeById(edge.to);
-  if (edge.vertical) {
-    return {
-      start: { x: from.x + NODE_W / 2, y: from.y + NODE_H },
-      end: { x: to.x + NODE_W / 2, y: to.y },
-    };
-  }
   return {
-    start: { x: from.x + NODE_W, y: from.y + NODE_H / 2 },
-    end: { x: to.x, y: to.y + NODE_H / 2 },
+    start: portPoint(from, edge.fromSide, edge.fromAlong),
+    end: portPoint(to, edge.toSide, edge.toAlong),
   };
 }
 
 function edgePath(edge: FlowEdge) {
   const { start, end } = edgeEnds(edge);
-  let d: string;
-  if (edge.vertical) {
-    const dy = Math.max(18, (end.y - start.y) * 0.5);
-    d = `M ${start.x} ${start.y} C ${start.x} ${start.y + dy}, ${end.x} ${end.y - dy}, ${end.x} ${end.y}`;
-  } else if (start.y === end.y) {
-    d = `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
-  } else {
-    const dx = (end.x - start.x) * 0.5;
-    d = `M ${start.x} ${start.y} C ${start.x + dx} ${start.y}, ${end.x - dx} ${end.y}, ${end.x} ${end.y}`;
+  const span = Math.hypot(end.x - start.x, end.y - start.y);
+  const dist = Math.max(28, Math.min(90, span * 0.45));
+  // Exception path: leave the hub to the left and drop between Office and Fulfilment.
+  if (edge.id === "e-hub-human") {
+    const midX = 214;
+    const midY = 248;
+    const dropY = 470;
+    const d = `M ${start.x} ${start.y} L ${midX} ${start.y} L ${midX} ${dropY} C ${midX} ${dropY + 18}, ${end.x - 18} ${end.y}, ${end.x} ${end.y}`;
+    return { d, start, end };
   }
+  if (edge.fromSide === "right" && edge.toSide === "left" && start.y === end.y) {
+    return { d: `M ${start.x} ${start.y} L ${end.x} ${end.y}`, start, end };
+  }
+  if (edge.fromSide === "bottom" && edge.toSide === "top" && start.x === end.x) {
+    const dy = Math.max(18, (end.y - start.y) * 0.5);
+    const d = `M ${start.x} ${start.y} C ${start.x} ${start.y + dy}, ${end.x} ${end.y - dy}, ${end.x} ${end.y}`;
+    return { d, start, end };
+  }
+  const c1 = control(start, edge.fromSide, dist);
+  const c2 = control(end, edge.toSide, dist);
+  const d = `M ${start.x} ${start.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${end.x} ${end.y}`;
   return { d, start, end };
 }
 
-/** Which sides of each card have a connector, so port dots are drawn only where a line meets the card. */
-const PORTS: Record<NodeId, Set<"left" | "right" | "top" | "bottom">> = (() => {
-  const out = Object.fromEntries(NODES.map((n) => [n.id, new Set()])) as Record<NodeId, Set<"left" | "right" | "top" | "bottom">>;
+const PORTS: Record<NodeId, Partial<Record<Side, boolean>>> = (() => {
+  const out = Object.fromEntries(NODES.map((n) => [n.id, {}])) as Record<NodeId, Partial<Record<Side, boolean>>>;
   for (const e of EDGES) {
-    out[e.from].add(e.vertical ? "bottom" : "right");
-    out[e.to].add(e.vertical ? "top" : "left");
+    out[e.from][e.fromSide] = true;
+    out[e.to][e.toSide] = true;
   }
   return out;
 })();
 
 function stateAt(id: NodeId, t: number, reduced: boolean): NodeState {
+  if (id === "hub") return reduced || t >= NODE_TIMES.hub.done ? "done" : t >= 0 ? "running" : "idle";
   if (reduced) return id === "human" ? "idle" : "done";
   if (id === "human") return "idle";
   const times = NODE_TIMES[id];
@@ -142,12 +252,52 @@ function stateAt(id: NodeId, t: number, reduced: boolean): NodeState {
   return "idle";
 }
 
-const MOBILE_STEPS: { id: NodeId; title: string; sub: string; icon: FlowNode["icon"] }[] = [
-  { id: "trigger", title: "Missed call", sub: "Tue 6:42 pm", icon: PhoneMissed },
-  { id: "sms", title: "AI reply", sub: "Sent in 40s", icon: MessageSquare },
-  { id: "booked", title: "Booked", sub: "Thu 9:00 am", icon: CalendarCheck },
-  { id: "invoice", title: "Invoice sent", sub: "Xero", icon: Receipt },
-  { id: "paid", title: "Paid", sub: "Same day", icon: Check },
+function visibleAt(id: NodeId, t: number, reduced: boolean) {
+  if (reduced) return true;
+  return t >= NODE_TIMES[id].appear;
+}
+
+const MOBILE_GROUPS: { label: string; nodes: { id: NodeId; title: string; sub: string; icon: FlowNode["icon"] }[] }[] = [
+  { label: "Cytron agents", nodes: [{ id: "hub", title: "Cytron agents", sub: "On our servers", icon: Cpu }] },
+  {
+    label: "Enquiries",
+    nodes: [
+      { id: "missed", title: "Missed call", sub: "After hours", icon: PhoneMissed },
+      { id: "reply", title: "Instant reply", sub: "Under a minute", icon: MessageSquare },
+    ],
+  },
+  {
+    label: "Bookings",
+    nodes: [
+      { id: "booked", title: "Booked", sub: "In the calendar", icon: CalendarCheck },
+      { id: "reminder", title: "Reminder", sub: "Day before", icon: Bell },
+    ],
+  },
+  {
+    label: "Office",
+    nodes: [
+      { id: "lead", title: "Lead saved", sub: "CRM", icon: Database },
+      { id: "documents", title: "Documents in", sub: "Collected", icon: FileText },
+    ],
+  },
+  {
+    label: "Fulfilment",
+    nodes: [
+      { id: "order", title: "Order check", sub: "Shopify", icon: Package },
+      { id: "shipping", title: "Shipping docs", sub: "Ready to pack", icon: Truck },
+    ],
+  },
+  {
+    label: "Finance",
+    nodes: [
+      { id: "invoice", title: "Invoice sent", sub: "Xero", icon: Receipt },
+      { id: "paid", title: "Paid", sub: "Pay-by-link", icon: Check },
+    ],
+  },
+  {
+    label: "Exceptions",
+    nodes: [{ id: "human", title: "Human review", sub: "When needed", icon: UserRound }],
+  },
 ];
 
 function NodeCard({
@@ -155,40 +305,51 @@ function NodeCard({
   state,
   style,
 }: {
-  node: FlowNode | (typeof MOBILE_STEPS)[number];
+  node: FlowNode | { id: NodeId; title: string; sub: string; icon: FlowNode["icon"]; kind?: NodeKind };
   state: NodeState;
   style?: React.CSSProperties;
 }) {
   const Icon = node.icon;
+  const kind: NodeKind = "kind" in node && node.kind ? node.kind : node.id === "hub" ? "hub" : node.id === "human" ? "human" : "task";
+  const isHub = kind === "hub";
+  const isHuman = kind === "human";
   return (
     <div
       className={`flex items-center gap-2.5 rounded-xl border bg-white px-2.5 py-2.5 ${
-        "id" in node && node.id === "human"
+        isHuman
           ? "border-dashed border-slate-300"
-          : state === "running"
-            ? "border-[#5b5cf6]"
-            : "border-[#e5e7eb]"
+          : isHub
+            ? "border-[#c7c8f8]"
+            : state === "running"
+              ? "border-[#5b5cf6]"
+              : "border-[#e5e7eb]"
       }`}
       style={{
         width: NODE_W,
         height: NODE_H,
-        boxShadow: "0 1px 2px rgba(15,23,42,0.05), 0 8px 20px rgba(15,23,42,0.06)",
+        boxShadow: isHub
+          ? "0 1px 2px rgba(15,23,42,0.05), 0 10px 24px rgba(91,92,246,0.08)"
+          : "0 1px 2px rgba(15,23,42,0.05), 0 8px 20px rgba(15,23,42,0.06)",
         ...style,
       }}
     >
       <span
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${
-          state === "done"
-            ? "bg-emerald-50 text-emerald-700"
-            : state === "running"
-              ? "bg-[#5b5cf6] text-white"
-              : "bg-[#f7f8fa] text-slate-700"
+          isHub
+            ? "bg-[#5b5cf6] text-white"
+            : state === "done"
+              ? "bg-emerald-50 text-emerald-700"
+              : state === "running"
+                ? "bg-[#5b5cf6] text-white"
+                : "bg-[#f7f8fa] text-slate-700"
         }`}
       >
-        {state === "done" ? <Check size={16} strokeWidth={2.5} /> : <Icon size={16} />}
+        {state === "done" && !isHub ? <Check size={16} strokeWidth={2.5} /> : <Icon size={16} />}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-[12px] font-semibold tracking-tight text-slate-900">{node.title}</span>
+        <span className={`block truncate font-semibold tracking-tight text-slate-900 ${isHub ? "text-[13px]" : "text-[12px]"}`}>
+          {node.title}
+        </span>
         <span className="block truncate text-[11px] leading-tight tracking-tight text-slate-600">{node.sub}</span>
       </span>
     </div>
@@ -235,11 +396,14 @@ function DesktopFlow({ time, reduced }: { time: number; reduced: boolean }) {
         <rect width={VIEW_W} height={VIEW_H} fill="url(#hero-dot-grid)" opacity="0.7" />
         {EDGES.map((edge) => {
           const { d } = paths[edge.id];
+          const fromVisible = visibleAt(edge.from, time, reduced);
+          const toVisible = visibleAt(edge.to, time, reduced);
+          const show = fromVisible && (toVisible || (!reduced && time >= NODE_TIMES[edge.to].appear - 200));
           const live = pulses.some((p) => p.edge === edge.id && p.on);
           const consumed =
             reduced ||
-            MAIN_PULSE.filter((p) => p.edge === edge.id).some((p) => time >= p.toMs) ||
-            (edge.dashed && time >= NODE_TIMES.sms.done);
+            MAIN_PULSE.filter((p) => p.edge === edge.id).some((p) => time >= p.toMs);
+          if (!show) return null;
           return (
             <motion.path
               key={edge.id}
@@ -247,12 +411,13 @@ function DesktopFlow({ time, reduced }: { time: number; reduced: boolean }) {
               fill="none"
               stroke={live || consumed ? "#5b5cf6" : "#cbd5e1"}
               strokeLinecap="round"
+              strokeLinejoin="round"
               strokeWidth={live ? 1.75 : 1.4}
               strokeDasharray={edge.dashed ? "5 5" : undefined}
               strokeOpacity={edge.dashed ? 0.7 : 1}
               initial={reduced ? false : { pathLength: 0 }}
               animate={{ pathLength: 1 }}
-              transition={{ duration: reduced ? 0 : 0.9, ease: "easeOut" }}
+              transition={{ duration: reduced ? 0 : 0.7, ease: "easeOut" }}
             />
           );
         })}
@@ -263,19 +428,56 @@ function DesktopFlow({ time, reduced }: { time: number; reduced: boolean }) {
           ))}
       </svg>
 
+      {LANES.map((lane) => {
+        const related: NodeId[] =
+          lane.id === "enquiries"
+            ? ["missed"]
+            : lane.id === "bookings"
+              ? ["booked"]
+              : lane.id === "office"
+                ? ["lead"]
+                : lane.id === "fulfilment"
+                  ? ["order"]
+                  : lane.id === "finance"
+                    ? ["invoice"]
+                    : ["human"];
+        const show = reduced || related.some((id) => visibleAt(id, time, reduced));
+        if (!show) return null;
+        return (
+          <p
+            key={lane.id}
+            className="absolute text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500"
+            style={{ left: lane.x, top: lane.y, width: lane.w }}
+          >
+            {lane.label}
+          </p>
+        );
+      })}
+
       {NODES.map((node) => {
+        if (!visibleAt(node.id, time, reduced) && !reduced) {
+          return null;
+        }
         const state = stateAt(node.id, time, reduced);
         const sides = PORTS[node.id];
+        const { w, h } = sizeOf(node);
         const dot = "absolute z-10 h-2 w-2 rounded-full border bg-white";
-        const on = state === "running" ? "border-[#5b5cf6]" : "border-[#d1d5db]";
+        const on = state === "running" || node.kind === "hub" ? "border-[#5b5cf6]" : "border-[#d1d5db]";
         return (
-          <div key={node.id} className="absolute" style={{ left: node.x, top: node.y, width: NODE_W, height: NODE_H }}>
-            {sides.has("left") && <span className={`${dot} ${on} left-0 top-1/2 -translate-x-1/2 -translate-y-1/2`} aria-hidden />}
-            {sides.has("right") && <span className={`${dot} ${on} right-0 top-1/2 translate-x-1/2 -translate-y-1/2`} aria-hidden />}
-            {sides.has("top") && <span className={`${dot} ${on} left-1/2 top-0 -translate-x-1/2 -translate-y-1/2`} aria-hidden />}
-            {sides.has("bottom") && <span className={`${dot} ${on} bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2`} aria-hidden />}
-            <NodeCard node={node} state={state} />
-          </div>
+          <motion.div
+            key={node.id}
+            className="absolute"
+            style={{ left: node.x, top: node.y, width: w, height: h }}
+            initial={reduced ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+          >
+            {sides.left && <span className={`${dot} ${on} left-0 top-1/2 -translate-x-1/2 -translate-y-1/2`} aria-hidden />}
+            {sides.right && <span className={`${dot} ${on} right-0 top-1/2 translate-x-1/2 -translate-y-1/2`} aria-hidden />}
+            {sides.top && <span className={`${dot} ${on} left-1/2 top-0 -translate-x-1/2 -translate-y-1/2`} aria-hidden />}
+            {sides.bottom && <span className={`${dot} ${on} bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2`} aria-hidden />}
+            <NodeCard node={node} state={state} style={{ width: w, height: h }} />
+          </motion.div>
         );
       })}
     </div>
@@ -302,23 +504,38 @@ function TravelDot({ d, t }: { d: string; t: number }) {
 
 function MobileFlow({ time, reduced }: { time: number; reduced: boolean }) {
   return (
-    <ol className="relative mx-auto w-full max-w-sm px-5">
-      <span className="absolute bottom-6 left-[34px] top-6 w-px bg-[#e5e7eb]" aria-hidden />
-      {MOBILE_STEPS.map((node, i) => {
-        const state = stateAt(node.id, time, reduced);
+    <div className="relative mx-auto w-full max-w-sm px-5">
+      {MOBILE_GROUPS.map((group) => {
+        const showGroup = reduced || group.nodes.some((node) => visibleAt(node.id, time, reduced));
+        if (!showGroup) return null;
         return (
-          <li key={node.id} className="relative mb-4 last:mb-0 flex items-start gap-3">
-            <span
-              className={`relative z-10 mt-4 h-2.5 w-2.5 shrink-0 rounded-full border ${
-                state === "done" || state === "running" ? "border-[#5b5cf6] bg-[#5b5cf6]" : "border-[#e5e7eb] bg-white"
-              }`}
-              aria-hidden
-            />
-            <NodeCard node={node} state={state} style={{ width: "100%", maxWidth: 280 }} />
-          </li>
+        <div key={group.label} className="mb-5 last:mb-0">
+          <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{group.label}</p>
+          <ol className="relative">
+            <span className="absolute bottom-6 left-[5px] top-6 w-px bg-[#e5e7eb]" aria-hidden />
+            {group.nodes.map((node) => {
+              const state = stateAt(node.id, time, reduced);
+              const show = visibleAt(node.id, time, reduced);
+              if (!show) return null;
+              return (
+                <li key={node.id} className="relative mb-3 last:mb-0 flex items-start gap-3">
+                  <span
+                    className={`relative z-10 mt-4 h-2.5 w-2.5 shrink-0 rounded-full border ${
+                      state === "done" || state === "running" || node.id === "hub"
+                        ? "border-[#5b5cf6] bg-[#5b5cf6]"
+                        : "border-[#e5e7eb] bg-white"
+                    }`}
+                    aria-hidden
+                  />
+                  <NodeCard node={node} state={state} style={{ width: "100%", maxWidth: 280 }} />
+                </li>
+              );
+            })}
+          </ol>
+        </div>
         );
       })}
-    </ol>
+    </div>
   );
 }
 
@@ -351,7 +568,6 @@ export default function HeroFlow({ reduced: reducedProp }: { reduced?: boolean }
 
   return (
     <div ref={rootRef} className="relative w-full" aria-hidden="true">
-      {/* Tablet and desktop: flat node graph, scaled to fit the column */}
       <div ref={fitRef} className="hidden w-full md:block">
         <div className="mx-auto" style={{ width: VIEW_W * scale, height: VIEW_H * scale }}>
           <div style={{ width: VIEW_W, height: VIEW_H, transform: `scale(${scale})`, transformOrigin: "0 0" }}>
@@ -360,7 +576,6 @@ export default function HeroFlow({ reduced: reducedProp }: { reduced?: boolean }
         </div>
       </div>
 
-      {/* Phones: vertical flow */}
       <div className="flex items-center justify-center py-6 md:hidden">
         <MobileFlow time={time} reduced={reduced} />
       </div>
@@ -369,4 +584,4 @@ export default function HeroFlow({ reduced: reducedProp }: { reduced?: boolean }
 }
 
 export const HERO_FLOW_SUMMARY =
-  "A missed call is answered by an automatic SMS, the job is booked in the calendar, a reminder is sent, an invoice is synced to Xero and paid. Unclear cases are held for a person.";
+  "Cytron agents, running on our servers, handle enquiries, bookings, office admin, fulfilment and invoices. Anything unusual is held for a person.";
