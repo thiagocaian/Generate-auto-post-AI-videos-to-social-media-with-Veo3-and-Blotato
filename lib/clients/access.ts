@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { forbidden, getRequestUser, isCompanyAdminEmail, unauthorized } from '@/lib/auth'
+import { forbidden, getRequestUser, unauthorized } from '@/lib/auth'
+import { adminEmailStatus } from '@/lib/company-admin'
 
 export async function requireClientsAdmin(): Promise<
   { ok: true; email: string } | { ok: false; response: NextResponse }
@@ -7,10 +8,9 @@ export async function requireClientsAdmin(): Promise<
   try {
     const user = await getRequestUser()
     const email = user?.email
-    if (!user || !email) return { ok: false, response: unauthorized() }
-    if (!isCompanyAdminEmail(email)) {
-      return { ok: false, response: forbidden() }
-    }
+    const decision = adminEmailStatus(email)
+    if (decision === 403) return { ok: false, response: forbidden() }
+    if (decision !== 200 || !email) return { ok: false, response: unauthorized() }
     return { ok: true, email }
   } catch {
     return { ok: false, response: unauthorized() }

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { track } from "@vercel/analytics";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { AUDIT_CONSENT_TEXT } from "@/lib/inbound/consent";
 
 const BUSINESS_TYPES = ["Trades & construction", "Clinic / allied health", "Real estate / property", "Hospitality / tourism / short-stay", "Retail / online store", "Professional services", "Other"];
 const AUDIT_TIMES = ["9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM"];
@@ -47,11 +48,13 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
     responseProcess: "",
     preferredDate: "",
     preferredTime: "",
+    consent: false,
+    honeypot: "",
   });
   const [error, setError] = useState("");
   // Friendly, non-error notice when this email/business already has a free audit.
   const [already, setAlready] = useState(false);
-  const set = (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+  const set = (field: "name" | "businessName" | "email" | "phone" | "industry" | "responseProcess" | "preferredDate" | "preferredTime" | "honeypot") => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
   useEffect(() => {
@@ -77,6 +80,10 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
       setError("Please pick a weekday and a time.");
       return;
     }
+    if (!form.consent) {
+      setError("Please agree before we save this request.");
+      return;
+    }
     setError("");
     setAlready(false);
     if (preview) {
@@ -85,7 +92,11 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
     }
     setStatus("loading");
     try {
-      const res = await fetch("/api/lead-audit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+      const res = await fetch("/api/lead-audit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, consent: true, honeypot: form.honeypot }),
+      });
       if (res.ok) {
         track("lead_audit_submitted", { industry: form.industry });
         setStatus("success");
@@ -190,6 +201,25 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
                 })}
               </div>
             </fieldset>
+            <div className="absolute left-[-10000px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
+              <label htmlFor="audit-honeypot">Website</label>
+              <input id="audit-honeypot" data-testid="audit-honeypot" name="honeypot" tabIndex={-1} autoComplete="off" value={form.honeypot} onChange={set("honeypot")} />
+            </div>
+            <label className="flex items-start gap-3 text-sm leading-relaxed text-slate-700">
+              <input
+                id="audit-consent"
+                data-testid="audit-consent"
+                type="checkbox"
+                className="mt-1"
+                checked={form.consent}
+                onChange={(event) => setForm((prev) => ({ ...prev, consent: event.target.checked }))}
+                required
+              />
+              <span>
+                {AUDIT_CONSENT_TEXT}{" "}
+                <a href="/privacy" className="font-semibold text-[#5b5cf6] underline">Privacy policy</a>
+              </span>
+            </label>
             {error && (already ? (
               <p role="status" aria-live="polite" data-testid="audit-already" className="rounded-lg border border-[#c7c8f8] bg-[#f4f4ff] px-4 py-3 text-sm font-medium text-slate-800">{error}</p>
             ) : (
@@ -204,7 +234,7 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
               </button>
             </div>
             {preview && <p className="text-center text-xs text-slate-600">Sketch only — this form does not send a request.</p>}
-            {!preview && <p className="text-center text-xs text-slate-600">Pick a weekday in the next 14 days. We confirm within one business day.</p>}
+            {!preview && <p className="text-center text-xs text-slate-600">Pick a weekday in the next 14 days. We review the request and follow up.</p>}
           </motion.form>
         )}
 
@@ -218,9 +248,9 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
             >
               <Check size={30} strokeWidth={3} />
             </motion.div>
-            <h3 className="mb-2 text-2xl font-semibold text-slate-900">Audit requested</h3>
+            <h3 data-testid="audit-success" className="mb-2 text-2xl font-semibold text-slate-900">Request received</h3>
             <p className="mx-auto max-w-sm text-sm leading-relaxed text-slate-700">
-              We have your preferred time, {form.preferredDate} at {form.preferredTime} AEST. We&apos;ll confirm it within one business day.
+              We received your request. We&apos;ll review it and get back to you.
             </p>
           </motion.div>
         )}

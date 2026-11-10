@@ -1,35 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAdminClient } from '@/lib/auth'
 import { requireClientsAdmin } from '@/lib/clients/access'
+import { clientsSupabaseConfigured, getClientsSupabase } from '@/lib/clients-supabase'
+import { listAdminAudits } from '@/lib/inbound/admin-audits'
+import { createClientsRepository } from '@/lib/inbound/clients-repository'
+import { logRoute } from '@/lib/inbound/log'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-const STATUSES = ['new', 'contacted', 'converted', 'closed'] as const
-
 export async function GET(req: NextRequest) {
   const auth = await requireClientsAdmin()
   if (!auth.ok) return auth.response
-
-  const status = req.nextUrl.searchParams.get('status')
-  if (status && !STATUSES.includes(status as (typeof STATUSES)[number])) {
-    return NextResponse.json({ error: 'Unknown status' }, { status: 400 })
+  if (!clientsSupabaseConfigured()) {
+    logRoute('[admin/audits]', 'not_configured')
+    return NextResponse.json({ error: 'Could not load audit requests' }, { status: 500 })
   }
 
-  const admin = getAdminClient()
-  let query = admin.from('lead_audits').select('*').order('created_at', { ascending: false })
-  if (status) query = query.eq('status', status)
-  const { data, error } = await query
-  if (error) return NextResponse.json({ error: 'Could not load audit requests' }, { status: 500 })
-
-  const q = req.nextUrl.searchParams.get('q')?.trim().toLowerCase()
-  const audits = (data ?? []).filter(row => {
-    if (!q) return true
-    return [row.name, row.business_name, row.email, row.phone, row.industry, row.response_process, row.notes]
-      .join(' ')
-      .toLowerCase()
-      .includes(q)
-  })
-
-  return NextResponse.json({ audits, adminEmail: auth.email })
+  const result = await listAdminAudits(createClientsRepository(getClientsSupabase()), {
+    status: req.nextUrl.searchParams.get('status'),
+    q: req.nextUrl.searchParams.get('q'),
+  }, auth.email)
+  if (result.status >= 400) logRoute('[admin/audits]', 'list_failed', { code: result.status })
+  return NextResponse.json(result.body, { status: result.status })
 }

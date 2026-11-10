@@ -8,7 +8,7 @@ import AuditForm from "@/components/marketing/audit-form";
 const NEXT = [
   { icon: ClipboardList, t: "Tell us about the business", d: "Two minutes: who you are and which task eats the most time." },
   { icon: CalendarCheck, t: "Pick a time", d: "Choose a weekday slot for the audit, in person on the Coast or online." },
-  { icon: PhoneCall, t: "We confirm and prepare", d: "We reply to confirm and come to the call with ideas for your tools." },
+  { icon: PhoneCall, t: "We review and follow up", d: "A person at Cytron reviews the request and comes back with ideas for your tools." },
 ];
 
 const GET = ["A map of where your team's hours go", "The top 3 tasks worth automating first", "A rough estimate of time and cost saved", "A clear next step, with no obligation"];

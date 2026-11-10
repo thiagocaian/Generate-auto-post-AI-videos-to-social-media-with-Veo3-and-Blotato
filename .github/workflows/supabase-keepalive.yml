@@ -1,0 +1,34 @@
+name: supabase-keepalive
+
+# Optional daily fallback. Vercel cron runs only on production after merge.
+# This workflow does nothing until KEEPALIVE_URL and CRON_SECRET exist as
+# GitHub Actions secrets. It never prints the secret or the URL.
+on:
+  schedule:
+    - cron: '30 21 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase keep-alive
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          KEEPALIVE_URL: ${{ secrets.KEEPALIVE_URL }}
+        run: |
+          if [ -z "$CRON_SECRET" ] || [ -z "$KEEPALIVE_URL" ]; then
+            echo "Keep-alive secrets are not set; skipping."
+            exit 0
+          fi
+          code=$(curl --silent --output /tmp/keepalive-body --write-out "%{http_code}" \
+            --header "Authorization: Bearer ${CRON_SECRET}" \
+            --url "$KEEPALIVE_URL" || true)
+          if [ "$code" != "200" ] && [ "$code" != "503" ]; then
+            echo "Keep-alive HTTP status ${code}"
+            exit 1
+          fi
+          echo "Keep-alive HTTP status ${code}"
