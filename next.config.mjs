@@ -7,6 +7,7 @@ const nextConfig = {
     { source: '/solutions/:path*', destination: '/', permanent: true },
     // Short links into the multi-page site (temporary while the structure settles)
     { source: '/audit', destination: '/contact', permanent: false },
+    { source: '/booking', destination: '/contact', permanent: false },
     { source: '/free-audit', destination: '/contact', permanent: false },
     { source: '/industries', destination: '/use-cases', permanent: false },
     { source: '/faq', destination: '/pricing#faq', permanent: false },

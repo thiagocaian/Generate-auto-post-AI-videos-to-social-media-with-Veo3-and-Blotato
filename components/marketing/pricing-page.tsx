@@ -5,8 +5,7 @@ import { Check, ChevronRight } from "lucide-react";
 import { Accent, Eyebrow, Heading } from "@/components/site";
 import { CtaBand, PageIntro, PrimaryLink, SecondaryLink } from "@/components/marketing/page-kit";
 
-// NOTE (sketch): the plan names and "Free" / "Fixed quote" come from the live site.
-// No real monthly price exists in the marketing copy, so "$—" is a placeholder to confirm.
+// Every price after the free audit is quoted per business, never a list price.
 const PLANS = [
   {
     t: "Automation audit",
@@ -15,7 +14,6 @@ const PLANS = [
     d: "One session, in person on the Coast or online, to map your processes and find the tasks worth automating first.",
     f: ["Process map of where the hours go", "Top 3 automation opportunities", "Rough time and cost saved", "No obligation"],
     cta: "Book the free audit",
-    placeholder: false,
   },
   {
     t: "Pilot",
@@ -25,23 +23,22 @@ const PLANS = [
     f: ["Rules written with your team", "Messages in your tone, approved by you", "Shadow test with a daily comparison", "Go-live plan"],
     cta: "Start with the audit",
     hot: true,
-    placeholder: false,
   },
   {
     t: "Run & improve",
-    price: "From $—",
-    unit: "/mo",
+    price: "Custom quote",
+    unit: "",
+    note: "Priced after your free audit",
     d: "We keep it running, watch the exceptions and add the next automations as you grow.",
     f: ["Monitoring and alerts from Cytron agents", "Daily or weekly plain-English reports", "Monthly rule tuning", "New workflows as you grow"],
-    cta: "Talk to us",
-    placeholder: true,
+    cta: "Book the free audit",
   },
 ];
 
 const INCLUDED = ["Works with the tools you already use", "Read-only first, one click back to manual", "Your data and accounts stay yours", "Local Gold Coast team"];
 
 const FAQ = [
-  { q: "What does it cost?", a: "The audit is free. Each automation gets a fixed quote before we start, so there are no surprise invoices." },
+  { q: "What does it cost?", a: "The audit is free. The pilot and the monthly run & improve are both quoted after your free audit, based on what we automate, so you know the price before anything is built and there are no surprise invoices." },
   { q: "Is there a lock-in contract?", a: "Your workflows, your data, your accounts. No black box and no lock-in." },
   { q: "Do I need to change the software I use?", a: "No. We connect to what you already use: your calendar, job or practice software, accounting, email and chat." },
   { q: "How long until it runs?", a: "A first workflow usually goes from audit to shadow test in a few weeks, depending on access to your systems." },
@@ -68,13 +65,13 @@ export default function PricingPage() {
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-semibold text-slate-600">Step {i + 1}</p>
                   {p.hot && <p className="rounded-full bg-[#eef0ff] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4f46e5]">Most chosen</p>}
-                  {p.placeholder && <p className="rounded-full border border-dashed border-amber-400 bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-800">Price to be confirmed</p>}
                 </div>
                 <h2 className="mt-4 text-xl font-semibold text-slate-900">{p.t}</h2>
                 <p className="mt-2 text-[34px] font-semibold tracking-tight text-slate-900">
                   {p.price}
                   {p.unit && <span className="text-base font-medium text-slate-600">{p.unit}</span>}
                 </p>
+                {"note" in p && p.note && <p className="mt-1 text-sm font-medium text-slate-600">{p.note}</p>}
                 <p className="mt-3 text-[15px] leading-relaxed text-slate-600">{p.d}</p>
                 <ul className="mt-6 flex-1 space-y-2.5 text-[15px] text-slate-700">
                   {p.f.map((f) => <li key={f} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-700" />{f}</li>)}
@@ -89,7 +86,7 @@ export default function PricingPage() {
             <span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Every plan</span>
             {INCLUDED.map((t) => <span key={t} className="flex items-center gap-2"><Check size={16} className="text-emerald-700" />{t}</span>)}
           </div>
-          <p className="mt-4 text-center text-xs text-slate-600">All prices in AUD.</p>
+          <p className="mt-4 text-center text-xs text-slate-600">Quotes in AUD, agreed before any work starts.</p>
         </div>
       </section>
 
