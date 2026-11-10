@@ -12,7 +12,7 @@ export const NAV_LINKS = [
 export const INDUSTRY_SLUGS = ["trades", "clinics", "real-estate", "hospitality", "retail", "professional-services"] as const;
 
 /** Pages rendered inside app/(site): they share the header, footer and 3D transition. */
-export const SITE_ROUTES: string[] = ["/", ...NAV_LINKS.map((l) => l.href), ...INDUSTRY_SLUGS.map((s) => `/${s}`)];
+export const SITE_ROUTES: string[] = ["/", ...NAV_LINKS.map((l) => l.href), ...INDUSTRY_SLUGS.map((s) => `/${s}`), "/booking"];
 
 /** Public, no-login pages (site pages plus the legal pages). */
 export const PUBLIC_MARKETING_ROUTES: string[] = [...SITE_ROUTES, "/privacy", "/terms"];
@@ -25,6 +25,7 @@ export function isSiteRoute(pathname: string) {
 /** Which nav item is active for a path. Industry pages live under "Use cases". */
 export function activeNavHref(pathname: string): string | null {
   if (INDUSTRY_SLUGS.some((s) => pathname === `/${s}`)) return "/use-cases";
+  if (pathname === "/booking") return "/contact";
   const hit = NAV_LINKS.find((l) => pathname === l.href || pathname.startsWith(l.href + "/"));
   return hit ? hit.href : null;
 }

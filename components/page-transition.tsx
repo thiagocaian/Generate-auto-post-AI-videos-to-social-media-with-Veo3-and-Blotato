@@ -108,7 +108,6 @@ const variants3d: Variants = {
   center: {
     opacity: 1, scale: 1, rotateY: 0, rotateX: 0, y: 0, transformPerspective: PERSPECTIVE,
     transition: { duration: ENTER_MS / 1000, ease: [0.22, 1, 0.36, 1] },
-    transitionEnd: { transform: "none" },
   },
   // outgoing page: recedes in depth with a slight turn and fades
   exit: {
@@ -129,9 +128,11 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
   const { phase, origin, onExitDone } = useContext(TransitionCtx);
   const reduced = useReducedMotion() === true;
   const [animateIn] = useState(() => !firstMount);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     firstMount = false;
+    if (!animateIn && ref.current) ref.current.style.transform = "none";
     // Arrived with a hash (e.g. /pricing#faq): jump to it once the page is in.
     const hash = window.location.hash.slice(1);
     if (animateIn && hash) {
@@ -146,8 +147,12 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
       variants={reduced ? variantsFade : variants3d}
       initial={animateIn ? "enter" : false}
       animate={phase === "exit" ? "exit" : "center"}
+      ref={ref}
       onAnimationComplete={(def) => {
         if (def === "exit") onExitDone();
+        // Settled: drop the leftover perspective() so the page has no transform
+        // (keeps position:fixed/sticky children and compositing exactly as without the transition).
+        else if (def === "center" && ref.current) ref.current.style.transform = "none";
       }}
       style={{ transformOrigin: phase === "exit" ? origin : "50% 50vh", backfaceVisibility: "hidden" }}
     >
