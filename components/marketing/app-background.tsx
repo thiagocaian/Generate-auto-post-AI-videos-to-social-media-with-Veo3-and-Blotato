@@ -2,20 +2,11 @@
 
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
+import { PUBLIC_MARKETING_ROUTES } from "@/lib/site-routes";
 
 const BackgroundScene = dynamic(() => import("@/components/BackgroundScene"), { ssr: false });
 
-const MARKETING = new Set([
-  "/",
-  "/privacy",
-  "/terms",
-  "/trades",
-  "/clinics",
-  "/real-estate",
-  "/hospitality",
-  "/retail",
-  "/professional-services",
-]);
+const MARKETING = new Set(PUBLIC_MARKETING_ROUTES);
 
 export default function AppBackground() {
   const pathname = usePathname() || "/";

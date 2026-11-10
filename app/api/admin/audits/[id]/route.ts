@@ -44,6 +44,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
   const admin = getAdminClient()
   const { data, error } = await admin.from('lead_audits').update(patch).eq('id', params.id).select('*').maybeSingle()
+  if (error?.code === '23505') return failure(409, 'Another audit request already uses this email or business name')
   if (error) return failure(500, 'Could not update the audit request')
   if (!data) return failure(404, 'Audit request not found')
   return NextResponse.json({ audit: data })

@@ -49,11 +49,16 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
     preferredTime: "",
   });
   const [error, setError] = useState("");
+  // Friendly, non-error notice when this email/business already has a free audit.
+  const [already, setAlready] = useState(false);
   const set = (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
   useEffect(() => {
     setDays(weekdayChips(10));
+    // Email typed in the home hero arrives as ?email=
+    const fromHero = new URLSearchParams(window.location.search).get("email");
+    if (fromHero) setForm((prev) => (prev.email ? prev : { ...prev, email: fromHero.slice(0, 200) }));
   }, []);
 
   const goTimes = (e: React.FormEvent) => {
@@ -73,6 +78,7 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
       return;
     }
     setError("");
+    setAlready(false);
     if (preview) {
       setStep(3);
       return;
@@ -86,6 +92,7 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
         setStep(3);
       } else {
         const data = await res.json().catch(() => ({}));
+        setAlready(res.status === 409 && data.code === "already_requested");
         setError(typeof data.error === "string" ? data.error : "Something went wrong. Please try again.");
         setStatus("error");
       }
@@ -183,7 +190,11 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
                 })}
               </div>
             </fieldset>
-            {error && <p role="alert" aria-live="polite" className="text-sm font-medium text-red-700">{error}</p>}
+            {error && (already ? (
+              <p role="status" aria-live="polite" data-testid="audit-already" className="rounded-lg border border-[#c7c8f8] bg-[#f4f4ff] px-4 py-3 text-sm font-medium text-slate-800">{error}</p>
+            ) : (
+              <p role="alert" aria-live="polite" className="text-sm font-medium text-red-700">{error}</p>
+            ))}
             <div className="flex gap-3">
               <button type="button" onClick={() => { setError(""); setStatus("idle"); setStep(1); }} className="inline-flex items-center gap-1 rounded-lg border border-[#e5e7eb] bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50">
                 <ArrowLeft size={16} /> Back

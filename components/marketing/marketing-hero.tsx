@@ -5,19 +5,13 @@ import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { Play } from "lucide-react";
 import HeroFlow, { HERO_FLOW_SUMMARY } from "@/components/marketing/hero-flow";
-
-function fillAuditEmail(email: string) {
-  const dest = document.getElementById("audit-email") as HTMLInputElement | null;
-  if (!dest) return;
-  const proto = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
-  proto?.call(dest, email);
-  dest.dispatchEvent(new Event("input", { bubbles: true }));
-}
+import { useSiteNavigate } from "@/components/page-transition";
 
 export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
   const reduced = useReducedMotion() === true;
   const sectionRef = useRef<HTMLElement>(null);
   const [email, setEmail] = useState("");
+  const navigate = useSiteNavigate();
   // Optional static art; the coded automation flow renders when none is passed.
   const resolvedArt = artSrc ?? null;
 
@@ -32,8 +26,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) fillAuditEmail(email);
-    document.getElementById("audit")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+    navigate(email ? `/contact?email=${encodeURIComponent(email)}` : "/contact");
   };
 
   return (
