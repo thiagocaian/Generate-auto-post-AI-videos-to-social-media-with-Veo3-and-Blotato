@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { motion, useInView, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import {
   Bell,
   CalendarCheck,
@@ -21,7 +21,6 @@ type FlowNode = {
   id: NodeId;
   x: number;
   y: number;
-  z: number;
   title: string;
   sub: string;
   icon: LucideIcon;
@@ -31,32 +30,38 @@ type FlowEdge = {
   id: string;
   from: NodeId;
   to: NodeId;
+  /** Leaves from the bottom of `from` and enters the top of `to`. */
+  vertical?: boolean;
   dashed?: boolean;
 };
 
-const NODE_W = 156;
-const NODE_H = 68;
+// Flat, grid-aligned canvas: 4 columns × 4 rows. Everything is on the same plane
+// (no rotate / translateZ), so the connector lines always meet the cards exactly.
+const NODE_W = 148;
+const NODE_H = 64;
+const COL = 172; // column pitch
+const PAD = 12; // room for the port dots on the outer edges
 
 const NODES: FlowNode[] = [
-  { id: "trigger", x: 8, y: 156, z: 8, title: "Missed call", sub: "Tue 6:42 pm", icon: PhoneMissed },
-  { id: "sms", x: 184, y: 156, z: 16, title: "AI reply", sub: "Sent in 40s", icon: MessageSquare },
-  { id: "booked", x: 360, y: 56, z: 24, title: "Booked", sub: "Thu 9:00 am", icon: CalendarCheck },
-  { id: "crm", x: 360, y: 244, z: 10, title: "Lead saved", sub: "CRM", icon: Database },
-  { id: "reminder", x: 536, y: 56, z: 20, title: "Reminder", sub: "Day before", icon: Bell },
-  { id: "invoice", x: 536, y: 244, z: 28, title: "Invoice sent", sub: "Xero", icon: Receipt },
-  { id: "paid", x: 712, y: 244, z: 36, title: "Paid ✓", sub: "Same day · by link", icon: Check },
-  { id: "human", x: 184, y: 352, z: -8, title: "Human review", sub: "Held for a person", icon: UserRound },
+  { id: "trigger", x: PAD, y: 150, title: "Missed call", sub: "Tue 6:42 pm", icon: PhoneMissed },
+  { id: "sms", x: PAD + COL, y: 150, title: "AI reply", sub: "Sent in 40s", icon: MessageSquare },
+  { id: "booked", x: PAD + COL * 2, y: 40, title: "Booked", sub: "Thu 9:00 am", icon: CalendarCheck },
+  { id: "crm", x: PAD + COL * 2, y: 260, title: "Lead saved", sub: "CRM", icon: Database },
+  { id: "reminder", x: PAD + COL * 3, y: 40, title: "Reminder", sub: "Day before", icon: Bell },
+  { id: "invoice", x: PAD + COL * 3, y: 260, title: "Invoice sent", sub: "Xero", icon: Receipt },
+  { id: "paid", x: PAD + COL * 3, y: 376, title: "Paid", sub: "Same day", icon: Check },
+  { id: "human", x: PAD + COL, y: 300, title: "Human review", sub: "When needed", icon: UserRound },
 ];
 
 const EDGES: FlowEdge[] = [
   { id: "e-trigger-sms", from: "trigger", to: "sms" },
   { id: "e-sms-booked", from: "sms", to: "booked" },
   { id: "e-sms-crm", from: "sms", to: "crm" },
-  { id: "e-sms-human", from: "sms", to: "human", dashed: true },
+  { id: "e-sms-human", from: "sms", to: "human", vertical: true, dashed: true },
   { id: "e-booked-reminder", from: "booked", to: "reminder" },
-  { id: "e-reminder-invoice", from: "reminder", to: "invoice" },
+  { id: "e-reminder-invoice", from: "reminder", to: "invoice", vertical: true },
   { id: "e-crm-invoice", from: "crm", to: "invoice" },
-  { id: "e-invoice-paid", from: "invoice", to: "paid" },
+  { id: "e-invoice-paid", from: "invoice", to: "paid", vertical: true },
 ];
 
 const MAIN_PULSE: { edge: string; fromMs: number; toMs: number }[] = [
@@ -81,60 +86,52 @@ const NODE_TIMES: Record<NodeId, { run: number; done: number }> = {
 };
 
 const LOOP_MS = 9500;
-const VIEW_W = 900;
-const VIEW_H = 500;
+export const VIEW_W = PAD * 2 + COL * 3 + NODE_W; // 688
+export const VIEW_H = 376 + NODE_H + 16; // 456
 
 function nodeById(id: NodeId) {
   return NODES.find((n) => n.id === id)!;
 }
 
-function ports(from: FlowNode, to: FlowNode, dashedDown = false) {
-  const start = { x: from.x + NODE_W, y: from.y + NODE_H / 2 };
-  const end = { x: to.x, y: to.y + NODE_H / 2 };
-  if (to.x === from.x || dashedDown) {
-    // mostly vertical
+export function edgeEnds(edge: FlowEdge) {
+  const from = nodeById(edge.from);
+  const to = nodeById(edge.to);
+  if (edge.vertical) {
     return {
       start: { x: from.x + NODE_W / 2, y: from.y + NODE_H },
       end: { x: to.x + NODE_W / 2, y: to.y },
     };
   }
-  if (Math.abs(to.y - from.y) > 40 && to.x > from.x) {
-    return { start, end };
-  }
-  return { start, end };
+  return {
+    start: { x: from.x + NODE_W, y: from.y + NODE_H / 2 },
+    end: { x: to.x, y: to.y + NODE_H / 2 },
+  };
 }
 
 function edgePath(edge: FlowEdge) {
-  const from = nodeById(edge.from);
-  const to = nodeById(edge.to);
-  const downFromReminder = edge.from === "reminder" && edge.to === "invoice";
-  let start: { x: number; y: number };
-  let end: { x: number; y: number };
-  if (downFromReminder) {
-    start = { x: from.x + NODE_W / 2, y: from.y + NODE_H };
-    end = { x: to.x + NODE_W / 2, y: to.y };
-  } else if (edge.to === "human") {
-    start = { x: from.x + NODE_W / 2, y: from.y + NODE_H };
-    end = { x: to.x + NODE_W / 2, y: to.y };
+  const { start, end } = edgeEnds(edge);
+  let d: string;
+  if (edge.vertical) {
+    const dy = Math.max(18, (end.y - start.y) * 0.5);
+    d = `M ${start.x} ${start.y} C ${start.x} ${start.y + dy}, ${end.x} ${end.y - dy}, ${end.x} ${end.y}`;
+  } else if (start.y === end.y) {
+    d = `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
   } else {
-    const p = ports(from, to);
-    start = p.start;
-    end = p.end;
+    const dx = (end.x - start.x) * 0.5;
+    d = `M ${start.x} ${start.y} C ${start.x + dx} ${start.y}, ${end.x - dx} ${end.y}, ${end.x} ${end.y}`;
   }
-  const dx = Math.max(40, Math.abs(end.x - start.x) * 0.45);
-  const dy = Math.abs(end.y - start.y);
-  let c1: { x: number; y: number };
-  let c2: { x: number; y: number };
-  if (downFromReminder || edge.to === "human") {
-    c1 = { x: start.x, y: start.y + Math.max(36, dy * 0.4) };
-    c2 = { x: end.x, y: end.y - Math.max(36, dy * 0.4) };
-  } else {
-    c1 = { x: start.x + dx, y: start.y };
-    c2 = { x: end.x - dx, y: end.y };
-  }
-  const d = `M ${start.x} ${start.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${end.x} ${end.y}`;
   return { d, start, end };
 }
+
+/** Which sides of each card have a connector, so port dots are drawn only where a line meets the card. */
+const PORTS: Record<NodeId, Set<"left" | "right" | "top" | "bottom">> = (() => {
+  const out = Object.fromEntries(NODES.map((n) => [n.id, new Set()])) as Record<NodeId, Set<"left" | "right" | "top" | "bottom">>;
+  for (const e of EDGES) {
+    out[e.from].add(e.vertical ? "bottom" : "right");
+    out[e.to].add(e.vertical ? "top" : "left");
+  }
+  return out;
+})();
 
 function stateAt(id: NodeId, t: number, reduced: boolean): NodeState {
   if (reduced) return id === "human" ? "idle" : "done";
@@ -150,7 +147,7 @@ const MOBILE_STEPS: { id: NodeId; title: string; sub: string; icon: FlowNode["ic
   { id: "sms", title: "AI reply", sub: "Sent in 40s", icon: MessageSquare },
   { id: "booked", title: "Booked", sub: "Thu 9:00 am", icon: CalendarCheck },
   { id: "invoice", title: "Invoice sent", sub: "Xero", icon: Receipt },
-  { id: "paid", title: "Paid ✓", sub: "Same day · by link", icon: Check },
+  { id: "paid", title: "Paid", sub: "Same day", icon: Check },
 ];
 
 function NodeCard({
@@ -249,6 +246,7 @@ function DesktopFlow({ time, reduced }: { time: number; reduced: boolean }) {
               d={d}
               fill="none"
               stroke={live || consumed ? "#5b5cf6" : "#cbd5e1"}
+              strokeLinecap="round"
               strokeWidth={live ? 1.75 : 1.4}
               strokeDasharray={edge.dashed ? "5 5" : undefined}
               strokeOpacity={edge.dashed ? 0.7 : 1}
@@ -267,27 +265,15 @@ function DesktopFlow({ time, reduced }: { time: number; reduced: boolean }) {
 
       {NODES.map((node) => {
         const state = stateAt(node.id, time, reduced);
+        const sides = PORTS[node.id];
+        const dot = "absolute z-10 h-2 w-2 rounded-full border bg-white";
+        const on = state === "running" ? "border-[#5b5cf6]" : "border-[#d1d5db]";
         return (
-          <div
-            key={node.id}
-            className="absolute"
-            style={{
-              left: node.x,
-              top: node.y,
-              transform: `translateZ(${node.z}px)`,
-            }}
-          >
-            {/* ports */}
-            <span
-              className="absolute left-0 top-1/2 z-10 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#e5e7eb] bg-white"
-              aria-hidden
-            />
-            <span
-              className={`absolute right-0 top-1/2 z-10 h-2 w-2 translate-x-1/2 -translate-y-1/2 rounded-full border bg-white ${
-                state === "running" ? "border-[#5b5cf6]" : "border-[#e5e7eb]"
-              }`}
-              aria-hidden
-            />
+          <div key={node.id} className="absolute" style={{ left: node.x, top: node.y, width: NODE_W, height: NODE_H }}>
+            {sides.has("left") && <span className={`${dot} ${on} left-0 top-1/2 -translate-x-1/2 -translate-y-1/2`} aria-hidden />}
+            {sides.has("right") && <span className={`${dot} ${on} right-0 top-1/2 translate-x-1/2 -translate-y-1/2`} aria-hidden />}
+            {sides.has("top") && <span className={`${dot} ${on} left-1/2 top-0 -translate-x-1/2 -translate-y-1/2`} aria-hidden />}
+            {sides.has("bottom") && <span className={`${dot} ${on} bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2`} aria-hidden />}
             <NodeCard node={node} state={state} />
           </div>
         );
@@ -336,54 +322,46 @@ function MobileFlow({ time, reduced }: { time: number; reduced: boolean }) {
   );
 }
 
+/** Scales the fixed-size canvas down to fit its column (never up), so nothing is clipped at any width. */
+function useFitScale() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => {
+      const w = el.clientWidth;
+      if (w > 0) setScale(Math.min(1, w / VIEW_W));
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return { ref, scale };
+}
+
 export default function HeroFlow({ reduced: reducedProp }: { reduced?: boolean }) {
   const reducedHook = useReducedMotion() === true;
   const reduced = reducedProp ?? reducedHook;
   const rootRef = useRef<HTMLDivElement>(null);
   const inView = useInView(rootRef, { amount: 0.25 });
   const time = useLoop(inView, reduced);
-
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const spring = { stiffness: 160, damping: 22, mass: 0.4 };
-  const tiltX = useSpring(useTransform(my, [-0.5, 0.5], [11, 5]), spring);
-  const tiltY = useSpring(useTransform(mx, [-0.5, 0.5], [-11, -5]), spring);
-
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (reduced) return;
-    const r = e.currentTarget.getBoundingClientRect();
-    mx.set((e.clientX - r.left) / r.width - 0.5);
-    my.set((e.clientY - r.top) / r.height - 0.5);
-  };
-  const onLeave = () => {
-    mx.set(0);
-    my.set(0);
-  };
+  const { ref: fitRef, scale } = useFitScale();
 
   return (
-    <div
-      ref={rootRef}
-      className="relative h-full w-full"
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      aria-hidden="true"
-    >
-      {/* Desktop 3D canvas */}
-      <div className="hidden h-full w-full lg:flex lg:items-center" style={{ perspective: 1400 }}>
-        <motion.div
-          className="origin-left"
-          style={{
-            rotateX: reduced ? 8 : tiltX,
-            rotateY: reduced ? -8 : tiltY,
-            transformStyle: "preserve-3d",
-          }}
-        >
-          <DesktopFlow time={time} reduced={reduced} />
-        </motion.div>
+    <div ref={rootRef} className="relative w-full" aria-hidden="true">
+      {/* Tablet and desktop: flat node graph, scaled to fit the column */}
+      <div ref={fitRef} className="hidden w-full md:block">
+        <div className="mx-auto" style={{ width: VIEW_W * scale, height: VIEW_H * scale }}>
+          <div style={{ width: VIEW_W, height: VIEW_H, transform: `scale(${scale})`, transformOrigin: "0 0" }}>
+            <DesktopFlow time={time} reduced={reduced} />
+          </div>
+        </div>
       </div>
 
-      {/* Mobile vertical flow */}
-      <div className="flex h-full items-center justify-center py-6 lg:hidden">
+      {/* Phones: vertical flow */}
+      <div className="flex items-center justify-center py-6 md:hidden">
         <MobileFlow time={time} reduced={reduced} />
       </div>
     </div>
