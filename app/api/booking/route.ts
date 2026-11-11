@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { renderNotificationHtml, sendInternalNotification } from '@/lib/notify'
 import { PUBLIC_RATE_LIMIT, PUBLIC_RATE_WINDOW_MS, clientIp, createRateLimiter } from '@/lib/rate-limit'
-import { parseBooking } from '@/lib/validation/booking'
+import { parseBooking, type BookingInput } from '@/lib/validation/booking'
 
 // In-memory limiter. Resets on cold start — basic abuse prevention, not a hard guarantee.
 const checkRateLimit = createRateLimiter(PUBLIC_RATE_LIMIT, PUBLIC_RATE_WINDOW_MS)
@@ -54,5 +55,30 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const submittedAt = typeof data?.created_at === 'string' && data.created_at
+    ? data.created_at
+    : new Date().toISOString()
+
+  await sendInternalNotification({
+    label: 'booking',
+    replyTo: booking.email,
+    subject: `New demo booking: ${bookingWho(booking)}`,
+    html: renderNotificationHtml('New demo booking', [
+      ['Name', booking.name],
+      ['Email', booking.email],
+      ['Phone', booking.phone || '—'],
+      ['Business', booking.business_name || '—'],
+      ['Business type', booking.business_type || '—'],
+      ['Preferred date', booking.preferred_date || '—'],
+      ['Preferred time', booking.preferred_time || '—'],
+      ['Message', booking.message || '—'],
+      ['Submitted', submittedAt],
+    ]),
+  })
+
   return NextResponse.json({ success: true, booking: data })
+}
+
+function bookingWho(booking: Pick<BookingInput, 'name' | 'business_name'>): string {
+  return booking.business_name ? `${booking.name} / ${booking.business_name}` : booking.name
 }

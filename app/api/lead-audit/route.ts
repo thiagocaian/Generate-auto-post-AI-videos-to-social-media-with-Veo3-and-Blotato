@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { Resend } from 'resend'
 import { z } from 'zod'
-import { COMPANY_ADMIN_EMAILS } from '@/lib/company-admin'
+import { escapeHtml, getMailer, renderNotificationHtml } from '@/lib/notify'
 import { PUBLIC_RATE_LIMIT, PUBLIC_RATE_WINDOW_MS, clientIp, createRateLimiter } from '@/lib/rate-limit'
 import {
   ALREADY_REQUESTED_CODE,
@@ -46,17 +45,6 @@ const LeadAuditSchema = z.object({
 // In-memory limiter (per IP, max 3 requests per hour).
 // Note: resets on cold start. Provides basic abuse prevention, not a hard guarantee.
 const checkRateLimit = createRateLimiter(PUBLIC_RATE_LIMIT, PUBLIC_RATE_WINDOW_MS)
-
-// ─── HTML escaping (prevent HTML injection in emails) ─────────────────────────
-function esc(str: string | undefined | null): string {
-  if (!str) return ''
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-}
 
 export async function POST(req: NextRequest) {
   // Rate limiting
@@ -125,22 +113,18 @@ export async function POST(req: NextRequest) {
   }
 
   // Send emails — best-effort. Lead is already saved; email failure is non-fatal.
-  const resendKey = process.env.RESEND_API_KEY
-  if (resendKey && resendKey !== 're_CHANGE_ME') {
-    const resend = new Resend(resendKey)
-    const fromAddress = process.env.RESEND_FROM_ADDRESS || 'CYTRON <hello@cytronai.com>'
-    const notifyAddress = process.env.CYTRON_NOTIFY_EMAIL || COMPANY_ADMIN_EMAILS[0]
-
+  const mailer = getMailer()
+  if (mailer) {
     const results = await Promise.allSettled([
-      resend.emails.send({
-        from: fromAddress,
+      mailer.resend.emails.send({
+        from: mailer.fromAddress,
         to: data.email,
         subject: `Lead Audit Request Received — ${data.businessName}`,
         html: confirmationEmailHtml(data),
       }),
-      resend.emails.send({
-        from: fromAddress,
-        to: notifyAddress,
+      mailer.resend.emails.send({
+        from: mailer.fromAddress,
+        to: mailer.notifyAddress,
         subject: `New Lead Audit: ${data.businessName} (${data.industry || 'Unknown industry'})`,
         html: internalNotificationHtml(data),
       }),
@@ -175,10 +159,10 @@ function confirmationEmailHtml(data: { name: string; businessName: string; prefe
     <div style="width:40px;height:40px;background:#886cff;border-radius:8px;margin-bottom:24px;display:flex;align-items:center;justify-content:center;">
       <span style="color:white;font-weight:bold;font-size:18px;">C</span>
     </div>
-    <h1 style="color:#fff;font-size:22px;margin:0 0 12px 0;">We received your request, ${esc(data.name)}.</h1>
+    <h1 style="color:#fff;font-size:22px;margin:0 0 12px 0;">We received your request, ${escapeHtml(data.name)}.</h1>
     <p style="color:#888;font-size:15px;line-height:1.6;margin:0 0 20px 0;">
-      We&apos;re reviewing the request for <strong style="color:#ccc;">${esc(data.businessName)}</strong>.
-      Your preferred time is <strong style="color:#ccc;">${esc(data.preferredDate)} at ${esc(data.preferredTime)}</strong>.
+      We&apos;re reviewing the request for <strong style="color:#ccc;">${escapeHtml(data.businessName)}</strong>.
+      Your preferred time is <strong style="color:#ccc;">${escapeHtml(data.preferredDate)} at ${escapeHtml(data.preferredTime)}</strong>.
       We&apos;ll confirm the audit within one business day.
     </p>
     <p style="color:#888;font-size:15px;line-height:1.6;margin:0 0 28px 0;">
@@ -218,24 +202,5 @@ function internalNotificationHtml(data: {
     ['Preferred time', data.preferredTime],
     ['Current process', data.responseProcess || '—'],
   ]
-  const tableRows = rows
-    .map(([k, v]) =>
-      `<tr>
-        <td style="padding:8px 12px;color:#888;white-space:nowrap;vertical-align:top;">${esc(k)}</td>
-        <td style="padding:8px 12px;color:#e5e5e5;">${esc(v)}</td>
-      </tr>`
-    )
-    .join('')
-
-  return `<!DOCTYPE html>
-<html>
-<body style="font-family:sans-serif;background:#0a0a0a;color:#e5e5e5;padding:40px 20px;max-width:600px;margin:0 auto;">
-  <div style="background:#111;border:1px solid rgba(136,108,255,0.2);border-radius:12px;padding:32px;">
-    <h2 style="color:#886cff;margin:0 0 20px 0;">New Lead Audit Request</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:14px;">
-      ${tableRows}
-    </table>
-  </div>
-</body>
-</html>`
+  return renderNotificationHtml('New Lead Audit Request', rows)
 }
