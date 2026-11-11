@@ -36,10 +36,10 @@ function WalkthroughHeader() {
     <div className="max-w-3xl">
       <Eyebrow>Enquiry to invoice</Eyebrow>
       <Heading>
-        From missed call to <Accent>paid invoice</Accent>.
+        Automate the repetitive. Decide <Accent>what matters</Accent>.
       </Heading>
       <p className="mt-4 max-w-2xl leading-relaxed text-slate-600">
-        One enquiry, handled in the background. Your team only steps in if something is unclear.
+        Cytron runs on smart automation: less manual work, more time for what drives results.
       </p>
     </div>
   );
