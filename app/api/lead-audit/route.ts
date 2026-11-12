@@ -4,7 +4,7 @@ import { qualifyLeadWithGemini } from '@/lib/gemini-lead'
 import { createClientsRepository } from '@/lib/inbound/clients-repository'
 import { logRoute } from '@/lib/inbound/log'
 import { processLeadAudit } from '@/lib/inbound/process-lead-audit'
-import { clientIp, createRateLimiter, PUBLIC_RATE_LIMIT, PUBLIC_RATE_WINDOW_MS } from '@/lib/rate-limit'
+import { requestIp, createRateLimiter, PUBLIC_RATE_LIMIT, PUBLIC_RATE_WINDOW_MS } from '@/lib/rate-limit'
 import { hashIp } from '@/lib/ip-hash'
 import { auditAdminUrl, sendTelegramMessage } from '@/lib/telegram-notify'
 
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   const result = await processLeadAudit({
     raw,
     jsonOk,
-    ip: clientIp(req.headers.get('x-forwarded-for')),
+    ip: requestIp(req.headers),
     userAgent: req.headers.get('user-agent'),
     memoryAllow,
     repo: clientsSupabaseConfigured() ? createClientsRepository(getClientsSupabase()) : null,
