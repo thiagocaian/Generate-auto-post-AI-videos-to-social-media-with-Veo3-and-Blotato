@@ -34,12 +34,12 @@ export default function HeroHeading() {
 
   return (
     <h1 className="max-w-xl text-[28px] font-semibold leading-snug tracking-tight text-slate-900 sm:text-[40px] lg:text-[44px]">
-      <span className="sr-only">Automate the busywork. Keep the judgment.</span>
+      <span className="sr-only">Automate the repetitive. Decide what matters.</span>
       <span aria-hidden="true" className="block">
         <span className="block">
-          <Accent>Automate</Accent> the busywork.
+          <Accent>Automate</Accent> the repetitive.
         </span>
-        <span className="block">Keep the judgment.</span>
+        <span className="block">Decide what matters.</span>
         <span className="mt-3 flex flex-wrap items-center gap-2 text-[16px] font-semibold leading-none sm:mt-4 sm:text-lg">
           <Chip
             delay={0.28}
