@@ -68,6 +68,8 @@ export async function processLeadAudit(input: {
   adminUrl: (leadId: string) => string
   model?: string | null
   log?: LogFn
+  /** Optional best-effort hook after the lead row is stored (marketing attribution). Errors are swallowed. */
+  onStored?: (leadId: string) => Promise<unknown>
 }): Promise<LeadAuditResult> {
   const now = input.now ?? new Date()
   const log = input.log ?? (() => {})
@@ -162,6 +164,7 @@ export async function processLeadAudit(input: {
   }
 
   log('insert_ok', { lead_id: leadId, status: 'stored' })
+  if (input.onStored) await safe(() => input.onStored!(leadId), log, 'attribution_failed')
   const workflowId = await safe(() => repo.insertWorkflow({
     tenant_id: tenantId,
     lead_id: leadId,
