@@ -14,6 +14,7 @@ export default defineConfig({
     include: [
       'lib/security/**/*.test.ts',
       'lib/validation/**/*.test.ts',
+      'lib/inbound/**/*.test.ts',
       'lib/notify.test.ts',
     ],
   },

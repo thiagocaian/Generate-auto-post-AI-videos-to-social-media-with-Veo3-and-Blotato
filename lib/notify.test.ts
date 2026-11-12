@@ -14,6 +14,8 @@ const { send, db } = vi.hoisted(() => ({
   },
 }))
 
+vi.mock('server-only', () => ({}))
+
 vi.mock('resend', () => ({
   Resend: class Resend {
     emails = { send }
@@ -283,7 +285,7 @@ describe('early-access notifications', () => {
 })
 
 describe('lead-audit notifications', () => {
-  function auditBody(overrides: Record<string, string> = {}) {
+  function auditBody(overrides: Record<string, unknown> = {}) {
     return {
       name: 'Ada',
       businessName: 'Northwind',
@@ -291,50 +293,39 @@ describe('lead-audit notifications', () => {
       industry: 'Electrical',
       preferredDate: brisbaneDate(1),
       preferredTime: '9:00 AM',
+      consent: true,
+      honeypot: '',
       ...overrides,
     }
   }
 
-  test('still sends the confirmation and the internal notification', async () => {
-    const res = await leadAuditPost(postJson('http://localhost/api/lead-audit', auditBody({
-      name: '<script>alert(1)</script>',
-      businessName: 'A & B',
-    })))
-    assert.equal(res.status, 200)
-    assert.deepEqual(await res.json(), { success: true, emailSent: true })
-    assert.equal(send.mock.calls.length, 2)
-    const [confirmation, notification] = send.mock.calls.map(call => call[0])
-    assert.equal(confirmation.to, 'ada@example.com')
-    assert.equal(confirmation.subject, 'Lead Audit Request Received — A & B')
-    assert.equal(confirmation.html.includes('<script>'), false)
-    assert.match(confirmation.html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/)
-    assert.match(confirmation.html, /A &amp; B/)
-    assert.equal(notification.to, 'notify@example.com')
-    assert.equal(notification.subject, 'New Lead Audit: A & B (Electrical)')
-    assert.equal(notification.html.includes('<script>'), false)
-    assert.match(notification.html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/)
-    assert.equal(notification.replyTo, undefined)
-  })
-
-  test('does not send when the insert fails', async () => {
-    db.error = { message: 'insert failed' }
+  test('does not email the lead even when Resend is configured', async () => {
     const res = await leadAuditPost(postJson('http://localhost/api/lead-audit', auditBody()))
-    assert.equal(res.status, 500)
+    assert.equal(res.status, 503)
+    assert.deepEqual(await res.json(), { error: 'Service unavailable' })
     assert.equal(send.mock.calls.length, 0)
   })
 
-  test('returns success with emailSent false when Resend throws', async () => {
-    send.mockRejectedValue(new Error('resend down'))
-    const res = await leadAuditPost(postJson('http://localhost/api/lead-audit', auditBody()))
+  test('does not email the lead when the honeypot is filled', async () => {
+    const res = await leadAuditPost(postJson('http://localhost/api/lead-audit', auditBody({
+      honeypot: 'http://spam.test',
+      name: '<script>alert(1)</script>',
+    })))
     assert.equal(res.status, 200)
     assert.deepEqual(await res.json(), { success: true, emailSent: false })
+    assert.equal(send.mock.calls.length, 0)
   })
 
-  test('skips mail when the key is missing', async () => {
+  test('does not email the lead when consent is missing', async () => {
+    const res = await leadAuditPost(postJson('http://localhost/api/lead-audit', auditBody({ consent: false })))
+    assert.equal(res.status, 400)
+    assert.equal(send.mock.calls.length, 0)
+  })
+
+  test('does not email the lead when the Resend key is missing', async () => {
     delete process.env.RESEND_API_KEY
     const res = await leadAuditPost(postJson('http://localhost/api/lead-audit', auditBody()))
-    assert.equal(res.status, 200)
-    assert.deepEqual(await res.json(), { success: true, emailSent: false })
+    assert.equal(res.status, 503)
     assert.equal(send.mock.calls.length, 0)
   })
 })
