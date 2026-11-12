@@ -142,7 +142,7 @@ export default function Home() {
             <p className="text-[22px] font-semibold tracking-tight text-slate-900 sm:text-[26px]">Start small. Pay for what works.</p>
           </div>
           <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[15px] text-slate-700">
-            {["Free audit", "Fixed-quote pilot", "Monthly run & improve"].map((t) => (
+            {["Starter $349/mo", "Growth $649/mo", "Business $999/mo", "Enterprise $1,499+/mo"].map((t) => (
               <li key={t} className="flex items-center gap-2"><Check size={16} className="text-emerald-700" />{t}</li>
             ))}
           </ul>

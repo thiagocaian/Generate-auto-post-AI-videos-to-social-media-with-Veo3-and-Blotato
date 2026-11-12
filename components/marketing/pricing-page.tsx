@@ -5,32 +5,62 @@ import { Check, ChevronRight } from "lucide-react";
 import { Accent, Eyebrow, Heading } from "@/components/site";
 import { CtaBand, PageIntro, PrimaryLink, SecondaryLink } from "@/components/marketing/page-kit";
 
-// Every price after the free audit is quoted per business, never a list price.
 const PLANS = [
   {
-    t: "Automation audit",
-    price: "Free",
-    unit: "",
-    d: "One session, in person on the Coast or online, to map your processes and find the tasks worth automating first.",
-    f: ["Process map of where the hours go", "Top 3 automation opportunities", "Rough time and cost saved", "No obligation"],
+    t: "Starter",
+    price: "$349",
+    unit: "/month",
+    note: "Setup $990",
+    d: "One operational automation, with monitoring.",
+    f: [
+      "One operational workflow",
+      "Monitoring and alerts from Cytron agents",
+      "Rules written with your team",
+      "Read-only first, with a go-live plan",
+    ],
     cta: "Book the free audit",
   },
   {
-    t: "Pilot",
-    price: "Fixed quote",
-    unit: "",
-    d: "One workflow built and tested in read-only mode next to your team, for a price agreed before we start.",
-    f: ["Rules written with your team", "Messages in your tone, approved by you", "Shadow test with a daily comparison", "Go-live plan"],
+    t: "Growth",
+    price: "$649",
+    unit: "/month",
+    note: "Setup $1,490",
+    d: "AI agents, CRM, leads and follow-up.",
+    f: [
+      "Cytron agents on our servers",
+      "Lead capture in your CRM",
+      "Follow-up tasks and reminders",
+      "Messages in your tone, approved by you",
+    ],
     cta: "Start with the audit",
     hot: true,
   },
   {
-    t: "Run & improve",
-    price: "Custom quote",
-    unit: "",
-    note: "Priced after your free audit",
-    d: "We keep it running, watch the exceptions and add the next automations as you grow.",
-    f: ["Monitoring and alerts from Cytron agents", "Daily or weekly plain-English reports", "Monthly rule tuning", "New workflows as you grow"],
+    t: "Business",
+    price: "$999",
+    unit: "/month",
+    note: "Setup $2,490",
+    d: "Multiple processes, integrations and advanced monitoring.",
+    f: [
+      "Multiple workflows as you grow",
+      "Connects to the tools you already use",
+      "Daily or weekly plain-English reports",
+      "Monitoring and alerts from Cytron agents",
+    ],
+    cta: "Book the free audit",
+  },
+  {
+    t: "Enterprise",
+    price: "$1,499+",
+    unit: "/month",
+    note: "Custom setup",
+    d: "Complex operations and specialised digital teams.",
+    f: [
+      "Human review, built in",
+      "Local Gold Coast team",
+      "Monthly rule tuning and reports",
+      "New workflows as you grow",
+    ],
     cta: "Book the free audit",
   },
 ];
@@ -38,7 +68,7 @@ const PLANS = [
 const INCLUDED = ["Works with the tools you already use", "Read-only first, one click back to manual", "Your data and accounts stay yours", "Local Gold Coast team"];
 
 const FAQ = [
-  { q: "What does it cost?", a: "The audit is free. The pilot and the monthly run & improve are both quoted after your free audit, based on what we automate, so you know the price before anything is built and there are no surprise invoices." },
+  { q: "What does it cost?", a: "The audit is free. Monthly plans start at $349, plus a setup fee from $990. Growth is $649, Business is $999, and Enterprise is $1,499+ a month with a custom setup. Prices are in AUD, ex GST where applicable. API usage, phone and SMS are subject to included allowances or additional charges." },
   { q: "Is there a lock-in contract?", a: "Your workflows, your data, your accounts. No black box and no lock-in." },
   { q: "Do I need to change the software I use?", a: "No. We connect to what you already use: your calendar, job or practice software, accounting, email and chat." },
   { q: "How long until it runs?", a: "A first workflow usually goes from audit to shadow test in a few weeks, depending on access to your systems." },
@@ -53,18 +83,21 @@ export default function PricingPage() {
       <PageIntro
         eyebrow="Pricing"
         title={<>Start small. <Accent>Pay for what works</Accent>.</>}
-        lead="Begin with a free audit, prove one workflow in a fixed-price pilot, then keep it running month to month."
+        lead="Begin with a free audit, then choose a monthly plan — from one operational automation to more complex operations."
         actions={<><PrimaryLink href="/contact">Book a free audit</PrimaryLink><SecondaryLink href="#faq">Read the FAQ</SecondaryLink></>}
       />
 
       <section className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-5">
-          <div className="grid gap-5 lg:grid-cols-3">
-            {PLANS.map((p, i) => (
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            {PLANS.map((p) => (
               <div key={p.t} className={`relative flex flex-col rounded-2xl border bg-white p-7 shadow-sm ${p.hot ? "border-[#5b5cf6] ring-1 ring-[#5b5cf6]" : "border-[#e5e7eb]"}`}>
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-slate-600">Step {i + 1}</p>
-                  {p.hot && <p className="rounded-full bg-[#eef0ff] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4f46e5]">Most chosen</p>}
+                <div className="flex min-h-[26px] items-center justify-between">
+                  {p.hot ? (
+                    <p className="rounded-full bg-[#eef0ff] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4f46e5]">Recommended</p>
+                  ) : (
+                    <span aria-hidden className="h-[26px]" />
+                  )}
                 </div>
                 <h2 className="mt-4 text-xl font-semibold text-slate-900">{p.t}</h2>
                 <p className="mt-2 text-[34px] font-semibold tracking-tight text-slate-900">
@@ -86,7 +119,7 @@ export default function PricingPage() {
             <span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Every plan</span>
             {INCLUDED.map((t) => <span key={t} className="flex items-center gap-2"><Check size={16} className="text-emerald-700" />{t}</span>)}
           </div>
-          <p className="mt-4 text-center text-xs text-slate-600">Quotes in AUD, agreed before any work starts.</p>
+          <p className="mt-4 text-center text-xs text-slate-600">Prices in AUD, ex GST where applicable. API usage, phone and SMS are subject to included allowances or additional charges.</p>
         </div>
       </section>
 
@@ -107,7 +140,7 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <CtaBand title="Get a fixed quote for your first workflow." text="It starts with the free audit. You'll know the price before anything is built." />
+      <CtaBand title="Not sure which plan fits?" text="It starts with the free audit. We'll recommend the right plan for your business." />
     </div>
   );
 }
