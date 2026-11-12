@@ -179,6 +179,9 @@ export default function OnboardingPage() {
               <p className="mt-3 text-neutral-500 text-sm sm:text-base">
                 We&apos;ll set up your workspace so everything fits perfectly.
               </p>
+              <p className="mt-3 text-neutral-500 text-sm sm:text-base">
+                You stay in control. We never ask for your main login password. Instead, you generate API keys in your own accounts (for example StarShipIt, Shopify or Supabase) with only the permissions the automation needs. If a platform doesn&apos;t offer API keys, you create a separate service user for us with limited permissions. You can revoke a key or user at any time.
+              </p>
             </div>
 
             {/* Form */}
