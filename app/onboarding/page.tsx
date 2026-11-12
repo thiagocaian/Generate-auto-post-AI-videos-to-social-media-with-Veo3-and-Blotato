@@ -50,24 +50,32 @@ export default function OnboardingPage() {
   const [trade, setTrade] = useState('')
   const [location, setLocation] = useState('')
 
-  // Check auth on mount
+  // Middleware already requires a session. This only sends a signed-out
+  // visitor back, and it gives up if the browser auth call does not settle.
   useEffect(() => {
+    let cancelled = false
+    const timer = window.setTimeout(() => {
+      if (!cancelled) setCheckingAuth(false)
+    }, 8000)
     async function checkUser() {
       try {
         const { supabase } = await import('@/lib/supabase')
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) {
-          router.push('/login?tab=signup')
+          window.location.assign('/login?next=/onboarding')
           return
         }
       } catch {
-        router.push('/login?tab=signup')
-        return
+        // Keep the form. The edge check already allowed this request through.
       }
-      setCheckingAuth(false)
+      if (!cancelled) setCheckingAuth(false)
     }
     checkUser()
-  }, [router])
+    return () => {
+      cancelled = true
+      window.clearTimeout(timer)
+    }
+  }, [])
 
   async function handleSubmit() {
     if (!businessName.trim()) {

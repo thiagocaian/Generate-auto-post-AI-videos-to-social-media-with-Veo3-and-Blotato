@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { unwrapCompany } from '@/lib/company-embed'
 
 export async function GET() {
   const cookieStore = await cookies()
@@ -22,24 +23,36 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  // Use service role to bypass RLS
-  const { createClient } = await import('@supabase/supabase-js')
-  const adminClient = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  const account = { id: user.id, email: user.email }
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!supabaseUrl || !serviceKey) {
+    return NextResponse.json({ error: 'Could not load workspace', user: account }, { status: 500 })
+  }
 
-  const { data: member } = await adminClient
+  // Service role bypasses RLS. The browser query against companies can come
+  // back empty when that table has no SELECT policy, which left the sidebar
+  // name on "Loading...".
+  const { createClient } = await import('@supabase/supabase-js')
+  const adminClient = createClient(supabaseUrl, serviceKey)
+
+  const { data: rows, error } = await adminClient
     .from('company_members')
     .select('role, companies(id, name, slug, plan, plan_status, primary_color, logo_url)')
     .eq('user_id', user.id)
-    .single()
+    .limit(1)
 
-  if (!member) return NextResponse.json({ error: 'No company found' }, { status: 404 })
+  if (error) return NextResponse.json({ error: 'Could not load workspace', user: account }, { status: 500 })
+
+  const member = rows?.[0]
+  const company = unwrapCompany(member?.companies)
+  if (!member || !company?.id) {
+    return NextResponse.json({ error: 'No company found', user: account }, { status: 404 })
+  }
 
   return NextResponse.json({
-    user: { id: user.id, email: user.email },
-    company: member.companies,
+    user: account,
+    company,
     role: member.role,
   })
 }

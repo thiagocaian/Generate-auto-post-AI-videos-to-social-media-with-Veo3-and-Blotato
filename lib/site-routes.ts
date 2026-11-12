@@ -17,6 +17,18 @@ export const SITE_ROUTES: string[] = ["/", ...NAV_LINKS.map((l) => l.href), ...I
 /** Public, no-login pages (site pages plus the legal pages). */
 export const PUBLIC_MARKETING_ROUTES: string[] = [...SITE_ROUTES, "/privacy", "/terms"];
 
+/**
+ * Auth screens that must render without a session.
+ * `/login` is classified separately so a signed-in visitor can be sent on.
+ */
+export const PUBLIC_AUTH_ROUTES = ["/forgot-password", "/reset-password", "/auth/callback", "/auth/signout"] as const;
+
+/**
+ * Paths that next.config redirects onto marketing pages. Middleware runs first,
+ * so these have to stay public or the redirect never happens.
+ */
+export const PUBLIC_LEGACY_ROUTES = ["/audit", "/booking", "/free-audit", "/industries", "/faq", "/how", "/landing"] as const;
+
 export function isSiteRoute(pathname: string) {
   const p = pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
   return SITE_ROUTES.includes(p);

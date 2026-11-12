@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { unwrapCompany } from '@/lib/company-embed'
 
 export async function GET() {
   const cookieStore = await cookies()
@@ -23,24 +24,35 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const admin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const account = { id: user.id, email: user.email }
+  if (!supabaseUrl || !serviceKey) {
+    return NextResponse.json({ error: 'Could not load workspace', user: account }, { status: 500 })
+  }
 
-  // Get company
-  const { data: member } = await admin
+  const admin = createClient(supabaseUrl, serviceKey)
+
+  // .single() errors when a person belongs to more than one company, and the
+  // embed comes back as an array when PostgREST treats it as to-many. Either
+  // case used to drop the name and leave the panel on "Loading...".
+  const { data: rows, error: memberError } = await admin
     .from('company_members')
     .select('role, companies(id, name, slug, plan, plan_status, primary_color, logo_url)')
     .eq('user_id', user.id)
-    .single()
+    .limit(1)
 
-  if (!member?.companies) {
-    return NextResponse.json({ error: 'No company found' }, { status: 404 })
+  if (memberError) {
+    return NextResponse.json({ error: 'Could not load workspace', user: account }, { status: 500 })
   }
 
-  const company = member.companies as any
-  const companyId = company.id as string
+  const member = rows?.[0]
+  const company = unwrapCompany(member?.companies)
+  if (!member || !company?.id) {
+    return NextResponse.json({ error: 'No company found', user: account }, { status: 404 })
+  }
+
+  const companyId = company.id
 
   // Fetch all stats in parallel
   const [marketing, quotes, compliance, workOrders, jobs, invoices, recentPosts, recentQuotes, recentJobs] = await Promise.all([
@@ -151,7 +163,7 @@ export async function GET() {
   }
 
   return NextResponse.json({
-    user: { id: user.id, email: user.email },
+    user: account,
     company,
     role: member.role,
     stats,

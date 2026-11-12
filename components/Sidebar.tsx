@@ -1,6 +1,8 @@
 'use client'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { accountLabel } from '@/lib/account-label'
+import { unwrapCompany } from '@/lib/company-embed'
 import { supabase } from '@/lib/supabase'
 
 type NavItem = { label: string; href: string; key: string; iconPath: string; badge?: string }
@@ -24,37 +26,56 @@ const navItems: NavItem[] = [
 
 export default function Sidebar({ active }: { active: string }) {
   const [userEmail, setUserEmail] = useState<string | null>(null)
-  const [companyName, setCompanyName] = useState('Loading...')
+  const [companyName, setCompanyName] = useState('Account')
   const [lowStockCount, setLowStockCount] = useState(0)
   const [plan, setPlan] = useState('starter')
   const [planStatus, setPlanStatus] = useState('trial')
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
+    let cancelled = false
+    const controller = new AbortController()
+    const timer = window.setTimeout(() => controller.abort(), 8000)
+
     async function loadUserData() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        setUserEmail(user.email ?? null)
-        const { data: member } = await supabase
-          .from('company_members')
-          .select('companies(name, plan, plan_status)')
-          .eq('user_id', user.id)
-          .single()
-        if (member?.companies) {
-          const co = member.companies as unknown as { name: string; plan?: string; plan_status?: string }
-          setCompanyName(co.name)
-          if (co.plan) setPlan(co.plan)
-          if (co.plan_status) setPlanStatus(co.plan_status)
-        }
+      // The label used to start as "Loading..." and change only when the
+      // browser embed returned a company name. That query dropped errors,
+      // and companies has no SELECT policy in the RLS script, so the name
+      // never arrived. /api/company reads with the service role and always
+      // includes the email for the fallback.
+      try {
+        const res = await fetch('/api/company', { signal: controller.signal })
+        const body = await res.json().catch(() => null)
+        if (cancelled) return
+        const email = typeof body?.user?.email === 'string' ? body.user.email : null
+        const company = unwrapCompany(body?.company)
+        if (email) setUserEmail(email)
+        setCompanyName(accountLabel(company?.name, email))
+        if (company?.plan) setPlan(company.plan)
+        if (company?.plan_status) setPlanStatus(company.plan_status)
+      } catch {
+        if (!cancelled) setCompanyName('Account')
+      } finally {
+        window.clearTimeout(timer)
       }
-      const { data: items } = await supabase
-        .from('warehouse_items')
-        .select('current_stock, minimum_stock')
-      if (items) {
-        setLowStockCount(items.filter(i => i.current_stock <= i.minimum_stock).length)
+
+      try {
+        const { data: items } = await supabase
+          .from('warehouse_items')
+          .select('current_stock, minimum_stock')
+        if (!cancelled && items) {
+          setLowStockCount(items.filter(i => i.current_stock <= i.minimum_stock).length)
+        }
+      } catch {
+        // The stock badge is optional. A failed read must not freeze the label.
       }
     }
     loadUserData()
+    return () => {
+      cancelled = true
+      controller.abort()
+      window.clearTimeout(timer)
+    }
   }, [])
 
   useEffect(() => {
