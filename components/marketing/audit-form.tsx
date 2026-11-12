@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { track } from "@vercel/analytics";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { AUDIT_CONSENT_TEXT } from "@/lib/inbound/consent";
+import { readAttribution } from "@/lib/marketing/attribution-client";
 
 const BUSINESS_TYPES = ["Trades & construction", "Clinic / allied health", "Real estate / property", "Hospitality / tourism / short-stay", "Retail / online store", "Professional services", "Other"];
 const AUDIT_TIMES = ["9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM"];
@@ -95,7 +96,7 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
       const res = await fetch("/api/lead-audit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, consent: true, honeypot: form.honeypot }),
+        body: JSON.stringify({ ...form, consent: true, honeypot: form.honeypot, attribution: readAttribution() ?? undefined }),
       });
       if (res.ok) {
         track("lead_audit_submitted", { industry: form.industry });

@@ -1,0 +1,304 @@
+{
+ "name": "TESTE (copy, do not activate) - Marketing A - Trend research (free sources)",
+ "nodes": [
+  {
+   "id": "488c3224-efb3-4cc4-8469-10bfaeefa6cf",
+   "name": "Note 1",
+   "type": "n8n-nodes-base.stickyNote",
+   "typeVersion": 1,
+   "position": [
+    -40,
+    -380
+   ],
+   "parameters": {
+    "content": "## A — Pesquisa de tendências (fontes grátis, sem chave)\nGoogle Trends AU (RSS), Google News (RSS), Reddit (RSS), Hacker News (Algolia), YouTube (RSS).\nPontua por relevância para a Cytron (AI automation, small business, tradies, Gold Coast…), recência e engajamento.\n**dry_run=true** (nó Sources): só mostra o preview. Gravar em `mkt_content_ideas` exige ativar o nó Supabase (credencial pendente).\nNÃO ATIVAR. Grok Bot, 13/11/2026.",
+    "height": 300,
+    "width": 560
+   }
+  },
+  {
+   "id": "d844916c-b617-4fca-b2d9-5da9e15320aa",
+   "name": "Run manually (test)",
+   "type": "n8n-nodes-base.manualTrigger",
+   "typeVersion": 1,
+   "position": [
+    0,
+    0
+   ],
+   "parameters": {}
+  },
+  {
+   "id": "1eb76893-1a3e-49f7-8b6c-940f1b464fcb",
+   "name": "Daily 06:00 (Brisbane)",
+   "type": "n8n-nodes-base.scheduleTrigger",
+   "typeVersion": 1.2,
+   "position": [
+    0,
+    200
+   ],
+   "parameters": {
+    "rule": {
+     "interval": [
+      {
+       "field": "cronExpression",
+       "expression": "0 6 * * *"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "81b672a9-5a98-4933-8033-b32248112b6b",
+   "name": "Sources (free, no key)",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    240,
+    100
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// A1 Config + fontes grátis (sem chave). Cada item = 1 fonte; o nó HTTP seguinte busca uma por vez.\nconst COMPANY_ID = '4a617a32-8493-4bd1-a9ab-12f5edf2055a'; // CYTRON\nconst DRY_RUN = true; // true = só mostra; false = grava em mkt_content_ideas (nó Supabase precisa estar ativo)\nconst enc = encodeURIComponent;\nconst NEWS_QUERIES = ['\"small business\" AI automation', 'AI receptionist tradies', 'Gold Coast small business', 'AI agents customer service'];\nconst SUBREDDITS = ['smallbusiness', 'Entrepreneur', 'automation', 'n8n', 'AusFinance'];\nconst HN_QUERIES = ['AI automation small business', 'AI agents'];\n// Canais do YouTube via RSS público (channel_id). Ajustar a lista na quinta.\nconst YT_CHANNELS = { 'Nate Herk (n8n)': 'UC2ojq-nuP8ceeHqiroeKhBA', 'Liam Ottley': 'UCui4jxDaMb53Gdh-AZUTPAg' };\nconst out = [];\nout.push({ source: 'google_trends', label: 'Google Trends AU (diário)', url: 'https://trends.google.com/trending/rss?geo=AU', parser: 'trends_rss' });\nfor (const q of NEWS_QUERIES) out.push({ source: 'google_news', label: 'Google News: ' + q, url: `https://news.google.com/rss/search?q=${enc(q + ' when:7d')}&hl=en-AU&gl=AU&ceid=AU:en`, parser: 'rss' });\nfor (const s of SUBREDDITS) out.push({ source: 'reddit', label: 'r/' + s, url: `https://www.reddit.com/r/${s}/top/.rss?t=week&limit=15`, parser: 'atom' });\nfor (const q of HN_QUERIES) out.push({ source: 'hacker_news', label: 'HN: ' + q, url: `https://hn.algolia.com/api/v1/search?query=${enc(q)}&tags=story&numericFilters=${enc('created_at_i>' + Math.floor(Date.now()/1000 - 7*86400))}&hitsPerPage=15`, parser: 'hn' });\nfor (const [name, id] of Object.entries(YT_CHANNELS)) out.push({ source: 'youtube', label: 'YouTube: ' + name, url: `https://www.youtube.com/feeds/videos.xml?channel_id=${id}`, parser: 'atom' });\nreturn out.map(j => ({ json: { ...j, company_id: COMPANY_ID, dry_run: DRY_RUN, run_at: new Date().toISOString() } }));\n"
+   }
+  },
+  {
+   "id": "65ae3c4b-33c1-4d2c-8a75-7c1e60ffc230",
+   "name": "Fetch source (1 req / 2.5s)",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    480,
+    100
+   ],
+   "parameters": {
+    "url": "={{ $json.url }}",
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "User-Agent",
+       "value": "Mozilla/5.0 (compatible; CytronResearchBot/0.1; +https://cytronai.com)"
+      }
+     ]
+    },
+    "options": {
+     "timeout": 20000,
+     "batching": {
+      "batch": {
+       "batchSize": 1,
+       "batchInterval": 2500
+      }
+     },
+     "response": {
+      "response": {
+       "responseFormat": "text",
+       "outputPropertyName": "data"
+      }
+     }
+    }
+   },
+   "onError": "continueRegularOutput",
+   "alwaysOutputData": true
+  },
+  {
+   "id": "e2084b08-c1a7-4b47-b8d6-91983071a909",
+   "name": "Parse + score + dedupe",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    720,
+    100
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// A3 Normaliza, pontua e deduplica. Sem rede. Saída = linhas prontas para mkt_content_ideas.\nconst srcs = $('Sources (free, no key)').all().map(i => i.json);\nconst resp = $input.all().map(i => i.json);\nconst dec = s => String(s || '').replace(/<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>/g, '$1').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '\"').replace(/&#39;|&apos;/g, \"'\").replace(/&#(\\d+);/g, (m, n) => String.fromCharCode(+n)).replace(/<[^>]+>/g, ' ').replace(/\\s+/g, ' ').trim();\nconst tag = (x, t) => { const m = x.match(new RegExp(`<${t}[^>]*>([\\\\s\\\\S]*?)</${t}>`, 'i')); return m ? dec(m[1]) : ''; };\nconst blocks = (x, t) => x.match(new RegExp(`<${t}[\\\\s>][\\\\s\\\\S]*?</${t}>`, 'gi')) || [];\nconst KW = { 'ai': 3, 'automation': 4, 'automate': 4, 'agent': 3, 'agents': 3, 'chatbot': 3, 'small business': 5, 'smb': 3, 'tradie': 5, 'tradies': 5, 'plumber': 3, 'electrician': 3, 'gold coast': 6, 'brisbane': 4, 'queensland': 3, 'australia': 2, 'lead': 2, 'leads': 3, 'booking': 3, 'receptionist': 4, 'missed call': 5, 'customer service': 3, 'n8n': 4, 'workflow': 2, 'crm': 3, 'marketing': 2, 'invoice': 2, 'quote': 2, 'productivity': 1, 'hiring': 1, 'cost': 1 };\nconst NEG = ['crypto', 'nsfw', 'giveaway', 'promo code', 'politic', 'election', 'murder', 'football', 'cricket', 'afl'];\nconst hash = s => { let h = 5381; for (const c of s) h = ((h << 5) + h + c.charCodeAt(0)) | 0; return (h >>> 0).toString(36); };\nconst norm = s => s.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\\s+/g, ' ').trim();\nconst rows = []; const errors = [];\nresp.forEach((r, i) => {\n  const s = srcs[i] || {}; const body = typeof r.data === 'string' ? r.data : (r.data ? JSON.stringify(r.data) : '');\n  if (r.error || !body) { errors.push({ source: s.label, error: String(r.error?.message || r.error || 'empty') }); return; }\n  let items = [];\n  try {\n    if (s.parser === 'hn') items = (JSON.parse(body).hits || []).map(h => ({ title: h.title, url: h.url || `https://news.ycombinator.com/item?id=${h.objectID}`, published: h.created_at, engagement: (h.points || 0) + 2 * (h.num_comments || 0) }));\n    else if (s.parser === 'atom') items = blocks(body, 'entry').map(e => ({ title: tag(e, 'title'), url: (e.match(/<link[^>]*href=\"([^\"]+)\"/) || [])[1], published: tag(e, 'published') || tag(e, 'updated'), summary: (tag(e, 'content') || tag(e, 'media:description')).slice(0, 400) }));\n    else items = blocks(body, 'item').map(e => ({ title: tag(e, 'title'), url: tag(e, 'link'), published: tag(e, 'pubDate'), summary: tag(e, 'description').slice(0, 400), traffic: tag(e, 'ht:approx_traffic') }));\n  } catch (e) { errors.push({ source: s.label, error: 'parse: ' + e.message }); return; }\n  for (const it of items) {\n    if (!it.title) continue;\n    const text = norm(it.title + ' ' + (it.summary || ''));\n    if (NEG.some(n => text.includes(n))) continue;\n    const hits = Object.keys(KW).filter(k => (' ' + text + ' ').includes(' ' + k + ' '));\n    let score = hits.reduce((a, k) => a + KW[k], 0) * 3;\n    const ageH = it.published ? (Date.now() - new Date(it.published).getTime()) / 36e5 : 96;\n    score += Math.max(0, 20 - ageH / 8);                       // recência (até +20)\n    if (it.engagement) score += Math.min(25, Math.log10(1 + it.engagement) * 10);\n    if (it.traffic) score += Math.min(15, (parseInt(String(it.traffic).replace(/\\D/g, '')) || 0) / 20000);\n    if (s.source === 'google_trends' && !hits.length) score = Math.min(score, 15); // trend genérica = baixa prioridade\n    rows.push({ company_id: s.company_id, source: s.source, source_url: it.url || null, title: it.title.slice(0, 500), summary: it.summary || null,\n      keywords: hits, language: 'en', region: 'AU', score: Math.round(Math.min(100, score) * 100) / 100, status: 'new',\n      dedupe_key: s.source + ':' + hash(norm(it.title)), raw: { feed: s.label, published: it.published || null, engagement: it.engagement || null, traffic: it.traffic || null } });\n  }\n});\nconst seen = new Set(); const uniq = rows.filter(r => !seen.has(r.dedupe_key) && seen.add(r.dedupe_key)).sort((a, b) => b.score - a.score);\nconst MIN = 25, TOP = 40;\nconst keep = uniq.filter(r => r.score >= MIN).slice(0, TOP);\nreturn [{ json: { dry_run: srcs[0]?.dry_run !== false, total_raw: rows.length, total_unique: uniq.length, kept: keep.length, errors, ideas: keep, preview: keep.slice(0, 10).map(r => `${r.score} | ${r.source} | ${r.title}`) } }];\n"
+   }
+  },
+  {
+   "id": "d78847f1-42f2-4b06-96a7-737f88ed2511",
+   "name": "Dry run?",
+   "type": "n8n-nodes-base.if",
+   "typeVersion": 2,
+   "position": [
+    960,
+    100
+   ],
+   "parameters": {
+    "conditions": {
+     "options": {
+      "caseSensitive": true,
+      "leftValue": "",
+      "typeValidation": "loose"
+     },
+     "conditions": [
+      {
+       "id": "fd00e243-9e6c-43d2-a2ef-5a4de643b90d",
+       "leftValue": "={{ $json.dry_run }}",
+       "rightValue": "",
+       "operator": {
+        "type": "boolean",
+        "operation": "true",
+        "singleValue": true
+       }
+      }
+     ],
+     "combinator": "and"
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "ba056ba0-bd4d-4160-ab46-877f510bd678",
+   "name": "Preview (dry-run)",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    1200,
+    0
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// A4 Explode as ideias em linhas (1 item = 1 linha) para o upsert no Supabase\nreturn ($input.first().json.ideas || []).map(r => ({ json: r }));\n"
+   }
+  },
+  {
+   "id": "747fa067-a046-4581-a59c-751db8484a00",
+   "name": "Rows for upsert",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    1200,
+    220
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// A4 Explode as ideias em linhas (1 item = 1 linha) para o upsert no Supabase\nreturn ($input.first().json.ideas || []).map(r => ({ json: r }));\n"
+   }
+  },
+  {
+   "id": "0e3108ad-bb67-46a6-96bb-5c8989eeee9a",
+   "name": "Supabase: upsert mkt_content_ideas",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    1440,
+    220
+   ],
+   "parameters": {
+    "method": "POST",
+    "url": "https://awjagykdhrroeonewwgx.supabase.co/rest/v1/mkt_content_ideas?on_conflict=company_id,dedupe_key",
+    "authentication": "predefinedCredentialType",
+    "nodeCredentialType": "supabaseApi",
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Prefer",
+       "value": "resolution=ignore-duplicates,return=minimal"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify($json) }}",
+    "options": {
+     "timeout": 30000
+    }
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO: falta credencial \"Supabase Cytron (service role)\" no n8n. Ativar na quinta."
+  }
+ ],
+ "connections": {
+  "Run manually (test)": {
+   "main": [
+    [
+     {
+      "node": "Sources (free, no key)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Daily 06:00 (Brisbane)": {
+   "main": [
+    [
+     {
+      "node": "Sources (free, no key)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Sources (free, no key)": {
+   "main": [
+    [
+     {
+      "node": "Fetch source (1 req / 2.5s)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Fetch source (1 req / 2.5s)": {
+   "main": [
+    [
+     {
+      "node": "Parse + score + dedupe",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Parse + score + dedupe": {
+   "main": [
+    [
+     {
+      "node": "Dry run?",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Dry run?": {
+   "main": [
+    [
+     {
+      "node": "Preview (dry-run)",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    [
+     {
+      "node": "Rows for upsert",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Rows for upsert": {
+   "main": [
+    [
+     {
+      "node": "Supabase: upsert mkt_content_ideas",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1",
+  "timezone": "Australia/Brisbane",
+  "saveManualExecutions": true
+ }
+}
