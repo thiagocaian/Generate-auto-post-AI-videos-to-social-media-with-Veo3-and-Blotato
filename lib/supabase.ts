@@ -6,8 +6,20 @@ import { createBrowserClient } from '@supabase/ssr'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'build-placeholder-anon-key'
 
+// The browser auth client otherwise takes a Web Locks lock. An orphaned lock
+// (cancelled navigation, Strict Mode remount) leaves getUser() unresolved, which
+// is what kept the workspace name on "Loading...". Run the critical section
+// directly so a stuck lock cannot freeze the panel.
+function runWithoutNavigatorLock<R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>) {
+  return fn()
+}
+
 // Browser client with session persistence (for 'use client' pages)
-export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    lock: runWithoutNavigatorLock,
+  },
+})
 
 // Server-side only client (no session)
 export const supabaseAdmin = createClient(supabaseUrl, supabaseAnonKey)

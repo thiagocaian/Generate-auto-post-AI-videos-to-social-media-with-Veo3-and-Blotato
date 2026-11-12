@@ -23,6 +23,12 @@ vi.mock('resend', () => ({
 vi.mock('@supabase/supabase-js', () => ({
   createClient: () => ({
     from: () => ({
+      // lead-audit checks for an existing row before inserting.
+      select: () => ({
+        eq: () => ({
+          limit: () => Promise.resolve({ data: [], error: null }),
+        }),
+      }),
       insert: () => {
         const result = { data: db.data, error: db.error }
         return Object.assign(Promise.resolve(result), {

@@ -1,34 +1,42 @@
 'use client'
 import { Suspense, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { CytronLogin } from '@/components/ui/cytron-login'
+import { safeNextPath } from '@/lib/safe-next'
+
+function friendlyAuthError(message: string) {
+  if (/failed to fetch|network|load failed/i.test(message)) {
+    return 'Unable to connect to the sign-in service'
+  }
+  return message
+}
 
 function LoginContent() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-
-  // Support ?tab=signup from landing page CTAs
+  const [notice, setNotice] = useState('')
+  const nextPath = safeNextPath(searchParams.get('next'))
   const defaultTab = searchParams.get('tab') === 'signup' ? 'signup' : 'signin'
+  const callbackError = searchParams.get('error') === 'auth_callback_error'
+    ? 'That sign-in link has expired. Enter your email and password to continue.'
+    : ''
 
   async function handleLogin(email: string, password: string) {
     setLoading(true)
     setError('')
-
+    setNotice('')
     try {
       const { supabase } = await import('@/lib/supabase')
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-
-      if (error) {
-        setError(error.message)
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+      if (signInError) {
+        setError(friendlyAuthError(signInError.message))
         setLoading(false)
-      } else {
-        router.push('/dashboard')
-        router.refresh()
+        return
       }
-    } catch (err) {
-      setError('Unable to connect to authentication service')
+      window.location.assign(nextPath)
+    } catch {
+      setError('Unable to connect to the sign-in service')
       setLoading(false)
     }
   }
@@ -36,29 +44,27 @@ function LoginContent() {
   async function handleSignUp(email: string, password: string, fullName: string) {
     setLoading(true)
     setError('')
-
+    setNotice('')
     try {
       const { supabase } = await import('@/lib/supabase')
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: {
-            full_name: fullName,
-          },
-        },
+        options: { data: { full_name: fullName } },
       })
-
-      if (error) {
-        setError(error.message)
+      if (signUpError) {
+        setError(friendlyAuthError(signUpError.message))
         setLoading(false)
-      } else if (data.user) {
-        // Redirect to onboarding after successful signup
-        router.push('/onboarding')
-        router.refresh()
+        return
       }
-    } catch (err) {
-      setError('Unable to connect to authentication service')
+      if (data.session) {
+        window.location.assign('/onboarding')
+        return
+      }
+      setNotice('Check your email to confirm the account, then sign in.')
+      setLoading(false)
+    } catch {
+      setError('Unable to connect to the sign-in service')
       setLoading(false)
     }
   }
@@ -66,18 +72,20 @@ function LoginContent() {
   async function handleGoogleLogin() {
     setLoading(true)
     setError('')
+    setNotice('')
     try {
       const { supabase } = await import('@/lib/supabase')
-      const { error } = await supabase.auth.signInWithOAuth({
+      const next = encodeURIComponent(nextPath)
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: window.location.origin + '/auth/callback' },
+        options: { redirectTo: `${window.location.origin}/auth/callback?next=${next}` },
       })
-      if (error) {
-        setError(error.message)
+      if (oauthError) {
+        setError(friendlyAuthError(oauthError.message))
         setLoading(false)
       }
-    } catch (err) {
-      setError('Unable to connect to authentication service')
+    } catch {
+      setError('Unable to connect to the sign-in service')
       setLoading(false)
     }
   }
@@ -87,20 +95,17 @@ function LoginContent() {
       onSubmit={handleLogin}
       onSignUp={handleSignUp}
       onGoogleLogin={handleGoogleLogin}
-      error={error}
+      error={error || callbackError}
+      notice={notice}
       loading={loading}
-      defaultTab={defaultTab as "signin" | "signup"}
+      defaultTab={defaultTab}
     />
   )
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-[#886cff] border-t-transparent rounded-full animate-spin" />
-      </div>
-    }>
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
       <LoginContent />
     </Suspense>
   )

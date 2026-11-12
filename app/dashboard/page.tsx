@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Sidebar from '@/components/Sidebar'
+import { panelSubtitle } from '@/lib/account-label'
+import { unwrapCompany } from '@/lib/company-embed'
 
 type DashboardData = {
   company: { name: string; slug: string; plan: string; plan_status: string }
@@ -45,18 +47,45 @@ export default function Home() {
   const [stock, setStock] = useState<StockSummary | null>(null)
 
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [accountEmail, setAccountEmail] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/dashboard')
-      .then(r => r.json())
-      .then(d => {
-        if (d.company) {
-          setData(d)
-        } else if (d.error) {
-          setLoadError(d.error)
+    const controller = new AbortController()
+    const timer = window.setTimeout(() => controller.abort(), 8000)
+    let cancelled = false
+
+    async function loadDashboard() {
+      try {
+        const response = await fetch('/api/dashboard', { signal: controller.signal })
+        const body = await response.json().catch(() => null)
+        if (cancelled) return
+        if (typeof body?.user?.email === 'string') setAccountEmail(body.user.email)
+        if (response.status === 401) {
+          const next = window.location.pathname + window.location.search
+          window.location.assign(`/login?next=${encodeURIComponent(next)}`)
+          return
         }
-      })
-      .catch(() => setLoadError('Could not load dashboard data.'))
+        const company = unwrapCompany(body?.company)
+        if (response.ok && company?.id) {
+          setData({
+            ...body,
+            company: {
+              name: company.name || '',
+              slug: company.slug || '',
+              plan: company.plan || 'starter',
+              plan_status: company.plan_status || 'trial',
+            },
+          })
+          return
+        }
+        setLoadError(typeof body?.error === 'string' ? body.error : 'Could not load dashboard data.')
+      } catch {
+        if (!cancelled) setLoadError('Could not load dashboard data.')
+      } finally {
+        window.clearTimeout(timer)
+      }
+    }
+    loadDashboard()
 
     fetch('/api/reports?period=month')
       .then(r => r.json())
@@ -69,6 +98,12 @@ export default function Home() {
         if (d.platforms) setPlatformStatus(d.platforms.map((p: { name: string; connected: boolean; username?: string }) => ({ name: p.name, connected: p.connected, username: p.username })))
       })
       .catch(() => setPlatformStatus([{ name: 'Instagram', connected: false }, { name: 'TikTok', connected: false }]))
+
+    return () => {
+      cancelled = true
+      controller.abort()
+      window.clearTimeout(timer)
+    }
   }, [])
 
   const company = data?.company
@@ -77,8 +112,9 @@ export default function Home() {
   const plan = company?.plan || 'starter'
   const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.starter
 
-  // No company found — show setup prompt
-  if (loadError && !data) {
+  // No company row yet — show setup. Any other failure keeps the panel
+  // and falls back to the email, instead of sitting on "Loading...".
+  if (loadError === 'No company found' && !data) {
     return (
       <div className="flex min-h-screen" style={{ background: '#F7F7F7', fontFamily: "'Inter', system-ui, sans-serif" }}>
         <Sidebar active="dashboard" />
@@ -117,7 +153,7 @@ export default function Home() {
           <div>
             <h1 className="text-xl md:text-2xl font-bold" style={{ color: '#1A1A1A' }}>Dashboard</h1>
             <p className="text-sm mt-0.5" style={{ color: '#AAAAAA' }}>
-              {company?.name ? `${company.name} — Overview` : 'Loading...'}
+              {panelSubtitle(company?.name, accountEmail)}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -130,6 +166,12 @@ export default function Home() {
         </header>
 
         <div className="flex-1 overflow-y-auto p-4 md:p-8">
+
+          {loadError && loadError !== 'No company found' && !data && (
+            <p className="mb-4 rounded-lg border border-[#EBEBEB] bg-white px-4 py-3 text-sm" style={{ color: '#666' }}>
+              Workspace details are unavailable right now. Your account is still signed in.
+            </p>
+          )}
 
           {/* KPIs */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-6 md:mb-8">

@@ -7,9 +7,10 @@ import { PUBLIC_MARKETING_ROUTES } from "@/lib/site-routes";
 const BackgroundScene = dynamic(() => import("@/components/BackgroundScene"), { ssr: false });
 
 const MARKETING = new Set(PUBLIC_MARKETING_ROUTES);
+const QUIET = new Set(["/login", "/forgot-password", "/reset-password"]);
 
 export default function AppBackground() {
   const pathname = usePathname() || "/";
-  if (MARKETING.has(pathname)) return null;
+  if (MARKETING.has(pathname) || QUIET.has(pathname)) return null;
   return <BackgroundScene fixed opacity={0.25} particleCount={60} />;
 }
