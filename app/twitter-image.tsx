@@ -47,7 +47,7 @@ export default function OpengraphImage() {
           <div style={{ fontSize: 28, fontWeight: 700, letterSpacing: 2 }}>CYTRON</div>
         </div>
         <div style={{ fontSize: 64, fontWeight: 650, lineHeight: 1.1, maxWidth: 900 }}>
-          Automate the busywork. Keep the judgment.
+          Automate the repetitive. Decide what matters.
         </div>
         <div style={{ marginTop: 28, fontSize: 26, color: "rgba(255,255,255,0.82)", maxWidth: 800 }}>
           Business automation for Gold Coast small businesses.
