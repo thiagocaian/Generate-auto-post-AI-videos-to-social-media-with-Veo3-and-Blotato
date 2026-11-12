@@ -3,7 +3,7 @@ import PricingPage from "@/components/marketing/pricing-page";
 
 export const metadata: Metadata = {
   title: "Pricing — CYTRON",
-  description: "Free automation audit, a fixed-quote pilot and monthly run & improve for Gold Coast small businesses. No surprise invoices.",
+  description: "Monthly plans from $349 AUD for Gold Coast small businesses, plus a free automation audit. Setup fees listed, prices ex GST where applicable.",
   alternates: { canonical: "/pricing" },
 };
 

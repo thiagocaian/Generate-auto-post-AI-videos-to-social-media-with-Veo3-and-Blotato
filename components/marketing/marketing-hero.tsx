@@ -43,9 +43,9 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="text-[clamp(2.25rem,8vw,3rem)] font-semibold leading-[1.05] tracking-tight text-slate-900 lg:text-[clamp(3.5rem,5.2vw,4.75rem)] xl:text-[clamp(3.5rem,4.4vw,4.25rem)]"
           >
-            Automate the busywork.
+            Automate the repetitive.
             <br />
-            Keep the judgment.
+            Decide what matters.
           </motion.h1>
           <motion.p
             initial={reduced ? false : { opacity: 0, y: 8 }}
@@ -53,7 +53,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             transition={{ delay: 0.06, duration: 0.4, ease: "easeOut" }}
             className="mt-5 max-w-md text-[17px] leading-relaxed text-slate-600 sm:text-lg"
           >
-            Missed calls, bookings and invoices — handled. Your team only steps in when it matters.
+            Cytron runs on smart automation: less manual work, more time for what drives results.
           </motion.p>
 
           <motion.form

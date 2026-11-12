@@ -6,9 +6,16 @@ const root = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   resolve: {
-    alias: { '@': root },
+    alias: {
+      '@': root,
+    },
   },
   test: {
-    include: ['lib/security/**/*.test.ts', 'lib/validation/**/*.test.ts', 'lib/inbound/**/*.test.ts'],
+    include: [
+      'lib/security/**/*.test.ts',
+      'lib/validation/**/*.test.ts',
+      'lib/inbound/**/*.test.ts',
+      'lib/notify.test.ts',
+    ],
   },
 })
