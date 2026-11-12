@@ -1,0 +1,329 @@
+{
+ "name": "TESTE (copy, do not activate) - Marketing E - Weekly analysis + morning page",
+ "nodes": [
+  {
+   "id": "73f33648-c6d9-4176-aa0b-a74d5d4e6c26",
+   "name": "Note 1",
+   "type": "n8n-nodes-base.stickyNote",
+   "typeVersion": 1,
+   "position": [
+    -40,
+    -380
+   ],
+   "parameters": {
+    "content": "## E — Análise semanal + página da manhã\nLê peças, distribuições, métricas (Blotato analytics) e leads atribuídos (UTM) → top conteúdos, melhor canal, leads por campanha, recomendações e plano da próxima semana → grava `mkt_weekly_insights` e manda a página da manhã.\nHoje roda com **dados mock** e análise heurística (grátis). Envio Telegram/e-mail DESATIVADO. NÃO ATIVAR.",
+    "height": 300,
+    "width": 560
+   }
+  },
+  {
+   "id": "d2430aaa-8fe9-42d4-8711-2cc0b11ff761",
+   "name": "Run manually (test)",
+   "type": "n8n-nodes-base.manualTrigger",
+   "typeVersion": 1,
+   "position": [
+    0,
+    0
+   ],
+   "parameters": {}
+  },
+  {
+   "id": "94c4b3de-425a-4541-8a9e-1fbb1dd91464",
+   "name": "Monday 07:00 (Brisbane)",
+   "type": "n8n-nodes-base.scheduleTrigger",
+   "typeVersion": 1.2,
+   "position": [
+    0,
+    200
+   ],
+   "parameters": {
+    "rule": {
+     "interval": [
+      {
+       "field": "cronExpression",
+       "expression": "0 7 * * 1"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "0d0e5082-e22d-4b3a-a813-bd06e6463d0a",
+   "name": "Config",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    220,
+    100
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// E1 Config\nreturn [{ json: { dry_run: true, company_id: '4a617a32-8493-4bd1-a9ab-12f5edf2055a' } }];\n"
+   }
+  },
+  {
+   "id": "24ff03ee-a1c9-42b1-bf17-b9dd6d49765f",
+   "name": "Mock week data",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    440,
+    100
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// E1b Mock (dry-run): dados de exemplo no formato das tabelas mkt_*\nconst C = '4a617a32-8493-4bd1-a9ab-12f5edf2055a';\nreturn [{ json: { company_id: C,\n  pieces: [{ id: 'p1', title: 'AI receptionist for tradies', status: 'published' }, { id: 'p2', title: 'Missed-call text-back in 30s', status: 'published' }, { id: 'p3', title: 'Quotes on autopilot', status: 'pending_approval' }],\n  jobs: [{ id: 'j1', piece_id: 'p1', platform: 'instagram' }, { id: 'j2', piece_id: 'p1', platform: 'tiktok' }, { id: 'j3', piece_id: 'p2', platform: 'linkedin' }],\n  metrics: [{ distribution_job_id: 'j1', captured_at: '2026-11-10', views: 1200, likes: 40, comments: 5, shares: 3, saves: 6 }, { distribution_job_id: 'j2', captured_at: '2026-11-10', views: 3400, likes: 120, comments: 12, shares: 9 }, { distribution_job_id: 'j3', captured_at: '2026-11-10', impressions: 800, likes: 15, clicks: 9 }],\n  leads: [{ lead_table: 'lead_audits', utm_source: 'tiktok', utm_campaign: 'mkt_20261110_ai-receptionist', piece_id: 'p1' }, { lead_table: 'demo_requests', utm_source: 'linkedin', utm_campaign: 'mkt_20261110_missed-call', piece_id: 'p2' }],\n  ideas: [{ id: 'i1', title: 'Boyd Group has AI agents booking repairs', source: 'google_news', score: 46, status: 'new' }] } }];\n"
+   }
+  },
+  {
+   "id": "372f19ad-1fdc-443c-b48c-24148883b1e3",
+   "name": "Supabase: load week (RPC pendente)",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    660,
+    100
+   ],
+   "parameters": {
+    "options": {
+     "timeout": 30000
+    },
+    "method": "POST",
+    "url": "https://awjagykdhrroeonewwgx.supabase.co/rest/v1/rpc/mkt_week_snapshot",
+    "authentication": "predefinedCredentialType",
+    "nodeCredentialType": "supabaseApi",
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify({ p_company_id: $json.company_id }) }}"
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO: criar RPC mkt_week_snapshot + credencial. Desativado = passa o mock."
+  },
+  {
+   "id": "0e6cd91d-1f19-4c5a-b45a-5f5514aab276",
+   "name": "Blotato: GET /v2/analytics",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    880,
+    100
+   ],
+   "parameters": {
+    "options": {
+     "timeout": 30000
+    },
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "blotato-api-key",
+       "value": "={{ $env.BLOTATO_API_KEY }}"
+      }
+     ]
+    },
+    "url": "https://backend.blotato.com/v2/analytics"
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO: analytics só em plano pago do Blotato."
+  },
+  {
+   "id": "a51c5fcf-a962-48e4-afc3-d44538d26feb",
+   "name": "Analyse + morning page",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    1100,
+    100
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// E2 Análise semanal + página da manhã. Entrada: dados das tabelas mkt_* (ou mock). Sem rede.\nconst d = $input.first().json; const pieces = d.pieces || [], jobs = d.jobs || [], metrics = d.metrics || [], leads = d.leads || [], ideas = d.ideas || [];\nconst bne = new Date(Date.now() + 10 * 36e5); const today = bne.toISOString().slice(0, 10);\nconst start = new Date(bne.getTime() - 7 * 864e5).toISOString().slice(0, 10);\nconst lastByJob = {}; for (const m of metrics) if (!lastByJob[m.distribution_job_id] || m.captured_at > lastByJob[m.distribution_job_id].captured_at) lastByJob[m.distribution_job_id] = m;\nconst eng = m => (m.likes || 0) + 2 * (m.comments || 0) + 3 * (m.shares || 0) + 2 * (m.saves || 0) + 5 * (m.clicks || 0);\nconst byPiece = {};\nfor (const j of jobs) { const m = lastByJob[j.id] || {}; const b = byPiece[j.piece_id] = byPiece[j.piece_id] || { piece_id: j.piece_id, views: 0, engagement: 0, leads: 0, platforms: {} }; b.views += m.views || m.impressions || 0; b.engagement += eng(m); b.platforms[j.platform] = (b.platforms[j.platform] || 0) + eng(m); }\nfor (const l of leads) if (l.piece_id && byPiece[l.piece_id]) byPiece[l.piece_id].leads++;\nconst leadsByCampaign = {}; for (const l of leads) { const k = l.utm_campaign || '(sem utm)'; leadsByCampaign[k] = (leadsByCampaign[k] || 0) + 1; }\nconst leadsBySource = {}; for (const l of leads) { const k = l.utm_source || l.lead_table || 'direto'; leadsBySource[k] = (leadsBySource[k] || 0) + 1; }\nconst top = Object.values(byPiece).map(b => ({ ...b, title: (pieces.find(p => p.id === b.piece_id) || {}).title || b.piece_id, score: b.leads * 100 + b.engagement })).sort((a, b) => b.score - a.score).slice(0, 5);\nconst platTotals = {}; for (const b of Object.values(byPiece)) for (const [k, v] of Object.entries(b.platforms)) platTotals[k] = (platTotals[k] || 0) + v;\nconst bestPlat = Object.entries(platTotals).sort((a, b) => b[1] - a[1])[0]?.[0] || null;\nconst status = {}; for (const p of pieces) status[p.status] = (status[p.status] || 0) + 1;\nconst recs = [];\nif (top[0]) recs.push(`Repetir o formato/tema de \"${top[0].title}\" (melhor da semana: ${top[0].leads} leads, engajamento ${top[0].engagement}).`);\nif (bestPlat) recs.push(`Priorizar ${bestPlat} no horário nobre (maior engajamento somado).`);\nif ((status.pending_approval || 0) > 3) recs.push(`${status.pending_approval} peças esperando aprovação — aprovar ou rejeitar no Telegram.`);\nif (!leads.length) recs.push('Nenhum lead atribuído: conferir se os links levam UTM e se os formulários gravam a origem.');\nconst plan = ideas.filter(i => i.status === 'new').sort((a, b) => b.score - a.score).slice(0, 5).map((i, n) => ({ day: n + 1, idea_id: i.id, title: i.title, source: i.source }));\nconst stats = { pieces_by_status: status, distribution_jobs: jobs.length, leads: leads.length, leads_by_campaign: leadsByCampaign, leads_by_source: leadsBySource, platform_engagement: platTotals };\nconst md = [`# Página da manhã — Cytron Marketing (${today}, Brisbane)`, '', `**Semana ${start} → ${today}**`, `- Peças: ${Object.entries(status).map(([k, v]) => `${k} ${v}`).join(' · ') || 'nenhuma'}`,\n  `- Posts distribuídos: ${jobs.length} · Leads atribuídos: ${leads.length}`, '', '## Top conteúdos', ...(top.length ? top.map((t, n) => `${n + 1}. ${t.title} — ${t.leads} leads, eng. ${t.engagement}`) : ['(sem métricas ainda)']),\n  '', '## Recomendações', ...recs.map(r => '- ' + r), '', '## Plano da próxima semana (ideias com maior score)', ...(plan.length ? plan.map(p => `- Dia ${p.day}: ${p.title} (${p.source})`) : ['(sem ideias novas)'])].join('\\n');\nreturn [{ json: { insight: { company_id: d.company_id, period_start: start, period_end: today, kind: 'weekly', summary: recs.join(' '), stats, top_pieces: top, recommendations: recs, next_week_plan: plan, generator: 'heuristic_v1' }, morning_page_md: md } }];\n"
+   }
+  },
+  {
+   "id": "d84abe53-d350-4865-b4cc-923a39fd3413",
+   "name": "Supabase: upsert mkt_weekly_insights",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    1320,
+    0
+   ],
+   "parameters": {
+    "method": "POST",
+    "url": "https://awjagykdhrroeonewwgx.supabase.co/rest/v1/mkt_weekly_insights?on_conflict=company_id,kind,period_start",
+    "authentication": "predefinedCredentialType",
+    "nodeCredentialType": "supabaseApi",
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Prefer",
+       "value": "resolution=merge-duplicates,return=minimal"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify($json.insight) }}",
+    "options": {
+     "timeout": 30000
+    }
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO: falta credencial \"Supabase Cytron (service role)\" no n8n. Ativar na quinta."
+  },
+  {
+   "id": "a80d6faa-5123-436e-9578-fbf11fcc91e4",
+   "name": "Telegram: morning page",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    1320,
+    200
+   ],
+   "parameters": {
+    "options": {
+     "timeout": 30000
+    },
+    "method": "POST",
+    "url": "={{ 'https://api.telegram.org/bot' + $env.MKT_TELEGRAM_BOT_TOKEN + '/sendMessage' }}",
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify({ chat_id: $env.MKT_TELEGRAM_APPROVER_CHAT_ID, text: $json.morning_page_md.slice(0, 4000) }) }}"
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO"
+  },
+  {
+   "id": "008d2ba1-f9b3-418a-a45f-f1332640a518",
+   "name": "Resend: morning page e-mail",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    1320,
+    400
+   ],
+   "parameters": {
+    "options": {
+     "timeout": 30000
+    },
+    "method": "POST",
+    "url": "https://api.resend.com/emails",
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Authorization",
+       "value": "={{ \"Bearer \" + $env.RESEND_API_KEY }}"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify({ from: \"Cytron Marketing <hello@cytronai.com>\", to: [\"PENDENTE\"], subject: \"Página da manhã — Cytron Marketing\", text: $json.morning_page_md }) }}"
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO: definir destinatário."
+  }
+ ],
+ "connections": {
+  "Run manually (test)": {
+   "main": [
+    [
+     {
+      "node": "Config",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Monday 07:00 (Brisbane)": {
+   "main": [
+    [
+     {
+      "node": "Config",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Config": {
+   "main": [
+    [
+     {
+      "node": "Mock week data",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Mock week data": {
+   "main": [
+    [
+     {
+      "node": "Supabase: load week (RPC pendente)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Supabase: load week (RPC pendente)": {
+   "main": [
+    [
+     {
+      "node": "Blotato: GET /v2/analytics",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Blotato: GET /v2/analytics": {
+   "main": [
+    [
+     {
+      "node": "Analyse + morning page",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Analyse + morning page": {
+   "main": [
+    [
+     {
+      "node": "Supabase: upsert mkt_weekly_insights",
+      "type": "main",
+      "index": 0
+     },
+     {
+      "node": "Telegram: morning page",
+      "type": "main",
+      "index": 0
+     },
+     {
+      "node": "Resend: morning page e-mail",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1",
+  "timezone": "Australia/Brisbane",
+  "saveManualExecutions": true
+ }
+}

@@ -1,0 +1,426 @@
+{
+ "name": "TESTE (copy, do not activate) - Marketing B - Content generator (LLM pending)",
+ "nodes": [
+  {
+   "id": "1b7ddf00-e4a7-44cd-8e5e-875a99d6db2a",
+   "name": "Note 1",
+   "type": "n8n-nodes-base.stickyNote",
+   "typeVersion": 1,
+   "position": [
+    -40,
+    -380
+   ],
+   "parameters": {
+    "content": "## B — Gerador de roteiro e copy\nPega as melhores ideias → monta prompt com a voz da Cytron → LLM (nó Gemini DESATIVADO até ter chave/plano) → se o LLM não responder, usa o **gerador por template (grátis)**.\nSaída = linhas de `mkt_content_pieces` com status `pending_approval`, variantes por canal e links com UTM.\nMídia (Veo3/voz/design Fox) PENDENTE. NÃO ATIVAR.",
+    "height": 300,
+    "width": 560
+   }
+  },
+  {
+   "id": "f7042cab-7323-4bb2-9c6a-ba7cae0b667b",
+   "name": "Run manually (test)",
+   "type": "n8n-nodes-base.manualTrigger",
+   "typeVersion": 1,
+   "position": [
+    0,
+    0
+   ],
+   "parameters": {}
+  },
+  {
+   "id": "fd5b598c-a7c6-4ebe-97f2-fb8427123532",
+   "name": "Called by A / scheduler",
+   "type": "n8n-nodes-base.executeWorkflowTrigger",
+   "typeVersion": 1.1,
+   "position": [
+    0,
+    200
+   ],
+   "parameters": {
+    "inputSource": "passthrough"
+   }
+  },
+  {
+   "id": "52c5cee1-4bbb-4520-b9eb-0b015d00483b",
+   "name": "Config",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    240,
+    100
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// B1 Config. dry_run=true usa ideias mock e não grava nada.\nconst inp = $input.first()?.json || {};\nreturn [{ json: {\n  dry_run: inp.dry_run !== false,\n  max_pieces: inp.max_pieces || 3,\n  format: inp.format || 'short_video',\n  platforms: inp.platforms || ['instagram', 'tiktok', 'youtube', 'facebook', 'linkedin'], // PENDENTE: Thiago escolher os canais\n  audience: inp.audience || 'Small local businesses and tradies on the Gold Coast / SE Queensland (English, AU) — PENDENTE confirmar',\n} }];\n"
+   }
+  },
+  {
+   "id": "bd4f5ffb-e675-4374-a9ea-0f4dfb5242cb",
+   "name": "Dry run? (mock ideas)",
+   "type": "n8n-nodes-base.if",
+   "typeVersion": 2,
+   "position": [
+    460,
+    100
+   ],
+   "parameters": {
+    "conditions": {
+     "options": {
+      "caseSensitive": true,
+      "leftValue": "",
+      "typeValidation": "loose"
+     },
+     "conditions": [
+      {
+       "id": "3a6af664-408c-4429-879d-1bce7f484998",
+       "leftValue": "={{ $json.dry_run }}",
+       "rightValue": "",
+       "operator": {
+        "type": "boolean",
+        "operation": "true",
+        "singleValue": true
+       }
+      }
+     ],
+     "combinator": "and"
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "c90bb7aa-e27f-4c8a-861c-4c88f96ace1a",
+   "name": "Mock ideas",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    680,
+    0
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// B1b Mock de ideias para dry-run (sem Supabase)\nreturn [\n  { json: { id: null, source: 'google_news', title: 'Boyd Group Has AI Agents Booking Repairs. Claims Paperwork Is Next.', summary: '', score: 46 } },\n  { json: { id: null, source: 'hacker_news', title: 'United Airlines bans AI agents from booking flights on behalf of travelers', summary: '', score: 69 } },\n];\n"
+   }
+  },
+  {
+   "id": "38b4040a-8ba3-4085-9f43-772e80298583",
+   "name": "Supabase: top new ideas",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    680,
+    220
+   ],
+   "parameters": {
+    "options": {
+     "timeout": 30000
+    },
+    "url": "https://awjagykdhrroeonewwgx.supabase.co/rest/v1/mkt_content_ideas?status=eq.new&order=score.desc&limit=5&select=id,source,title,summary,score",
+    "authentication": "predefinedCredentialType",
+    "nodeCredentialType": "supabaseApi"
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO: credencial Supabase pendente."
+  },
+  {
+   "id": "6c317577-4e69-44ec-9f17-5f74919c6387",
+   "name": "Prepare prompt",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    900,
+    100
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// B2 Seleciona ideias e monta o prompt (para o LLM) + plano de canais. Sem rede.\n// Entrada: itens de mkt_content_ideas (via Supabase) ou mock quando dry_run.\nconst COMPANY_ID = '4a617a32-8493-4bd1-a9ab-12f5edf2055a';\nconst cfg = $('Config').first().json;\nconst ideas = $input.all().map(i => i.json).flatMap(j => Array.isArray(j.ideas) ? j.ideas : [j]).filter(j => j && j.title);\nconst BRAND = {\n  name: 'Cytron AI', site: 'https://cytronai.com',\n  offer: 'AI automation for small businesses: AI receptionist / missed-call text-back, lead capture and follow-up, bookings, quotes and back-office workflows (n8n).',\n  audience: cfg.audience, voice: 'Plain-English, practical, local (Australian spelling), confident but no hype, no fake numbers, one clear CTA.',\n  cta: 'Book a free 15-min automation audit',\n};\nconst LIMITS = { instagram: 2200, tiktok: 2200, youtube: 100, facebook: 5000, linkedin: 3000, threads: 500, twitter: 280 };\nconst out = ideas.slice(0, cfg.max_pieces).map((idea, n) => {\n  const slug = (idea.title || 'post').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);\n  const utm_campaign = `mkt_${new Date(Date.now() + 10 * 36e5).toISOString().slice(0, 10).replace(/-/g, '')}_${slug}`.slice(0, 80);\n  const prompt = [\n    `You are the content writer for ${BRAND.name} (${BRAND.site}). Offer: ${BRAND.offer}`,\n    `Audience: ${BRAND.audience}. Voice: ${BRAND.voice}`,\n    `Trend/idea (source ${idea.source}): \"${idea.title}\". ${idea.summary || ''}`,\n    `Write ONE ${cfg.format} for: ${cfg.platforms.join(', ')}. Return strict JSON:`,\n    `{\"title\":\"\",\"hook\":\"<=12 words\",\"script\":\"30-45s voiceover, 3 beats: problem, how AI automation fixes it, CTA\",\"caption\":\"\",\"hashtags\":[\"max 6\"],\"cta\":\"${BRAND.cta}\",\"variants\":{\"<platform>\":{\"text\":\"\",\"title\":\"\"}}}`,\n    `Respect limits: ${JSON.stringify(LIMITS)}. Never invent client results or statistics.`,\n  ].join('\\n');\n  return { json: { company_id: COMPANY_ID, idea, prompt, utm_campaign, platforms: cfg.platforms, format: cfg.format, limits: LIMITS, brand: BRAND, n } };\n});\nreturn out;\n"
+   }
+  },
+  {
+   "id": "0d485e53-7568-4400-a30e-8a200060abfa",
+   "name": "LLM: Gemini generate (PENDENTE chave)",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    1120,
+    100
+   ],
+   "parameters": {
+    "options": {
+     "timeout": 60000,
+     "batching": {
+      "batch": {
+       "batchSize": 1,
+       "batchInterval": 4000
+      }
+     }
+    },
+    "method": "POST",
+    "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+    "authentication": "predefinedCredentialType",
+    "nodeCredentialType": "googlePalmApi",
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify({ contents: [{ parts: [{ text: $json.prompt }] }], generationConfig: { responseMimeType: \"application/json\", temperature: 0.8 } }) }}"
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO: escolher LLM (Gemini pago / Claude) e ligar a credencial. Desativado = passa direto para o template."
+  },
+  {
+   "id": "47d7e939-980b-4d8f-b7a1-895b1d58b114",
+   "name": "Build pieces (LLM or template)",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    1340,
+    100
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// B4 Gerador SEM LLM (grátis, determinístico) — usado enquanto não há chave paga.\n// Se o nó Gemini rodar e devolver JSON válido, ele tem prioridade.\nconst preps = $('Prepare prompt').all().map(i => i.json);\nconst llm = $input.all().map(i => i.json);\nconst pick = (arr, n) => arr[n % arr.length];\nconst HOOKS = ['Still losing jobs to missed calls?', 'Your competitors just hired an AI receptionist.', 'This is what AI actually does for a small business.', 'Stop doing this by hand.'];\nreturn preps.map((p, i) => {\n  let g = null, generator = 'template_v1';\n  try { const t = llm[i]?.candidates?.[0]?.content?.parts?.[0]?.text; if (t) { g = JSON.parse(t.replace(/^```json|```$/g, '').trim()); generator = 'gemini'; } } catch (e) { g = null; }\n  const idea = p.idea; const link = `${p.brand.site}/?utm_source={platform}&utm_medium=social&utm_campaign=${p.utm_campaign}`;\n  if (!g) {\n    const hook = pick(HOOKS, p.n);\n    g = {\n      title: `AI for small business: ${idea.title}`.slice(0, 95), hook,\n      script: `${hook}\\nIn the news this week: ${idea.title}.\\nWhat it means for you: the same AI that big companies use can answer your calls, reply to enquiries in seconds and book jobs while you're on the tools.\\n${p.brand.cta} — link in bio.`,\n      caption: `${hook}\\n\\n${idea.title} — here's the practical version for local businesses: answer every enquiry, follow up every lead, book the job. No new staff.\\n\\n${p.brand.cta} 👉 {link}`,\n      hashtags: ['#smallbusiness', '#aiautomation', '#goldcoast', '#tradies', '#australianbusiness', '#cytronai'], cta: p.brand.cta, variants: {},\n    };\n  }\n  const variants = {};\n  for (const pl of p.platforms) {\n    const v = (g.variants && g.variants[pl]) || {};\n    let text = (v.text || g.caption || '').replace('{link}', link.replace('{platform}', pl));\n    if (pl !== 'youtube' && !text.includes('#')) text += '\\n\\n' + (g.hashtags || []).slice(0, 6).join(' ');\n    variants[pl] = { text: text.slice(0, p.limits[pl] || 2200), title: (v.title || g.title || '').slice(0, pl === 'youtube' ? 100 : 150), link: link.replace('{platform}', pl) };\n  }\n  return { json: { company_id: p.company_id, idea_id: idea.id || null, format: p.format, title: g.title, hook: g.hook, script: g.script,\n    caption: (g.caption || '').replace('{link}', link.replace('{platform}', 'instagram')), hashtags: g.hashtags || [], cta: g.cta, target_platforms: p.platforms,\n    platform_variants: variants, media_urls: [], utm_campaign: p.utm_campaign, status: 'pending_approval', generator,\n    generator_meta: { prompt_chars: p.prompt.length, media: 'PENDENTE: vídeo Veo3 / voz ElevenLabs / design Fox' } } };\n});\n"
+   }
+  },
+  {
+   "id": "b59aba35-0d7b-458a-8501-718b8324f06e",
+   "name": "Dry run? (no write)",
+   "type": "n8n-nodes-base.if",
+   "typeVersion": 2,
+   "position": [
+    1560,
+    100
+   ],
+   "parameters": {
+    "conditions": {
+     "options": {
+      "caseSensitive": true,
+      "leftValue": "",
+      "typeValidation": "loose"
+     },
+     "conditions": [
+      {
+       "id": "a430cd86-543f-42e3-a85e-a1a2633fd91b",
+       "leftValue": "={{ $('Config').first().json.dry_run }}",
+       "rightValue": "",
+       "operator": {
+        "type": "boolean",
+        "operation": "true",
+        "singleValue": true
+       }
+      }
+     ],
+     "combinator": "and"
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "d2d344fa-74c2-400b-9ba3-948e8a66f24a",
+   "name": "Preview pieces",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    1780,
+    0
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// Preview: nada é gravado\nreturn $input.all();"
+   }
+  },
+  {
+   "id": "ed33aa95-d6b9-4468-914f-7eeed7c8f2ab",
+   "name": "Supabase: insert mkt_content_pieces",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    1780,
+    220
+   ],
+   "parameters": {
+    "method": "POST",
+    "url": "https://awjagykdhrroeonewwgx.supabase.co/rest/v1/mkt_content_pieces",
+    "authentication": "predefinedCredentialType",
+    "nodeCredentialType": "supabaseApi",
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Prefer",
+       "value": "return=representation"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify($json) }}",
+    "options": {
+     "timeout": 30000
+    }
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO: falta credencial \"Supabase Cytron (service role)\" no n8n. Ativar na quinta."
+  },
+  {
+   "id": "ba19f606-1d0d-4bfd-8475-da4a9ac24fda",
+   "name": "Send to approval (workflow C)",
+   "type": "n8n-nodes-base.executeWorkflow",
+   "typeVersion": 1.1,
+   "position": [
+    2000,
+    220
+   ],
+   "parameters": {
+    "source": "database",
+    "workflowId": "={{ \"PENDENTE_ID_WORKFLOW_C\" }}",
+    "options": {}
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO: apontar para o ID do workflow C depois de ativar."
+  }
+ ],
+ "connections": {
+  "Run manually (test)": {
+   "main": [
+    [
+     {
+      "node": "Config",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Called by A / scheduler": {
+   "main": [
+    [
+     {
+      "node": "Config",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Config": {
+   "main": [
+    [
+     {
+      "node": "Dry run? (mock ideas)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Dry run? (mock ideas)": {
+   "main": [
+    [
+     {
+      "node": "Mock ideas",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    [
+     {
+      "node": "Supabase: top new ideas",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Mock ideas": {
+   "main": [
+    [
+     {
+      "node": "Prepare prompt",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Supabase: top new ideas": {
+   "main": [
+    [
+     {
+      "node": "Prepare prompt",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Prepare prompt": {
+   "main": [
+    [
+     {
+      "node": "LLM: Gemini generate (PENDENTE chave)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "LLM: Gemini generate (PENDENTE chave)": {
+   "main": [
+    [
+     {
+      "node": "Build pieces (LLM or template)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Build pieces (LLM or template)": {
+   "main": [
+    [
+     {
+      "node": "Dry run? (no write)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Dry run? (no write)": {
+   "main": [
+    [
+     {
+      "node": "Preview pieces",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    [
+     {
+      "node": "Supabase: insert mkt_content_pieces",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Supabase: insert mkt_content_pieces": {
+   "main": [
+    [
+     {
+      "node": "Send to approval (workflow C)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1",
+  "timezone": "Australia/Brisbane",
+  "saveManualExecutions": true
+ }
+}

@@ -1,0 +1,464 @@
+{
+ "name": "TESTE (copy, do not activate) - Marketing D - Distribution via Blotato (dry-run)",
+ "nodes": [
+  {
+   "id": "3be2dc74-25e0-4593-a0ba-80dcf2af6475",
+   "name": "Note 1",
+   "type": "n8n-nodes-base.stickyNote",
+   "typeVersion": 1,
+   "position": [
+    -40,
+    -400
+   ],
+   "parameters": {
+    "content": "## D — Distribuição: Blotato no centro\n1 peça aprovada → **Blotato** (hub único) → 1 post por conta conectada (IG, TikTok, YouTube, Facebook, LinkedIn), cada um no formato e horário do canal (Brisbane).\nPadrão **DRY-RUN**: só vira live se a peça vier com `dry_run:false` **e** `MKT_LIVE=true` no servidor. Além disso, o POST do Blotato está DESATIVADO.\nFalhou no Blotato → fallback Ayrshare (1 chamada multi-canal) / Outstand, também desativado.\nNÃO ATIVAR.",
+    "height": 320,
+    "width": 560
+   }
+  },
+  {
+   "id": "a7e52ac0-6ddd-4597-9462-b92beb97b086",
+   "name": "Run manually (test)",
+   "type": "n8n-nodes-base.manualTrigger",
+   "typeVersion": 1,
+   "position": [
+    0,
+    0
+   ],
+   "parameters": {}
+  },
+  {
+   "id": "eca00afd-f70f-4c7d-80cf-8fab42b1c85f",
+   "name": "Called by C (approved)",
+   "type": "n8n-nodes-base.executeWorkflowTrigger",
+   "typeVersion": 1.1,
+   "position": [
+    0,
+    200
+   ],
+   "parameters": {
+    "inputSource": "passthrough"
+   }
+  },
+  {
+   "id": "4e412419-18c9-4990-aea3-dcebcc133fbf",
+   "name": "Mock approved piece",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    220,
+    0
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// D0 Peça aprovada mock (teste manual)\nreturn [{ json: { id: '11111111-2222-4333-8444-555555555555', company_id: '4a617a32-8493-4bd1-a9ab-12f5edf2055a', status: 'approved', title: 'TESTE: AI receptionist for tradies', caption: 'Mock caption #smallbusiness', media_urls: [], target_platforms: ['instagram', 'tiktok', 'youtube', 'facebook', 'linkedin'], platform_variants: { linkedin: { text: 'Mock LinkedIn text' }, facebook: { text: 'Mock Facebook text' } }, dry_run: true } }];\n"
+   }
+  },
+  {
+   "id": "42fb5da2-5714-4be0-91f9-d2c99ea7ae3d",
+   "name": "Approved piece (input)",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    440,
+    100
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// D1 Normaliza a peça aprovada (vinda do fluxo C ou do mock). dry_run padrão = true.\nconst p = $input.first().json;\nreturn [{ json: { ...p, dry_run: p.dry_run === false ? false : true } }];\n"
+   }
+  },
+  {
+   "id": "ff6946f5-3dde-4756-a341-2cf04767bcaf",
+   "name": "Mock Blotato accounts",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    660,
+    100
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// D1b Contas mock (dry-run). Live: substituir pelo GET /v2/users/me/accounts do Blotato.\nreturn [{ json: { items: [ { id: 'MOCK-IG', platform: 'instagram' }, { id: 'MOCK-TT', platform: 'tiktok' }, { id: 'MOCK-YT', platform: 'youtube' }, { id: 'MOCK-FB', platform: 'facebook' }, { id: 'MOCK-LI', platform: 'linkedin' } ] } }];\n"
+   }
+  },
+  {
+   "id": "5544aa0f-f93c-41ba-868f-8e77de89284f",
+   "name": "Blotato: GET accounts",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    880,
+    100
+   ],
+   "parameters": {
+    "options": {
+     "timeout": 30000
+    },
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "blotato-api-key",
+       "value": "={{ $env.BLOTATO_API_KEY }}"
+      }
+     ]
+    },
+    "url": "https://backend.blotato.com/v2/users/me/accounts"
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO (passa o mock adiante). Ativar e apagar o mock quando o plano Blotato e as contas estiverem conectados."
+  },
+  {
+   "id": "bf2658ff-f172-4f0e-a4f3-d924f1cceb70",
+   "name": "Fan-out: 1 post per channel",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    1100,
+    100
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// D2 Blotato = hub único. 1 peça aprovada -> 1 post por conta conectada (Blotato exige accountId por plataforma).\n// dry_run é o padrão: só fica live se input.dry_run === false E env MKT_LIVE === 'true'. E os nós POST estão desativados.\nconst env = k => { try { return $env[k]; } catch (e) { return undefined; } };\nconst piece = $('Approved piece (input)').first().json;\nconst accs = ($input.first().json.items || []);\nconst live = piece.dry_run === false && String(env('MKT_LIVE') || '').toLowerCase() === 'true';\nconst PLAT = { instagram: 'instagram', tiktok: 'tiktok', youtube: 'youtube', facebook: 'facebook', linkedin: 'linkedin', threads: 'threads', twitter: 'twitter' };\nconst SLOTS = { linkedin: '08:00', twitter: '08:30', threads: '07:30', facebook: '12:30', instagram: '18:00', tiktok: '19:00', youtube: '17:00' }; // Brisbane UTC+10\nconst nextSlot = hhmm => { const base = new Date(Date.now() + 10 * 36e5).toISOString().slice(0, 10); let d = new Date(`${base}T${hhmm}:00+10:00`); while (d.getTime() < Date.now() + 10 * 60e3) d = new Date(d.getTime() + 864e5); return new Date(d.getTime() + 10 * 36e5).toISOString().slice(0, 19) + '+10:00'; };\nconst media = piece.media_urls || [];\nreturn (piece.target_platforms || []).map(pl => {\n  const platform = PLAT[pl] || pl; const acc = accs.find(a => a.platform === platform) || null; const v = (piece.platform_variants || {})[pl] || {};\n  let target = { targetType: platform };\n  if (platform === 'facebook') target.pageId = env('BLOTATO_FACEBOOK_PAGE_ID') || 'PENDENTE_PAGE_ID';\n  if (platform === 'tiktok') target = { targetType: 'tiktok', privacyLevel: 'PUBLIC_TO_EVERYONE', disabledComments: false, disabledDuet: false, disabledStitch: false, isBrandedContent: false, isYourBrand: true, isAiGenerated: true, title: (v.title || '').slice(0, 90) };\n  if (platform === 'youtube') target = { targetType: 'youtube', title: (v.title || piece.title || '').slice(0, 100), privacyStatus: 'public', shouldNotifySubscribers: true };\n  if (platform === 'instagram') target = { targetType: 'instagram', mediaType: media.length ? 'reel' : undefined };\n  const body = { post: { accountId: acc ? String(acc.id) : 'PENDENTE_ACCOUNT_' + platform, content: { text: v.text || piece.caption || '', mediaUrls: media, platform }, target }, scheduledTime: piece.publish_now ? undefined : nextSlot(SLOTS[platform] || '12:00') };\n  const problems = [];\n  if (!acc) problems.push('conta não conectada no Blotato');\n  if (['tiktok', 'youtube', 'instagram'].includes(platform) && !media.length) problems.push('plataforma exige vídeo/imagem (mídia pendente)');\n  return { json: { company_id: piece.company_id, piece_id: piece.id || null, provider: 'blotato', is_fallback: false, platform, account_id: acc ? String(acc.id) : null, dry_run: !live, body, problems } };\n});\n"
+   }
+  },
+  {
+   "id": "96b869af-1d12-4a62-85fa-3789e2bc41fa",
+   "name": "Dry run?",
+   "type": "n8n-nodes-base.if",
+   "typeVersion": 2,
+   "position": [
+    1320,
+    100
+   ],
+   "parameters": {
+    "conditions": {
+     "options": {
+      "caseSensitive": true,
+      "leftValue": "",
+      "typeValidation": "loose"
+     },
+     "conditions": [
+      {
+       "id": "140320ec-8fa9-4aff-ab4f-6e97e5ec0c35",
+       "leftValue": "={{ $json.dry_run }}",
+       "rightValue": "",
+       "operator": {
+        "type": "boolean",
+        "operation": "true",
+        "singleValue": true
+       }
+      }
+     ],
+     "combinator": "and"
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "d0b0d214-1431-4ee1-86e0-6a390e74c817",
+   "name": "Dry-run: no POST",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    1540,
+    0
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// Dry-run: nada é enviado ao Blotato\nreturn $input.all();"
+   }
+  },
+  {
+   "id": "27810820-214f-4bea-933b-824f43f0dfa2",
+   "name": "Blotato: POST /v2/posts",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    1540,
+    220
+   ],
+   "parameters": {
+    "options": {
+     "timeout": 60000,
+     "batching": {
+      "batch": {
+       "batchSize": 1,
+       "batchInterval": 2500
+      }
+     }
+    },
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "blotato-api-key",
+       "value": "={{ $env.BLOTATO_API_KEY }}"
+      }
+     ]
+    },
+    "method": "POST",
+    "url": "https://backend.blotato.com/v2/posts",
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify($json.body) }}"
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO. NUNCA ativar sem o Thiago. 30 req/min."
+  },
+  {
+   "id": "37d8916b-6d30-41cf-b89a-58dd151228d6",
+   "name": "Result → distribution_jobs",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    1760,
+    100
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// D4 Resultado (dry-run ou live) -> linhas para mkt_distribution_jobs. Falhas vão para o fallback.\nreturn $input.all().map(({ json: j }) => {\n  const failed = !j.dry_run && (!!j.error || j.status === 'failed');\n  return { json: { company_id: j.company_id, piece_id: j.piece_id, provider: j.provider, is_fallback: j.is_fallback, platform: j.platform, account_id: j.account_id,\n    dry_run: j.dry_run, status: j.dry_run ? 'dry_run' : (failed ? 'failed' : (j.scheduledTime ? 'scheduled' : 'submitted')), provider_post_id: j.postSubmissionId || null,\n    scheduled_for: j.body?.scheduledTime || null, request: j.body || {}, response: j.dry_run ? { note: 'DRY-RUN: nada foi enviado', problems: j.problems } : (j.response || {}), error: failed ? String(j.error || 'failed') : null, needs_fallback: failed } };\n});\n"
+   }
+  },
+  {
+   "id": "c9116d74-cae1-4c73-8756-305eadc8d224",
+   "name": "Supabase: insert mkt_distribution_jobs",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    1980,
+    100
+   ],
+   "parameters": {
+    "method": "POST",
+    "url": "https://awjagykdhrroeonewwgx.supabase.co/rest/v1/mkt_distribution_jobs",
+    "authentication": "predefinedCredentialType",
+    "nodeCredentialType": "supabaseApi",
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Prefer",
+       "value": "return=minimal"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify((({ needs_fallback, ...r }) => r)($json)) }}",
+    "options": {
+     "timeout": 30000
+    }
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO: falta credencial \"Supabase Cytron (service role)\" no n8n. Ativar na quinta."
+  },
+  {
+   "id": "d877937b-b636-410c-b2a4-3c139d327ccc",
+   "name": "Fallback needed? (Ayrshare/Outstand)",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    2200,
+    100
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// D6 Fallback (só se o Blotato falhar): Ayrshare aceita 1 chamada com várias plataformas; Outstand por conta.\nconst failed = $input.all().map(i => i.json).filter(j => j.needs_fallback);\nif (!failed.length) return [];\nconst piece = $('Approved piece (input)').first().json;\nconst platforms = [...new Set(failed.map(f => f.platform))];\nreturn [{ json: { provider: 'ayrshare', dry_run: true, body: { post: piece.caption, platforms, mediaUrls: piece.media_urls || [] }, outstand_alt: platforms.map(p => ({ platform: p, text: (piece.platform_variants || {})[p]?.text })) } }];\n"
+   }
+  },
+  {
+   "id": "14a28bd8-5bf1-40e1-9b5b-deaf09483190",
+   "name": "Ayrshare: POST /api/post (fallback)",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    2420,
+    100
+   ],
+   "parameters": {
+    "options": {
+     "timeout": 30000
+    },
+    "method": "POST",
+    "url": "https://api.ayrshare.com/api/post",
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Authorization",
+       "value": "={{ \"Bearer \" + $env.AYRSHARE_API_KEY }}"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify($json.body) }}"
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO: fallback só se o Blotato cair."
+  }
+ ],
+ "connections": {
+  "Run manually (test)": {
+   "main": [
+    [
+     {
+      "node": "Mock approved piece",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Mock approved piece": {
+   "main": [
+    [
+     {
+      "node": "Approved piece (input)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Called by C (approved)": {
+   "main": [
+    [
+     {
+      "node": "Approved piece (input)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Approved piece (input)": {
+   "main": [
+    [
+     {
+      "node": "Mock Blotato accounts",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Mock Blotato accounts": {
+   "main": [
+    [
+     {
+      "node": "Blotato: GET accounts",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Blotato: GET accounts": {
+   "main": [
+    [
+     {
+      "node": "Fan-out: 1 post per channel",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Fan-out: 1 post per channel": {
+   "main": [
+    [
+     {
+      "node": "Dry run?",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Dry run?": {
+   "main": [
+    [
+     {
+      "node": "Dry-run: no POST",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    [
+     {
+      "node": "Blotato: POST /v2/posts",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Dry-run: no POST": {
+   "main": [
+    [
+     {
+      "node": "Result → distribution_jobs",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Blotato: POST /v2/posts": {
+   "main": [
+    [
+     {
+      "node": "Result → distribution_jobs",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Result → distribution_jobs": {
+   "main": [
+    [
+     {
+      "node": "Supabase: insert mkt_distribution_jobs",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Supabase: insert mkt_distribution_jobs": {
+   "main": [
+    [
+     {
+      "node": "Fallback needed? (Ayrshare/Outstand)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Fallback needed? (Ayrshare/Outstand)": {
+   "main": [
+    [
+     {
+      "node": "Ayrshare: POST /api/post (fallback)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1",
+  "timezone": "Australia/Brisbane",
+  "saveManualExecutions": true
+ }
+}
