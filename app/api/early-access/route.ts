@@ -1,17 +1,13 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { renderNotificationHtml, sendInternalNotification } from '@/lib/notify'
-import { PUBLIC_RATE_LIMIT, PUBLIC_RATE_WINDOW_MS, clientIp, createRateLimiter } from '@/lib/rate-limit'
+import { requestIp } from '@/lib/rate-limit'
+import { allowPublicRate, tooManyRequests } from '@/lib/durable-rate'
 import { parseEarlyAccess } from '@/lib/validation/early-access'
 
-// In-memory limiter. Resets on cold start — basic abuse prevention, not a hard guarantee.
-const checkRateLimit = createRateLimiter(PUBLIC_RATE_LIMIT, PUBLIC_RATE_WINDOW_MS)
-
 export async function POST(req: NextRequest) {
-  const ip = clientIp(req.headers.get('x-forwarded-for'))
-  if (!checkRateLimit(ip)) {
-    return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
-  }
+  const ip = requestIp(req.headers)
+  if (!(await allowPublicRate(ip))) return tooManyRequests()
 
   const raw = await req.json().catch(() => null)
   const parsed = parseEarlyAccess(raw)

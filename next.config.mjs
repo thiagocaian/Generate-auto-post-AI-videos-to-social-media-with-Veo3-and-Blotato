@@ -49,7 +49,7 @@ const nextConfig = {
           value: [
             "default-src 'self'",
             // Next.js inline scripts + Vercel analytics
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com",
+            "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
             // Supabase, Stripe, external APIs
             "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://backend.blotato.com https://app.ayrshare.com https://api.outstand.so https://*.n8n.cloud",
             "style-src 'self' 'unsafe-inline'",

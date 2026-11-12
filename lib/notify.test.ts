@@ -171,7 +171,7 @@ describe('booking notifications', () => {
     db.error = { message: 'connection refused' }
     const res = await bookingPost(postJson('http://localhost/api/booking', bookingBody))
     assert.equal(res.status, 500)
-    assert.equal((await res.json()).error, 'connection refused')
+    assert.equal((await res.json()).error, 'Failed to save the request. Please try again.')
     assert.equal(send.mock.calls.length, 0)
   })
 

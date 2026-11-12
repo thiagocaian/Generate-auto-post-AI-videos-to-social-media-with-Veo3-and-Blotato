@@ -12,19 +12,21 @@ interface CytronLoginProps {
   loading?: boolean;
   className?: string;
   defaultTab?: "signin" | "signup";
+  signupEnabled?: boolean;
 }
 
-export function CytronLogin({ onSubmit, onSignUp, onGoogleLogin, error, loading = false, className, defaultTab = "signin" }: CytronLoginProps) {
+export function CytronLogin({ onSubmit, onSignUp, onGoogleLogin, error, loading = false, className, defaultTab = "signin", signupEnabled = false }: CytronLoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [activeTab, setActiveTab] = useState<"signin" | "signup">(defaultTab);
+  const [activeTab, setActiveTab] = useState<"signin" | "signup">(signupEnabled && defaultTab === "signup" ? "signup" : "signin");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setTabSwitched(false); // Allow new errors to show
-    if (activeTab === "signup" && onSignUp) {
+    if (activeTab === "signup") {
+      if (!signupEnabled || !onSignUp) return;
       onSignUp(email, password, fullName);
     } else {
       onSubmit(email, password);
@@ -35,6 +37,7 @@ export function CytronLogin({ onSubmit, onSignUp, onGoogleLogin, error, loading 
   const [tabSwitched, setTabSwitched] = useState(false);
 
   const switchTab = (tab: "signin" | "signup") => {
+    if (tab === "signup" && !signupEnabled) return;
     setActiveTab(tab);
     setTabSwitched(true);
     setEmail("");
@@ -73,6 +76,7 @@ export function CytronLogin({ onSubmit, onSignUp, onGoogleLogin, error, loading 
         <div className="w-full max-w-sm px-4">
           <div className="space-y-6 text-center">
             {/* Tab switcher */}
+            {signupEnabled && (
             <div className="flex items-center justify-center gap-1 p-1 rounded-xl"
               style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
               <button
@@ -100,6 +104,7 @@ export function CytronLogin({ onSubmit, onSignUp, onGoogleLogin, error, loading 
                 Start Free Trial
               </button>
             </div>
+            )}
 
             <div className="space-y-2">
               <h1 className="text-4xl font-bold tracking-[-0.02em]" style={{ color: "#fff" }}>
@@ -195,14 +200,14 @@ export function CytronLogin({ onSubmit, onSignUp, onGoogleLogin, error, loading 
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
-                      placeholder={activeTab === "signin" ? "Enter your password" : "Create a password (min. 6 characters)"}
+                      placeholder={activeTab === "signin" ? "Enter your password" : "Create a password (min. 12 characters)"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="w-full py-3 px-4 pr-12 rounded-xl text-sm focus:outline-none transition-colors"
                       style={{ background: "rgba(255,255,255,0.05)", color: "#fff", border: "1px solid rgba(255,255,255,0.1)" }}
                       onFocus={e => e.currentTarget.style.borderColor = "rgba(136,108,255,0.4)"}
                       onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
-                      minLength={activeTab === "signup" ? 6 : undefined}
+                      minLength={activeTab === "signup" ? 12 : undefined}
                       required
                     />
                     <button
@@ -252,12 +257,18 @@ export function CytronLogin({ onSubmit, onSignUp, onGoogleLogin, error, loading 
             <div className="pt-6 space-y-4">
               {activeTab === "signin" ? (
                 <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
-                  Don&apos;t have an account?{" "}
-                  <button onClick={() => switchTab("signup")} className="transition-colors" style={{ color: "rgba(136,108,255,0.6)" }}
-                    onMouseEnter={e => e.currentTarget.style.color = "rgba(136,108,255,1)"}
-                    onMouseLeave={e => e.currentTarget.style.color = "rgba(136,108,255,0.6)"}>
-                    Start your free trial
-                  </button>
+                  {signupEnabled ? (
+                    <>
+                      Don&apos;t have an account?{" "}
+                      <button onClick={() => switchTab("signup")} className="transition-colors" style={{ color: "rgba(136,108,255,0.6)" }}
+                        onMouseEnter={e => e.currentTarget.style.color = "rgba(136,108,255,1)"}
+                        onMouseLeave={e => e.currentTarget.style.color = "rgba(136,108,255,0.6)"}>
+                        Start your free trial
+                      </button>
+                    </>
+                  ) : (
+                    <>Need an account? Ask your Cytron administrator for an invite.</>
+                  )}
                 </p>
               ) : (
                 <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>

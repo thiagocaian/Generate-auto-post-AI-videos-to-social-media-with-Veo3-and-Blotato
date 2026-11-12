@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requestIp } from '@/lib/rate-limit'
+import { allowAiRate, tooManyRequests } from '@/lib/durable-rate'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { parseMaterialsSearch } from '@/lib/validation/materials'
@@ -72,6 +74,7 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getAuthUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!(await allowAiRate(user.id, requestIp(req.headers)))) return tooManyRequests()
 
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json({ error: 'OPENAI_API_KEY missing' }, { status: 500 })
@@ -125,7 +128,8 @@ Return ONLY valid JSON (no markdown, no backticks):
     }
     return NextResponse.json({ error: 'Could not parse AI response', raw: aiText.substring(0, 300) })
 
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 })
+  } catch (err: unknown) {
+    console.error('[materials/search] failed:', err)
+    return NextResponse.json({ error: 'Search failed. Please try again.' }, { status: 500 })
   }
 }
