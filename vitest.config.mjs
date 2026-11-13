@@ -16,6 +16,7 @@ export default defineConfig({
       'lib/validation/**/*.test.ts',
       'lib/inbound/**/*.test.ts',
       'lib/notify.test.ts',
+      'agents/fulfilment/**/*.test.ts',
     ],
   },
 })

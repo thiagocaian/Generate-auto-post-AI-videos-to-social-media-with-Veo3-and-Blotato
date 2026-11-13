@@ -1,0 +1,37 @@
+# STATUS: NOT EXECUTED
+# Plan for a future server. This agent did not run Docker.
+# The service is on the Compose profile "do-not-run".
+# `docker compose -f docker-compose.plan.yml up` does not start it.
+# Starting it later would be: docker compose -f docker-compose.plan.yml --profile do-not-run up -d
+# Do not do that from the production branch. Do not commit values for these variables.
+
+name: cytron-fulfilment-plan
+
+services:
+  n8n:
+    profiles: ["do-not-run"]
+    image: n8nio/n8n:2.43.4
+    ports:
+      - "5678:5678"
+    environment:
+      TZ: Australia/Brisbane
+      GENERIC_TIMEZONE: Australia/Brisbane
+      N8N_HOST: ${N8N_HOST:-localhost}
+      N8N_PORT: 5678
+      N8N_PROTOCOL: ${N8N_PROTOCOL:-http}
+      WEBHOOK_URL: ${WEBHOOK_URL:-http://localhost:5678/}
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      # Code nodes read FULFILMENT_CLIENT_ID. Set this to false on that server or Prepare cannot see env.
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      FULFILMENT_CLIENT_ID: ${FULFILMENT_CLIENT_ID:-hom}
+      FULFILMENT_CLIENTS_JSON: ${FULFILMENT_CLIENTS_JSON:-}
+      HOM_STARSHIPIT_BASE_URL: ${HOM_STARSHIPIT_BASE_URL}
+      HOM_STARSHIPIT_API_KEY: ${HOM_STARSHIPIT_API_KEY}
+      HOM_STARSHIPIT_SUBSCRIPTION_KEY: ${HOM_STARSHIPIT_SUBSCRIPTION_KEY}
+      HOM_TELEGRAM_BOT_TOKEN: ${HOM_TELEGRAM_BOT_TOKEN}
+      HOM_TELEGRAM_CHAT_ID: ${HOM_TELEGRAM_CHAT_ID}
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:
