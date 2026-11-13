@@ -1,0 +1,153 @@
+{
+  "clients": {
+    "hom": {
+      "id": "hom",
+      "displayName": "House of Mouth",
+      "timezone": "Australia/Brisbane",
+      "schedule": {
+        "cron": "30 7 * * *"
+      },
+      "starshipit": {
+        "baseUrlEnv": "HOM_STARSHIPIT_BASE_URL",
+        "apiKeyEnv": "HOM_STARSHIPIT_API_KEY",
+        "subscriptionKeyEnv": "HOM_STARSHIPIT_SUBSCRIPTION_KEY",
+        "pageSize": 250,
+        "maxPages": 20
+      },
+      "telegram": {
+        "botTokenEnv": "HOM_TELEGRAM_BOT_TOKEN",
+        "chatIdEnv": "HOM_TELEGRAM_CHAT_ID",
+        "sendingEnabled": false
+      },
+      "llm": {
+        "provider": "gemini",
+        "model": "models/gemini-2.5-flash",
+        "temperature": 0,
+        "allowCustomerPii": false
+      },
+      "windows": {
+        "unshippedLookbackDays": 120,
+        "printedLookbackDays": 2,
+        "shippedLookbackDays": 30,
+        "inTransitEscalateAfterDays": 5
+      },
+      "methodPatterns": {
+        "express": ["express"],
+        "australiaPostSigned": ["australia post"]
+      },
+      "carrierRules": {
+        "express": {
+          "carrier": "Australia Post",
+          "service": "Express",
+          "signature": false
+        },
+        "mailbox": {
+          "carrier": "Australia Post",
+          "service": "Parcel Post",
+          "signature": true
+        },
+        "australiaPostSigned": {
+          "carrier": "Australia Post",
+          "service": "Parcel Post",
+          "signature": true
+        },
+        "envelopeFallback": {
+          "carrier": "Australia Post",
+          "service": "Parcel Post",
+          "signature": true
+        },
+        "standardBands": [
+          {
+            "maxKg": 4.99,
+            "carrier": "Aramex",
+            "service": "Standard",
+            "signature": false
+          },
+          {
+            "minKg": 5,
+            "maxKg": 6,
+            "carrier": "StarTrack",
+            "service": "Standard",
+            "signature": false,
+            "rejectPackaging": ["envelope", "satchel"]
+          },
+          {
+            "minKgExclusive": 6,
+            "carrier": "Australia Post",
+            "service": "Parcel Post",
+            "signature": false
+          }
+        ]
+      },
+      "mailboxPatterns": [
+        {
+          "kind": "po_box",
+          "source": "\\b(?:p\\.?\\s*o\\.?\\s*box|post\\s+office\\s+box|post\\s+box|gpo\\s*box)\\s*\\d*"
+        },
+        {
+          "kind": "locked_bag",
+          "source": "\\blocked\\s+bags?\\b"
+        },
+        {
+          "kind": "private_bag",
+          "source": "\\bprivate\\s+bags?\\b"
+        },
+        {
+          "kind": "parcel_locker",
+          "source": "\\bparcel\\s+lockers?\\b|\\bparcel\\s+collect\\b|\\bpo\\s+lockers?\\b|\\bapl\\b"
+        },
+        {
+          "kind": "pmb",
+          "source": "\\bpmb\\b"
+        },
+        {
+          "kind": "cmb",
+          "source": "\\bcmb\\b"
+        }
+      ],
+      "address": {
+        "allowedCountries": ["AU", "AUS", "AUSTRALIA"],
+        "rejectMissingCountry": false,
+        "requireSuburb": true,
+        "stateAliases": {
+          "NSW": "NSW",
+          "NEW SOUTH WALES": "NSW",
+          "VIC": "VIC",
+          "VICTORIA": "VIC",
+          "QLD": "QLD",
+          "QUEENSLAND": "QLD",
+          "SA": "SA",
+          "SOUTH AUSTRALIA": "SA",
+          "WA": "WA",
+          "WESTERN AUSTRALIA": "WA",
+          "TAS": "TAS",
+          "TASMANIA": "TAS",
+          "NT": "NT",
+          "NORTHERN TERRITORY": "NT",
+          "ACT": "ACT",
+          "AUSTRALIAN CAPITAL TERRITORY": "ACT"
+        },
+        "postcodeRanges": {
+          "NSW": [[1000, 2599], [2619, 2899], [2921, 2999]],
+          "ACT": [[200, 299], [2600, 2618], [2900, 2920]],
+          "VIC": [[3000, 3999], [8000, 8999]],
+          "QLD": [[4000, 4999], [9000, 9999]],
+          "SA": [[5000, 5999]],
+          "WA": [[6000, 6999]],
+          "TAS": [[7000, 7999]],
+          "NT": [[800, 999]]
+        },
+        "streetTypes": [
+          "St", "Street", "Rd", "Road", "Ave", "Av", "Avenue", "Dr", "Drv", "Drive",
+          "Ct", "Crt", "Court", "Pl", "Place", "Cres", "Cr", "Crescent", "Pde", "Parade",
+          "Hwy", "Highway", "Ln", "Lane", "Tce", "Terrace", "Way", "Blvd", "Bvd", "Boulevard",
+          "Cl", "Close", "Cct", "Cir", "Circuit", "Esp", "Esplanade", "Gr", "Gve", "Grove",
+          "Sq", "Square", "Pkwy", "Parkway", "Rise", "Row", "Walk", "Mews", "Loop", "Track",
+          "Trl", "Trail", "Cove", "Gdns", "Gardens", "Ent", "Entrance", "Promenade", "Prom",
+          "Mall", "Quay", "Retreat", "Rtt", "View", "Vista", "Bend", "Brae", "Chase", "Glen",
+          "Green", "Heights", "Hts", "Link", "Outlook", "Pass", "Path", "Ridge", "Rdg", "Waters"
+        ]
+      }
+    }
+  }
+}
