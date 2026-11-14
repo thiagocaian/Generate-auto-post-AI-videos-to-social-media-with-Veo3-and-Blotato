@@ -5,6 +5,13 @@ const nextConfig = {
   redirects: async () => [
     { source: '/landing', destination: '/', permanent: true },
     { source: '/solutions/:path*', destination: '/', permanent: true },
+    // Short links into the multi-page site (temporary while the structure settles)
+    { source: '/audit', destination: '/contact', permanent: false },
+    { source: '/booking', destination: '/contact', permanent: false },
+    { source: '/free-audit', destination: '/contact', permanent: false },
+    { source: '/industries', destination: '/use-cases', permanent: false },
+    { source: '/faq', destination: '/pricing#faq', permanent: false },
+    { source: '/how', destination: '/how-it-works', permanent: false },
   ],
   headers: async () => [
     // Immutable static assets (production only: in dev the chunk names don't change, so the browser would keep stale code)
@@ -42,7 +49,7 @@ const nextConfig = {
           value: [
             "default-src 'self'",
             // Next.js inline scripts + Vercel analytics
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com",
+            "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
             // Supabase, Stripe, external APIs
             "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://backend.blotato.com https://app.ayrshare.com https://api.outstand.so https://*.n8n.cloud",
             "style-src 'self' 'unsafe-inline'",

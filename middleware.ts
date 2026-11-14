@@ -1,8 +1,22 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { PUBLIC_MARKETING_ROUTES } from '@/lib/site-routes'
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+  // Public static assets and generated metadata images must not require auth
+  const isPublicAsset =
+    /\.[a-z0-9]+$/i.test(pathname) ||
+    pathname.startsWith('/opengraph-image') ||
+    pathname.startsWith('/twitter-image') ||
+    pathname.startsWith('/icon') ||
+    pathname.startsWith('/apple-icon') ||
+    pathname === '/manifest.json'
+  if (isPublicAsset) {
+    return NextResponse.next({ request: { headers: request.headers } })
+  }
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
@@ -11,7 +25,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  const isLoginPage = request.nextUrl.pathname === '/login'
+  const isLoginPage = pathname === '/login'
   const isPublicPath =
     request.nextUrl.pathname.startsWith('/api') ||
     request.nextUrl.pathname.startsWith('/_next') ||
@@ -22,10 +36,8 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname === '/reset-password' ||
     request.nextUrl.pathname === '/booking' ||
     request.nextUrl.pathname === '/onboarding' ||
-    request.nextUrl.pathname === '/terms' ||
-    request.nextUrl.pathname === '/privacy' ||
-    ['/trades', '/clinics', '/real-estate', '/hospitality', '/retail', '/professional-services', '/sitemap.xml', '/robots.txt'].includes(request.nextUrl.pathname) ||
-    request.nextUrl.pathname === '/'
+    PUBLIC_MARKETING_ROUTES.includes(request.nextUrl.pathname) ||
+    ['/sitemap.xml', '/robots.txt'].includes(request.nextUrl.pathname)
 
   // Skip auth check for public paths (API routes protect themselves)
   if (isPublicPath) {

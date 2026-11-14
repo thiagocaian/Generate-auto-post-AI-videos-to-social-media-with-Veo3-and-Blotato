@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { getRequestUser, unauthorized } from '@/lib/auth'
+import { requireClientsAdmin } from '@/lib/clients/access'
 import { isAllowedUrl } from '@/lib/ssrf'
 
 export const maxDuration = 60 // Allow up to 60s for media upload + posting
@@ -16,8 +16,8 @@ const PostSchema = z.object({
 })
 
 export async function POST(req: NextRequest) {
-  const user = await getRequestUser()
-  if (!user) return unauthorized()
+  const auth = await requireClientsAdmin()
+  if (!auth.ok) return auth.response
 
   const raw = await req.json()
   const parsed = PostSchema.safeParse(raw)
@@ -309,6 +309,9 @@ export async function POST(req: NextRequest) {
 
 // PUT — Upload video to permanent storage (Supabase primary, Blotato presigned fallback)
 export async function PUT(req: NextRequest) {
+  const auth = await requireClientsAdmin()
+  if (!auth.ok) return auth.response
+
   const body = await req.json()
   const { videoUrl } = body
 

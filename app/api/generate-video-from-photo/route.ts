@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getRequestUser, unauthorized } from '@/lib/auth'
+import { requestIp } from '@/lib/rate-limit'
+import { allowAiRate, tooManyRequests } from '@/lib/durable-rate'
 import { isAllowedUrl } from '@/lib/ssrf'
 
 export const maxDuration = 60 // Allow up to 60s for GPT-4o Vision + base64 conversion
@@ -17,6 +19,7 @@ const GenerateSchema = z.object({
 export async function POST(req: NextRequest) {
   const user = await getRequestUser()
   if (!user) return unauthorized()
+  if (!(await allowAiRate(user.id, requestIp(req.headers)))) return tooManyRequests()
 
   const raw = await req.json()
   const parsed = GenerateSchema.safeParse(raw)
