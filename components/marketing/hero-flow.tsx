@@ -65,7 +65,7 @@ type LaneLabel = { id: string; label: string; x: number; y: number; w: number };
 // Flat, grid-aligned canvas. No rotate / translateZ, so connectors meet the cards exactly.
 const NODE_W = 148;
 const NODE_H = 64;
-const HUB_W = 172;
+const HUB_W = 232; // wide enough for "Runs in the background" on one line
 const HUB_H = 72;
 const COL = 172;
 const PAD = 12;
@@ -84,7 +84,7 @@ const MID_X = (PAD * 2 + COL * 3 + NODE_W - NODE_W) / 2; // 270
 const HUMAN_X = MID_X;
 
 const NODES: FlowNode[] = [
-  { id: "hub", x: HUB_X, y: HUB_Y, w: HUB_W, h: HUB_H, title: "Cytron agents", sub: "On our servers", icon: Cpu, kind: "hub" },
+  { id: "hub", x: HUB_X, y: HUB_Y, w: HUB_W, h: HUB_H, title: "Cytron automation", sub: "Runs in the background", icon: Cpu, kind: "hub" },
   // Enquiries — /services "Missed calls & messages"
   { id: "missed", x: LEFT_X, y: TOP_Y, title: "Missed call", sub: "After hours", icon: PhoneMissed },
   { id: "reply", x: COL1_X, y: TOP_Y, title: "Instant reply", sub: "Under a minute", icon: MessageSquare },
@@ -258,7 +258,7 @@ function visibleAt(id: NodeId, t: number, reduced: boolean) {
 }
 
 const MOBILE_GROUPS: { label: string; nodes: { id: NodeId; title: string; sub: string; icon: FlowNode["icon"] }[] }[] = [
-  { label: "Cytron agents", nodes: [{ id: "hub", title: "Cytron agents", sub: "On our servers", icon: Cpu }] },
+  { label: "Cytron automation", nodes: [{ id: "hub", title: "Cytron automation", sub: "Runs in the background", icon: Cpu }] },
   {
     label: "Enquiries",
     nodes: [
@@ -350,7 +350,15 @@ function NodeCard({
         <span className={`block truncate font-semibold tracking-tight text-slate-900 ${isHub ? "text-[13px]" : "text-[12px]"}`}>
           {node.title}
         </span>
-        <span className="block truncate text-[11px] leading-tight tracking-tight text-slate-600">{node.sub}</span>
+        <span
+          className={`block leading-tight text-slate-600 ${
+            isHub
+              ? "whitespace-nowrap text-[12px] tracking-normal"
+              : "truncate text-[11px] tracking-tight"
+          }`}
+        >
+          {node.sub}
+        </span>
       </span>
     </div>
   );
@@ -527,7 +535,15 @@ function MobileFlow({ time, reduced }: { time: number; reduced: boolean }) {
                     }`}
                     aria-hidden
                   />
-                  <NodeCard node={node} state={state} style={{ width: "100%", maxWidth: 280 }} />
+                  <NodeCard
+                    node={node}
+                    state={state}
+                    style={
+                      node.id === "hub"
+                        ? { width: "100%", maxWidth: 320, height: "auto", minHeight: NODE_H }
+                        : { width: "100%", maxWidth: 280 }
+                    }
+                  />
                 </li>
               );
             })}
@@ -584,4 +600,4 @@ export default function HeroFlow({ reduced: reducedProp }: { reduced?: boolean }
 }
 
 export const HERO_FLOW_SUMMARY =
-  "Cytron agents, running on our servers, handle enquiries, bookings, office admin, fulfilment and invoices. Anything unusual is held for a person.";
+  "Cytron automation, running in the background, handles enquiries, bookings, office admin, fulfilment and invoices. Anything unusual is held for a person.";
