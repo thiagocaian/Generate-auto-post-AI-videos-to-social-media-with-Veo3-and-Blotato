@@ -14,7 +14,7 @@ export type ConstellationId =
   | "hubspot"
   | "servicem8"
   | "square"
-  | "whatsapp"
+  | "afterpay"
   | "stripe"
   | "woocommerce";
 
@@ -39,7 +39,7 @@ export const CONSTELLATION_TOOLS: ConstellationTool[] = [
   { id: "hubspot", label: "HubSpot", source: "simple-icons" },
   { id: "servicem8", label: "ServiceM8", source: "official" },
   { id: "square", label: "Square", source: "simple-icons" },
-  { id: "whatsapp", label: "WhatsApp", source: "simple-icons" },
+  { id: "afterpay", label: "Afterpay", source: "simple-icons" },
   { id: "stripe", label: "Stripe", source: "simple-icons" },
   { id: "woocommerce", label: "WooCommerce", source: "simple-icons" },
 ];
@@ -61,11 +61,11 @@ export const CONSTELLATION_EDGES: [ConstellationId, ConstellationId][] = [
   ["myob", "excel"],
   ["ads", "hubspot"],
   ["hubspot", "gmail"],
-  ["hubspot", "whatsapp"],
+  ["shopify", "afterpay"],
   ["gmail", "calendar"],
   ["outlook", "calendar"],
   ["outlook", "excel"],
-  ["whatsapp", "servicem8"],
+  ["stripe", "afterpay"],
   ["gmail", "sheets"],
 ];
 
@@ -74,7 +74,7 @@ export const CONSTELLATION_LOOP_MS = 12_000;
 
 /** Which edges shimmer during each window of the 12s hero pulse. */
 export const SHIMMER_WINDOWS: { fromMs: number; toMs: number; edges: [ConstellationId, ConstellationId][] }[] = [
-  { fromMs: 900, toMs: 2300, edges: [["whatsapp", "servicem8"], ["hubspot", "whatsapp"]] },
+  { fromMs: 900, toMs: 2300, edges: [["stripe", "afterpay"], ["shopify", "afterpay"]] },
   { fromMs: 2500, toMs: 3900, edges: [["gmail", "calendar"], ["outlook", "calendar"]] },
   { fromMs: 4100, toMs: 5500, edges: [["ads", "hubspot"], ["hubspot", "gmail"]] },
   { fromMs: 5700, toMs: 7100, edges: [["shopify", "starshipit"], ["woocommerce", "starshipit"], ["shopify", "woocommerce"]] },
@@ -108,7 +108,7 @@ const WIDE: Anchor[] = [
   { id: "excel", x: 16, y: 7, amp: 6, period: 16.1, phase: 1.1 },
   { id: "ads", x: 5, y: 32, amp: 5, period: 12.8, phase: 2.4 },
   { id: "gmail", x: 8, y: 54, amp: 6, period: 15.4, phase: 0.7 },
-  { id: "whatsapp", x: 6, y: 76, amp: 5, period: 13.6, phase: 3.0 },
+  { id: "afterpay", x: 6, y: 76, amp: 5, period: 13.6, phase: 3.0 },
   { id: "servicem8", x: 22, y: 86, amp: 6, period: 17.0, phase: 1.8 },
   { id: "myob", x: 40, y: 90, amp: 4, period: 14.8, phase: 2.2 },
   { id: "sheets", x: 50, y: 8, amp: 5, period: 13.2, phase: 0.4 },
@@ -134,7 +134,7 @@ const STACKED: Anchor[] = [
   { id: "stripe", x: 72, y: 70, amp: 5, period: 15.1, phase: 3.3 },
   { id: "shopify", x: 94, y: 74, amp: 5, period: 16.4, phase: 0.1 },
   { id: "gmail", x: 10, y: 86, amp: 5, period: 15.4, phase: 0.7 },
-  { id: "whatsapp", x: 24, y: 88, amp: 5, period: 13.6, phase: 3.0 },
+  { id: "afterpay", x: 24, y: 88, amp: 5, period: 13.6, phase: 3.0 },
   { id: "servicem8", x: 40, y: 90, amp: 5, period: 17.0, phase: 1.8 },
   { id: "woocommerce", x: 58, y: 88, amp: 4, period: 16.8, phase: 2.6 },
   { id: "square", x: 76, y: 90, amp: 4, period: 13.9, phase: 0.9 },

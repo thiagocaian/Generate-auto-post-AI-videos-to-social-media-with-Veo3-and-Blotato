@@ -37,7 +37,7 @@ describe("hero constellation", () => {
       "hubspot",
       "servicem8",
       "square",
-      "whatsapp",
+      "afterpay",
       "stripe",
       "woocommerce",
     ];
@@ -176,6 +176,31 @@ describe("hero constellation", () => {
       }
       const frozen = driftedPositions(w, h, 8000, true, { x: 12, y: -9 });
       assert.deepEqual(frozen, rest);
+    }
+  });
+
+  test("WhatsApp is not in the constellation, and Afterpay sits in its place at every layout", () => {
+    assert.ok(!IDS.includes("whatsapp" as ConstellationId));
+    assert.ok(IDS.includes("afterpay"));
+    for (const [w, h] of [[360, 770], [390, 770], [430, 705], [768, 1000], [1010, 1040], [1280, 800], [1440, 800]] as const) {
+      const rest = restPositions(w, h);
+      const ids = rest.map((p) => p.id);
+      assert.ok(!ids.includes("whatsapp" as ConstellationId), `whatsapp at ${w}`);
+      if (w >= 768) assert.ok(ids.includes("afterpay"), `afterpay missing at ${w}`);
+      assert.equal(rest.length, w < 768 ? 8 : 16);
+    }
+  });
+
+  test("wide layout at 1280 and 1440 keeps every tile inside the hero", () => {
+    const tileRadius = 22;
+    const maxAmp = 6;
+    for (const [w, h] of [[1280, 800], [1440, 800]] as const) {
+      const rest = restPositions(w, h);
+      assert.equal(rest.length, 16);
+      for (const p of rest) {
+        assert.ok(p.x - tileRadius - maxAmp > 0 && p.x + tileRadius + maxAmp < w, `${p.id} x at ${w}`);
+        assert.ok(p.y - tileRadius - maxAmp > 0 && p.y + tileRadius + maxAmp < h, `${p.id} y at ${w}`);
+      }
     }
   });
 });
