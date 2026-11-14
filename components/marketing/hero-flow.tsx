@@ -65,7 +65,7 @@ type LaneLabel = { id: string; label: string; x: number; y: number; w: number };
 // Flat, grid-aligned canvas. No rotate / translateZ, so connectors meet the cards exactly.
 const NODE_W = 148;
 const NODE_H = 64;
-const HUB_W = 188; // a little wider so the new hub label is not truncated
+const HUB_W = 212; // a little wider so the new hub label is not truncated
 const HUB_H = 72;
 const COL = 172;
 const PAD = 12;
