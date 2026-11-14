@@ -11,7 +11,7 @@ const STEPS: ScrollStep[] = [
   { id: "audit", kicker: "Week 1", label: "Audit", detail: "We sit with your team, in person on the Coast or online, and map the tasks that eat the most hours. You get the top three worth automating first.", card: <ProcessMap /> },
   { id: "design", kicker: "Week 1–2", label: "Design", detail: "We write down how your best person decides, so the automation decides the same way. You approve every rule and every message.", card: <RulesCard /> },
   { id: "build", kicker: "Week 2–4", label: "Build", detail: "Workflows connected to the tools you already use, then a read-only shadow test next to your team before anything goes live.", card: <BuildFlow /> },
-  { id: "run", kicker: "Ongoing", label: "Run", detail: "Switched on one step at a time. Our agents check it every day, report in plain English and tune the rules every month.", card: <RunStatus /> },
+  { id: "run", kicker: "Ongoing", label: "Run", detail: "Switched on one step at a time. We check it every day, report in plain English and tune the rules every month.", card: <RunStatus /> },
 ];
 
 const CARE_SCHEDULE = [
@@ -57,7 +57,7 @@ export default function HowPage() {
           <div>
             <Eyebrow>Once it runs</Eyebrow>
             <Heading>Every area has its own check, <Accent>at its own time</Accent>.</Heading>
-            <p className="mt-4 text-[15px] leading-relaxed text-slate-600">You choose when each area is checked. If an agent stays quiet, everything in its area passed. Example schedule below.</p>
+            <p className="mt-4 text-[15px] leading-relaxed text-slate-600">You choose when each area is checked. If nothing is flagged, everything in that area passed. Example schedule below.</p>
           </div>
           <ol className="relative space-y-3 before:absolute before:bottom-4 before:left-[15px] before:top-4 before:w-px before:bg-[#e5e7eb]">
             {CARE_SCHEDULE.map((c) => (

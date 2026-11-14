@@ -11,7 +11,7 @@ const ICONS = { wrench: Wrench, stethoscope: Stethoscope, building: Building2, u
 const PROCESS = [
   { n: "01", t: "Free audit", d: "We map the tasks that eat your team's hours and pick the first one worth automating." },
   { n: "02", t: "Shadow test", d: "It runs in read-only mode next to your team. You see every decision before it acts." },
-  { n: "03", t: "Go live", d: "Switched on one step at a time, with our agents checking it every day." },
+  { n: "03", t: "Go live", d: "Switched on one step at a time, and checked every day." },
 ];
 
 const card = "rounded-xl border border-[#e5e7eb] bg-white shadow-sm";
@@ -96,9 +96,9 @@ export default function IndustryPage({ industry }: { industry: Industry }) {
           </div>
           <div className="rounded-xl border border-[#e5e7eb] bg-white p-7 shadow-sm">
             <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-md border border-[#e5e7eb] text-slate-700"><ShieldCheck size={18} /></div>
-            <h3 className="text-2xl font-semibold text-slate-900">Checked every day by our agents.</h3>
-            <p className="mt-3 text-[15px] leading-relaxed text-slate-600">Every automation we build is watched by Cytron agents running on our own servers. Each area is checked on its own schedule, and you get a plain-English report. If an agent stays quiet, everything passed.</p>
-            <a href="/services#agents" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[#5b5cf6]">How our agents work <ChevronRight size={16} /></a>
+            <h3 className="text-2xl font-semibold text-slate-900">Checked every day, in the background.</h3>
+            <p className="mt-3 text-[15px] leading-relaxed text-slate-600">Every automation we build is monitored on our own servers. Each area is checked on its own schedule, and you get a plain-English report. If nothing is flagged, everything passed.</p>
+            <a href="/services#agents" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[#5b5cf6]">How our automation works <ChevronRight size={16} /></a>
           </div>
         </div>
       </section>
