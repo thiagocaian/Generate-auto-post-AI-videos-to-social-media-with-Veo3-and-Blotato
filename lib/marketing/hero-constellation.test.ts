@@ -3,11 +3,18 @@ import { describe, test } from "vitest";
 import {
   CONSTELLATION_EDGES,
   CONSTELLATION_TOOLS,
+  DESKTOP_TILE,
+  MD_MIN,
+  MOBILE_BOTTOM_BAND,
+  MOBILE_TILE,
+  MOBILE_TOOL_IDS,
+  MOBILE_TOP_BAND,
   STACKED_COPY_CLEARANCE_Y,
   activeShimmerKeys,
   driftedPositions,
   edgeKey,
   restPositions,
+  tileSizeFor,
   type ConstellationId,
 } from "@/components/marketing/hero-constellation-data";
 
@@ -113,6 +120,62 @@ describe("hero constellation", () => {
           `${p.id} top ${top.toFixed(1)} overlaps copy at ${w}x${h} (clearance ${clearance.toFixed(1)})`,
         );
       }
+    }
+  });
+
+  test("desktop and tablet tile size and node count are unchanged", () => {
+    assert.equal(tileSizeFor(768), DESKTOP_TILE);
+    assert.equal(tileSizeFor(1010), DESKTOP_TILE);
+    assert.equal(tileSizeFor(1440), DESKTOP_TILE);
+    assert.equal(restPositions(768, 1000).length, 16);
+    assert.equal(restPositions(1279, 1100).length, 16);
+    assert.equal(restPositions(1440, 800).length, 16);
+    assert.equal(tileSizeFor(MD_MIN - 1), MOBILE_TILE);
+  });
+
+  test("mobile layout uses the 8 preferred icons and smaller tiles", () => {
+    assert.equal(MOBILE_TOOL_IDS.length, 8);
+    for (const id of ["starshipit", "shopify", "xero", "excel", "gmail", "ads", "whatsapp", "stripe"] as const) {
+      assert.ok(MOBILE_TOOL_IDS.includes(id), id);
+    }
+    const rest = restPositions(390, 770);
+    assert.equal(rest.length, 8);
+    assert.deepEqual(rest.map((p) => p.id), MOBILE_TOOL_IDS);
+    assert.equal(tileSizeFor(360), MOBILE_TILE);
+    assert.ok(MOBILE_TILE < DESKTOP_TILE);
+  });
+
+  test("mobile tiles stay in the top and bottom edge bands at 360, 390 and 430", () => {
+    const maxAmp = 3;
+    const radius = MOBILE_TILE / 2;
+    const cases: [number, number][] = [
+      [360, 700],
+      [360, 770],
+      [360, 1400],
+      [390, 770],
+      [390, 1400],
+      [430, 705],
+      [430, 1400],
+    ];
+    for (const [w, h] of cases) {
+      const rest = restPositions(w, h);
+      const live = driftedPositions(w, h, 8300, false);
+      assert.equal(rest.length, 8);
+      for (let i = 0; i < rest.length; i++) {
+        const p = rest[i];
+        const top = p.y - radius - maxAmp;
+        const bottom = p.y + radius + maxAmp;
+        const inTop = bottom <= MOBILE_TOP_BAND;
+        const inBottom = top >= h - MOBILE_BOTTOM_BAND;
+        assert.ok(inTop || inBottom, `${p.id} leaves the edge bands at ${w}x${h} (y ${p.y.toFixed(1)})`);
+        assert.ok(p.x - radius - maxAmp > 0 && p.x + radius + maxAmp < w, `${p.id} clips horizontally at ${w}x${h}`);
+        const dx = Math.abs(live[i].x - p.x);
+        const dy = Math.abs(live[i].y - p.y);
+        assert.ok(dx <= maxAmp + 0.01, `${p.id} dx ${dx}`);
+        assert.ok(dy <= maxAmp + 0.01, `${p.id} dy ${dy}`);
+      }
+      const frozen = driftedPositions(w, h, 8000, true, { x: 12, y: -9 });
+      assert.deepEqual(frozen, rest);
     }
   });
 });

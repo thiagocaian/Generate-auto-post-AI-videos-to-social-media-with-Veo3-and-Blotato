@@ -82,7 +82,18 @@ export const SHIMMER_WINDOWS: { fromMs: number; toMs: number; edges: [Constellat
   { fromMs: 8900, toMs: 10400, edges: [["servicem8", "xero"], ["servicem8", "myob"]] },
 ];
 
-type Anchor = { id: ConstellationId; x: number; y: number; amp: number; period: number; phase: number };
+type Anchor = {
+  id: ConstellationId;
+  x: number;
+  y: number;
+  amp: number;
+  period: number;
+  phase: number;
+  xFrom?: "left" | "right";
+  yFrom?: "top" | "bottom";
+  xUnit?: "percent" | "px";
+  yUnit?: "percent" | "px";
+};
 
 /** In the stacked (md–xl) layout, tile centres stay below this % of hero height so the copy is clear. */
 export const STACKED_COPY_CLEARANCE_Y = 44;
@@ -136,17 +147,73 @@ export type NodePoint = {
   y: number;
 };
 
+/** Below md the constellation is a smaller 8-icon frame around the hero edges. */
+export const MD_MIN = 768;
 const XL_MIN = 1280;
 
+export const DESKTOP_TILE = 44;
+export const MOBILE_TILE = 32;
+
+export function tileSizeFor(width: number) {
+  return width < MD_MIN ? MOBILE_TILE : DESKTOP_TILE;
+}
+
+/**
+ * Mobile copy starts after `pt-14` (56px). The graph column ends with `pb-12` plus
+ * the flow's `py-6`, leaving about 72px clear at the bottom. Tiles (plus drift)
+ * must stay inside those bands.
+ */
+export const MOBILE_TOP_BAND = 56;
+export const MOBILE_BOTTOM_BAND = 56;
+
+/** Preferred mobile set, in left-to-right order (top row, then bottom row). */
+export const MOBILE_TOOL_IDS: ConstellationId[] = [
+  "excel",
+  "gmail",
+  "ads",
+  "whatsapp",
+  "starshipit",
+  "shopify",
+  "xero",
+  "stripe",
+];
+
+/**
+ * Fixed inset from the hero edges so the tiles sit in the padding, never on the
+ * title, form, CTAs or mobile graph. `y` is in pixels from the named edge.
+ */
+const MOBILE: Anchor[] = [
+  { id: "excel", x: 10, y: 22, yUnit: "px", yFrom: "top", amp: 3, period: 16.1, phase: 1.1 },
+  { id: "gmail", x: 32, y: 22, yUnit: "px", yFrom: "top", amp: 3, period: 15.4, phase: 0.7 },
+  { id: "ads", x: 68, y: 22, yUnit: "px", yFrom: "top", amp: 3, period: 12.8, phase: 2.4 },
+  { id: "whatsapp", x: 90, y: 22, yUnit: "px", yFrom: "top", amp: 3, period: 13.6, phase: 3.0 },
+  { id: "starshipit", x: 10, y: 24, yUnit: "px", yFrom: "bottom", amp: 3, period: 14.0, phase: 2.0 },
+  { id: "shopify", x: 32, y: 24, yUnit: "px", yFrom: "bottom", amp: 3, period: 16.4, phase: 0.1 },
+  { id: "xero", x: 68, y: 24, yUnit: "px", yFrom: "bottom", amp: 3, period: 12.6, phase: 1.6 },
+  { id: "stripe", x: 90, y: 24, yUnit: "px", yFrom: "bottom", amp: 3, period: 15.1, phase: 3.3 },
+];
+
 export function anchorsFor(width: number): Anchor[] {
+  if (width < MD_MIN) return MOBILE;
   return width >= XL_MIN ? WIDE : STACKED;
+}
+
+function axisValue(
+  value: number,
+  size: number,
+  unit: "percent" | "px" | undefined,
+  from: "start" | "end" | "left" | "right" | "top" | "bottom" | undefined,
+  end: "right" | "bottom",
+) {
+  const px = unit === "px" ? value : (value / 100) * size;
+  return from === end || from === "end" ? size - px : px;
 }
 
 export function restPositions(width: number, height: number): NodePoint[] {
   return anchorsFor(width).map((a) => ({
     id: a.id,
-    x: (a.x / 100) * width,
-    y: (a.y / 100) * height,
+    x: axisValue(a.x, width, a.xUnit, a.xFrom, "right"),
+    y: axisValue(a.y, height, a.yUnit, a.yFrom, "bottom"),
   }));
 }
 
