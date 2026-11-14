@@ -3,6 +3,7 @@ import { describe, test } from "vitest";
 import {
   CONSTELLATION_EDGES,
   CONSTELLATION_TOOLS,
+  STACKED_COPY_CLEARANCE_Y,
   activeShimmerKeys,
   driftedPositions,
   edgeKey,
@@ -91,5 +92,27 @@ describe("hero constellation", () => {
     assert.ok(midFulfilment.has(edgeKey("shopify", "starshipit")));
     const midFinance = activeShimmerKeys(8000);
     assert.ok(midFinance.has(edgeKey("excel", "xero")));
+  });
+
+  test("stacked layout keeps every tile below the headline, subtitle and form", () => {
+    const tileRadius = 22;
+    const maxAmp = 6;
+    const cases: [number, number][] = [
+      [768, 1000],
+      [1010, 1040],
+      [1279, 1100],
+    ];
+    for (const [w, h] of cases) {
+      const rest = restPositions(w, h);
+      assert.equal(rest.length, 16);
+      const clearance = (STACKED_COPY_CLEARANCE_Y / 100) * h;
+      for (const p of rest) {
+        const top = p.y - tileRadius - maxAmp;
+        assert.ok(
+          top >= clearance,
+          `${p.id} top ${top.toFixed(1)} overlaps copy at ${w}x${h} (clearance ${clearance.toFixed(1)})`,
+        );
+      }
+    }
   });
 });

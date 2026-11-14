@@ -84,10 +84,13 @@ export const SHIMMER_WINDOWS: { fromMs: number; toMs: number; edges: [Constellat
 
 type Anchor = { id: ConstellationId; x: number; y: number; amp: number; period: number; phase: number };
 
+/** In the stacked (md–xl) layout, tile centres stay below this % of hero height so the copy is clear. */
+export const STACKED_COPY_CLEARANCE_Y = 44;
+
 /**
  * Positions are percentages of the hero section.
  * `wide` (xl, graph beside the copy) keeps a quiet zone over the headline.
- * `stacked` (md–xl) keeps tiles around the graph in the lower half, plus corners.
+ * `stacked` (md–xl) keeps every tile below the headline, subtitle and form.
  */
 const WIDE: Anchor[] = [
   { id: "outlook", x: 6, y: 10, amp: 5, period: 14.2, phase: 0.2 },
@@ -109,22 +112,22 @@ const WIDE: Anchor[] = [
 ];
 
 const STACKED: Anchor[] = [
-  { id: "outlook", x: 5, y: 6, amp: 4, period: 14.2, phase: 0.2 },
-  { id: "calendar", x: 94, y: 7, amp: 5, period: 15.8, phase: 2.8 },
-  { id: "ads", x: 8, y: 48, amp: 5, period: 12.8, phase: 2.4 },
-  { id: "gmail", x: 6, y: 62, amp: 5, period: 15.4, phase: 0.7 },
-  { id: "whatsapp", x: 7, y: 78, amp: 5, period: 13.6, phase: 3.0 },
-  { id: "servicem8", x: 22, y: 88, amp: 5, period: 17.0, phase: 1.8 },
-  { id: "myob", x: 40, y: 92, amp: 4, period: 14.8, phase: 2.2 },
-  { id: "excel", x: 4, y: 36, amp: 5, period: 16.1, phase: 1.1 },
-  { id: "sheets", x: 28, y: 46, amp: 4, period: 13.2, phase: 0.4 },
-  { id: "hubspot", x: 88, y: 46, amp: 5, period: 12.4, phase: 1.4 },
-  { id: "shopify", x: 94, y: 58, amp: 5, period: 16.4, phase: 0.1 },
-  { id: "starshipit", x: 93, y: 72, amp: 5, period: 14.0, phase: 2.0 },
-  { id: "stripe", x: 90, y: 86, amp: 5, period: 15.1, phase: 3.3 },
-  { id: "square", x: 72, y: 92, amp: 4, period: 13.9, phase: 0.9 },
-  { id: "woocommerce", x: 56, y: 90, amp: 4, period: 16.8, phase: 2.6 },
-  { id: "xero", x: 48, y: 50, amp: 5, period: 12.6, phase: 1.6 },
+  { id: "outlook", x: 6, y: 50, amp: 4, period: 14.2, phase: 0.2 },
+  { id: "sheets", x: 22, y: 52, amp: 4, period: 13.2, phase: 0.4 },
+  { id: "calendar", x: 93, y: 50, amp: 5, period: 15.8, phase: 2.8 },
+  { id: "excel", x: 7, y: 62, amp: 5, period: 16.1, phase: 1.1 },
+  { id: "xero", x: 48, y: 56, amp: 5, period: 12.6, phase: 1.6 },
+  { id: "hubspot", x: 92, y: 62, amp: 5, period: 12.4, phase: 1.4 },
+  { id: "ads", x: 8, y: 74, amp: 5, period: 12.8, phase: 2.4 },
+  { id: "myob", x: 36, y: 72, amp: 4, period: 14.8, phase: 2.2 },
+  { id: "stripe", x: 72, y: 70, amp: 5, period: 15.1, phase: 3.3 },
+  { id: "shopify", x: 94, y: 74, amp: 5, period: 16.4, phase: 0.1 },
+  { id: "gmail", x: 10, y: 86, amp: 5, period: 15.4, phase: 0.7 },
+  { id: "whatsapp", x: 24, y: 88, amp: 5, period: 13.6, phase: 3.0 },
+  { id: "servicem8", x: 40, y: 90, amp: 5, period: 17.0, phase: 1.8 },
+  { id: "woocommerce", x: 58, y: 88, amp: 4, period: 16.8, phase: 2.6 },
+  { id: "square", x: 76, y: 90, amp: 4, period: 13.9, phase: 0.9 },
+  { id: "starshipit", x: 93, y: 86, amp: 5, period: 14.0, phase: 2.0 },
 ];
 
 export type NodePoint = {

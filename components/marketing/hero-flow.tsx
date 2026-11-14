@@ -65,7 +65,7 @@ type LaneLabel = { id: string; label: string; x: number; y: number; w: number };
 // Flat, grid-aligned canvas. No rotate / translateZ, so connectors meet the cards exactly.
 const NODE_W = 148;
 const NODE_H = 64;
-const HUB_W = 188; // a little wider so the new hub label is not truncated
+const HUB_W = 232; // wide enough for "Runs in the background" on one line
 const HUB_H = 72;
 const COL = 172;
 const PAD = 12;
@@ -350,7 +350,15 @@ function NodeCard({
         <span className={`block truncate font-semibold tracking-tight text-slate-900 ${isHub ? "text-[13px]" : "text-[12px]"}`}>
           {node.title}
         </span>
-        <span className="block truncate text-[11px] leading-tight tracking-tight text-slate-600">{node.sub}</span>
+        <span
+          className={`block leading-tight text-slate-600 ${
+            isHub
+              ? "whitespace-nowrap text-[12px] tracking-normal"
+              : "truncate text-[11px] tracking-tight"
+          }`}
+        >
+          {node.sub}
+        </span>
       </span>
     </div>
   );
@@ -527,7 +535,15 @@ function MobileFlow({ time, reduced }: { time: number; reduced: boolean }) {
                     }`}
                     aria-hidden
                   />
-                  <NodeCard node={node} state={state} style={{ width: "100%", maxWidth: 280 }} />
+                  <NodeCard
+                    node={node}
+                    state={state}
+                    style={
+                      node.id === "hub"
+                        ? { width: "100%", maxWidth: 320, height: "auto", minHeight: NODE_H }
+                        : { width: "100%", maxWidth: 280 }
+                    }
+                  />
                 </li>
               );
             })}
