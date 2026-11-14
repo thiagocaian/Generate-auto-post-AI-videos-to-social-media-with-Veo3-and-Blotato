@@ -135,7 +135,7 @@ describe("hero constellation", () => {
 
   test("mobile layout uses the 8 preferred icons and smaller tiles", () => {
     assert.equal(MOBILE_TOOL_IDS.length, 8);
-    for (const id of ["starshipit", "shopify", "xero", "excel", "gmail", "ads", "whatsapp", "stripe"] as const) {
+    for (const id of ["starshipit", "shopify", "xero", "excel", "gmail", "ads", "servicem8", "stripe"] as const) {
       assert.ok(MOBILE_TOOL_IDS.includes(id), id);
     }
     const rest = restPositions(390, 770);
