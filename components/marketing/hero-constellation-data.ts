@@ -182,7 +182,7 @@ export const MOBILE_TOOL_IDS: ConstellationId[] = [
  * Fixed inset from the hero edges so the tiles sit in the padding, never on the
  * title, form, CTAs or mobile graph. `y` is in pixels from the named edge.
  */
-const MOBILE: Anchor[] = [
+export const MOBILE_ANCHORS: Anchor[] = [
   { id: "excel", x: 10, y: 22, yUnit: "px", yFrom: "top", amp: 3, period: 16.1, phase: 1.1 },
   { id: "gmail", x: 32, y: 22, yUnit: "px", yFrom: "top", amp: 3, period: 15.4, phase: 0.7 },
   { id: "ads", x: 68, y: 22, yUnit: "px", yFrom: "top", amp: 3, period: 12.8, phase: 2.4 },
@@ -194,7 +194,7 @@ const MOBILE: Anchor[] = [
 ];
 
 export function anchorsFor(width: number): Anchor[] {
-  if (width < MD_MIN) return MOBILE;
+  if (width < MD_MIN) return MOBILE_ANCHORS;
   return width >= XL_MIN ? WIDE : STACKED;
 }
 
