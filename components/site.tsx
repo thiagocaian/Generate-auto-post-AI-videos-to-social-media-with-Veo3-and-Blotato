@@ -220,7 +220,7 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2.5"><CytronLogo size={28} /><span className="font-semibold">CYTRON</span></div>
-          <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-300">AI process automation for small businesses. Built and looked after by agents running on our own servers. Gold Coast, Australia.</p>
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-300">AI process automation for small businesses. Built and looked after with automation running on our own servers. Gold Coast, Australia.</p>
           <a href="/contact" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:underline">Book a free audit <ChevronRight size={16} /></a>
         </div>
         <div>

@@ -121,9 +121,9 @@ export default function ServicesPage() {
       <section id="agents" className="scroll-mt-20 bg-[#f7f8fa] py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <div className="max-w-3xl">
-            <Eyebrow>Cytron agents</Eyebrow>
-            <Heading>Agents working on our servers, <Accent>for your business</Accent>.</Heading>
-            <p className="mt-5 text-lg leading-relaxed text-slate-600">They&apos;re not chatbots. Cytron agents are background workers running on our own servers, around the clock, keeping every automation safe and reliable.</p>
+            <Eyebrow>Cytron automation</Eyebrow>
+            <Heading>Smart automation on our servers, <Accent>for your business</Accent>.</Heading>
+            <p className="mt-5 text-lg leading-relaxed text-slate-600">This isn&apos;t a chatbot. Cytron runs background automation on our own servers, around the clock, keeping every workflow safe and reliable.</p>
           </div>
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {AGENT_ROLES.map(({ icon: Icon, t, d }, i) => (
