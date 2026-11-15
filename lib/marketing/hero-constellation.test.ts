@@ -7,6 +7,7 @@ import {
   MD_MIN,
   MOBILE_BOTTOM_BAND,
   MOBILE_TILE,
+  MOBILE_ANCHORS,
   MOBILE_TOOL_IDS,
   MOBILE_TOP_BAND,
   STACKED_COPY_CLEARANCE_Y,
@@ -201,6 +202,16 @@ describe("hero constellation", () => {
         assert.ok(p.x - tileRadius - maxAmp > 0 && p.x + tileRadius + maxAmp < w, `${p.id} x at ${w}`);
         assert.ok(p.y - tileRadius - maxAmp > 0 && p.y + tileRadius + maxAmp < h, `${p.id} y at ${w}`);
       }
+    }
+  });
+
+  test("mobile anchors use stable edge pixels, not viewport units", () => {
+    assert.equal(MOBILE_ANCHORS.length, 8);
+    for (const a of MOBILE_ANCHORS) {
+      assert.equal(a.yUnit, "px");
+      assert.ok(a.yFrom === "top" || a.yFrom === "bottom", a.id);
+      // x is a percent of the hero width (stable on address-bar resize); y is px from an edge.
+      assert.ok(a.x > 0 && a.x < 100, a.id);
     }
   });
 });

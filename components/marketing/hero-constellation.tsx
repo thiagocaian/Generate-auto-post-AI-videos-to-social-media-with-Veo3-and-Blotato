@@ -6,6 +6,8 @@ import {
   CONSTELLATION_TOOLS,
   DESKTOP_TILE,
   MD_MIN,
+  MOBILE_ANCHORS,
+  MOBILE_TILE,
   driftedPositions,
   tileSizeFor,
   type ConstellationId,
@@ -15,9 +17,53 @@ import { BrandMark } from "./hero-constellation-marks";
 
 const PARALLAX = 6;
 
-export default function HeroConstellation({ reduced: reducedProp }: { reduced?: boolean }) {
+const MOBILE_DRIFT_CLASS = [
+  "hero-constellation-mobile-tile--top-a",
+  "hero-constellation-mobile-tile--top-b",
+  "hero-constellation-mobile-tile--top-a",
+  "hero-constellation-mobile-tile--top-b",
+  "hero-constellation-mobile-tile--bottom-a",
+  "hero-constellation-mobile-tile--bottom-b",
+  "hero-constellation-mobile-tile--bottom-a",
+  "hero-constellation-mobile-tile--bottom-b",
+] as const;
+
+function MobileConstellation({ reduced }: { reduced: boolean }) {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden md:hidden"
+      aria-hidden="true"
+    >
+      {MOBILE_ANCHORS.map((anchor, i) => {
+        const fromBottom = anchor.yFrom === "bottom";
+        return (
+          <div
+            key={anchor.id}
+            className={[
+              "hero-constellation-tile hero-constellation-mobile-tile absolute flex items-center justify-center overflow-hidden rounded-xl border border-[#e5e7eb] bg-white/90",
+              fromBottom ? "hero-constellation-mobile-tile--bottom" : "hero-constellation-mobile-tile--top",
+              reduced ? "" : MOBILE_DRIFT_CLASS[i],
+            ].join(" ")}
+            style={{
+              left: `${anchor.x}%`,
+              width: MOBILE_TILE,
+              height: MOBILE_TILE,
+              ...(fromBottom ? { bottom: anchor.y } : { top: anchor.y }),
+            }}
+          >
+            <span className="flex items-center justify-center scale-[0.72]">
+              <BrandMark id={anchor.id} label={CONSTELLATION_TOOLS.find((tool) => tool.id === anchor.id)?.label ?? anchor.id} />
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function DesktopConstellation({ reduced }: { reduced: boolean }) {
   const reducedHook = useReducedMotion() === true;
-  const reduced = reducedProp ?? reducedHook;
+  const reduce = reduced || reducedHook;
   const rootRef = useRef<HTMLDivElement>(null);
   const tileRefs = useRef<Partial<Record<ConstellationId, HTMLDivElement | null>>>({});
   const sizeRef = useRef({ w: 0, h: 0 });
@@ -27,10 +73,10 @@ export default function HeroConstellation({ reduced: reducedProp }: { reduced?: 
   const inView = useInView(rootRef, { amount: 0.15 });
   const inViewRef = useRef(inView);
   const visibleRef = useRef(true);
-  const reducedRef = useRef(reduced);
+  const reducedRef = useRef(reduce);
   const kickRef = useRef<() => void>(() => {});
   inViewRef.current = inView;
-  reducedRef.current = reduced;
+  reducedRef.current = reduce;
 
   useEffect(() => {
     const onVis = () => {
@@ -44,31 +90,24 @@ export default function HeroConstellation({ reduced: reducedProp }: { reduced?: 
 
   useEffect(() => {
     kickRef.current();
-  }, [inView, reduced]);
+  }, [inView, reduce]);
 
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
+
+    let raf = 0;
+    let ro: ResizeObserver | null = null;
 
     const applyLayout = () => {
       const w = el.clientWidth;
       const h = el.clientHeight;
       if (w <= 0 || h <= 0) return;
       sizeRef.current = { w, h };
-      if (w < MD_MIN) {
-        mouseRef.current = { x: 0, y: 0 };
-        parallaxRef.current = { x: 0, y: 0 };
-      }
       pointsRef.current = driftedPositions(w, h, 0, true);
       paint(pointsRef.current, w);
     };
 
-    applyLayout();
-    const ro = new ResizeObserver(applyLayout);
-    ro.observe(el);
-
-    let raf = 0;
-    const start = performance.now();
     const tick = (now: number) => {
       const running = inViewRef.current && visibleRef.current && !reducedRef.current;
       if (!running) {
@@ -79,9 +118,8 @@ export default function HeroConstellation({ reduced: reducedProp }: { reduced?: 
       const { w, h } = sizeRef.current;
       if (w <= 0) return;
       // Ease parallax toward the target so it stays a few pixels and never snaps.
-      // Mobile / touch: keep the target at zero so this eases back and never follows a pointer.
       const p = parallaxRef.current;
-      const t = w < MD_MIN ? { x: 0, y: 0 } : mouseRef.current;
+      const t = mouseRef.current;
       p.x += (t.x - p.x) * 0.08;
       p.y += (t.y - p.y) * 0.08;
       const elapsed = now - start;
@@ -89,18 +127,16 @@ export default function HeroConstellation({ reduced: reducedProp }: { reduced?: 
       pointsRef.current = points;
       paint(points, w);
     };
+
+    let start = 0;
     const kick = () => {
       if (!raf && inViewRef.current && visibleRef.current && !reducedRef.current) {
         raf = requestAnimationFrame(tick);
       }
     };
-    kickRef.current = kick;
-    kick();
 
     const onMove = (e: MouseEvent) => {
-      const { w } = sizeRef.current;
-      // No mouse parallax below md, or when the primary pointer cannot hover (touch).
-      if (w < MD_MIN || window.matchMedia("(hover: none)").matches) {
+      if (window.matchMedia("(hover: none)").matches) {
         mouseRef.current = { x: 0, y: 0 };
         return;
       }
@@ -110,13 +146,37 @@ export default function HeroConstellation({ reduced: reducedProp }: { reduced?: 
       const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
       mouseRef.current = { x: nx * PARALLAX, y: ny * PARALLAX };
     };
-    window.addEventListener("mousemove", onMove, { passive: true });
 
-    return () => {
+    const stop = () => {
       kickRef.current = () => {};
       cancelAnimationFrame(raf);
-      ro.disconnect();
+      raf = 0;
+      ro?.disconnect();
+      ro = null;
       window.removeEventListener("mousemove", onMove);
+    };
+
+    const startDesktop = () => {
+      stop();
+      start = performance.now();
+      applyLayout();
+      ro = new ResizeObserver(applyLayout);
+      ro.observe(el);
+      kickRef.current = kick;
+      kick();
+      window.addEventListener("mousemove", onMove, { passive: true });
+    };
+
+    const mq = window.matchMedia(`(min-width: ${MD_MIN}px)`);
+    const sync = () => {
+      if (mq.matches) startDesktop();
+      else stop();
+    };
+    sync();
+    mq.addEventListener("change", sync);
+    return () => {
+      mq.removeEventListener("change", sync);
+      stop();
     };
   }, []);
 
@@ -124,10 +184,10 @@ export default function HeroConstellation({ reduced: reducedProp }: { reduced?: 
     const tile = tileSizeFor(width);
     const seen = new Set(points.map((p) => p.id));
     for (const tool of CONSTELLATION_TOOLS) {
-      const el = tileRefs.current[tool.id];
-      if (!el) continue;
+      const node = tileRefs.current[tool.id];
+      if (!node) continue;
       if (!seen.has(tool.id)) {
-        el.style.visibility = "hidden";
+        node.style.visibility = "hidden";
         continue;
       }
     }
@@ -144,19 +204,19 @@ export default function HeroConstellation({ reduced: reducedProp }: { reduced?: 
   return (
     <div
       ref={rootRef}
-      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+      className="pointer-events-none absolute inset-0 z-0 hidden overflow-hidden md:block"
       aria-hidden="true"
     >
       {CONSTELLATION_TOOLS.map((tool) => (
         <div
           key={tool.id}
-          ref={(el) => {
-            tileRefs.current[tool.id] = el;
+          ref={(node) => {
+            tileRefs.current[tool.id] = node;
           }}
           className="hero-constellation-tile absolute left-0 top-0 flex items-center justify-center overflow-hidden rounded-xl border border-[#e5e7eb] bg-white/90"
           style={{ width: DESKTOP_TILE, height: DESKTOP_TILE, willChange: "transform", visibility: "hidden" }}
         >
-          <span className="flex items-center justify-center max-md:scale-[0.72] md:contents">
+          <span className="flex items-center justify-center md:contents">
             <BrandMark id={tool.id} label={tool.label} />
           </span>
         </div>
@@ -165,3 +225,13 @@ export default function HeroConstellation({ reduced: reducedProp }: { reduced?: 
   );
 }
 
+export default function HeroConstellation({ reduced: reducedProp }: { reduced?: boolean }) {
+  const reducedHook = useReducedMotion() === true;
+  const reduced = reducedProp ?? reducedHook;
+  return (
+    <>
+      <MobileConstellation reduced={reduced} />
+      <DesktopConstellation reduced={reduced} />
+    </>
+  );
+}
