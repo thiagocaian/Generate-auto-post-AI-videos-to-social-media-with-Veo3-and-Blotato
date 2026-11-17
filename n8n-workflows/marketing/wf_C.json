@@ -1,0 +1,514 @@
+{
+ "name": "TESTE (copy, do not activate) - Marketing C - Approval via Telegram (disabled)",
+ "nodes": [
+  {
+   "id": "324532d3-5804-4b5a-b3d1-eec9b8b3148d",
+   "name": "Note 1",
+   "type": "n8n-nodes-base.stickyNote",
+   "typeVersion": 1,
+   "position": [
+    -40,
+    -420
+   ],
+   "parameters": {
+    "content": "## C — Aprovação no Telegram (montado, DESLIGADO)\n1) Card com botões ✅ Aprovar / ❌ Rejeitar / ✍️ Refazer texto / 🎬 Refazer mídia (callback `mkt:<ação>:<piece_id>`).\n2) Webhook do callback valida o header secreto do Telegram e a lista de aprovadores (`MKT_TELEGRAM_APPROVER_IDS`).\n3) Atualiza `mkt_content_pieces.status` + grava `mkt_approvals`; se aprovado chama o D.\nTodos os nós Telegram/Supabase estão DESATIVADOS e sem credencial. Usar um **bot novo de marketing**, não o do HOM. NÃO ATIVAR.",
+    "height": 340,
+    "width": 560
+   }
+  },
+  {
+   "id": "f0be34f0-48dd-40f9-8f4b-9d942527318d",
+   "name": "Run manually (test)",
+   "type": "n8n-nodes-base.manualTrigger",
+   "typeVersion": 1,
+   "position": [
+    0,
+    0
+   ],
+   "parameters": {}
+  },
+  {
+   "id": "7f48e5cf-8367-4851-8345-33bd5ebb7171",
+   "name": "Called by B (new piece)",
+   "type": "n8n-nodes-base.executeWorkflowTrigger",
+   "typeVersion": 1.1,
+   "position": [
+    0,
+    200
+   ],
+   "parameters": {
+    "inputSource": "passthrough"
+   }
+  },
+  {
+   "id": "a68e199d-3aae-4f72-bbbe-7f139341b050",
+   "name": "Mock piece",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    220,
+    0
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// C1b Peça mock para testar o card manualmente\nreturn [{ json: { id: '11111111-2222-4333-8444-555555555555', company_id: '4a617a32-8493-4bd1-a9ab-12f5edf2055a', title: 'TESTE: AI receptionist for tradies', hook: 'Still losing jobs to missed calls?', script: 'Mock script', target_platforms: ['instagram', 'tiktok', 'linkedin'], utm_campaign: 'mkt_teste', generator: 'template_v1' } }];\n"
+   }
+  },
+  {
+   "id": "170ffb07-618a-42c1-9f95-807432481ee7",
+   "name": "Build approval card",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    460,
+    100
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// C2 Monta o card de aprovação do Telegram (botões inline). Não envia nada.\nconst chatId = (() => { try { return $env.MKT_TELEGRAM_APPROVER_CHAT_ID; } catch (e) { return undefined; } })() || 'PENDENTE_CHAT_ID';\nreturn $input.all().map(({ json: p }) => {\n  const id = p.id || p.piece_id || 'PIECE_ID';\n  const esc = s => String(s || '').replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));\n  const text = [`<b>📣 Cytron Marketing — aprovar?</b>`, `<b>${esc(p.title)}</b>`, '', `🎣 ${esc(p.hook)}`, '', `<i>${esc((p.script || '').slice(0, 700))}</i>`, '',\n    `Canais: ${(p.target_platforms || []).join(', ')}`, `UTM: <code>${esc(p.utm_campaign)}</code>`, `Gerador: ${esc(p.generator)}`].join('\\n').slice(0, 4000);\n  const cb = a => `mkt:${a}:${id}`; // callback_data <= 64 bytes (uuid = 36)\n  const reply_markup = { inline_keyboard: [[{ text: '✅ Aprovar', callback_data: cb('ok') }, { text: '❌ Rejeitar', callback_data: cb('no') }], [{ text: '✍️ Refazer texto', callback_data: cb('rc') }, { text: '🎬 Refazer mídia', callback_data: cb('rm') }]] };\n  return { json: { piece_id: id, telegram: { chat_id: chatId, text, parse_mode: 'HTML', reply_markup, disable_web_page_preview: true },\n    approval_log: { company_id: p.company_id, piece_id: id, action: 'submitted', channel: 'telegram', actor: 'n8n', meta: { chat_id_set: chatId !== 'PENDENTE_CHAT_ID' } } } };\n});\n"
+   }
+  },
+  {
+   "id": "3bd666cd-7f8e-46bc-8395-f48ab1780ca3",
+   "name": "Telegram: send card",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    700,
+    100
+   ],
+   "parameters": {
+    "options": {
+     "timeout": 30000
+    },
+    "method": "POST",
+    "url": "={{ 'https://api.telegram.org/bot' + $env.MKT_TELEGRAM_BOT_TOKEN + '/sendMessage' }}",
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify($json.telegram) }}"
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO: falta bot de marketing (token) e chat_id do Thiago."
+  },
+  {
+   "id": "842c98df-ddb1-4e5d-9d63-7c0418771c25",
+   "name": "Supabase: log submitted",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    940,
+    100
+   ],
+   "parameters": {
+    "method": "POST",
+    "url": "https://awjagykdhrroeonewwgx.supabase.co/rest/v1/mkt_approvals",
+    "authentication": "predefinedCredentialType",
+    "nodeCredentialType": "supabaseApi",
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Prefer",
+       "value": "return=minimal"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify($(\"Build approval card\").item.json.approval_log) }}",
+    "options": {
+     "timeout": 30000
+    }
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO: falta credencial \"Supabase Cytron (service role)\" no n8n. Ativar na quinta."
+  },
+  {
+   "id": "eec5114a-c589-4646-966a-58162599ec80",
+   "name": "Webhook: Telegram callback",
+   "type": "n8n-nodes-base.webhook",
+   "typeVersion": 2,
+   "position": [
+    0,
+    460
+   ],
+   "parameters": {
+    "httpMethod": "POST",
+    "path": "teste-mkt-approval-callback",
+    "responseMode": "responseNode",
+    "options": {}
+   },
+   "webhookId": "9acdda70-5040-43d3-8339-3b1f37c51548"
+  },
+  {
+   "id": "ba36f5a6-d40b-45d9-9348-64c835bc1a65",
+   "name": "Parse + validate callback",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    240,
+    460
+   ],
+   "parameters": {
+    "mode": "runOnceForAllItems",
+    "jsCode": "// C5 Interpreta o callback do Telegram. Valida o secret header e o aprovador. Não grava nada.\nconst env = k => { try { return $env[k]; } catch (e) { return undefined; } };\nconst req = $input.first().json; const body = req.body || req; const headers = req.headers || {};\nconst secret = env('MKT_TELEGRAM_WEBHOOK_SECRET');\nconst okSecret = !!secret && headers['x-telegram-bot-api-secret-token'] === secret;\nconst allowed = String(env('MKT_TELEGRAM_APPROVER_IDS') || '').split(',').map(s => s.trim()).filter(Boolean);\nconst cq = body.callback_query || {}; const from = cq.from || {};\nconst m = String(cq.data || '').match(/^mkt:(ok|no|rc|rm):([0-9a-f-]{36})$/i);\nconst MAP = { ok: { action: 'approved', status: 'approved' }, no: { action: 'rejected', status: 'rejected' }, rc: { action: 'regenerate_copy', status: 'draft' }, rm: { action: 'regenerate_media', status: 'draft' } };\nlet reason = null;\nif (!okSecret) reason = 'secret header inválido ou não configurado';\nelse if (!m) reason = 'callback_data inválido';\nelse if (!allowed.includes(String(from.id))) reason = 'usuário não autorizado';\nconst act = m ? MAP[m[1].toLowerCase()] : null;\nreturn [{ json: { valid: !reason, reason, callback_query_id: cq.id || null, piece_id: m ? m[2] : null, action: act?.action || null, new_status: act?.status || null,\n  actor: from.username ? '@' + from.username : String(from.id || ''), approval_log: m ? { piece_id: m[2], action: act.action, channel: 'telegram', actor: from.username ? '@' + from.username : String(from.id || ''), meta: { telegram_user_id: from.id || null } } : null } }];\n"
+   }
+  },
+  {
+   "id": "873b7407-caa5-4f2c-ab3a-9c95b71fa041",
+   "name": "Valid?",
+   "type": "n8n-nodes-base.if",
+   "typeVersion": 2,
+   "position": [
+    460,
+    460
+   ],
+   "parameters": {
+    "conditions": {
+     "options": {
+      "caseSensitive": true,
+      "leftValue": "",
+      "typeValidation": "loose"
+     },
+     "conditions": [
+      {
+       "id": "c68c6cf0-99b4-4a6a-9d64-c4fcbc90a2c6",
+       "leftValue": "={{ $json.valid }}",
+       "rightValue": "",
+       "operator": {
+        "type": "boolean",
+        "operation": "true",
+        "singleValue": true
+       }
+      }
+     ],
+     "combinator": "and"
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "9a9e45ae-133a-4884-9f5a-37b6d1f1417e",
+   "name": "Telegram: answerCallbackQuery",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    700,
+    380
+   ],
+   "parameters": {
+    "options": {
+     "timeout": 30000
+    },
+    "method": "POST",
+    "url": "={{ 'https://api.telegram.org/bot' + $env.MKT_TELEGRAM_BOT_TOKEN + '/answerCallbackQuery' }}",
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify({ callback_query_id: $json.callback_query_id, text: \"Registrado: \" + $json.action }) }}"
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO"
+  },
+  {
+   "id": "e0c6cf4a-c92b-454c-a6f8-c5f2f85e189f",
+   "name": "Supabase: update piece status",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    940,
+    380
+   ],
+   "parameters": {
+    "method": "PATCH",
+    "url": "https://awjagykdhrroeonewwgx.supabase.co/rest/v1/mkt_content_pieces={{ '?id=eq.' + $('Parse + validate callback').item.json.piece_id }}",
+    "authentication": "predefinedCredentialType",
+    "nodeCredentialType": "supabaseApi",
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Prefer",
+       "value": "return=minimal"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify({ status: $('Parse + validate callback').item.json.new_status }) }}",
+    "options": {
+     "timeout": 30000
+    }
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO: falta credencial \"Supabase Cytron (service role)\" no n8n. Ativar na quinta."
+  },
+  {
+   "id": "964f4ccf-2b09-4604-b57e-6cf751dd795f",
+   "name": "Supabase: log decision",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    1180,
+    380
+   ],
+   "parameters": {
+    "method": "POST",
+    "url": "https://awjagykdhrroeonewwgx.supabase.co/rest/v1/mkt_approvals",
+    "authentication": "predefinedCredentialType",
+    "nodeCredentialType": "supabaseApi",
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Prefer",
+       "value": "return=minimal"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify($('Parse + validate callback').item.json.approval_log) }}",
+    "options": {
+     "timeout": 30000
+    }
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO: falta credencial \"Supabase Cytron (service role)\" no n8n. Ativar na quinta."
+  },
+  {
+   "id": "4313f8b2-82e0-4f0c-af6a-8a96d0719236",
+   "name": "Approved?",
+   "type": "n8n-nodes-base.if",
+   "typeVersion": 2,
+   "position": [
+    1400,
+    380
+   ],
+   "parameters": {
+    "conditions": {
+     "options": {
+      "caseSensitive": true,
+      "leftValue": "",
+      "typeValidation": "loose"
+     },
+     "conditions": [
+      {
+       "id": "44f95287-633d-4dd1-bebb-2f3f582af72f",
+       "leftValue": "={{ $('Parse + validate callback').item.json.action === 'approved' }}",
+       "rightValue": "",
+       "operator": {
+        "type": "boolean",
+        "operation": "true",
+        "singleValue": true
+       }
+      }
+     ],
+     "combinator": "and"
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "9bc60bb9-6e72-4b4c-8fb1-3775e78a2f31",
+   "name": "Distribute (workflow D)",
+   "type": "n8n-nodes-base.executeWorkflow",
+   "typeVersion": 1.1,
+   "position": [
+    1620,
+    300
+   ],
+   "parameters": {
+    "source": "database",
+    "workflowId": "={{ \"PENDENTE_ID_WORKFLOW_D\" }}",
+    "options": {}
+   },
+   "disabled": true,
+   "notesInFlow": true,
+   "notes": "DESATIVADO"
+  },
+  {
+   "id": "85cc1115-32cd-4936-88c8-0b91f599a106",
+   "name": "Respond 200",
+   "type": "n8n-nodes-base.respondToWebhook",
+   "typeVersion": 1.1,
+   "position": [
+    1840,
+    460
+   ],
+   "parameters": {
+    "respondWith": "json",
+    "responseBody": "={{ JSON.stringify({ ok: true }) }}",
+    "options": {}
+   }
+  }
+ ],
+ "connections": {
+  "Run manually (test)": {
+   "main": [
+    [
+     {
+      "node": "Mock piece",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Mock piece": {
+   "main": [
+    [
+     {
+      "node": "Build approval card",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Called by B (new piece)": {
+   "main": [
+    [
+     {
+      "node": "Build approval card",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Build approval card": {
+   "main": [
+    [
+     {
+      "node": "Telegram: send card",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Telegram: send card": {
+   "main": [
+    [
+     {
+      "node": "Supabase: log submitted",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Webhook: Telegram callback": {
+   "main": [
+    [
+     {
+      "node": "Parse + validate callback",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Parse + validate callback": {
+   "main": [
+    [
+     {
+      "node": "Valid?",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Valid?": {
+   "main": [
+    [
+     {
+      "node": "Telegram: answerCallbackQuery",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    [
+     {
+      "node": "Respond 200",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Telegram: answerCallbackQuery": {
+   "main": [
+    [
+     {
+      "node": "Supabase: update piece status",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Supabase: update piece status": {
+   "main": [
+    [
+     {
+      "node": "Supabase: log decision",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Supabase: log decision": {
+   "main": [
+    [
+     {
+      "node": "Approved?",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Approved?": {
+   "main": [
+    [
+     {
+      "node": "Distribute (workflow D)",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    [
+     {
+      "node": "Respond 200",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Distribute (workflow D)": {
+   "main": [
+    [
+     {
+      "node": "Respond 200",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1",
+  "timezone": "Australia/Brisbane",
+  "saveManualExecutions": true
+ }
+}

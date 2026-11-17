@@ -7,6 +7,7 @@ import { processLeadAudit } from '@/lib/inbound/process-lead-audit'
 import { requestIp, createRateLimiter, PUBLIC_RATE_LIMIT, PUBLIC_RATE_WINDOW_MS } from '@/lib/rate-limit'
 import { hashIp } from '@/lib/ip-hash'
 import { auditAdminUrl, sendTelegramMessage } from '@/lib/telegram-notify'
+import { recordLeadAttribution, splitAttribution } from '@/lib/marketing/attribution'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -31,9 +32,10 @@ export async function POST(req: NextRequest) {
     jsonOk = false
   }
 
+  const split = splitAttribution(raw)
   const secret = process.env.IP_HASH_SECRET
   const result = await processLeadAudit({
-    raw,
+    raw: split.body,
     jsonOk,
     ip: requestIp(req.headers),
     userAgent: req.headers.get('user-agent'),
@@ -47,6 +49,7 @@ export async function POST(req: NextRequest) {
     notify: text => sendTelegramMessage(text),
     hashIp: value => (secret ? hashIp(value, secret) : null),
     adminUrl: id => auditAdminUrl(id, req.nextUrl.origin),
+    onStored: leadId => recordLeadAttribution('lead_audits', leadId, split.attribution),
     log: (event, fields) => logRoute('[lead-audit]', event, { ...fields, duration_ms: Date.now() - started }),
   })
 

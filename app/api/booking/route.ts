@@ -4,6 +4,7 @@ import { renderNotificationHtml, sendInternalNotification } from '@/lib/notify'
 import { requestIp } from '@/lib/rate-limit'
 import { allowPublicRate, tooManyRequests } from '@/lib/durable-rate'
 import { parseBooking, type BookingInput } from '@/lib/validation/booking'
+import { recordLeadAttribution, splitAttribution } from '@/lib/marketing/attribution'
 
 function getAdmin() {
   return createClient(
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
   const ip = requestIp(req.headers)
   if (!(await allowPublicRate(ip))) return tooManyRequests()
 
-  const raw = await req.json().catch(() => null)
+  const { body: raw, attribution } = splitAttribution(await req.json().catch(() => null))
   const parsed = parseBooking(raw)
   if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 })
 
@@ -40,6 +41,8 @@ export async function POST(req: NextRequest) {
     console.error('[booking] insert failed:', error.message)
     return NextResponse.json({ error: 'Failed to save the request. Please try again.' }, { status: 500 })
   }
+
+  await recordLeadAttribution('demo_requests', typeof data?.id === 'string' ? data.id : null, attribution)
 
   // Optional: trigger n8n webhook for notification
   if (process.env.N8N_DEMO_WEBHOOK) {
