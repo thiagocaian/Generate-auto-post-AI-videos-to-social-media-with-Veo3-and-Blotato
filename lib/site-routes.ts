@@ -9,7 +9,7 @@ export const NAV_LINKS = [
   { label: "Contact", href: "/contact" },
 ] as const;
 
-export const INDUSTRY_SLUGS = ["trades", "clinics", "real-estate", "hospitality", "retail", "professional-services"] as const;
+export const INDUSTRY_SLUGS = [] as const;
 
 /** Pages rendered inside app/(site): they share the header, footer and 3D transition. */
 export const SITE_ROUTES: string[] = ["/", ...NAV_LINKS.map((l) => l.href), ...INDUSTRY_SLUGS.map((s) => `/${s}`)];

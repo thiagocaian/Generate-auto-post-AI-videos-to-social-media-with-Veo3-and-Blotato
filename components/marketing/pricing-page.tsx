@@ -70,11 +70,11 @@ const INCLUDED = ["Works with the tools you already use", "Read-only first, one 
 const FAQ = [
   { q: "What does it cost?", a: "The assessment is free. Monthly plans start at $349, plus a setup fee from $990. Growth is $649, Business is $999, and Enterprise is $1,499+ a month with a custom setup. Prices are in AUD, ex GST where applicable. API usage, phone and SMS are subject to included allowances or additional charges." },
   { q: "Is there a lock-in contract?", a: "Your workflows, your data, your accounts. No black box and no lock-in." },
-  { q: "Do I need to change the software I use?", a: "No. We connect to what you already use: your calendar, job or practice software, accounting, email and chat." },
+  { q: "Do I need to change the software I use?", a: "No. We connect to what you already use: your store, warehouse system, accounting, email and chat." },
   { q: "How long until it runs?", a: "A first workflow usually goes from assessment to shadow test in a few weeks, depending on access to your systems." },
   { q: "Will my customers know it's automated?", a: "Messages are written in your tone and approved by you. When a conversation needs a real person, it's handed over with the full history so nobody repeats themselves." },
   { q: "What if the automation gets something wrong?", a: "It is built to stop rather than guess. Anything outside the rules is held for a person, and every decision is logged." },
-  { q: "Is it only for one type of business?", a: "No. We work with trades, clinics, property, hospitality, retail and professional services. If a task follows the same steps every time, it can usually run on its own." },
+  { q: "Is it only for one type of business?", a: "No. We work with trade and wholesale, e-commerce, and warehouse and fulfilment operations. If a task follows the same steps every time, it can usually run on its own." },
 ];
 
 export default function PricingPage() {
@@ -82,8 +82,8 @@ export default function PricingPage() {
     <div className="bg-white">
       <PageIntro
         eyebrow="Pricing"
-        title={<>Start small. <Accent>Pay for what works</Accent>.</>}
-        lead="Begin with a free assessment, then choose a monthly plan — from one operational automation to more complex operations."
+        title={<>Office tasks. <Accent>Pay for what works</Accent>.</>}
+        lead="Cytron specialises in repetitive office tasks. Begin with a free assessment, then a monthly plan — from one workflow to more complex operations."
         actions={<><PrimaryLink href="/contact">Free Automation Assessment</PrimaryLink><SecondaryLink href="#faq">Read the FAQ</SecondaryLink></>}
       />
 

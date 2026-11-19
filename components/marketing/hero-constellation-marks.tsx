@@ -3,8 +3,7 @@
  * simple-icons (CC0): Xero, MYOB, Google Calendar, Google Sheets, Google Ads,
  * Gmail, Shopify, WooCommerce, Square, HubSpot, Afterpay, Stripe.
  * Official ServiceM8 BIMI logo: https://bimi.entrust.net/servicem8.com/logo.svg
- * Official Starshipit logomark, extracted from
- * https://starshipit.com/logos/starshipit-logo-horizontal-digital-blue.svg (fill #0066F7).
+ * Shipping is a generic box mark (not a vendor logo).
  * Official Microsoft Excel (2019–2025) and Outlook (2018–2024) icons, sourced
  * from Wikimedia Commons (original source: office.com / Microsoft Fabric Office Brand Icons).
  */
@@ -17,8 +16,18 @@ const OFFICIAL_SRC: Partial<Record<ConstellationId, string>> = {
   excel: "/marketing/integrations/excel.svg",
   outlook: "/marketing/integrations/outlook.svg",
   servicem8: "/marketing/integrations/servicem8.svg",
-  starshipit: "/marketing/integrations/starshipit.svg",
 };
+
+function ShippingMark() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className="h-[22px] w-[22px]" fill="none" stroke="#475569" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <title>Shipping</title>
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+      <path d="M3.3 7 12 12l8.7-5" />
+      <path d="M12 22V12" />
+    </svg>
+  );
+}
 
 function Si({
   title,
@@ -57,6 +66,7 @@ const SIMPLE: Partial<Record<ConstellationId, React.ReactNode>> = {
 };
 
 export function BrandMark({ id, label }: { id: ConstellationId; label: string }) {
+  if (id === "starshipit") return <ShippingMark />;
   const official = OFFICIAL_SRC[id];
   if (official) {
     return (

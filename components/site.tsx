@@ -5,7 +5,6 @@ import { track } from "@vercel/analytics";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronRight, Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { INDUSTRY_LINKS } from "@/lib/industries";
 import { activeNavHref, NAV_LINKS } from "@/lib/site-routes";
 
 export const ACCENT = "#5b5cf6";
@@ -220,7 +219,7 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2.5"><CytronLogo size={28} /><span className="font-semibold">CYTRON</span></div>
-          <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-300">AI process automation for small businesses. Built and looked after with automation running on our own servers. Gold Coast, Australia.</p>
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-300">Specialists in automating repetitive office tasks for trade, wholesale, e-commerce and warehouse operations. Run on our own servers. Gold Coast.</p>
           <a href="/contact" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:underline">Free Automation Assessment <ChevronRight size={16} /></a>
         </div>
         <div>
@@ -228,8 +227,13 @@ export function SiteFooter() {
           {[{ label: "Home", href: "/" }, ...NAV_LINKS].map(({ label, href }) => <a key={href} href={href} className={link}>{label}</a>)}
         </div>
         <div>
-          <p className={col}>Industries</p>
-          {INDUSTRY_LINKS.map((i) => <a key={i.slug} href={`/${i.slug}`} className={link}>{i.name}</a>)}
+          <p className={col}>Office tasks</p>
+          {[
+            ["Stock & inventory", "/use-cases#stock"],
+            ["Order intake", "/use-cases#orders"],
+            ["Dispatch & fulfilment", "/use-cases#dispatch"],
+            ["B2B & online sales", "/use-cases#sales"],
+          ].map(([label, href]) => <a key={href} href={href} className={link}>{label}</a>)}
         </div>
         <div>
           <p className={col}>Account</p>

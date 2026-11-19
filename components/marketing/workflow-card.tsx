@@ -188,7 +188,7 @@ export default function WorkflowCard() {
                 <Check size={16} strokeWidth={3} />
               </span>
               <span>
-                <span className="font-semibold">Paid ✓</span> · Booked, reminded and paid while the team was on the tools.
+                <span className="font-semibold">Paid ✓</span> · Booked, reminded and paid while the office work ran itself.
               </span>
             </motion.div>
           )}

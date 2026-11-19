@@ -2,57 +2,65 @@
 
 import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Briefcase, Check, ChevronRight, Scissors, Stethoscope, Wrench } from "lucide-react";
+import { Briefcase, Check, ChevronRight, ClipboardList, Package, Truck } from "lucide-react";
 import { Accent, Eyebrow, Heading } from "@/components/site";
 import StatsSection from "@/components/marketing/stats";
 import WeekTimeline from "@/components/marketing/week-timeline";
 import { CtaBand, PageIntro, PrimaryLink, SecondaryLink } from "@/components/marketing/page-kit";
-import { INDUSTRY_LINKS } from "@/lib/industries";
-
-const CASES = [
+const CASES: {
+  id: string;
+  icon: typeof Package;
+  t: string;
+  lead: string;
+  before: string[];
+  after: string[];
+  week: [string, string][];
+  tools: string;
+  more: null | { href: string; label: string };
+}[] = [
   {
-    id: "salon",
-    icon: Scissors,
-    t: "Salons & beauty",
-    lead: "Chairs stay full when rebooking, reminders and cancellations run themselves.",
-    before: ["Phone rings mid-cut and goes to voicemail", "No-shows leave gaps nobody can fill", "Clients forget to rebook for six weeks"],
-    after: ["Instant reply with a booking link", "Reminder the day before, waitlist fills cancellations", "A rebook nudge at the right time for each service"],
-    week: [["Bookings made online", "14"], ["No-shows avoided", "3"], ["Gaps filled from waitlist", "2"], ["Hours back at the front desk", "5"]],
-    tools: "Your booking app · Google Calendar · SMS",
-    more: null as null | { href: string; label: string },
+    id: "stock",
+    icon: Package,
+    t: "Stock & inventory",
+    lead: "The office sees what is low before the warehouse runs out.",
+    before: ["Stock counted in a spreadsheet", "Reorders raised after a product sells out", "The office and the floor working from different lists"],
+    after: ["Levels checked against the reorder point", "A buyer alert before the shelf is empty", "One list for the office and the warehouse"],
+    week: [["Checked before the shift", "Daily"], ["Low lines", "Flagged"], ["Recounts", "Held"], ["Office retype", "None"]],
+    tools: "Shopify · Xero · Spreadsheets",
+    more: null,
   },
   {
-    id: "clinic",
-    icon: Stethoscope,
-    t: "Clinics & allied health",
-    lead: "Reception gets time back for the patients in front of them.",
-    before: ["Reminder calls take the first hour of every day", "Intake forms filled in the waiting room", "Recalls slip when the team is busy"],
-    after: ["Reminders and confirmations by SMS", "Intake forms sent and returned before the visit", "Recall messages on schedule, in your tone"],
-    week: [["Appointments confirmed", "62"], ["Intake forms returned early", "18"], ["Recalls sent", "25"], ["Reception hours saved", "6"]],
-    tools: "Cliniko · Halaxy · Google Calendar",
-    more: { href: "/clinics", label: "Clinics in detail" },
+    id: "orders",
+    icon: ClipboardList,
+    t: "Order intake",
+    lead: "Wholesale and online orders are checked before anyone starts picking.",
+    before: ["Orders keyed in by hand", "Bad addresses found at the bench", "Accounts and the store sitting in different inboxes"],
+    after: ["Each order read as it arrives", "Unclear lines held, with the reason written down", "A clean order passed to pick"],
+    week: [["Read on arrival", "Each"], ["Unclear lines", "Held"], ["Duplicates", "Caught"], ["Retyping", "None"]],
+    tools: "Shopify · Email · HubSpot",
+    more: null,
   },
   {
-    id: "trades",
-    icon: Wrench,
-    t: "Trades & mechanics",
-    lead: "From missed call to paid invoice while you're on the tools.",
-    before: ["Calls missed under a sink or a car", "Quotes sent days late and never followed up", "Invoices written at night"],
-    after: ["Missed-call text back in 40 seconds", "Same-day quotes with a polite follow-up", "Invoice raised when the job is done, paid by link"],
-    week: [["Weekend enquiries handled", "6"], ["Jobs booked automatically", "4"], ["Quotes followed up", "5"], ["Invoices paid by link", "9"]],
-    tools: "ServiceM8 · Tradify · Xero",
-    more: { href: "/trades", label: "Trades in detail" },
+    id: "dispatch",
+    icon: Truck,
+    t: "Dispatch & fulfilment",
+    lead: "Paperwork and status updates are ready before the shift, not after it.",
+    before: ["Labels made one by one", "Customers asking where the order is", "Dispatch notes living in someone's head"],
+    after: ["Labels and paperwork prepared for the run", "Status updates sent without a chase", "Exceptions held for a person"],
+    week: [["Paperwork", "Ready"], ["Status", "Sent"], ["Exceptions", "Held"], ["Manual chase", "None"]],
+    tools: "Shopify · Shipping · Email",
+    more: null,
   },
   {
-    id: "services",
+    id: "sales",
     icon: Briefcase,
-    t: "Service providers",
-    lead: "Onboarding, documents and deadlines without the chasing.",
-    before: ["New clients onboarded by email ping-pong", "Documents chased one by one", "Deadlines tracked in someone's head"],
-    after: ["Onboarding flow with forms and e-signature", "Automatic document requests and reminders", "Deadline reminders and recurring reports"],
-    week: [["Clients onboarded", "3"], ["Documents collected", "21"], ["Deadline reminders sent", "12"], ["Admin hours saved", "7"]],
-    tools: "Microsoft 365 · Google Workspace · Xero",
-    more: { href: "/professional-services", label: "Professional services in detail" },
+    t: "B2B & online sales",
+    lead: "Repeat sales admin — invoices, follow-up and documents — runs without the office chasing it.",
+    before: ["Invoices raised at the end of the week", "Follow-up left to whoever remembers", "Documents requested one email at a time"],
+    after: ["Invoices raised when the order is done", "Follow-up sent in your tone", "Documents requested until they are in"],
+    week: [["Invoices", "Raised"], ["Follow-up", "Sent"], ["Documents", "Chased"], ["End-of-week pile", "None"]],
+    tools: "Xero · MYOB · Shopify",
+    more: null,
   },
 ];
 
@@ -71,12 +79,12 @@ export default function UseCasesPage() {
     <div className="bg-white">
       <PageIntro
         eyebrow="Use cases"
-        title={<>Same admin, <Accent>different business</Accent>.</>}
-        lead="Australian small businesses share the same repeat tasks. Here is what automation looks like for four of them."
+        title={<>Repetitive office work, <Accent>handled</Accent>.</>}
+        lead="Cytron specialises in automating repetitive office tasks for trade, wholesale, e-commerce and warehouse operations."
         actions={<><PrimaryLink href="/contact">Free Automation Assessment</PrimaryLink><SecondaryLink href="/services">All services</SecondaryLink></>}
       />
 
-      <nav aria-label="Business types" className="border-b border-[#e5e7eb] bg-white">
+      <nav aria-label="Office tasks" className="border-b border-[#e5e7eb] bg-white">
         <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-5 py-3 text-[13px]">
           {CASES.map((c) => (
             <a key={c.id} href={`#${c.id}`} className="flex shrink-0 items-center gap-1.5 rounded-full border border-[#e5e7eb] px-3 py-1.5 font-medium text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-900">
@@ -132,7 +140,7 @@ export default function UseCasesPage() {
             </div>
           </motion.section>
         ))}
-        <p className="text-xs text-slate-600">Weekly numbers are illustrative examples, not client results. Every business gets its own rules, tone and tools.</p>
+        <p className="text-xs text-slate-600">Examples of the office work, not client results. Every operation gets its own rules, tone and tools.</p>
       </div>
 
       <StatsSection />
@@ -163,16 +171,16 @@ export default function UseCasesPage() {
 
       <section className="bg-white pt-16">
         <div className="mx-auto max-w-6xl px-5">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Industry guides</p>
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Office tasks</p>
           <div className="flex flex-wrap gap-2.5">
-            {INDUSTRY_LINKS.map((i) => (
-              <a key={i.slug} href={`/${i.slug}`} className="rounded-md border border-[#e5e7eb] bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-900">{i.name}</a>
+            {CASES.map((c) => (
+              <a key={c.id} href={`#${c.id}`} className="rounded-md border border-[#e5e7eb] bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-900">{c.t}</a>
             ))}
           </div>
         </div>
       </section>
 
-      <CtaBand title="Don't see your business here?" text="If a task follows the same steps every time, it can usually run on its own. The assessment will tell you which ones." />
+      <CtaBand title="Running trade, wholesale or fulfilment?" text="If an office task follows the same steps every time, it can usually run on its own. The assessment will tell you which ones." />
     </div>
   );
 }

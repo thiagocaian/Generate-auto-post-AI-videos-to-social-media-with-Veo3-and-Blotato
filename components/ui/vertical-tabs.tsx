@@ -18,7 +18,7 @@ const SERVICES = [
     id: "02",
     title: "Marketing Automation",
     description:
-      "n8n workflows running 24/7 with 0% failure rate. From photo upload to social media posting — fully automated marketing pipeline.",
+      "Automation workflows running 24/7 with 0% failure rate. From photo upload to social media posting — fully automated marketing pipeline.",
     image:
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200",
   },

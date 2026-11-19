@@ -124,7 +124,7 @@ const SUB = "Runs in the background on Cytron's own server, in real time. A pers
 
 export function flowAccessibleText(flow: BackofficeFlow): string {
   const steps = flow.steps.map((s, i) => `${i + 1}. ${s.title}: ${s.sub}`).join(" ");
-  return `${flow.t1} to ${flow.t2}. ${SUB} Trigger: ${flow.trigger.title}. ${flow.trigger.sub}. Cytron automation, custom code, n8n and AI, on Cytron's server. What it does: ${steps}. Result: ${flow.result.title}. ${flow.result.sub}. If out of the ordinary — ${flow.exception} — ${flow.human}.${flow.badge ? ` ${flow.badge}.` : ""}`;
+  return `${flow.t1} to ${flow.t2}. ${SUB} Trigger: ${flow.trigger.title}. ${flow.trigger.sub}. Cytron automation, custom code and AI, on Cytron's server. What it does: ${steps}. Result: ${flow.result.title}. ${flow.result.sub}. If out of the ordinary — ${flow.exception} — ${flow.human}.${flow.badge ? ` ${flow.badge}.` : ""}`;
 }
 
 export default function BackofficeFlows() {
@@ -187,7 +187,7 @@ export default function BackofficeFlows() {
                 />
                 <ol className="sr-only">
                   <li>Trigger: {flow.trigger.title}. {flow.trigger.sub}</li>
-                  <li>Cytron automation: custom code, n8n and AI, on Cytron&apos;s server</li>
+                  <li>Cytron automation: custom code and AI, on Cytron&apos;s server</li>
                   {flow.steps.map((s, stepIndex) => (
                     <li key={s.title}>Step {stepIndex + 1}: {s.title}. {s.sub}</li>
                   ))}

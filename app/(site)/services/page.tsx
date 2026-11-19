@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import ServicesPage from "@/components/marketing/services-page";
 
 export const metadata: Metadata = {
-  title: "Services — CYTRON business automation, Australia",
-  description: "Missed calls and messages answered, bookings, reminders, invoices and payments, CRM lead capture and human review, automated for Australian businesses.",
+  title: "Services — specialists in repetitive office tasks | CYTRON",
+  description: "Cytron specialises in automating repetitive office tasks: missed calls, bookings, reminders, invoices and human review for trade, wholesale, e-commerce and warehouse operations.",
   alternates: { canonical: "/services" },
 };
 

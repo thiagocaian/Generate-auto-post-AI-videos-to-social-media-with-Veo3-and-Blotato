@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
-import { CalendarCheck, Check, CreditCard, Eye, MessageSquare, PhoneMissed, Scissors, ShieldCheck, Stethoscope, UserPlus, Wrench, Briefcase } from "lucide-react";
+import { Briefcase, CalendarCheck, Check, ClipboardList, CreditCard, Eye, MessageSquare, Package, PhoneMissed, ShieldCheck, Truck, UserPlus } from "lucide-react";
 import { Accent, Eyebrow, Heading } from "@/components/site";
 import MarketingHero from "@/components/marketing/marketing-hero";
 import WeekMetrics from "@/components/marketing/week-metrics";
@@ -13,7 +13,7 @@ import ProblemsSolved from "@/components/marketing/problems-solved";
 import { CtaBand, TextLink } from "@/components/marketing/page-kit";
 import { LEGACY_HASHES } from "@/lib/site-routes";
 
-const TOOLS = ["Xero", "MYOB", "ServiceM8", "Tradify", "Cliniko", "Google Workspace", "Microsoft 365", "Shopify", "HubSpot", "Starshipit", "n8n"];
+const TOOLS = ["Xero", "MYOB", "Shopify", "HubSpot", "Google Workspace", "Microsoft 365", "Shipping", "Automation"];
 
 const SERVICES = [
   { icon: PhoneMissed, t: "Missed calls & messages", d: "An instant reply in your tone, with a booking link." },
@@ -41,10 +41,10 @@ const SECURITY = [
 ];
 
 const USE_CASES = [
-  { icon: Scissors, t: "Salons & beauty", d: "Rebook reminders and no-show cover.", href: "/use-cases#salon" },
-  { icon: Stethoscope, t: "Clinics", d: "Reminders, intake forms and recalls.", href: "/use-cases#clinic" },
-  { icon: Wrench, t: "Trades & mechanics", d: "Missed-call text back to paid invoice.", href: "/use-cases#trades" },
-  { icon: Briefcase, t: "Service providers", d: "Onboarding, documents and follow-up.", href: "/use-cases#services" },
+  { icon: Package, t: "Stock & inventory", d: "Reorder points and stock checks, without the spreadsheet.", href: "/use-cases#stock" },
+  { icon: ClipboardList, t: "Order intake", d: "New orders checked before anyone starts picking.", href: "/use-cases#orders" },
+  { icon: Truck, t: "Dispatch & fulfilment", d: "Labels, status updates, and exceptions held for a person.", href: "/use-cases#dispatch" },
+  { icon: Briefcase, t: "B2B & online sales", d: "Wholesale and store orders, invoices and follow-up.", href: "/use-cases#sales" },
 ];
 
 /** Old one-page links (/#faq, /#audit …) land on the page that now holds that content. */
@@ -150,7 +150,7 @@ export default function Home() {
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
               <Eyebrow>Use cases</Eyebrow>
-              <Heading>Built for how <Accent>Australian businesses</Accent> work.</Heading>
+              <Heading>Office tasks for <Accent>trade, commerce and fulfilment</Accent>.</Heading>
             </div>
             <TextLink href="/use-cases">All use cases</TextLink>
           </div>
@@ -171,7 +171,7 @@ export default function Home() {
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 md:flex-row md:items-center md:justify-between">
           <div>
             <Eyebrow>Pricing</Eyebrow>
-            <p className="text-[22px] font-semibold tracking-tight text-slate-900 sm:text-[26px]">Start small. Pay for what works.</p>
+            <p className="text-[22px] font-semibold tracking-tight text-slate-900 sm:text-[26px]">Office tasks. Pay for what works.</p>
           </div>
           <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[15px] text-slate-700">
             {["Starter $349/mo", "Growth $649/mo", "Business $999/mo", "Enterprise $1,499+/mo"].map((t) => (
