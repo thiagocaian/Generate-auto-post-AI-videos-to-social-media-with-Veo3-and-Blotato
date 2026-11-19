@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Accent, Eyebrow, Heading } from "@/components/site";
 import FlowVideo from "@/components/marketing/flow-video";
 
@@ -113,10 +112,7 @@ export function flowAccessibleText(flow: BackofficeFlow): string {
 }
 
 export default function BackofficeFlows() {
-  const reduced = useReducedMotion() === true;
   const [active, setActive] = useState(0);
-  const flow = BACKOFFICE_FLOWS[active];
-  const videoLabel = `${flow.t1} to ${flow.t2}: Cytron back-office automation flow. ${flowAccessibleText(flow)}`;
 
   return (
     <section id="back-office" className="bg-white py-20 sm:py-24">
@@ -151,38 +147,41 @@ export default function BackofficeFlows() {
           })}
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={flow.id}
-            id={`flow-panel-${flow.id}`}
-            role="tabpanel"
-            aria-labelledby={`flow-tab-${flow.id}`}
-            initial={reduced ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reduced ? undefined : { opacity: 0, y: -6 }}
-            transition={{ duration: reduced ? 0 : 0.3, ease: "easeOut" }}
-            className="mt-6 overflow-hidden rounded-xl border border-[#e5e7eb] bg-white shadow-sm"
-          >
-            <FlowVideo
-              label={videoLabel}
-              poster={flow.poster}
-              posterMobile={flow.posterMobile}
-              srcWebm={flow.srcWebm}
-              srcMp4={flow.srcMp4}
-              srcWebmMobile={flow.srcWebmMobile}
-              srcMp4Mobile={flow.srcMp4Mobile}
-            />
-            <ol className="sr-only">
-              <li>Trigger: {flow.trigger.title}. {flow.trigger.sub}</li>
-              <li>Cytron automation: custom code, n8n and AI, on Cytron&apos;s server</li>
-              {flow.steps.map((s, i) => (
-                <li key={s.title}>Step {i + 1}: {s.title}. {s.sub}</li>
-              ))}
-              <li>Result: {flow.result.title}. {flow.result.sub}</li>
-              <li>Exception: {flow.exception}. {flow.human}</li>
-            </ol>
-          </motion.div>
-        </AnimatePresence>
+        <div className="mt-6">
+          {BACKOFFICE_FLOWS.map((flow, i) => {
+            const on = i === active;
+            const videoLabel = `${flow.t1} to ${flow.t2}: Cytron back-office automation flow. ${flowAccessibleText(flow)}`;
+            return (
+              <div
+                key={flow.id}
+                id={`flow-panel-${flow.id}`}
+                role="tabpanel"
+                aria-labelledby={`flow-tab-${flow.id}`}
+                hidden={!on}
+                className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-white shadow-sm"
+              >
+                <FlowVideo
+                  label={videoLabel}
+                  poster={flow.poster}
+                  posterMobile={flow.posterMobile}
+                  srcWebm={flow.srcWebm}
+                  srcMp4={flow.srcMp4}
+                  srcWebmMobile={flow.srcWebmMobile}
+                  srcMp4Mobile={flow.srcMp4Mobile}
+                />
+                <ol className="sr-only">
+                  <li>Trigger: {flow.trigger.title}. {flow.trigger.sub}</li>
+                  <li>Cytron automation: custom code, n8n and AI, on Cytron&apos;s server</li>
+                  {flow.steps.map((s, stepIndex) => (
+                    <li key={s.title}>Step {stepIndex + 1}: {s.title}. {s.sub}</li>
+                  ))}
+                  <li>Result: {flow.result.title}. {flow.result.sub}</li>
+                  <li>Exception: {flow.exception}. {flow.human}</li>
+                </ol>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
