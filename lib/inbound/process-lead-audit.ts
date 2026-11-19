@@ -15,7 +15,7 @@ import {
   normalizeEmail,
 } from '@/lib/validation/lead-audit-limit'
 import { consentGranted, createLeadAuditSchema, honeypotFilled } from '@/lib/validation/lead-audit'
-import { AUDIT_CONSENT_TEXT } from './consent'
+import { AUDIT_CONSENT_TEXT, AUDIT_CONSENT_VERSION } from './consent'
 import { StorageError, rateWindowStart, type InboundRepository } from './repository'
 
 export const INVALID_JSON = 'Invalid JSON'
@@ -173,7 +173,7 @@ export async function processLeadAudit(input: {
     tenant_id: tenantId,
     lead_id: leadId,
     type: 'form_submit',
-    payload: { source: 'site_form', consent_version: '2026-11-11' },
+    payload: { source: 'site_form', consent_version: AUDIT_CONSENT_VERSION },
   }), log, 'activity_failed')
 
   const qualifyInput: LeadQualifyInput = {

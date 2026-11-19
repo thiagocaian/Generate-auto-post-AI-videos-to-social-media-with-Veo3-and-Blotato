@@ -2,6 +2,11 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
+import {
+  FLOW_VIDEO_MOBILE_QUERY,
+  hasFlowVideoSources,
+  selectFlowVideoSources,
+} from "@/lib/marketing/flow-video-sources";
 
 export type FlowVideoProps = {
   label: string;
@@ -14,8 +19,22 @@ export type FlowVideoProps = {
   className?: string;
 };
 
-function present(src: string | null | undefined): src is string {
-  return typeof src === "string" && src.trim().length > 0;
+/**
+ * SSR-safe matchMedia hook. The first client render stays on the default
+ * (desktop) until mount, then tracks the query and updates on change.
+ */
+function useMediaQuery(query: string): boolean | null {
+  const [matches, setMatches] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    const update = () => setMatches(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, [query]);
+
+  return matches;
 }
 
 /**
@@ -23,6 +42,9 @@ function present(src: string | null | undefined): src is string {
  * Renders a poster always. If sources are provided, lazy-loads a muted looping
  * video when the slot is in view, unless the user prefers reduced motion.
  * Missing sources are valid: the poster stands alone.
+ *
+ * Video sources are chosen in JS (not <source media>, which browsers ignore
+ * inside <video>) so a desktop viewport never starts a mobile 720p file.
  */
 export default function FlowVideo({
   label,
@@ -38,11 +60,16 @@ export default function FlowVideo({
   const rootRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [inView, setInView] = useState(false);
+  const isMobile = useMediaQuery(FLOW_VIDEO_MOBILE_QUERY);
+  const mediaReady = isMobile !== null;
 
-  const hasDesktop = present(srcWebm) || present(srcMp4);
-  const hasMobile = present(srcWebmMobile) || present(srcMp4Mobile);
-  const hasVideo = hasDesktop || hasMobile;
-  const loadVideo = hasVideo && inView && !reduced;
+  const selected = selectFlowVideoSources(
+    { srcWebm, srcMp4, srcWebmMobile, srcMp4Mobile },
+    isMobile === true,
+  );
+  const hasVideo = hasFlowVideoSources(selected);
+  const loadVideo = mediaReady && hasVideo && inView && !reduced;
+  const videoPoster = isMobile === true && posterMobile ? posterMobile : poster;
 
   useEffect(() => {
     const el = rootRef.current;
@@ -75,6 +102,7 @@ export default function FlowVideo({
       </picture>
       {loadVideo ? (
         <video
+          key={selected.breakpoint}
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-contain bg-white"
           autoPlay
@@ -82,13 +110,11 @@ export default function FlowVideo({
           loop
           playsInline
           preload="none"
-          poster={poster}
+          poster={videoPoster}
           aria-hidden="true"
         >
-          {present(srcWebmMobile) ? <source src={srcWebmMobile} type="video/webm" media="(max-width: 767px)" /> : null}
-          {present(srcMp4Mobile) ? <source src={srcMp4Mobile} type="video/mp4" media="(max-width: 767px)" /> : null}
-          {present(srcWebm) ? <source src={srcWebm} type="video/webm" /> : null}
-          {present(srcMp4) ? <source src={srcMp4} type="video/mp4" /> : null}
+          {selected.webm ? <source src={selected.webm} type="video/webm" /> : null}
+          {selected.mp4 ? <source src={selected.mp4} type="video/mp4" /> : null}
         </video>
       ) : null}
     </figure>

@@ -172,7 +172,7 @@ export default function UseCasesPage() {
         </div>
       </section>
 
-      <CtaBand title="Don't see your business here?" text="If a task follows the same steps every time, it can usually run on its own. The audit will tell you which ones." />
+      <CtaBand title="Don't see your business here?" text="If a task follows the same steps every time, it can usually run on its own. The assessment will tell you which ones." />
     </div>
   );
 }

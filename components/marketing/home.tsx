@@ -25,7 +25,7 @@ const SERVICES = [
 ];
 
 const STEPS = [
-  { n: "01", t: "Audit", d: "We map where your team's hours go." },
+  { n: "01", t: "Assess", d: "We map where your team's hours go." },
   { n: "02", t: "Design", d: "Rules written the way your best person decides." },
   { n: "03", t: "Build", d: "Connected to your tools, shadow-tested first." },
   { n: "04", t: "Run", d: "Monitored daily, improved every month." },

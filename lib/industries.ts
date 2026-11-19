@@ -40,10 +40,10 @@ export const INDUSTRIES: Industry[] = [
     name: "Trades & construction",
     icon: "wrench",
     metaTitle: "Automation for Tradies in Australia | CYTRON",
-    metaDescription: "Missed-call text back, quote follow-up, job reminders and invoices synced to Xero. Automation for Australian plumbers, electricians, builders and trades.",
+    metaDescription: "Quote follow-up, invoices synced to Xero, job reminders and missed-call text back. Automation for Australian plumbers, electricians, builders and trades.",
     eyebrow: "Trades & construction",
-    headline: ["Never lose a job to a ", "missed call", " again."],
-    intro: "You're on the tools, the phone rings, and the customer calls the next tradie on Google. Cytron answers every enquiry in seconds, follows up your quotes and gets your invoices paid, while you get on with the job.",
+    headline: ["The job admin, ", "handled", " while you're on the tools."],
+    intro: "Invoices, quote follow-ups and reminders pile up while you're on site. Cytron handles that repeat back-office work in the background, and still texts back when a call is missed, so you can stay on the job.",
     pains: [
       "Calls missed while you're on a roof or under a sink",
       "Quotes sent and never followed up",
@@ -187,7 +187,7 @@ export const INDUSTRIES: Industry[] = [
     stat: STAT_REPLY,
     tools: ["Your channel manager", "Booking platforms", "Google Business Profile", "Google Sheets", "Email"],
     faq: [
-      { q: "Can it work across Airbnb, Booking.com and our own website?", a: "We connect where the platforms allow it, usually through your channel manager. We confirm exactly what's possible during the audit." },
+      { q: "Can it work across Airbnb, Booking.com and our own website?", a: "We connect where the platforms allow it, usually through your channel manager. We confirm exactly what's possible during the assessment." },
       { q: "What if a guest has an unusual request?", a: "It goes straight to a person, with the booking details attached, so nobody has to ask twice." },
       { q: "Will the messages sound robotic?", a: "They're written in your voice, and you approve them before anything goes live." },
     ],
@@ -270,7 +270,7 @@ export const INDUSTRIES: Industry[] = [
     faq: [
       { q: "We handle confidential information. Is that a problem?", a: "No. We work inside your existing accounts with the least access needed, and every action is logged." },
       { q: "Can clients still talk to a person?", a: "Always. Automation handles the reminders; your team handles the relationship." },
-      { q: "How long does it take to set up?", a: "A first workflow usually goes from audit to shadow test in a few weeks, depending on access to your systems." },
+      { q: "How long does it take to set up?", a: "A first workflow usually goes from assessment to shadow test in a few weeks, depending on access to your systems." },
     ],
   },
 ];
