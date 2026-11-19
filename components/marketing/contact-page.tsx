@@ -24,7 +24,7 @@ export default function ContactPage() {
               <Accent>One</Accent> call and you&apos;ll know what to automate first.
             </h1>
             <p className="mt-5 max-w-md text-[17px] leading-relaxed text-slate-600 sm:text-lg">
-              Tell us which task eats your team&apos;s day, whether it&apos;s missed calls, no-shows or unpaid invoices. We&apos;ll come back with a clear plan.
+              Cytron specialises in repetitive office tasks. Tell us which one eats the day — stock, orders, dispatch or invoices. We&apos;ll come back with a clear plan.
             </p>
 
             <ol className="mt-10 space-y-5">

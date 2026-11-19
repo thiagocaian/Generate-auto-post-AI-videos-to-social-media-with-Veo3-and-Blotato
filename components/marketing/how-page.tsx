@@ -36,7 +36,7 @@ export default function HowPage() {
       <PageIntro
         eyebrow="How it works"
         title={<>Assess, design, build, run. <Accent>Live in weeks</Accent>.</>}
-        lead="A first workflow usually goes from assessment to shadow test in a few weeks, depending on access to your systems. Nothing acts on its own until you've seen it work."
+        lead="Cytron specialises in repetitive office tasks. A first workflow usually goes from assessment to shadow test in a few weeks. Nothing acts on its own until you've seen it work."
         actions={<><PrimaryLink href="/contact">Free Automation Assessment</PrimaryLink><SecondaryLink href="/services">What we automate</SecondaryLink></>}
       />
 

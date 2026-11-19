@@ -91,10 +91,10 @@ const NODES: FlowNode[] = [
   // Bookings — /services "Bookings" + "Reminders"
   { id: "booked", x: COL2_X, y: TOP_Y, title: "Booked", sub: "In the calendar", icon: CalendarCheck },
   { id: "reminder", x: RIGHT_X, y: TOP_Y, title: "Reminder", sub: "Day before", icon: Bell },
-  // Office — /services "Lead capture" + /professional-services documents
+  // Office — /services "Lead capture" and document collection
   { id: "lead", x: LEFT_X, y: BOT_Y1, title: "Lead saved", sub: "CRM", icon: Database },
   { id: "documents", x: LEFT_X, y: BOT_Y2, title: "Documents in", sub: "Collected", icon: FileText },
-  // Fulfilment — /retail + /use-cases retailer case study
+  // Fulfilment — order check and shipping docs
   { id: "order", x: MID_X, y: BOT_Y1, title: "Order check", sub: "Shopify", icon: Package },
   { id: "shipping", x: MID_X, y: BOT_Y2, title: "Shipping docs", sub: "Ready to pack", icon: Truck },
   // Finance — /services "Invoices & payments"

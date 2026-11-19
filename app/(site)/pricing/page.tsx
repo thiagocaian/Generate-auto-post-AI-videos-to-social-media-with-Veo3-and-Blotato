@@ -3,7 +3,7 @@ import PricingPage from "@/components/marketing/pricing-page";
 
 export const metadata: Metadata = {
   title: "Pricing — CYTRON",
-  description: "Monthly plans from $349 AUD for Australian businesses, plus a Free Automation Assessment. Setup fees listed, prices ex GST where applicable.",
+  description: "Cytron specialises in automating repetitive office tasks. Monthly plans from $349 AUD for trade, e-commerce and fulfilment operations, plus a Free Automation Assessment. Prices ex GST where applicable.",
   alternates: { canonical: "/pricing" },
 };
 

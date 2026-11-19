@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import UseCasesPage from "@/components/marketing/use-cases-page";
 
 export const metadata: Metadata = {
-  title: "Use cases — CYTRON automation for salons, clinics, trades and service providers",
-  description: "What automation looks like for Australian salons, clinics, trades and mechanics, and service providers: bookings, reminders, quotes, invoices and follow-up.",
+  title: "Use cases — specialists in repetitive office tasks | CYTRON",
+  description: "Cytron specialises in automating repetitive office tasks: stock, orders, dispatch and B2B sales for Australian trade, wholesale, e-commerce and warehouse operations.",
   alternates: { canonical: "/use-cases" },
 };
 

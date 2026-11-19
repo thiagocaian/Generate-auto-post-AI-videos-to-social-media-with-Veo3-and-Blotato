@@ -22,11 +22,11 @@ export type ConstellationTool = {
   id: ConstellationId;
   label: string;
   /** Origin of the mark, for the PR write-up. */
-  source: "simple-icons" | "official";
+  source: "simple-icons" | "official" | "generic";
 };
 
 export const CONSTELLATION_TOOLS: ConstellationTool[] = [
-  { id: "starshipit", label: "Starshipit", source: "official" },
+  { id: "starshipit", label: "Shipping", source: "generic" },
   { id: "shopify", label: "Shopify", source: "simple-icons" },
   { id: "xero", label: "Xero", source: "simple-icons" },
   { id: "myob", label: "MYOB", source: "simple-icons" },
