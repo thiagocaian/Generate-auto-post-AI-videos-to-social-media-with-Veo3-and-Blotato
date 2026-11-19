@@ -25,8 +25,8 @@ export type LeadQualifyInput = {
   website: string | null
   monthlyEnquiries: string | null
   responseProcess: string | null
-  preferredDate: string
-  preferredTime: string
+  preferredDate: string | null
+  preferredTime: string | null
 }
 
 export type QualifyResult =

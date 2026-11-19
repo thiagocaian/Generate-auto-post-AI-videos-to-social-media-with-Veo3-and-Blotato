@@ -5,7 +5,7 @@
 //   business_normalized = btrim(regexp_replace(lower(business_name), '[^a-z0-9]+', ' ', 'g'))
 
 export const ALREADY_REQUESTED_MESSAGE =
-  "Looks like you've already requested your free audit — we'll be in touch."
+  "Looks like you've already requested a Free Automation Assessment — we'll be in touch."
 
 export const ALREADY_REQUESTED_CODE = 'already_requested'
 

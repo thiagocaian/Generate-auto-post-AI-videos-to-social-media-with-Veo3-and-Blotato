@@ -72,8 +72,8 @@ export default function UseCasesPage() {
       <PageIntro
         eyebrow="Use cases"
         title={<>Same admin, <Accent>different business</Accent>.</>}
-        lead="Most Gold Coast businesses have fewer than 20 staff and the same repeat tasks. Here is what automation looks like for four of them."
-        actions={<><PrimaryLink href="/contact">Book a free audit</PrimaryLink><SecondaryLink href="/services">All services</SecondaryLink></>}
+        lead="Australian small businesses share the same repeat tasks. Here is what automation looks like for four of them."
+        actions={<><PrimaryLink href="/contact">Free Automation Assessment</PrimaryLink><SecondaryLink href="/services">All services</SecondaryLink></>}
       />
 
       <nav aria-label="Business types" className="border-b border-[#e5e7eb] bg-white">
@@ -172,7 +172,7 @@ export default function UseCasesPage() {
         </div>
       </section>
 
-      <CtaBand title="Don't see your business here?" text="If a task follows the same steps every time, it can usually run on its own. The audit will tell you which ones." />
+      <CtaBand title="Don't see your business here?" text="If a task follows the same steps every time, it can usually run on its own. The assessment will tell you which ones." />
     </div>
   );
 }

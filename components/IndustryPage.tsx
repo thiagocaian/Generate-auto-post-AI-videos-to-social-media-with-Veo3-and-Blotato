@@ -9,7 +9,7 @@ import { INDUSTRIES, type Industry } from "@/lib/industries";
 const ICONS = { wrench: Wrench, stethoscope: Stethoscope, building: Building2, utensils: UtensilsCrossed, bag: ShoppingBag, briefcase: Briefcase };
 
 const PROCESS = [
-  { n: "01", t: "Free audit", d: "We map the tasks that eat your team's hours and pick the first one worth automating." },
+  { n: "01", t: "Free assessment", d: "We map the tasks that eat your team's hours and pick the first one worth automating." },
   { n: "02", t: "Shadow test", d: "It runs in read-only mode next to your team. You see every decision before it acts." },
   { n: "03", t: "Go live", d: "Switched on one step at a time, and checked every day." },
 ];
@@ -33,7 +33,7 @@ export default function IndustryPage({ industry }: { industry: Industry }) {
               <a href="/use-cases" className="hover:text-slate-800">Use cases</a><ChevronRight size={14} />
               <span className="text-slate-800">{industry.name}</span>
             </nav>
-            <Eyebrow>{industry.eyebrow} · Gold Coast</Eyebrow>
+            <Eyebrow>{industry.eyebrow} · Australia</Eyebrow>
             <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl text-[28px] font-semibold leading-snug tracking-tight text-slate-900 sm:text-[40px]">
               {before}<Accent>{accent}</Accent>{after}
             </motion.h1>
@@ -41,7 +41,7 @@ export default function IndustryPage({ industry }: { industry: Industry }) {
               {industry.intro}
             </motion.p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
-              {cta("Book a free automation audit", "/contact")}
+              {cta("Free Automation Assessment", "/contact")}
               <a href="#automations" className="inline-flex items-center gap-2 rounded-lg border border-[#e5e7eb] bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50">What we automate</a>
             </div>
           </div>
@@ -160,10 +160,10 @@ export default function IndustryPage({ industry }: { industry: Industry }) {
       <section className="bg-[#f7f8fa] py-20 sm:py-24">
         <div className="mx-auto max-w-3xl px-5 text-center">
           <h2 className="text-[28px] font-semibold leading-snug tracking-tight text-slate-900 sm:text-[36px]"><Accent>One</Accent> call and you&apos;ll know what to automate first.</h2>
-          <p className="mx-auto mt-5 max-w-lg text-lg text-slate-600">A free audit for your business. No obligation, and a clear plan within one business day.</p>
-          <div className="mt-9 flex justify-center">{cta("Book my free audit", "/contact")}</div>
+          <p className="mx-auto mt-5 max-w-lg text-lg text-slate-600">A free assessment for your business. No obligation, and a clear plan within one business day.</p>
+          <div className="mt-9 flex justify-center">{cta("Free Automation Assessment", "/contact")}</div>
           <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-600">
-            {["Works with your current tools", "Read-only pilot first", "Local to the Gold Coast"].map((t) => (
+            {["Works with your current tools", "Read-only pilot first", "For businesses across Australia"].map((t) => (
               <span key={t} className="flex items-center gap-2"><Check size={15} className="text-emerald-500" />{t}</span>
             ))}
           </div>

@@ -126,7 +126,7 @@ export function SiteNav() {
               Client login
             </a>
             <a href="/contact" onClick={() => track("lead_audit_started")} className={`hidden sm:inline-flex ${BTN_PRIMARY} !px-4 !py-2`}>
-              Free audit
+              Free Assessment
             </a>
             <button
               type="button"
@@ -185,7 +185,7 @@ export function SiteNav() {
                 onClick={() => { track("lead_audit_started"); setOpen(false); }}
                 className={`${BTN_PRIMARY} mt-2 w-full`}
               >
-                Book a free audit
+                Free Automation Assessment
               </a>
             </motion.nav>
           </motion.div>
@@ -202,7 +202,7 @@ export function SiteNav() {
             transition={ease}
           >
             <a href="/contact" onClick={() => track("lead_audit_started")} className={`${BTN_PRIMARY} w-full py-3`}>
-              Book a free audit
+              Free Automation Assessment
               <ChevronRight size={16} />
             </a>
           </motion.div>
@@ -221,7 +221,7 @@ export function SiteFooter() {
         <div>
           <div className="flex items-center gap-2.5"><CytronLogo size={28} /><span className="font-semibold">CYTRON</span></div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-300">AI process automation for small businesses. Built and looked after with automation running on our own servers. Gold Coast, Australia.</p>
-          <a href="/contact" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:underline">Book a free audit <ChevronRight size={16} /></a>
+          <a href="/contact" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:underline">Free Automation Assessment <ChevronRight size={16} /></a>
         </div>
         <div>
           <p className={col}>Company</p>

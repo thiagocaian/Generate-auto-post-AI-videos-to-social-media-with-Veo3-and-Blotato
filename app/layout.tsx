@@ -7,8 +7,8 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
-const title = "CYTRON — Business automation for Gold Coast small businesses";
-const description = "Cytron automates enquiries, missed calls, bookings, reminders, quotes and invoices for Gold Coast trades, clinics, property, hospitality and retail. Free automation audit, read-only pilot first.";
+const title = "CYTRON — Business automation for Australian businesses";
+const description = "Cytron automates repetitive back-office work for Australian businesses — trades, clinics, property, hospitality and retail. Smart automation on our own servers, with a free assessment and a read-only pilot first.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://cytronai.com"),

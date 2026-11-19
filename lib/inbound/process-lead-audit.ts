@@ -15,7 +15,7 @@ import {
   normalizeEmail,
 } from '@/lib/validation/lead-audit-limit'
 import { consentGranted, createLeadAuditSchema, honeypotFilled } from '@/lib/validation/lead-audit'
-import { AUDIT_CONSENT_TEXT } from './consent'
+import { AUDIT_CONSENT_TEXT, AUDIT_CONSENT_VERSION } from './consent'
 import { StorageError, rateWindowStart, type InboundRepository } from './repository'
 
 export const INVALID_JSON = 'Invalid JSON'
@@ -138,8 +138,8 @@ export async function processLeadAudit(input: {
       industry: blank(data.industry),
       monthly_enquiries: blank(data.monthlyEnquiries),
       response_process: blank(data.responseProcess),
-      preferred_date: data.preferredDate,
-      preferred_time: data.preferredTime,
+      preferred_date: data.preferredDate || null,
+      preferred_time: data.preferredTime || null,
       source: 'site_form',
       status: 'stored',
       consent_at: now.toISOString(),
@@ -173,7 +173,7 @@ export async function processLeadAudit(input: {
     tenant_id: tenantId,
     lead_id: leadId,
     type: 'form_submit',
-    payload: { source: 'site_form', consent_version: '2026-11-11' },
+    payload: { source: 'site_form', consent_version: AUDIT_CONSENT_VERSION },
   }), log, 'activity_failed')
 
   const qualifyInput: LeadQualifyInput = {
@@ -183,8 +183,8 @@ export async function processLeadAudit(input: {
     website: blank(data.website),
     monthlyEnquiries: blank(data.monthlyEnquiries),
     responseProcess: blank(data.responseProcess),
-    preferredDate: data.preferredDate,
-    preferredTime: data.preferredTime,
+    preferredDate: data.preferredDate || null,
+    preferredTime: data.preferredTime || null,
   }
 
   let qualification: QualifyResult

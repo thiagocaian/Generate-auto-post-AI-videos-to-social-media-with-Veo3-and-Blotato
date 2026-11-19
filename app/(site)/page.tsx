@@ -5,10 +5,10 @@ const jsonLd = {
   "@type": "LocalBusiness",
   name: "CYTRON",
   url: "https://cytronai.com",
-  description: "Cytron automates enquiries, missed calls, bookings, reminders, quotes and invoices for Gold Coast trades, clinics, property, hospitality and retail.",
+  description: "Cytron automates repetitive back-office work for Australian businesses — trades, clinics, property, hospitality and retail.",
   areaServed: {
-    "@type": "AdministrativeArea",
-    name: "Gold Coast, Queensland, Australia",
+    "@type": "Country",
+    name: "Australia",
   },
   address: {
     "@type": "PostalAddress",

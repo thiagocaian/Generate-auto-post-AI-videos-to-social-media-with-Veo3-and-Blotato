@@ -75,12 +75,12 @@ export function CtaBand({
       <div className="mx-auto max-w-6xl px-5">
         <div className="flex flex-col items-start justify-between gap-8 rounded-2xl border border-[#e5e7eb] bg-[#f7f8fa] p-8 sm:p-10 lg:flex-row lg:items-center">
           <div className="max-w-2xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Free automation audit</p>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Free Automation Assessment</p>
             <h2 className="text-[26px] font-semibold leading-snug tracking-tight text-slate-900 sm:text-[32px]">{title}</h2>
             <p className="mt-3 text-[16px] leading-relaxed text-slate-600">{text}</p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-3">
-            <PrimaryLink href="/contact">Book a free audit</PrimaryLink>
+            <PrimaryLink href="/contact">Free Automation Assessment</PrimaryLink>
             {secondary && <SecondaryLink href={secondary.href}>{secondary.label}</SecondaryLink>}
           </div>
         </div>

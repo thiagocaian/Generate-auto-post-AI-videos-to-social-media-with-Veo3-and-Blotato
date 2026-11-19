@@ -25,10 +25,10 @@ export function createLeadAuditSchema(now = new Date()) {
     website: z.string().url().optional().or(z.literal('')),
     monthlyEnquiries: z.string().max(50).optional(),
     responseProcess: z.string().max(1000).optional(),
-    preferredDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Choose a date'),
-    preferredTime: z.enum(TIME_SLOTS),
+    preferredDate: z.union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Choose a date'), z.literal('')]).optional(),
+    preferredTime: z.union([z.enum(TIME_SLOTS), z.literal('')]).optional(),
   }).superRefine((value, ctx) => {
-    if (value.preferredDate < min || value.preferredDate > max) {
+    if (value.preferredDate && (value.preferredDate < min || value.preferredDate > max)) {
       ctx.addIssue({ code: 'custom', path: ['preferredDate'], message: 'Choose a date in the next 14 days' })
     }
   })

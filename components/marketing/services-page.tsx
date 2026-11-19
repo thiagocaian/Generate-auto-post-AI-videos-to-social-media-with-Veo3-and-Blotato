@@ -15,7 +15,7 @@ const SERVICES = [
     k: "01",
     t: "Missed calls & messages, answered",
     d: "Every missed call, web form, SMS and social message gets a reply in under a minute, in your tone, with a link to book. After hours and weekends included.",
-    points: ["Missed-call text back", "Web form, SMS, email and WhatsApp in one flow", "Answers to common questions, approved by you"],
+    points: ["Missed-call text back", "Web form, SMS and email in one flow", "Answers to common questions, approved by you"],
     ui: <SmsThread text="Sorry we missed you, book a time here" booked />,
   },
   {
@@ -82,7 +82,7 @@ export default function ServicesPage() {
         eyebrow="Services"
         title={<>Six things that <Accent>run on their own</Accent>.</>}
         lead="From the first missed call to the paid invoice, Cytron handles the repeat work in the background and hands anything unusual to a person."
-        actions={<><PrimaryLink href="/contact">Book a free audit</PrimaryLink><SecondaryLink href="/pricing">See pricing</SecondaryLink></>}
+        actions={<><PrimaryLink href="/contact">Free Automation Assessment</PrimaryLink><SecondaryLink href="/pricing">See pricing</SecondaryLink></>}
       />
 
       <nav aria-label="Services on this page" className="border-b border-[#e5e7eb] bg-white">
@@ -140,7 +140,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <CtaBand title="Not sure where to start?" text="The free audit finds the one or two automations that save the most hours first." secondary={{ href: "/use-cases", label: "See use cases" }} />
+      <CtaBand title="Not sure where to start?" text="The free assessment finds the one or two automations that save the most hours first." secondary={{ href: "/use-cases", label: "See use cases" }} />
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 export const runtime = "edge";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "CYTRON — Business automation for Gold Coast small businesses";
+export const alt = "CYTRON — Business automation for Australian businesses";
 
 export default function OpengraphImage() {
   return new ImageResponse(
@@ -50,7 +50,7 @@ export default function OpengraphImage() {
           Automate the repetitive. Decide what matters.
         </div>
         <div style={{ marginTop: 28, fontSize: 26, color: "rgba(255,255,255,0.82)", maxWidth: 800 }}>
-          Business automation for Gold Coast small businesses.
+          Business automation for Australian businesses.
         </div>
       </div>
     ),
