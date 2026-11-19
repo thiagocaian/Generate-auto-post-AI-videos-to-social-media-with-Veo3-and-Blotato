@@ -3,15 +3,17 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
-import { CalendarCheck, Check, CreditCard, Eye, MessageSquare, PhoneMissed, Scissors, Stethoscope, UserPlus, Wrench, Briefcase } from "lucide-react";
+import { CalendarCheck, Check, CreditCard, Eye, MessageSquare, PhoneMissed, Scissors, ShieldCheck, Stethoscope, UserPlus, Wrench, Briefcase } from "lucide-react";
 import { Accent, Eyebrow, Heading } from "@/components/site";
 import MarketingHero from "@/components/marketing/marketing-hero";
 import WeekMetrics from "@/components/marketing/week-metrics";
 import Walkthrough from "@/components/marketing/walkthrough";
+import BackofficeFlows from "@/components/marketing/backoffice-flows";
+import ProblemsSolved from "@/components/marketing/problems-solved";
 import { CtaBand, TextLink } from "@/components/marketing/page-kit";
 import { LEGACY_HASHES } from "@/lib/site-routes";
 
-const TOOLS = ["Xero", "MYOB", "ServiceM8", "Tradify", "Cliniko", "Google Workspace", "Microsoft 365", "Shopify", "HubSpot", "WhatsApp", "n8n"];
+const TOOLS = ["Xero", "MYOB", "ServiceM8", "Tradify", "Cliniko", "Google Workspace", "Microsoft 365", "Shopify", "HubSpot", "Starshipit", "n8n"];
 
 const SERVICES = [
   { icon: PhoneMissed, t: "Missed calls & messages", d: "An instant reply in your tone, with a booking link." },
@@ -27,6 +29,15 @@ const STEPS = [
   { n: "02", t: "Design", d: "Rules written the way your best person decides." },
   { n: "03", t: "Build", d: "Connected to your tools, shadow-tested first." },
   { n: "04", t: "Run", d: "Monitored daily, improved every month." },
+];
+
+
+const SECURITY = [
+  { t: "Isolated by client", d: "Each client runs in an isolated environment on our own servers." },
+  { t: "Read-only first", d: "Every automation starts by watching, not acting." },
+  { t: "Human approval on exceptions", d: "Anything unusual is held for a person, with the context they need." },
+  { t: "Full logs and audit trail", d: "Every decision is recorded, so you can see what ran and why." },
+  { t: "Least-privilege access", d: "Automations only get the access they need to do the job." },
 ];
 
 const USE_CASES = [
@@ -63,6 +74,9 @@ export default function Home() {
           {TOOLS.map((t) => <span key={t}>{t}</span>)}
         </div>
       </section>
+
+      <BackofficeFlows />
+      <ProblemsSolved />
 
       <Walkthrough />
 
@@ -109,6 +123,24 @@ export default function Home() {
               </motion.li>
             ))}
           </ol>
+          <div className="mt-14 border-t border-[#e5e7eb] pt-12">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5b5cf6]">Secure by design</p>
+            <h3 className="mt-3 max-w-2xl text-[22px] font-semibold tracking-tight text-slate-900 sm:text-[26px]">
+              Secure by design, built by a team with a cyber security practice.
+            </h3>
+            <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-slate-600">
+              Automations run in the background on our own servers, with a person in the loop when something is off.
+            </p>
+            <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {SECURITY.map((s, i) => (
+                <motion.li key={s.t} {...rise(i)} className="rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm">
+                  <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-md border border-[#e5e7eb] text-slate-700"><ShieldCheck size={18} /></span>
+                  <h4 className="text-[16px] font-semibold text-slate-900">{s.t}</h4>
+                  <p className="mt-1.5 text-[14.5px] leading-relaxed text-slate-600">{s.d}</p>
+                </motion.li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
@@ -118,7 +150,7 @@ export default function Home() {
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
               <Eyebrow>Use cases</Eyebrow>
-              <Heading>Built for how the <Accent>Gold Coast</Accent> works.</Heading>
+              <Heading>Built for how <Accent>Australian businesses</Accent> work.</Heading>
             </div>
             <TextLink href="/use-cases">All use cases</TextLink>
           </div>

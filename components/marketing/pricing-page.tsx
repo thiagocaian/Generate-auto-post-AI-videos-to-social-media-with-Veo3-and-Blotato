@@ -18,7 +18,7 @@ const PLANS = [
       "Rules written with your team",
       "Read-only first, with a go-live plan",
     ],
-    cta: "Book the free audit",
+    cta: "Free Automation Assessment",
   },
   {
     t: "Growth",
@@ -32,7 +32,7 @@ const PLANS = [
       "Follow-up tasks and reminders",
       "Messages in your tone, approved by you",
     ],
-    cta: "Start with the audit",
+    cta: "Start with the assessment",
     hot: true,
   },
   {
@@ -47,7 +47,7 @@ const PLANS = [
       "Daily or weekly plain-English reports",
       "Monitoring and alerts from Cytron automation",
     ],
-    cta: "Book the free audit",
+    cta: "Free Automation Assessment",
   },
   {
     t: "Enterprise",
@@ -61,17 +61,17 @@ const PLANS = [
       "Monthly rule tuning and reports",
       "New workflows as you grow",
     ],
-    cta: "Book the free audit",
+    cta: "Free Automation Assessment",
   },
 ];
 
 const INCLUDED = ["Works with the tools you already use", "Read-only first, one click back to manual", "Your data and accounts stay yours", "Local Gold Coast team"];
 
 const FAQ = [
-  { q: "What does it cost?", a: "The audit is free. Monthly plans start at $349, plus a setup fee from $990. Growth is $649, Business is $999, and Enterprise is $1,499+ a month with a custom setup. Prices are in AUD, ex GST where applicable. API usage, phone and SMS are subject to included allowances or additional charges." },
+  { q: "What does it cost?", a: "The assessment is free. Monthly plans start at $349, plus a setup fee from $990. Growth is $649, Business is $999, and Enterprise is $1,499+ a month with a custom setup. Prices are in AUD, ex GST where applicable. API usage, phone and SMS are subject to included allowances or additional charges." },
   { q: "Is there a lock-in contract?", a: "Your workflows, your data, your accounts. No black box and no lock-in." },
   { q: "Do I need to change the software I use?", a: "No. We connect to what you already use: your calendar, job or practice software, accounting, email and chat." },
-  { q: "How long until it runs?", a: "A first workflow usually goes from audit to shadow test in a few weeks, depending on access to your systems." },
+  { q: "How long until it runs?", a: "A first workflow usually goes from assessment to shadow test in a few weeks, depending on access to your systems." },
   { q: "Will my customers know it's automated?", a: "Messages are written in your tone and approved by you. When a conversation needs a real person, it's handed over with the full history so nobody repeats themselves." },
   { q: "What if the automation gets something wrong?", a: "It is built to stop rather than guess. Anything outside the rules is held for a person, and every decision is logged." },
   { q: "Is it only for one type of business?", a: "No. We work with trades, clinics, property, hospitality, retail and professional services. If a task follows the same steps every time, it can usually run on its own." },
@@ -83,8 +83,8 @@ export default function PricingPage() {
       <PageIntro
         eyebrow="Pricing"
         title={<>Start small. <Accent>Pay for what works</Accent>.</>}
-        lead="Begin with a free audit, then choose a monthly plan — from one operational automation to more complex operations."
-        actions={<><PrimaryLink href="/contact">Book a free audit</PrimaryLink><SecondaryLink href="#faq">Read the FAQ</SecondaryLink></>}
+        lead="Begin with a free assessment, then choose a monthly plan — from one operational automation to more complex operations."
+        actions={<><PrimaryLink href="/contact">Free Automation Assessment</PrimaryLink><SecondaryLink href="#faq">Read the FAQ</SecondaryLink></>}
       />
 
       <section className="bg-white py-16 sm:py-20">
@@ -140,7 +140,7 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <CtaBand title="Not sure which plan fits?" text="It starts with the free audit. We'll recommend the right plan for your business." />
+      <CtaBand title="Not sure which plan fits?" text="It starts with the free assessment. We'll recommend the right plan for your business." />
     </div>
   );
 }

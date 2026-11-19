@@ -72,8 +72,8 @@ export default function UseCasesPage() {
       <PageIntro
         eyebrow="Use cases"
         title={<>Same admin, <Accent>different business</Accent>.</>}
-        lead="Most Gold Coast businesses have fewer than 20 staff and the same repeat tasks. Here is what automation looks like for four of them."
-        actions={<><PrimaryLink href="/contact">Book a free audit</PrimaryLink><SecondaryLink href="/services">All services</SecondaryLink></>}
+        lead="Australian small businesses share the same repeat tasks. Here is what automation looks like for four of them."
+        actions={<><PrimaryLink href="/contact">Free Automation Assessment</PrimaryLink><SecondaryLink href="/services">All services</SecondaryLink></>}
       />
 
       <nav aria-label="Business types" className="border-b border-[#e5e7eb] bg-white">

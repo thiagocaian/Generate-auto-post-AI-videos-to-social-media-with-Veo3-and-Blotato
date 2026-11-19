@@ -87,8 +87,8 @@ export type LeadInsert = {
   industry: string | null
   monthly_enquiries: string | null
   response_process: string | null
-  preferred_date: string
-  preferred_time: string
+  preferred_date: string | null
+  preferred_time: string | null
   source: string
   status: 'stored'
   consent_at: string

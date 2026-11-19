@@ -66,7 +66,7 @@ export default function WeekMetrics() {
             id="week-metrics-heading"
             className="text-[15px] font-semibold tracking-tight text-slate-900 sm:text-base"
           >
-            A typical week for a Gold Coast trade business
+            A typical week for an Australian trade business
           </h2>
           <p className="text-xs font-medium text-slate-600">Illustrative example</p>
         </div>

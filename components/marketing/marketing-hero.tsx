@@ -39,6 +39,14 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
       <HeroConstellation reduced={reduced} />
       <div className="relative z-10 mx-auto flex max-w-6xl flex-col xl:min-h-[calc(90vh-4rem)] xl:flex-row xl:items-center">
         <div className="relative z-10 w-full px-5 pb-8 pt-14 md:pb-4 xl:w-[47%] xl:shrink-0 xl:py-16">
+          <motion.p
+            initial={reduced ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#5b5cf6]"
+          >
+            Smart automation for Australian businesses
+          </motion.p>
           <motion.h1
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -55,7 +63,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             transition={{ delay: 0.06, duration: 0.4, ease: "easeOut" }}
             className="mt-5 max-w-md text-[17px] leading-relaxed text-slate-600 sm:text-lg"
           >
-            Cytron runs on smart automation: less manual work, more time for what drives results.
+            Cytron runs on smart automation: repetitive, error-prone back-office work handled in the background, in real time, on our own servers — for businesses across Australia.
           </motion.p>
 
           <motion.form
@@ -83,7 +91,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
               type="submit"
               className="shrink-0 rounded-full bg-[#5b5cf6] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#4f46e5] sm:px-5 sm:text-sm"
             >
-              Book a free audit
+              Free Assessment
             </button>
           </motion.form>
 

@@ -37,7 +37,7 @@ export default function HowPage() {
         eyebrow="How it works"
         title={<>Audit, design, build, run. <Accent>Live in weeks</Accent>.</>}
         lead="A first workflow usually goes from audit to shadow test in a few weeks, depending on access to your systems. Nothing acts on its own until you've seen it work."
-        actions={<><PrimaryLink href="/contact">Start with a free audit</PrimaryLink><SecondaryLink href="/services">What we automate</SecondaryLink></>}
+        actions={<><PrimaryLink href="/contact">Free Automation Assessment</PrimaryLink><SecondaryLink href="/services">What we automate</SecondaryLink></>}
       />
 
       <ScrollSteps

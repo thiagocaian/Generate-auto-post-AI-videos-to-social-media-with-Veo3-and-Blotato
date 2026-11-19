@@ -138,8 +138,8 @@ export async function processLeadAudit(input: {
       industry: blank(data.industry),
       monthly_enquiries: blank(data.monthlyEnquiries),
       response_process: blank(data.responseProcess),
-      preferred_date: data.preferredDate,
-      preferred_time: data.preferredTime,
+      preferred_date: data.preferredDate || null,
+      preferred_time: data.preferredTime || null,
       source: 'site_form',
       status: 'stored',
       consent_at: now.toISOString(),
@@ -183,8 +183,8 @@ export async function processLeadAudit(input: {
     website: blank(data.website),
     monthlyEnquiries: blank(data.monthlyEnquiries),
     responseProcess: blank(data.responseProcess),
-    preferredDate: data.preferredDate,
-    preferredTime: data.preferredTime,
+    preferredDate: data.preferredDate || null,
+    preferredTime: data.preferredTime || null,
   }
 
   let qualification: QualifyResult

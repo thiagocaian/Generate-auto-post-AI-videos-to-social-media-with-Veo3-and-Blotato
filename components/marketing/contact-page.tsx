@@ -7,8 +7,8 @@ import AuditForm from "@/components/marketing/audit-form";
 
 const NEXT = [
   { icon: ClipboardList, t: "Tell us about the business", d: "Two minutes: who you are and which task eats the most time." },
-  { icon: CalendarCheck, t: "Pick a time", d: "Choose a weekday slot for the audit, in person on the Coast or online." },
-  { icon: PhoneCall, t: "We review and follow up", d: "A person at Cytron reviews the request and comes back with ideas for your tools." },
+  { icon: CalendarCheck, t: "We get in touch", d: "A person at Cytron reviews the request, in person on the Coast or online." },
+  { icon: PhoneCall, t: "A clear plan, no obligation", d: "We come back with the tasks worth automating first, and how we would run them." },
 ];
 
 const GET = ["A map of where your team's hours go", "The top 3 tasks worth automating first", "A rough estimate of time and cost saved", "A clear next step, with no obligation"];
@@ -19,7 +19,7 @@ export default function ContactPage() {
       <section id="audit" className="border-b border-[#e5e7eb] bg-gradient-to-b from-white to-[#f3f4f7]">
         <div className="mx-auto grid max-w-6xl gap-12 px-5 pb-20 pt-14 sm:pt-20 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#5b5cf6]">Contact · Free automation audit</p>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#5b5cf6]">Contact · Free Automation Assessment</p>
             <h1 className="max-w-xl text-[clamp(2.1rem,6.5vw,3.4rem)] font-semibold leading-[1.06] tracking-tight text-slate-900">
               <Accent>One</Accent> call and you&apos;ll know what to automate first.
             </h1>
@@ -40,7 +40,7 @@ export default function ContactPage() {
             </ol>
 
             <div className="mt-10 rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm">
-              <p className="mb-4 text-sm font-semibold text-slate-900">What you get from the audit</p>
+              <p className="mb-4 text-sm font-semibold text-slate-900">What you get from the assessment</p>
               <ul className="space-y-2.5 text-[15px] text-slate-700">
                 {GET.map((g) => <li key={g} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-700" />{g}</li>)}
               </ul>

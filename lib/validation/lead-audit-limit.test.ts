@@ -73,6 +73,6 @@ describe('isUniqueViolation', () => {
     expect(isUniqueViolation(null)).toBe(false)
   })
   it('has a friendly message', () => {
-    expect(ALREADY_REQUESTED_MESSAGE).toMatch(/already requested your free audit/)
+    expect(ALREADY_REQUESTED_MESSAGE).toMatch(/already requested a Free Automation Assessment/)
   })
 })
