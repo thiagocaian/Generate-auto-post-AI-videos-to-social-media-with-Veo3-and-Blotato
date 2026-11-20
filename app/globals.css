@@ -124,3 +124,78 @@ html {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 0; }
 ::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+
+@keyframes hero-constellation-tile-in {
+  from { opacity: 0; }
+  to { opacity: 0.84; }
+}
+
+.hero-constellation-tile {
+  animation: hero-constellation-tile-in 600ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-constellation-tile {
+    animation: none;
+  }
+}
+
+/* Mobile hero icons: compositor-only drift. No JS per frame, no vh. */
+@keyframes hero-constellation-drift-top-a {
+  0%, 100% { transform: translate3d(-50%, -50%, 0); }
+  40% { transform: translate3d(calc(-50% + 2px), calc(-50% - 2px), 0); }
+  75% { transform: translate3d(calc(-50% - 2px), calc(-50% + 1px), 0); }
+}
+@keyframes hero-constellation-drift-top-b {
+  0%, 100% { transform: translate3d(-50%, -50%, 0); }
+  35% { transform: translate3d(calc(-50% - 2px), calc(-50% - 1px), 0); }
+  65% { transform: translate3d(calc(-50% + 2px), calc(-50% + 2px), 0); }
+}
+@keyframes hero-constellation-drift-bottom-a {
+  0%, 100% { transform: translate3d(-50%, 50%, 0); }
+  40% { transform: translate3d(calc(-50% + 2px), calc(50% - 2px), 0); }
+  75% { transform: translate3d(calc(-50% - 2px), calc(50% + 1px), 0); }
+}
+@keyframes hero-constellation-drift-bottom-b {
+  0%, 100% { transform: translate3d(-50%, 50%, 0); }
+  35% { transform: translate3d(calc(-50% - 2px), calc(50% - 1px), 0); }
+  65% { transform: translate3d(calc(-50% + 2px), calc(50% + 2px), 0); }
+}
+
+.hero-constellation-mobile-tile--top {
+  transform: translate3d(-50%, -50%, 0);
+}
+.hero-constellation-mobile-tile--bottom {
+  transform: translate3d(-50%, 50%, 0);
+}
+
+.hero-constellation-mobile-tile {
+  will-change: transform;
+}
+
+.hero-constellation-mobile-tile--top-a {
+  animation:
+    hero-constellation-tile-in 600ms ease-out both,
+    hero-constellation-drift-top-a 18s ease-in-out 0.6s infinite;
+}
+.hero-constellation-mobile-tile--top-b {
+  animation:
+    hero-constellation-tile-in 600ms ease-out both,
+    hero-constellation-drift-top-b 21s ease-in-out 0.6s infinite;
+}
+.hero-constellation-mobile-tile--bottom-a {
+  animation:
+    hero-constellation-tile-in 600ms ease-out both,
+    hero-constellation-drift-bottom-a 19s ease-in-out 0.6s infinite;
+}
+.hero-constellation-mobile-tile--bottom-b {
+  animation:
+    hero-constellation-tile-in 600ms ease-out both,
+    hero-constellation-drift-bottom-b 22s ease-in-out 0.6s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-constellation-mobile-tile {
+    animation: none;
+  }
+}

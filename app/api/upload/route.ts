@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
+import { requestIp } from '@/lib/rate-limit'
+import { allowUploadRate, tooManyRequests } from '@/lib/durable-rate'
 import { createClient } from '@supabase/supabase-js'
 
 export const maxDuration = 30
@@ -41,6 +43,7 @@ export async function POST(req: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!(await allowUploadRate(user.id, requestIp(req.headers)))) return tooManyRequests()
 
   const formData = await req.formData()
   const file = formData.get('file') as File | null
@@ -85,7 +88,7 @@ export async function POST(req: NextRequest) {
 
   if (error) {
     console.error('Upload error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Upload failed. Please try again.' }, { status: 500 })
   }
 
   const { data: { publicUrl } } = adminClient.storage

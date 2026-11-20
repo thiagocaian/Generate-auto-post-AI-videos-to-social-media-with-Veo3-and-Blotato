@@ -4,10 +4,15 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
-// ─── Stripe init ────────────────────────────────────────────────────────────
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-03-25.dahlia',
-})
+// Constructed on demand so `next build` can import this route without a key.
+let stripeClient: Stripe | null = null
+function getStripe() {
+  if (stripeClient) return stripeClient
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key) throw new Error('STRIPE_SECRET_KEY is not configured')
+  stripeClient = new Stripe(key, { apiVersion: '2026-03-25.dahlia' })
+  return stripeClient
+}
 
 // ─── Plan → price mapping (AUD) ─────────────────────────────────────────────
 // Prices in cents
@@ -26,7 +31,7 @@ async function getOrCreatePrice(plan: string): Promise<string> {
   if (!config) throw new Error(`Unknown plan: ${plan}`)
 
   // Search for existing price by metadata
-  const existingPrices = await stripe.prices.search({
+  const existingPrices = await getStripe().prices.search({
     query: `metadata["cytron_plan"]:"${plan}" active:"true"`,
   })
 
@@ -35,12 +40,12 @@ async function getOrCreatePrice(plan: string): Promise<string> {
   }
 
   // Create product + price
-  const product = await stripe.products.create({
+  const product = await getStripe().products.create({
     name: config.name,
     metadata: { cytron_plan: plan },
   })
 
-  const price = await stripe.prices.create({
+  const price = await getStripe().prices.create({
     product: product.id,
     unit_amount: config.amount,
     currency: 'aud',
@@ -114,7 +119,7 @@ export async function POST(request: Request) {
     let customerId = company.stripe_customer_id
 
     if (!customerId) {
-      const customer = await stripe.customers.create({
+      const customer = await getStripe().customers.create({
         email: user.email,
         name: company.name,
         metadata: {
@@ -167,7 +172,7 @@ export async function POST(request: Request) {
       sessionParams.subscription_data!.trial_period_days = trialDays
     }
 
-    const session = await stripe.checkout.sessions.create(sessionParams)
+    const session = await getStripe().checkout.sessions.create(sessionParams)
 
     return NextResponse.json({ url: session.url })
   } catch (err) {

@@ -46,9 +46,15 @@ export default function ScanPage() {
   }, [])
 
   useEffect(() => {
-    supabase.from('projects').select('id, name').eq('status', 'active').then(({ data }) => {
-      if (data) setProjects(data)
-    })
+    fetch('/api/projects')
+      .then(async (res) => {
+        if (res.status === 401 || res.status === 403) return []
+        if (!res.ok) return []
+        const json = await res.json()
+        return Array.isArray(json.projects) ? json.projects : []
+      })
+      .then((data) => setProjects(data))
+      .catch(() => setProjects([]))
   }, [])
 
   useEffect(() => {

@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
     })
     return NextResponse.json({ success: true })
   } catch (error) {
-    return NextResponse.json({ success: false, error: String(error) }, { status: 502 })
+    console.error('[warehouse/alert] webhook failed:', error)
+    return NextResponse.json({ success: false, error: 'Webhook delivery failed' }, { status: 502 })
   }
 }

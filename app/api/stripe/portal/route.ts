@@ -4,10 +4,15 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
-// ─── Stripe init ────────────────────────────────────────────────────────────
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-03-25.dahlia',
-})
+// Constructed on demand so `next build` can import this route without a key.
+let stripeClient: Stripe | null = null
+function getStripe() {
+  if (stripeClient) return stripeClient
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key) throw new Error('STRIPE_SECRET_KEY is not configured')
+  stripeClient = new Stripe(key, { apiVersion: '2026-03-25.dahlia' })
+  return stripeClient
+}
 
 // ─── POST /api/stripe/portal ────────────────────────────────────────────────
 export async function POST(request: Request) {
@@ -65,7 +70,7 @@ export async function POST(request: Request) {
     // 3. Create Stripe Billing Portal session
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
-    const portalSession = await stripe.billingPortal.sessions.create({
+    const portalSession = await getStripe().billingPortal.sessions.create({
       customer: company.stripe_customer_id,
       return_url: `${siteUrl}/billing`,
     })
