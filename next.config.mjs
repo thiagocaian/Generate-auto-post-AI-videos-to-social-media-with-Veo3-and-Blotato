@@ -12,6 +12,18 @@ const nextConfig = {
     { source: '/industries', destination: '/use-cases', permanent: false },
     { source: '/faq', destination: '/pricing#faq', permanent: false },
     { source: '/how', destination: '/how-it-works', permanent: false },
+    { source: '/clinics', destination: '/use-cases', permanent: true },
+    { source: '/clinics/:path*', destination: '/use-cases', permanent: true },
+    { source: '/trades', destination: '/use-cases', permanent: true },
+    { source: '/trades/:path*', destination: '/use-cases', permanent: true },
+    { source: '/real-estate', destination: '/use-cases', permanent: true },
+    { source: '/real-estate/:path*', destination: '/use-cases', permanent: true },
+    { source: '/hospitality', destination: '/use-cases', permanent: true },
+    { source: '/hospitality/:path*', destination: '/use-cases', permanent: true },
+    { source: '/retail', destination: '/use-cases', permanent: true },
+    { source: '/retail/:path*', destination: '/use-cases', permanent: true },
+    { source: '/professional-services', destination: '/use-cases', permanent: true },
+    { source: '/professional-services/:path*', destination: '/use-cases', permanent: true },
   ],
   headers: async () => [
     // Immutable static assets (production only: in dev the chunk names don't change, so the browser would keep stale code)

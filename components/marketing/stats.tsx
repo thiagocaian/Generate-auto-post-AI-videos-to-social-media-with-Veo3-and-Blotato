@@ -7,7 +7,7 @@ import { Accent, Eyebrow } from "@/components/site";
 const STATS = [
   { target: 72, prefix: "", suffix: "%", v: "of Australians expect a reply from a small business within an hour. 22% expect it instantly.", link: "Missed calls & enquiries", src: "Zoho, 2024", url: "https://itbrief.com.au/story/zoho-study-reveals-rising-customer-service-expectations-in-australia" },
   { target: 15257, prefix: "$", suffix: "", v: "a year is what late payments cost the average Australian small business.", link: "Invoices & getting paid", src: "Xero Small Business Insights, Dec 2025 qtr", url: "https://www.xero.com/au/guides/late-payment-small-business-australia/" },
-  { target: 97, prefix: "", suffix: "%", v: "of Gold Coast businesses have fewer than 20 staff. Most have no admin team to absorb the busywork.", link: "Reports & AI assistant", src: "NEMA Gold Coast LGA profile, 2025", url: "https://www.nema.gov.au/sites/default/files/LGAProfiles/Gold%20Coast%20-%20LGA%20profile.docx" },
+  { target: 97, prefix: "", suffix: "%", v: "of Gold Coast businesses have fewer than 20 staff.", link: "Business counts on the Coast", src: "NEMA Gold Coast LGA profile, 2025", url: "https://www.nema.gov.au/sites/default/files/LGAProfiles/Gold%20Coast%20-%20LGA%20profile.docx" },
   { target: 64, prefix: "", suffix: "%", v: "of Australian small businesses already use AI regularly, up from 39% a year earlier.", link: "Your competitors are moving", src: "QuickBooks Small Business Insights, Apr 2025", url: "https://quickbooks.intuit.com/au/blog/news/small-business-insights-survey-april-2025" },
 ];
 
@@ -50,10 +50,10 @@ export default function StatsSection() {
       <div className="mx-auto max-w-6xl">
       <Eyebrow>Why it matters</Eyebrow>
       <h2 className="max-w-3xl text-[28px] font-semibold leading-snug tracking-tight text-slate-900 sm:text-[36px]">
-        Small teams, <Accent>big expectations</Accent>.
+        Busy operations, <Accent>big expectations</Accent>.
       </h2>
       <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-slate-700">
-        Customers expect fast replies and easy payments. Most local businesses don&apos;t have the staff to keep up by hand. That gap is where automation pays for itself.
+        Customers expect fast replies and easy payments. Trade, wholesale and fulfilment teams still handle a lot of that by hand. That gap is where automation pays for itself.
       </p>
       <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {STATS.map((s, i) => (
@@ -75,7 +75,7 @@ export default function StatsSection() {
           </motion.div>
         ))}
       </div>
-      <p className="mt-6 text-sm text-slate-700">On the Coast, health care employment grew 18.5% and construction 12.9% in the year to August 2025 (<a href="https://www.jobsandskills.gov.au/sites/default/files/2025-10/Industry%20Profile%20Gold%20Coast.pdf" target="_blank" rel="noopener noreferrer" className="font-medium text-slate-800 underline underline-offset-2">Jobs and Skills Australia</a>). More clients, same front desk.</p>
+      <p className="mt-6 text-sm text-slate-700">On the Coast, health care employment grew 18.5% and construction 12.9% in the year to August 2025 (<a href="https://www.jobsandskills.gov.au/sites/default/files/2025-10/Industry%20Profile%20Gold%20Coast.pdf" target="_blank" rel="noopener noreferrer" className="font-medium text-slate-800 underline underline-offset-2">Jobs and Skills Australia</a>). The office work behind that demand is still repetitive.</p>
       </div>
     </section>
   );

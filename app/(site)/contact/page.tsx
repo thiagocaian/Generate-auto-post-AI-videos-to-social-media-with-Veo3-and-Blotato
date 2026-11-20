@@ -3,7 +3,7 @@ import ContactPage from "@/components/marketing/contact-page";
 
 export const metadata: Metadata = {
   title: "Contact — Free Automation Assessment | CYTRON",
-  description: "Request a Free Automation Assessment with Cytron, in person on the Gold Coast or online. Tell us which task eats your team's day.",
+  description: "Cytron specialises in automating repetitive office tasks. Request a Free Automation Assessment, in person on the Gold Coast or online.",
   alternates: { canonical: "/contact" },
 };
 

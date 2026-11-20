@@ -45,7 +45,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#5b5cf6]"
           >
-            Smart automation for Australian businesses
+            Specialists in repetitive office tasks
           </motion.p>
           <motion.h1
             initial={reduced ? false : { opacity: 0, y: 8 }}
@@ -53,9 +53,9 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="text-[clamp(2.25rem,8vw,3rem)] font-semibold leading-[1.05] tracking-tight text-slate-900 lg:text-[clamp(3.5rem,5.2vw,4.75rem)] xl:text-[clamp(3.5rem,4.4vw,4.25rem)]"
           >
-            Automate the repetitive.
+            Specialists in automating
             <br />
-            Decide what matters.
+            repetitive office tasks.
           </motion.h1>
           <motion.p
             initial={reduced ? false : { opacity: 0, y: 8 }}
@@ -63,7 +63,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             transition={{ delay: 0.06, duration: 0.4, ease: "easeOut" }}
             className="mt-5 max-w-md text-[17px] leading-relaxed text-slate-600 sm:text-lg"
           >
-            Cytron runs on smart automation: repetitive, error-prone back-office work handled in the background, in real time, on our own servers — for businesses across Australia.
+            Cytron specialises in automating repetitive office tasks for trade, wholesale, e-commerce and warehouse operations — in the background, on our own servers.
           </motion.p>
 
           <motion.form

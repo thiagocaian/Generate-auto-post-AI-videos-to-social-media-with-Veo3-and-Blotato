@@ -5,7 +5,7 @@ const jsonLd = {
   "@type": "LocalBusiness",
   name: "CYTRON",
   url: "https://cytronai.com",
-  description: "Cytron automates repetitive back-office work for Australian businesses — trades, clinics, property, hospitality and retail.",
+  description: "Cytron specialises in automating repetitive office tasks for Australian trade, wholesale, e-commerce and warehouse operations.",
   areaServed: {
     "@type": "Country",
     name: "Australia",

@@ -81,7 +81,7 @@ export default function ServicesPage() {
       <PageIntro
         eyebrow="Services"
         title={<>Six things that <Accent>run on their own</Accent>.</>}
-        lead="From the first missed call to the paid invoice, Cytron handles the repeat work in the background and hands anything unusual to a person."
+        lead="Cytron specialises in automating repetitive office tasks, from the first enquiry to the paid invoice, and hands anything unusual to a person."
         actions={<><PrimaryLink href="/contact">Free Automation Assessment</PrimaryLink><SecondaryLink href="/pricing">See pricing</SecondaryLink></>}
       />
 

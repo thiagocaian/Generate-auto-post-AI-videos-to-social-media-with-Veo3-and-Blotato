@@ -8,7 +8,7 @@ export default function AnnouncementBar() {
       href="/contact"
       className="block bg-slate-900 px-4 py-2 text-center text-[13px] font-medium text-slate-200 transition-colors hover:text-white"
     >
-      New: Free Automation Assessment for Australian businesses{" "}
+      Specialists in repetitive office tasks — free assessment for trade and fulfilment{" "}
       <span aria-hidden="true">→</span>
     </a>
   );

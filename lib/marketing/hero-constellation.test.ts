@@ -22,7 +22,7 @@ import {
 const IDS = CONSTELLATION_TOOLS.map((t) => t.id);
 
 describe("hero constellation", () => {
-  test("includes 16 tools Cytron can integrate with, including Starshipit", () => {
+  test("includes 16 tools Cytron can integrate with", () => {
     assert.equal(CONSTELLATION_TOOLS.length, 16);
     const wanted = [
       "starshipit",
@@ -43,7 +43,9 @@ describe("hero constellation", () => {
       "woocommerce",
     ];
     assert.deepEqual([...IDS].sort(), [...wanted].sort());
-    assert.equal(CONSTELLATION_TOOLS.find((t) => t.id === "starshipit")?.source, "official");
+    const shipping = CONSTELLATION_TOOLS.find((t) => t.id === "starshipit");
+    assert.equal(shipping?.label, "Shipping");
+    assert.equal(shipping?.source, "generic");
   });
 
   test("every edge connects two known tools and includes the meaningful pairs", () => {

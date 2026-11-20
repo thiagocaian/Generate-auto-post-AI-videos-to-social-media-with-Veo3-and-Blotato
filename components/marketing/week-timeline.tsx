@@ -4,11 +4,11 @@ import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 const WEEK = [
-  { day: "Mon", time: "7:00 am", from: "Cytron", msg: "Weekend summary: 6 enquiries, 4 already booked, 2 quotes waiting for a price.", me: false },
-  { day: "Tue", time: "6:42 pm", from: "Customer", msg: "Hi, called about a leaking tap, no answer?", reply: "Sorry we missed you, book a time here", me: true },
-  { day: "Wed", time: "10:15 am", from: "Cytron", msg: "Friendly follow-up on Monday's quote sent. Customer accepted ✓", me: false },
-  { day: "Thu", time: "2:30 pm", from: "Cytron", msg: "Job done. Invoice #1042 sent and synced to Xero before the van left.", me: false },
-  { day: "Fri", time: "4:00 pm", from: "Cytron", msg: "3 review requests sent. 1 unhappy reply forwarded to you to sort personally.", me: false },
+  { day: "Mon", time: "7:00 am", from: "Cytron", msg: "Overnight orders checked. Unclear addresses are held for the office.", me: false },
+  { day: "Tue", time: "9:10 am", from: "Buyer", msg: "Where is our wholesale order?", reply: "It's packed. Here's the tracking.", me: true },
+  { day: "Wed", time: "10:15 am", from: "Cytron", msg: "A repeat order matched the account and was released to pick.", me: false },
+  { day: "Thu", time: "2:30 pm", from: "Cytron", msg: "Dispatch paperwork is ready. The invoice is synced to Xero.", me: false },
+  { day: "Fri", time: "4:00 pm", from: "Cytron", msg: "Office summary: what shipped, what's held, and what to reorder.", me: false },
 ];
 
 export default function WeekTimeline() {
