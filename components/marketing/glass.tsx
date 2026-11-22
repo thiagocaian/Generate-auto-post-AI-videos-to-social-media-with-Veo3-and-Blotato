@@ -17,10 +17,6 @@ export const GLASS_SPRING: Transition = { type: "spring", bounce: 0.2, duration:
 export const GLASS_EASE: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 export const GLASS_DURATION = 0.45;
 
-/** Legacy flat panel (pre liquid glass); kept until every panel uses LiquidGlass. */
-export const GLASS_PANEL =
-  "rounded-2xl border border-slate-200/70 bg-gradient-to-b from-white/80 to-slate-50/60 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_1px_2px_rgba(15,23,42,0.04),0_10px_28px_rgba(15,23,42,0.06)]";
-
 /** Small uppercase section header, like MAIN / WORKSPACE in the reference. */
 export const GLASS_HEADER = "text-[10.5px] font-semibold uppercase tracking-[0.14em] text-slate-500";
 

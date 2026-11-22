@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useId, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { ChevronDown, FileText, Package, Receipt, UserPlus, type LucideIcon } from "lucide-react";
+import { useReducedMotion } from "framer-motion";
+import { FileText, Package, Receipt, UserPlus, type LucideIcon } from "lucide-react";
 import { Accent, Eyebrow, Heading } from "@/components/site";
 import FlowVideo from "@/components/marketing/flow-video";
-import { GLASS_ACTIVE, GLASS_DURATION, GLASS_EASE, GLASS_FOCUS, GLASS_HEADER, GLASS_PANEL, GLASS_ROW, GlassCollapse } from "@/components/marketing/glass";
+import { GLASS_ACTIVE, GLASS_FOCUS, GLASS_HEADER, GLASS_IDLE, GLASS_ROW, GlassChevronIcon, GlassCollapse, LiquidGlass, useHoverPill } from "@/components/marketing/glass";
 
 export type BackofficeFlow = {
   id: string;
@@ -142,8 +142,8 @@ function FlowRowContent({ flow, on }: { flow: BackofficeFlow; on: boolean }) {
   return (
     <>
       <span
-        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-300 ${
-          on ? "bg-white/90 text-[#4f46e5] shadow-sm" : "bg-slate-100/80 text-slate-600"
+        className={`lg-row flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-300 ${
+          on ? "text-[#4f46e5]" : "text-slate-600"
         }`}
         aria-hidden
       >
@@ -154,7 +154,7 @@ function FlowRowContent({ flow, on }: { flow: BackofficeFlow; on: boolean }) {
       </span>
       <span
         className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10.5px] font-semibold tabular-nums ${
-          on ? "bg-[#5b5cf6] text-white" : "bg-slate-900/[0.05] text-slate-600"
+          on ? "bg-gradient-to-b from-[#6d6ef8] to-[#5b5cf6] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]" : "bg-slate-900/[0.05] text-slate-600"
         }`}
         aria-hidden
       >
@@ -171,6 +171,8 @@ export default function BackofficeFlows() {
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
+  const menuHover = useHoverPill(reduced);
+  const railHover = useHoverPill(reduced);
   const activeFlow = BACKOFFICE_FLOWS[active];
 
   const onTabKey = (e: React.KeyboardEvent<HTMLButtonElement>, i: number) => {
@@ -203,8 +205,10 @@ export default function BackofficeFlows() {
 
         <div className="mt-8 lg:grid lg:grid-cols-[17rem_minmax(0,1fr)] lg:items-start lg:gap-5">
           {/* Mobile / tablet: collapsible selector showing the active flow. */}
-          <div
-            className={`${GLASS_PANEL} mb-4 p-1.5 lg:hidden`}
+          <LiquidGlass
+            reduced={reduced}
+            className="mb-4 lg:hidden"
+            panelClassName="p-1.5"
             data-glass="c-mobile"
             onKeyDown={(e) => {
               if (e.key === "Escape" && menuOpen) {
@@ -224,15 +228,9 @@ export default function BackofficeFlows() {
             >
               <span className="sr-only">Back-office workflow: </span>
               <FlowRowContent flow={activeFlow} on />
-              <motion.span
-                aria-hidden
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-200/80 bg-white/80 text-slate-600"
-                initial={false}
-                animate={{ rotate: menuOpen ? 180 : 0 }}
-                transition={{ duration: reduced ? 0 : GLASS_DURATION, ease: GLASS_EASE }}
-              >
-                <ChevronDown size={15} />
-              </motion.span>
+              <span aria-hidden className="lg-row flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-600">
+                <GlassChevronIcon open={menuOpen} reduced={reduced} />
+              </span>
             </button>
             <GlassCollapse open={menuOpen} id={menuId} reduced={reduced}>
               <p className={`${GLASS_HEADER} px-2.5 pb-1 pt-2.5`}>Choose a workflow</p>
@@ -246,8 +244,10 @@ export default function BackofficeFlows() {
                         aria-current={on ? "true" : undefined}
                         onClick={() => pick(i)}
                         data-glass-option={f.id}
-                        className={`${GLASS_ROW} w-full text-left ${on ? GLASS_ACTIVE : "hover:bg-white/60"} ${GLASS_FOCUS}`}
+                        className={`${GLASS_ROW} w-full text-left ${on ? GLASS_ACTIVE : GLASS_IDLE} ${GLASS_FOCUS}`}
+                        {...menuHover.bind(i)}
                       >
+                        {menuHover.pill(i, "flows-menu")}
                         <FlowRowContent flow={f} on={on} />
                       </button>
                     </li>
@@ -255,10 +255,10 @@ export default function BackofficeFlows() {
                 })}
               </ul>
             </GlassCollapse>
-          </div>
+          </LiquidGlass>
 
           {/* Desktop: narrow glass rail beside the video. */}
-          <div className={`${GLASS_PANEL} hidden p-1.5 lg:block`} data-glass="c-rail">
+          <LiquidGlass reduced={reduced} className="hidden lg:block" panelClassName="p-1.5" sheenDelay="2.5s" data-glass="c-rail">
             <p className={`${GLASS_HEADER} px-2.5 pb-1.5 pt-2`} id="flow-rail-heading">Choose a workflow</p>
             <div role="tablist" aria-labelledby="flow-rail-heading" aria-orientation="vertical" className="flex flex-col gap-1">
               {BACKOFFICE_FLOWS.map((f, i) => {
@@ -277,14 +277,16 @@ export default function BackofficeFlows() {
                     tabIndex={on ? 0 : -1}
                     onClick={() => setActive(i)}
                     onKeyDown={(e) => onTabKey(e, i)}
-                    className={`${GLASS_ROW} w-full text-left ${on ? GLASS_ACTIVE : "hover:bg-white/60"} ${GLASS_FOCUS}`}
+                    className={`${GLASS_ROW} w-full text-left ${on ? GLASS_ACTIVE : GLASS_IDLE} ${GLASS_FOCUS}`}
+                    {...railHover.bind(i)}
                   >
+                    {railHover.pill(i, "flows-rail")}
                     <FlowRowContent flow={f} on={on} />
                   </button>
                 );
               })}
             </div>
-          </div>
+          </LiquidGlass>
 
           <div>
           {BACKOFFICE_FLOWS.map((flow, i) => {
