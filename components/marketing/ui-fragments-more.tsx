@@ -4,7 +4,7 @@ import React, { useId, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { AlertTriangle, Check, Clock, MessageSquare, PhoneMissed, UserPlus, CalendarCheck, FileText, CreditCard, Keyboard, Receipt } from "lucide-react";
 import { hoursSummary } from "@/lib/marketing/hours-summary";
-import { GLASS_ACTIVE, GLASS_HEADER, GLASS_IDLE, GLASS_PANEL, GLASS_ROW, GlassChevron, GlassCollapse } from "@/components/marketing/glass";
+import { GLASS_ACTIVE, GLASS_HEADER, GLASS_IDLE, GLASS_ROW, GlassChevron, GlassCollapse, LiquidGlass, useHoverPill } from "@/components/marketing/glass";
 
 /** More compact UI fragments for the services and how-it-works pages. Same visual language as ui-fragments.tsx. */
 
@@ -73,8 +73,9 @@ export function ProcessMap() {
   const [open, setOpen] = useState(true);
   const listId = useId();
   const summary = hoursSummary(HOURS_EXAMPLE);
+  const hover = useHoverPill(reduced);
   return (
-    <div className={`${GLASS_PANEL} p-2`} data-glass="a">
+    <LiquidGlass reduced={reduced} panelClassName="p-2" data-glass="a">
       <div className="flex items-center justify-between gap-3 py-1 pl-2.5 pr-1">
         <p className={GLASS_HEADER}>Where the hours go · example</p>
         <GlassChevron
@@ -93,13 +94,13 @@ export function ProcessMap() {
             {HOURS_EXAMPLE.map(({ t, icon: Icon, top }) => (
               <span
                 key={t}
-                className={`flex h-6 w-6 items-center justify-center rounded-full border-2 border-white ${top ? "bg-[#eef0ff] text-[#4f46e5]" : "bg-slate-100 text-slate-500"}`}
+                className={`lg-row flex h-6 w-6 items-center justify-center rounded-full ${top ? "lg-row-active text-[#4f46e5]" : "text-slate-500"}`}
               >
                 <Icon size={12} />
               </span>
             ))}
           </span>
-          <span className="whitespace-nowrap rounded-full bg-[#5b5cf6]/[0.09] px-2.5 py-1 text-[12px] font-semibold tabular-nums text-[#4f46e5] ring-1 ring-inset ring-[#5b5cf6]/20">
+          <span className="lg-row lg-row-active whitespace-nowrap rounded-full px-2.5 py-1 text-[12px] font-semibold tabular-nums text-[#4338ca]">
             {summary}
           </span>
         </div>
@@ -107,10 +108,11 @@ export function ProcessMap() {
 
       <GlassCollapse open={open} id={listId} reduced={reduced}>
         <ul className="flex flex-col gap-1.5 px-0.5 pb-1 pt-1">
-          {HOURS_EXAMPLE.map(({ t, hours, icon: Icon, top }) => (
-            <li key={t} className={`${GLASS_ROW} ${top ? GLASS_ACTIVE : GLASS_IDLE}`}>
+          {HOURS_EXAMPLE.map(({ t, hours, icon: Icon, top }, i) => (
+            <li key={t} className={`${GLASS_ROW} ${top ? GLASS_ACTIVE : GLASS_IDLE}`} {...hover.bind(i)}>
+              {hover.pill(i, "assess")}
               <span
-                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${top ? "bg-white/90 text-[#4f46e5] shadow-sm" : "bg-slate-100/80 text-slate-500"}`}
+                className={`lg-row flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${top ? "text-[#4f46e5]" : "text-slate-500"}`}
                 aria-hidden
               >
                 <Icon size={14} />
@@ -120,7 +122,7 @@ export function ProcessMap() {
                 {top ? <span className="sr-only"> (picked)</span> : null}
               </span>
               <span
-                className={`shrink-0 rounded-full px-2 py-0.5 text-[11.5px] font-semibold tabular-nums ${top ? "bg-[#5b5cf6] text-white" : "bg-slate-900/[0.05] text-slate-600"}`}
+                className={`shrink-0 rounded-full px-2 py-0.5 text-[11.5px] font-semibold tabular-nums ${top ? "bg-gradient-to-b from-[#6d6ef8] to-[#5b5cf6] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]" : "bg-slate-900/[0.05] text-slate-600"}`}
               >
                 {hours} h / week
               </span>
@@ -132,7 +134,7 @@ export function ProcessMap() {
           Top 3 picked to automate first
         </p>
       </GlassCollapse>
-    </div>
+    </LiquidGlass>
   );
 }
 
