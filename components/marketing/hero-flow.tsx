@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import {
   Bell,
   CalendarCheck,
   Check,
+  ChevronDown,
   Cpu,
   Database,
   FileText,
@@ -17,6 +18,7 @@ import {
   UserRound,
   type LucideIcon,
 } from "lucide-react";
+import { GLASS_ACTIVE, GLASS_DURATION, GLASS_EASE, GLASS_FOCUS, GLASS_HEADER, GLASS_IDLE, GLASS_PANEL, GLASS_ROW, GlassCollapse } from "@/components/marketing/glass";
 
 type NodeId =
   | "hub"
@@ -510,47 +512,122 @@ function TravelDot({ d, t }: { d: string; t: number }) {
   );
 }
 
+const REVEAL_DONE_MS = NODE_TIMES.human.appear + 500;
+
+function groupSlug(label: string) {
+  return label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+}
+
+/**
+ * Mobile timeline: a nested glass list. Every row is always in the layout (no layout
+ * shift); rows fade in step by step on the first pass, then stay settled.
+ */
 function MobileFlow({ time, reduced }: { time: number; reduced: boolean }) {
+  const baseId = useId();
+  const [settled, setSettled] = useState(false);
+  const [closed, setClosed] = useState<Record<string, boolean>>({});
+  useEffect(() => {
+    if (!settled && time >= REVEAL_DONE_MS) setSettled(true);
+  }, [time, settled]);
+  const still = reduced || settled;
+
   return (
-    <div className="relative mx-auto w-full max-w-sm px-5">
-      {MOBILE_GROUPS.map((group) => {
-        const showGroup = reduced || group.nodes.some((node) => visibleAt(node.id, time, reduced));
-        if (!showGroup) return null;
-        return (
-        <div key={group.label} className="mb-5 last:mb-0">
-          <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{group.label}</p>
-          <ol className="relative">
-            <span className="absolute bottom-6 left-[5px] top-6 w-px bg-[#e5e7eb]" aria-hidden />
-            {group.nodes.map((node) => {
-              const state = stateAt(node.id, time, reduced);
-              const show = visibleAt(node.id, time, reduced);
-              if (!show) return null;
-              return (
-                <li key={node.id} className="relative mb-3 last:mb-0 flex items-start gap-3">
+    <div className="relative mx-auto w-full max-w-sm px-5" data-glass="b">
+      <div className={`${GLASS_PANEL} p-2`}>
+        {MOBILE_GROUPS.map((group, gi) => {
+          const slug = groupSlug(group.label);
+          const listId = `${baseId}-${slug}`;
+          const open = !closed[slug];
+          const groupShown = still || group.nodes.some((node) => visibleAt(node.id, time, false));
+          return (
+            <div key={group.label} className={gi ? "mt-1 border-t border-slate-200/60 pt-1" : ""}>
+              <button
+                type="button"
+                aria-expanded={open}
+                aria-controls={listId}
+                onClick={() => setClosed((c) => ({ ...c, [slug]: open }))}
+                data-glass-toggle={`b-${slug}`}
+                className={`flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left transition-colors hover:bg-white/60 ${GLASS_FOCUS}`}
+              >
+                <span className={`${GLASS_HEADER} flex-1 transition-opacity duration-500 ${groupShown ? "opacity-100" : "opacity-50"}`}>
+                  {group.label}
+                </span>
+                <span className="rounded-full bg-slate-900/[0.05] px-1.5 py-0.5 text-[10.5px] font-semibold tabular-nums text-slate-600">
+                  {group.nodes.length}
+                </span>
+                <motion.span
+                  aria-hidden
+                  className="flex h-6 w-6 items-center justify-center rounded-full border border-slate-200/80 bg-white/80 text-slate-500"
+                  initial={false}
+                  animate={{ rotate: open ? 180 : 0 }}
+                  transition={{ duration: reduced ? 0 : GLASS_DURATION, ease: GLASS_EASE }}
+                >
+                  <ChevronDown size={13} />
+                </motion.span>
+              </button>
+
+              <GlassCollapse open={open} id={listId} reduced={reduced}>
+                <ol className="relative ml-[17px] pb-1.5 pl-4 pt-0.5">
                   <span
-                    className={`relative z-10 mt-4 h-2.5 w-2.5 shrink-0 rounded-full border ${
-                      state === "done" || state === "running" || node.id === "hub"
-                        ? "border-[#5b5cf6] bg-[#5b5cf6]"
-                        : "border-[#e5e7eb] bg-white"
-                    }`}
+                    className="absolute bottom-4 left-0 top-4 w-px bg-gradient-to-b from-[#5b5cf6]/55 via-[#5b5cf6]/25 to-[#5b5cf6]/5"
                     aria-hidden
                   />
-                  <NodeCard
-                    node={node}
-                    state={state}
-                    style={
-                      node.id === "hub"
-                        ? { width: "100%", maxWidth: 320, height: "auto", minHeight: NODE_H }
-                        : { width: "100%", maxWidth: 280 }
-                    }
-                  />
-                </li>
-              );
-            })}
-          </ol>
-        </div>
-        );
-      })}
+                  {group.nodes.map((node) => {
+                    const shown = still || visibleAt(node.id, time, false);
+                    const state: NodeState = still ? stateAt(node.id, LOOP_MS, true) : stateAt(node.id, time, false);
+                    const Icon = node.icon;
+                    const isHub = node.id === "hub";
+                    const isHuman = node.id === "human";
+                    const active = isHub || state === "running";
+                    return (
+                      <motion.li
+                        key={node.id}
+                        className="relative mb-1.5 last:mb-0"
+                        initial={false}
+                        animate={{ opacity: shown ? 1 : 0.35, x: shown ? 0 : -3 }}
+                        transition={{ duration: reduced ? 0 : 0.45, ease: GLASS_EASE }}
+                      >
+                        <span
+                          className={`absolute -left-4 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full ring-[3px] ring-white/90 transition-colors duration-300 ${
+                            isHuman
+                              ? "border border-slate-300 bg-white"
+                              : state === "done" || active
+                                ? "bg-[#5b5cf6]"
+                                : "bg-slate-300"
+                          }`}
+                          aria-hidden
+                        />
+                        <div
+                          className={`${GLASS_ROW} ${
+                            isHuman ? "border border-dashed border-slate-300 bg-white/40" : active ? GLASS_ACTIVE : GLASS_IDLE
+                          }`}
+                        >
+                          <span
+                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-300 ${
+                              isHub || state === "running"
+                                ? "bg-[#5b5cf6] text-white"
+                                : state === "done"
+                                  ? "bg-emerald-50 text-emerald-700"
+                                  : "bg-slate-100/80 text-slate-600"
+                            }`}
+                            aria-hidden
+                          >
+                            {state === "done" && !isHub ? <Check size={15} strokeWidth={2.5} /> : <Icon size={15} />}
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-[13px] font-semibold tracking-tight text-slate-900">{node.title}</span>
+                            <span className="block truncate text-[11.5px] leading-tight text-slate-600">{node.sub}</span>
+                          </span>
+                        </div>
+                      </motion.li>
+                    );
+                  })}
+                </ol>
+              </GlassCollapse>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -583,8 +660,8 @@ export default function HeroFlow({ reduced: reducedProp }: { reduced?: boolean }
   const { ref: fitRef, scale } = useFitScale();
 
   return (
-    <div ref={rootRef} className="relative w-full" aria-hidden="true">
-      <div ref={fitRef} className="hidden w-full md:block">
+    <div ref={rootRef} className="relative w-full">
+      <div ref={fitRef} className="hidden w-full md:block" aria-hidden="true">
         <div className="mx-auto" style={{ width: VIEW_W * scale, height: VIEW_H * scale }}>
           <div style={{ width: VIEW_W, height: VIEW_H, transform: `scale(${scale})`, transformOrigin: "0 0" }}>
             <DesktopFlow time={time} reduced={reduced} />
@@ -592,7 +669,7 @@ export default function HeroFlow({ reduced: reducedProp }: { reduced?: boolean }
         </div>
       </div>
 
-      <div className="flex items-center justify-center py-6 md:hidden">
+      <div className="flex items-center justify-center py-6 md:hidden" role="group" aria-label="Cytron automation timeline">
         <MobileFlow time={time} reduced={reduced} />
       </div>
     </div>
