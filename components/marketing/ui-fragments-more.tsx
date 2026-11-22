@@ -1,7 +1,10 @@
 "use client";
 
-import React from "react";
-import { AlertTriangle, Check, Clock, MessageSquare, PhoneMissed, UserPlus, CalendarCheck, FileText, CreditCard } from "lucide-react";
+import React, { useId, useState } from "react";
+import { useReducedMotion } from "framer-motion";
+import { AlertTriangle, Check, Clock, MessageSquare, PhoneMissed, UserPlus, CalendarCheck, FileText, CreditCard, Keyboard, Receipt } from "lucide-react";
+import { hoursSummary } from "@/lib/marketing/hours-summary";
+import { GLASS_ACTIVE, GLASS_HEADER, GLASS_IDLE, GLASS_PANEL, GLASS_ROW, GlassChevron, GlassCollapse } from "@/components/marketing/glass";
 
 /** More compact UI fragments for the services and how-it-works pages. Same visual language as ui-fragments.tsx. */
 
@@ -58,28 +61,77 @@ export function HeldForReview() {
   );
 }
 
+const HOURS_EXAMPLE = [
+  { t: "Returning missed calls", hours: 6, icon: PhoneMissed, top: true },
+  { t: "Chasing unpaid invoices", hours: 4, icon: Receipt, top: true },
+  { t: "Confirming tomorrow's bookings", hours: 3, icon: CalendarCheck, top: true },
+  { t: "Re-typing jobs into Xero", hours: 2, icon: Keyboard, top: false },
+];
+
 export function ProcessMap() {
-  const tasks = [
-    { t: "Returning missed calls", h: "6 h / week", top: true },
-    { t: "Chasing unpaid invoices", h: "4 h / week", top: true },
-    { t: "Confirming tomorrow's bookings", h: "3 h / week", top: true },
-    { t: "Re-typing jobs into Xero", h: "2 h / week", top: false },
-  ];
+  const reduced = useReducedMotion() === true;
+  const [open, setOpen] = useState(true);
+  const listId = useId();
+  const summary = hoursSummary(HOURS_EXAMPLE);
   return (
-    <div className="flex flex-col gap-2">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">Where the hours go · example</p>
-      {tasks.map((x) => (
-        <div key={x.t} className="flex items-center justify-between gap-3 rounded-lg border border-[#e5e7eb] bg-white px-3 py-2">
-          <span className="flex items-center gap-2 text-[12.5px] text-slate-800">
-            <span className={`flex h-5 w-5 items-center justify-center rounded ${x.top ? "bg-[#5b5cf6] text-white" : "border border-[#e5e7eb] text-slate-500"}`}>
-              {x.top ? <Check size={11} strokeWidth={3} /> : null}
-            </span>
-            {x.t}
+    <div className={`${GLASS_PANEL} p-2`} data-glass="a">
+      <div className="flex items-center justify-between gap-3 py-1 pl-2.5 pr-1">
+        <p className={GLASS_HEADER}>Where the hours go · example</p>
+        <GlassChevron
+          open={open}
+          controls={listId}
+          label={open ? "Collapse where the hours go" : "Expand where the hours go"}
+          onClick={() => setOpen((v) => !v)}
+          reduced={reduced}
+          data-glass-toggle="a"
+        />
+      </div>
+
+      <GlassCollapse open={!open} reduced={reduced}>
+        <div className="flex items-center gap-2 px-2.5 pb-1.5 pt-1">
+          <span className="flex shrink-0 -space-x-1.5" aria-hidden>
+            {HOURS_EXAMPLE.map(({ t, icon: Icon, top }) => (
+              <span
+                key={t}
+                className={`flex h-6 w-6 items-center justify-center rounded-full border-2 border-white ${top ? "bg-[#eef0ff] text-[#4f46e5]" : "bg-slate-100 text-slate-500"}`}
+              >
+                <Icon size={12} />
+              </span>
+            ))}
           </span>
-          <span className="text-[12px] font-semibold tabular-nums text-slate-700">{x.h}</span>
+          <span className="whitespace-nowrap rounded-full bg-[#5b5cf6]/[0.09] px-2.5 py-1 text-[12px] font-semibold tabular-nums text-[#4f46e5] ring-1 ring-inset ring-[#5b5cf6]/20">
+            {summary}
+          </span>
         </div>
-      ))}
-      <p className="mt-1 text-[12px] font-medium text-slate-700">Top 3 picked to automate first</p>
+      </GlassCollapse>
+
+      <GlassCollapse open={open} id={listId} reduced={reduced}>
+        <ul className="flex flex-col gap-1.5 px-0.5 pb-1 pt-1">
+          {HOURS_EXAMPLE.map(({ t, hours, icon: Icon, top }) => (
+            <li key={t} className={`${GLASS_ROW} ${top ? GLASS_ACTIVE : GLASS_IDLE}`}>
+              <span
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${top ? "bg-white/90 text-[#4f46e5] shadow-sm" : "bg-slate-100/80 text-slate-500"}`}
+                aria-hidden
+              >
+                <Icon size={14} />
+              </span>
+              <span className={`min-w-0 flex-1 text-[12.5px] ${top ? "font-medium text-slate-900" : "text-slate-700"}`}>
+                {t}
+                {top ? <span className="sr-only"> (picked)</span> : null}
+              </span>
+              <span
+                className={`shrink-0 rounded-full px-2 py-0.5 text-[11.5px] font-semibold tabular-nums ${top ? "bg-[#5b5cf6] text-white" : "bg-slate-900/[0.05] text-slate-600"}`}
+              >
+                {hours} h / week
+              </span>
+            </li>
+          ))}
+        </ul>
+        <p className="flex items-center gap-2 px-2.5 pb-1.5 pt-2 text-[12px] font-medium text-slate-700">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#5b5cf6]/25 ring-1 ring-[#5b5cf6]/40" aria-hidden />
+          Top 3 picked to automate first
+        </p>
+      </GlassCollapse>
     </div>
   );
 }
