@@ -1,8 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useId, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { ChevronDown, FileText, Package, Receipt, UserPlus, type LucideIcon } from "lucide-react";
 import { Accent, Eyebrow, Heading } from "@/components/site";
 import FlowVideo from "@/components/marketing/flow-video";
+import { GLASS_ACTIVE, GLASS_DURATION, GLASS_EASE, GLASS_FOCUS, GLASS_HEADER, GLASS_PANEL, GLASS_ROW, GlassCollapse } from "@/components/marketing/glass";
 
 export type BackofficeFlow = {
   id: string;
@@ -127,8 +130,67 @@ export function flowAccessibleText(flow: BackofficeFlow): string {
   return `${flow.t1} to ${flow.t2}. ${SUB} Trigger: ${flow.trigger.title}. ${flow.trigger.sub}. Cytron automation, custom code and AI, on Cytron's server. What it does: ${steps}. Result: ${flow.result.title}. ${flow.result.sub}. If out of the ordinary — ${flow.exception} — ${flow.human}.${flow.badge ? ` ${flow.badge}.` : ""}`;
 }
 
+const FLOW_ICONS: Record<string, LucideIcon> = {
+  intake: UserPlus,
+  invoice: Receipt,
+  document: FileText,
+  fulfilment: Package,
+};
+
+function FlowRowContent({ flow, on }: { flow: BackofficeFlow; on: boolean }) {
+  const Icon = FLOW_ICONS[flow.id] ?? FileText;
+  return (
+    <>
+      <span
+        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-300 ${
+          on ? "bg-white/90 text-[#4f46e5] shadow-sm" : "bg-slate-100/80 text-slate-600"
+        }`}
+        aria-hidden
+      >
+        <Icon size={15} />
+      </span>
+      <span className={`min-w-0 flex-1 text-[13.5px] leading-snug ${on ? "font-semibold text-slate-900" : "font-medium text-slate-700"}`}>
+        {flow.label}
+      </span>
+      <span
+        className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10.5px] font-semibold tabular-nums ${
+          on ? "bg-[#5b5cf6] text-white" : "bg-slate-900/[0.05] text-slate-600"
+        }`}
+        aria-hidden
+      >
+        {flow.n}
+      </span>
+    </>
+  );
+}
+
 export default function BackofficeFlows() {
   const [active, setActive] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const reduced = useReducedMotion() === true;
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuId = useId();
+  const activeFlow = BACKOFFICE_FLOWS[active];
+
+  const onTabKey = (e: React.KeyboardEvent<HTMLButtonElement>, i: number) => {
+    const last = BACKOFFICE_FLOWS.length - 1;
+    let next = -1;
+    if (e.key === "ArrowDown" || e.key === "ArrowRight") next = i === last ? 0 : i + 1;
+    else if (e.key === "ArrowUp" || e.key === "ArrowLeft") next = i === 0 ? last : i - 1;
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = last;
+    if (next < 0) return;
+    e.preventDefault();
+    setActive(next);
+    tabRefs.current[next]?.focus();
+  };
+
+  const pick = (i: number) => {
+    setActive(i);
+    setMenuOpen(false);
+    menuButtonRef.current?.focus();
+  };
 
   return (
     <section id="back-office" className="bg-white py-20 sm:py-24">
@@ -139,31 +201,92 @@ export default function BackofficeFlows() {
           Cytron automation takes the trigger, runs the steps on our own servers, and holds anything unusual for a person.
         </p>
 
-        <div role="tablist" aria-label="Back-office workflows" className="mt-8 flex gap-2 overflow-x-auto pb-1">
-          {BACKOFFICE_FLOWS.map((f, i) => {
-            const on = i === active;
-            return (
-              <button
-                key={f.id}
-                type="button"
-                role="tab"
-                aria-selected={on}
-                aria-controls={`flow-panel-${f.id}`}
-                id={`flow-tab-${f.id}`}
-                onClick={() => setActive(i)}
-                className={`shrink-0 rounded-lg border px-3.5 py-2 text-[13px] font-semibold transition-colors sm:text-sm ${
-                  on
-                    ? "border-[#5b5cf6] bg-[#eef0ff] text-[#4f46e5]"
-                    : "border-[#e5e7eb] bg-white text-slate-700 hover:border-slate-300"
-                }`}
+        <div className="mt-8 lg:grid lg:grid-cols-[17rem_minmax(0,1fr)] lg:items-start lg:gap-5">
+          {/* Mobile / tablet: collapsible selector showing the active flow. */}
+          <div
+            className={`${GLASS_PANEL} mb-4 p-1.5 lg:hidden`}
+            data-glass="c-mobile"
+            onKeyDown={(e) => {
+              if (e.key === "Escape" && menuOpen) {
+                setMenuOpen(false);
+                menuButtonRef.current?.focus();
+              }
+            }}
+          >
+            <button
+              ref={menuButtonRef}
+              type="button"
+              aria-expanded={menuOpen}
+              aria-controls={menuId}
+              onClick={() => setMenuOpen((v) => !v)}
+              data-glass-toggle="c"
+              className={`${GLASS_ROW} ${GLASS_ACTIVE} w-full text-left ${GLASS_FOCUS}`}
+            >
+              <span className="sr-only">Back-office workflow: </span>
+              <FlowRowContent flow={activeFlow} on />
+              <motion.span
+                aria-hidden
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-200/80 bg-white/80 text-slate-600"
+                initial={false}
+                animate={{ rotate: menuOpen ? 180 : 0 }}
+                transition={{ duration: reduced ? 0 : GLASS_DURATION, ease: GLASS_EASE }}
               >
-                {f.label}
-              </button>
-            );
-          })}
-        </div>
+                <ChevronDown size={15} />
+              </motion.span>
+            </button>
+            <GlassCollapse open={menuOpen} id={menuId} reduced={reduced}>
+              <p className={`${GLASS_HEADER} px-2.5 pb-1 pt-2.5`}>Choose a workflow</p>
+              <ul className="flex flex-col gap-1 pb-0.5">
+                {BACKOFFICE_FLOWS.map((f, i) => {
+                  const on = i === active;
+                  return (
+                    <li key={f.id}>
+                      <button
+                        type="button"
+                        aria-current={on ? "true" : undefined}
+                        onClick={() => pick(i)}
+                        data-glass-option={f.id}
+                        className={`${GLASS_ROW} w-full text-left ${on ? GLASS_ACTIVE : "hover:bg-white/60"} ${GLASS_FOCUS}`}
+                      >
+                        <FlowRowContent flow={f} on={on} />
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </GlassCollapse>
+          </div>
 
-        <div className="mt-6">
+          {/* Desktop: narrow glass rail beside the video. */}
+          <div className={`${GLASS_PANEL} hidden p-1.5 lg:block`} data-glass="c-rail">
+            <p className={`${GLASS_HEADER} px-2.5 pb-1.5 pt-2`} id="flow-rail-heading">Choose a workflow</p>
+            <div role="tablist" aria-labelledby="flow-rail-heading" aria-orientation="vertical" className="flex flex-col gap-1">
+              {BACKOFFICE_FLOWS.map((f, i) => {
+                const on = i === active;
+                return (
+                  <button
+                    key={f.id}
+                    ref={(el) => {
+                      tabRefs.current[i] = el;
+                    }}
+                    type="button"
+                    role="tab"
+                    aria-selected={on}
+                    aria-controls={`flow-panel-${f.id}`}
+                    id={`flow-tab-${f.id}`}
+                    tabIndex={on ? 0 : -1}
+                    onClick={() => setActive(i)}
+                    onKeyDown={(e) => onTabKey(e, i)}
+                    className={`${GLASS_ROW} w-full text-left ${on ? GLASS_ACTIVE : "hover:bg-white/60"} ${GLASS_FOCUS}`}
+                  >
+                    <FlowRowContent flow={f} on={on} />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
           {BACKOFFICE_FLOWS.map((flow, i) => {
             const on = i === active;
             const videoLabel = `${flow.t1} to ${flow.t2}: Cytron back-office automation flow. ${flowAccessibleText(flow)}`;
@@ -197,6 +320,7 @@ export default function BackofficeFlows() {
               </div>
             );
           })}
+          </div>
         </div>
       </div>
     </section>
