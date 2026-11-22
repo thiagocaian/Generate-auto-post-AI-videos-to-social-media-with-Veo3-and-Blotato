@@ -6,7 +6,6 @@ import {
   Bell,
   CalendarCheck,
   Check,
-  ChevronDown,
   Cpu,
   Database,
   FileText,
@@ -18,7 +17,7 @@ import {
   UserRound,
   type LucideIcon,
 } from "lucide-react";
-import { GLASS_ACTIVE, GLASS_DURATION, GLASS_EASE, GLASS_FOCUS, GLASS_HEADER, GLASS_IDLE, GLASS_PANEL, GLASS_ROW, GlassCollapse } from "@/components/marketing/glass";
+import { GLASS_ACTIVE, GLASS_FOCUS, GLASS_HEADER, GLASS_IDLE, GLASS_ROW, GLASS_SPRING, GlassChevronIcon, GlassCollapse, LiquidGlass } from "@/components/marketing/glass";
 
 type NodeId =
   | "hub"
@@ -522,18 +521,14 @@ function groupSlug(label: string) {
  * Mobile timeline: a nested glass list. Every row is always in the layout (no layout
  * shift); rows fade in step by step on the first pass, then stay settled.
  */
-function MobileFlow({ time, reduced }: { time: number; reduced: boolean }) {
+function MobileFlow({ time, reduced, settled }: { time: number; reduced: boolean; settled: boolean }) {
   const baseId = useId();
-  const [settled, setSettled] = useState(false);
   const [closed, setClosed] = useState<Record<string, boolean>>({});
-  useEffect(() => {
-    if (!settled && time >= REVEAL_DONE_MS) setSettled(true);
-  }, [time, settled]);
   const still = reduced || settled;
 
   return (
     <div className="relative mx-auto w-full max-w-sm px-5" data-glass="b">
-      <div className={`${GLASS_PANEL} p-2`}>
+      <LiquidGlass reduced={reduced} tall panelClassName="p-2" sheenDelay="0.4s">
         {MOBILE_GROUPS.map((group, gi) => {
           const slug = groupSlug(group.label);
           const listId = `${baseId}-${slug}`;
@@ -547,23 +542,17 @@ function MobileFlow({ time, reduced }: { time: number; reduced: boolean }) {
                 aria-controls={listId}
                 onClick={() => setClosed((c) => ({ ...c, [slug]: open }))}
                 data-glass-toggle={`b-${slug}`}
-                className={`flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left transition-colors hover:bg-white/60 ${GLASS_FOCUS}`}
+                className={`flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left transition-colors hover:bg-white/40 ${GLASS_FOCUS}`}
               >
                 <span className={`${GLASS_HEADER} flex-1 transition-opacity duration-500 ${groupShown ? "opacity-100" : "opacity-50"}`}>
                   {group.label}
                 </span>
-                <span className="rounded-full bg-slate-900/[0.05] px-1.5 py-0.5 text-[10.5px] font-semibold tabular-nums text-slate-600">
+                <span className="lg-row rounded-full px-1.5 py-0.5 text-[10.5px] font-semibold tabular-nums text-slate-600">
                   {group.nodes.length}
                 </span>
-                <motion.span
-                  aria-hidden
-                  className="flex h-6 w-6 items-center justify-center rounded-full border border-slate-200/80 bg-white/80 text-slate-500"
-                  initial={false}
-                  animate={{ rotate: open ? 180 : 0 }}
-                  transition={{ duration: reduced ? 0 : GLASS_DURATION, ease: GLASS_EASE }}
-                >
-                  <ChevronDown size={13} />
-                </motion.span>
+                <span aria-hidden className="lg-row flex h-6 w-6 items-center justify-center rounded-full text-slate-500">
+                  <GlassChevronIcon open={open} reduced={reduced} size={13} />
+                </span>
               </button>
 
               <GlassCollapse open={open} id={listId} reduced={reduced}>
@@ -585,10 +574,10 @@ function MobileFlow({ time, reduced }: { time: number; reduced: boolean }) {
                         className="relative mb-1.5 last:mb-0"
                         initial={false}
                         animate={{ opacity: shown ? 1 : 0.35, x: shown ? 0 : -3 }}
-                        transition={{ duration: reduced ? 0 : 0.45, ease: GLASS_EASE }}
+                        transition={reduced ? { duration: 0 } : GLASS_SPRING}
                       >
                         <span
-                          className={`absolute -left-4 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full ring-[3px] ring-white/90 transition-colors duration-300 ${
+                          className={`absolute -left-4 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full ring-[3px] ring-white/80 shadow-[0_0_0_1px_rgba(91,92,246,0.15)] transition-colors duration-300 ${
                             isHuman
                               ? "border border-slate-300 bg-white"
                               : state === "done" || active
@@ -605,10 +594,10 @@ function MobileFlow({ time, reduced }: { time: number; reduced: boolean }) {
                           <span
                             className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-300 ${
                               isHub || state === "running"
-                                ? "bg-[#5b5cf6] text-white"
+                                ? "bg-gradient-to-b from-[#6d6ef8] to-[#5b5cf6] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]"
                                 : state === "done"
-                                  ? "bg-emerald-50 text-emerald-700"
-                                  : "bg-slate-100/80 text-slate-600"
+                                  ? "lg-row text-emerald-700"
+                                  : "lg-row text-slate-600"
                             }`}
                             aria-hidden
                           >
@@ -627,7 +616,7 @@ function MobileFlow({ time, reduced }: { time: number; reduced: boolean }) {
             </div>
           );
         })}
-      </div>
+      </LiquidGlass>
     </div>
   );
 }
@@ -651,12 +640,30 @@ function useFitScale() {
   return { ref, scale };
 }
 
+function useIsMobile() {
+  const [mobile, setMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return mobile;
+}
+
 export default function HeroFlow({ reduced: reducedProp }: { reduced?: boolean }) {
   const reducedHook = useReducedMotion() === true;
   const reduced = reducedProp ?? reducedHook;
   const rootRef = useRef<HTMLDivElement>(null);
   const inView = useInView(rootRef, { amount: 0.25 });
-  const time = useLoop(inView, reduced);
+  const isMobile = useIsMobile();
+  const [mobileSettled, setMobileSettled] = useState(false);
+  // On phones the reveal plays once; after that the per-frame loop stops (glass motion is pure CSS).
+  const time = useLoop(inView && !(isMobile && mobileSettled), reduced);
+  useEffect(() => {
+    if (!mobileSettled && time >= REVEAL_DONE_MS) setMobileSettled(true);
+  }, [time, mobileSettled]);
   const { ref: fitRef, scale } = useFitScale();
 
   return (
@@ -670,7 +677,7 @@ export default function HeroFlow({ reduced: reducedProp }: { reduced?: boolean }
       </div>
 
       <div className="flex items-center justify-center py-6 md:hidden" role="group" aria-label="Cytron automation timeline">
-        <MobileFlow time={time} reduced={reduced} />
+        <MobileFlow time={time} reduced={reduced} settled={mobileSettled} />
       </div>
     </div>
   );
