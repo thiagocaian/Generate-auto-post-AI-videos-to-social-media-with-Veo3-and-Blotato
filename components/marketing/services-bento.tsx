@@ -85,7 +85,7 @@ export default function ServicesBento() {
               initial={reduced ? false : { opacity: 0, y: 10 }}
               animate={reduced || inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
               transition={{ delay: reduced ? 0 : i * 0.07, duration: 0.35, ease: "easeOut" }}
-              className={`${tile.span} flex flex-col overflow-hidden rounded-[20px] border border-white/[0.09] bg-white shadow-[var(--cy-shadow)] transition-[border-color,box-shadow] duration-200 hover:border-white/20 hover:shadow`}
+              className={`${tile.span} flex flex-col overflow-hidden rounded-[20px] border border-white/[0.09] cy-glass shadow-[var(--cy-shadow)] transition-[border-color,box-shadow] duration-200 hover:border-white/20 hover:shadow`}
             >
               <div className={`${tile.aspect} overflow-hidden p-4 sm:p-5`}>{tile.fragment}</div>
               <div className="border-t border-white/[0.09] px-4 py-3 sm:px-5">

@@ -88,7 +88,7 @@ export default function ServicesPage() {
       <nav aria-label="Services on this page" className="bg-transparent">
         <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-5 py-3 text-[13px]">
           {SERVICES.map((s) => (
-            <a key={s.id} href={`#${s.id}`} className="shrink-0 rounded-full border border-white/[0.09] bg-white px-3 py-1.5 font-medium text-[#d1d5db] transition-colors hover:border-white/20 hover:bg-[#f3efff] hover:text-white">
+            <a key={s.id} href={`#${s.id}`} className="shrink-0 rounded-full border border-white/[0.09] bg-white/[0.04] px-3 py-1.5 font-medium text-[#d1d5db] transition-colors hover:border-white/20 hover:bg-white/[0.07] hover:text-white">
               {s.short}
             </a>
           ))}
@@ -101,7 +101,7 @@ export default function ServicesPage() {
             key={s.id}
             id={s.id}
             {...rise}
-            className="grid scroll-mt-24 items-center gap-8 rounded-[24px] border border-white/[0.09] bg-white p-6 shadow-[var(--cy-shadow)] sm:p-8 lg:grid-cols-2 lg:gap-12 lg:p-10"
+            className="grid scroll-mt-24 items-center gap-8 rounded-[24px] border border-white/[0.09] cy-glass p-6 shadow-[var(--cy-shadow)] sm:p-8 lg:grid-cols-2 lg:gap-12 lg:p-10"
           >
             <div className={i % 2 ? "lg:order-2" : ""}>
               <p className="text-sm font-semibold text-[#a5b4fc]">{s.k}</p>
@@ -111,8 +111,8 @@ export default function ServicesPage() {
                 {s.points.map((p) => <li key={p} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-400" />{p}</li>)}
               </ul>
             </div>
-            <div className={`rounded-xl border border-white/[0.09] bg-[#f7f8fa] p-5 sm:p-7 ${i % 2 ? "lg:order-1" : ""}`}>
-              <div className="mx-auto max-w-sm rounded-[20px] border border-white/[0.09] bg-white p-5 shadow-[var(--cy-shadow)]">{s.ui}</div>
+            <div className={`rounded-xl border border-white/[0.09] bg-white/[0.03] p-5 sm:p-7 ${i % 2 ? "lg:order-1" : ""}`}>
+              <div className="mx-auto max-w-sm rounded-[20px] border border-white/[0.09] cy-glass p-5 shadow-[var(--cy-shadow)]">{s.ui}</div>
             </div>
           </motion.section>
         ))}
@@ -127,7 +127,7 @@ export default function ServicesPage() {
           </div>
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {AGENT_ROLES.map(({ icon: Icon, t, d }, i) => (
-              <div key={t} className="rounded-[20px] border border-white/[0.09] bg-white p-6 shadow-[var(--cy-shadow)]">
+              <div key={t} className="rounded-[20px] border border-white/[0.09] cy-glass p-6 shadow-[var(--cy-shadow)]">
                 <div className="mb-4 flex items-center justify-between">
                   <div className="flex h-10 w-10 items-center justify-center rounded-md border border-white/[0.09] text-[#d1d5db]"><Icon size={18} /></div>
                   <span className="text-xs font-semibold text-[#9ca3af]">0{i + 1}</span>

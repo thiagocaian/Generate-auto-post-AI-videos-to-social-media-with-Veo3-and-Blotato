@@ -54,10 +54,10 @@ export default function ProblemsSolved() {
           {CARDS.map((c, i) => {
             const Icon = c.icon;
             return (
-              <motion.article key={c.title} {...rise(i)} className="flex flex-col rounded-[24px] border border-white/[0.09] bg-white p-6 shadow-[var(--cy-shadow)] sm:p-7">
+              <motion.article key={c.title} {...rise(i)} className="flex flex-col rounded-[24px] border border-white/[0.09] cy-glass p-6 shadow-[var(--cy-shadow)] sm:p-7">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#eef0ff] text-[#a5b4fc]">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#6366f1]/15 text-[#a5b4fc]">
                       <Icon size={18} strokeWidth={2} aria-hidden />
                     </span>
                     <div>
@@ -67,20 +67,20 @@ export default function ProblemsSolved() {
                   </div>
                 </div>
                 {c.badge && (
-                  <p className="mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-white/[0.09] bg-[#f7f8fa] px-3 py-1 text-[12px] font-medium text-[#d1d5db]">
+                  <p className="mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-white/[0.09] bg-white/[0.03] px-3 py-1 text-[12px] font-medium text-[#d1d5db]">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" aria-hidden />
                     {c.badge}
                   </p>
                 )}
                 <div className="mt-5 grid gap-3">
-                  <div className="rounded-[18px] border border-white/[0.09] bg-[#f7f8fa] p-4">
+                  <div className="rounded-[18px] border border-white/[0.09] bg-white/[0.03] p-4">
                     <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9ca3af]">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-[#9ca3af]"><X size={12} strokeWidth={2.5} aria-hidden /></span>
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/[0.06] text-[#9ca3af]"><X size={12} strokeWidth={2.5} aria-hidden /></span>
                       Before
                     </p>
                     <p className="mt-2 text-[15px] leading-relaxed text-[#9ca3af]">{c.before}</p>
                   </div>
-                  <div className="rounded-[18px] border-[1.5px] border-[#818cf8]/40 bg-[#f6f6ff] p-4">
+                  <div className="rounded-[18px] border-[1.5px] border-[#818cf8]/40 bg-[#6366f1]/10 p-4">
                     <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#a5b4fc]">
                       <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5b5cf6] text-white"><Check size={12} strokeWidth={2.5} aria-hidden /></span>
                       After

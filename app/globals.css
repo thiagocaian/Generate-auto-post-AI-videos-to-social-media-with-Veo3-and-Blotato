@@ -14,7 +14,7 @@
   --cy-line: rgba(255, 255, 255, 0.09);
   --cy-accent: #6366f1;
   --cy-accent-text: #a5b4fc;
-  --cy-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 40px -22px rgba(0, 0, 0, 0.85);
+  --cy-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 40px -22px rgba(0, 0, 0, 0.85);
 }
 
 /* Public site is dark: no white flash on overscroll or behind the 3D page transition. */
@@ -30,14 +30,20 @@ body:has(.cy-site) {
 }
 
 @layer components {
-  /* Large white panel that sits on the canvas, like the app shell in the reference. */
+  /* Large mirrored dark-glass panel on the canvas: dark fill, specular top edge, faint diagonal sheen. */
   .cy-shell {
     position: relative;
     margin: 0.5rem;
     border-radius: 24px;
-    border: 1px solid var(--cy-line);
-    background: #fff;
-    box-shadow: var(--cy-shadow);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background:
+      linear-gradient(115deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.035) 44%, rgba(255, 255, 255, 0) 58%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.012) 38%, rgba(255, 255, 255, 0.02) 100%),
+      #101113;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.09),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+      0 24px 60px -30px rgba(0, 0, 0, 0.9);
   }
   @media (min-width: 640px) {
     .cy-shell {
@@ -46,21 +52,44 @@ body:has(.cy-site) {
     }
   }
 
-  /* Soft mesh wash for hero and feature banners (no pink). */
+  /* Cards and inner panels: frosted dark glass (no blur needed on a static canvas). */
+  .cy-glass {
+    background:
+      linear-gradient(125deg, rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0.03) 48%, rgba(255, 255, 255, 0) 62%),
+      linear-gradient(160deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.025) 45%, rgba(255, 255, 255, 0.04) 100%);
+    background-color: rgba(23, 24, 27, 0.6);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  /* Navigation pill: the one place with a real backdrop blur (sits over scrolling content). */
+  .cy-glass-pill {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 8px 24px -12px rgba(0, 0, 0, 0.8);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
+  }
+
+  /* Hero / intro panels: the shell with a faint cool graphite + indigo wash (no pink, no glow). */
   .cy-aurora {
     background:
-      radial-gradient(55% 75% at 88% 8%, rgba(216, 180, 254, 0.5) 0%, rgba(216, 180, 254, 0) 70%),
-      radial-gradient(45% 65% at 100% 85%, rgba(199, 215, 254, 0.45) 0%, rgba(199, 215, 254, 0) 70%),
-      radial-gradient(40% 60% at 55% 105%, rgba(199, 215, 254, 0.5) 0%, rgba(199, 215, 254, 0) 70%),
-      radial-gradient(35% 55% at 0% 100%, rgba(198, 241, 222, 0.45) 0%, rgba(198, 241, 222, 0) 70%),
-      #fcfbff;
+      linear-gradient(115deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.04) 44%, rgba(255, 255, 255, 0) 58%),
+      radial-gradient(55% 80% at 88% 0%, rgba(99, 102, 241, 0.13) 0%, rgba(99, 102, 241, 0) 70%),
+      radial-gradient(45% 70% at 0% 100%, rgba(148, 163, 184, 0.1) 0%, rgba(148, 163, 184, 0) 70%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 45%),
+      #0f1012;
   }
-  /* Lavender feature banner (closing call to action). */
+  /* Closing call to action: brighter mirrored glass with a cool silver edge. */
   .cy-banner {
     background:
-      radial-gradient(60% 120% at 100% 0%, rgba(199, 215, 254, 0.6) 0%, rgba(199, 215, 254, 0) 65%),
-      radial-gradient(50% 100% at 70% 110%, rgba(199, 215, 254, 0.6) 0%, rgba(199, 215, 254, 0) 70%),
-      linear-gradient(120deg, #f1eafe 0%, #e9defd 55%, #efe4fb 100%);
+      linear-gradient(115deg, rgba(255, 255, 255, 0) 28%, rgba(255, 255, 255, 0.06) 42%, rgba(255, 255, 255, 0) 56%),
+      radial-gradient(60% 120% at 100% 0%, rgba(99, 102, 241, 0.16) 0%, rgba(99, 102, 241, 0) 65%),
+      linear-gradient(160deg, #1b1c20 0%, #141518 55%, #17181c 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 24px 60px -30px rgba(0, 0, 0, 0.9);
+  }
+  .cy-footer {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0) 40%),
+      #0d0e10;
   }
 }
 

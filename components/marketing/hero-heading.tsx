@@ -44,7 +44,7 @@ export default function HeroHeading() {
           <Chip
             delay={0.28}
             reduced={reduced}
-            className="rounded-lg rounded-bl-sm border border-white/[0.09] bg-[#f7f8fa] px-2 py-1.5 text-[#d1d5db]"
+            className="rounded-lg rounded-bl-sm border border-white/[0.09] bg-white/[0.03] px-2 py-1.5 text-[#d1d5db]"
           >
             Sorry we missed you…
           </Chip>
@@ -59,7 +59,7 @@ export default function HeroHeading() {
           <Chip
             delay={0.56}
             reduced={reduced}
-            className="rounded-md border border-white/[0.09] bg-white px-2 py-1.5 text-[#d1d5db]"
+            className="rounded-md border border-white/[0.09] bg-white/[0.04] px-2 py-1.5 text-[#d1d5db]"
           >
             <Clock size={12} strokeWidth={2.25} />
             40s

@@ -114,7 +114,7 @@ export default function WorkflowCard() {
   return (
     <div
       ref={rootRef}
-      className="relative w-full max-w-md rounded-[20px] border border-white/[0.09] bg-white p-4 shadow-[var(--cy-shadow)] sm:p-5"
+      className="relative w-full max-w-md rounded-[20px] border border-white/[0.09] cy-glass p-4 shadow-[var(--cy-shadow)] sm:p-5"
       aria-label="Enquiry to invoice, live demonstration"
     >
       <div className="mb-3 flex items-center justify-between gap-2 sm:mb-4">
@@ -128,7 +128,7 @@ export default function WorkflowCard() {
       </div>
 
       <ul className="relative space-y-2">
-        <div className="pointer-events-none absolute bottom-5 left-[18px] top-5 w-[2px] rounded-full bg-slate-200" aria-hidden>
+        <div className="pointer-events-none absolute bottom-5 left-[18px] top-5 w-[2px] rounded-full bg-white/10" aria-hidden>
           <motion.div
             className="w-full rounded-full origin-top"
             style={{ background: paid ? "#059669" : ACCENT }}
@@ -151,15 +151,15 @@ export default function WorkflowCard() {
               <motion.div
                 className={`relative flex items-center gap-3 rounded-lg border px-3 py-1.5 sm:py-2.5 ${
                   done
-                    ? "border-white/[0.09] bg-white"
+                    ? "border-white/[0.09] bg-white/[0.04]"
                     : active
-                      ? "border-[#5b5cf6] bg-white"
-                      : "border-transparent bg-[#f7f8fa]"
+                      ? "border-[#5b5cf6] bg-white/[0.04]"
+                      : "border-transparent bg-white/[0.03]"
                 }`}
               >
                 <div
                   className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-md sm:h-9 sm:w-9 ${
-                    done ? "bg-emerald-400/10 text-emerald-400" : active ? "text-white" : "bg-slate-100 text-[#9ca3af]"
+                    done ? "bg-emerald-400/10 text-emerald-400" : active ? "text-white" : "bg-white/[0.06] text-[#9ca3af]"
                   }`}
                   style={active ? { background: ACCENT } : undefined}
                 >

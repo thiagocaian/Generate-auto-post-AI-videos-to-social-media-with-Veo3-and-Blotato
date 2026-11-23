@@ -6,7 +6,7 @@ import { track } from "@vercel/analytics";
 import { ArrowRight, Check } from "lucide-react";
 import { AUDIT_CONSENT_TEXT } from "@/lib/inbound/consent";
 
-const inputClass = "w-full rounded-lg border border-white/[0.09] bg-white px-3.5 py-2.5 text-sm text-[#f3f4f6] outline-none transition placeholder:text-[#8b929e] focus:border-[#5b5cf6] focus:ring-2 focus:ring-[#5b5cf6]/15";
+const inputClass = "w-full rounded-lg border border-white/[0.09] bg-white/[0.04] px-3.5 py-2.5 text-sm text-[#f3f4f6] outline-none transition placeholder:text-[#8b929e] focus:border-[#5b5cf6] focus:ring-2 focus:ring-[#5b5cf6]/15";
 const labelClass = "mb-1.5 block text-xs font-semibold text-[#d1d5db]";
 
 function normaliseWebsite(value: string): string {
@@ -86,7 +86,7 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
   const trans = reduced ? { duration: 0 } : { duration: 0.28, ease: "easeOut" as const };
 
   return (
-    <div className="rounded-[20px] border border-white/[0.09] bg-white p-6 shadow-[var(--cy-shadow)] sm:p-8">
+    <div className="rounded-[20px] border border-white/[0.09] cy-glass p-6 shadow-[var(--cy-shadow)] sm:p-8">
       <AnimatePresence mode="wait">
         {status === "success" ? (
           <motion.div key="done" role="status" aria-live="polite" initial={reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }} className="py-10 text-center">

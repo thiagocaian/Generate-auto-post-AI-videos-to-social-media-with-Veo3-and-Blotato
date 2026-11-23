@@ -71,7 +71,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12, duration: 0.4, ease: "easeOut" }}
-            className="mt-8 flex w-full max-w-md items-center rounded-full border border-white/[0.09] bg-white p-1.5 shadow-sm"
+            className="mt-8 flex w-full max-w-md items-center rounded-full border border-white/[0.09] cy-glass p-1.5 shadow-[var(--cy-shadow)]"
           >
             <label htmlFor="hero-email" className="sr-only">
               Work email

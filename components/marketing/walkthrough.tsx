@@ -65,7 +65,7 @@ function StepCard({ index, reduced }: { index: number; reduced: boolean }) {
     );
 
   return (
-    <div className="flex h-full min-h-[22rem] flex-col rounded-[20px] border border-white/[0.09] bg-white p-6 shadow-[var(--cy-shadow)] sm:p-7">
+    <div className="flex h-full min-h-[22rem] flex-col rounded-[20px] border border-white/[0.09] cy-glass p-6 shadow-[var(--cy-shadow)] sm:p-7">
       <p className="mb-5 text-sm font-semibold text-[#e5e7eb]">{STEPS[index].label}</p>
       <div className="flex flex-1 flex-col justify-center">{inner}</div>
     </div>
@@ -94,8 +94,8 @@ function StepList({
               onClick={clickable && onSelect ? () => onSelect(i) : undefined}
               aria-current={current ? "step" : undefined}
               className={`flex w-full gap-3 rounded-lg px-2 py-2.5 text-left transition-colors ${
-                current ? "bg-white" : "bg-transparent"
-              } ${clickable ? "cursor-pointer hover:bg-white" : ""}`}
+                current ? "bg-white/[0.04]" : "bg-transparent"
+              } ${clickable ? "cursor-pointer hover:bg-white/10" : ""}`}
             >
               <span
                 className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] font-semibold ${
@@ -103,7 +103,7 @@ function StepList({
                     ? "bg-emerald-700 text-white"
                     : current
                       ? "bg-[#5b5cf6] text-white"
-                      : "border border-white/[0.09] bg-white text-[#d1d5db]"
+                      : "border border-white/[0.09] bg-white/[0.04] text-[#d1d5db]"
                 }`}
               >
                 {done ? <Check size={12} strokeWidth={3} /> : i + 1}
@@ -155,7 +155,7 @@ function DesktopWalkthrough() {
           </div>
           <div className="grid grid-cols-[0.9fr_1.1fr] items-stretch gap-12">
             <div className="relative pl-1">
-              <div className="pointer-events-none absolute bottom-3 left-[22px] top-3 w-px bg-[#e5e7eb]" aria-hidden />
+              <div className="pointer-events-none absolute bottom-3 left-[22px] top-3 w-px bg-white/[0.08]" aria-hidden />
               <motion.div
                 className="pointer-events-none absolute left-[22px] top-3 w-px origin-top bg-[#5b5cf6]"
                 style={{ height: lineHeight }}

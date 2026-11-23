@@ -90,9 +90,9 @@ export default function Home() {
             </div>
             <TextLink href="/services">All services</TextLink>
           </div>
-          <div className="mt-10 grid overflow-hidden rounded-[20px] border border-white/[0.09] bg-[#e7e7ec] shadow-[var(--cy-shadow)] sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 1 }}>
+          <div className="mt-10 grid overflow-hidden rounded-[20px] border border-white/[0.09] bg-white/[0.08] shadow-[var(--cy-shadow)] sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 1 }}>
             {SERVICES.map(({ icon: Icon, t, d }, i) => (
-              <motion.a key={t} href="/services" {...rise(i)} className="group flex gap-4 bg-white p-6 transition-colors hover:bg-[#fafafb]">
+              <motion.a key={t} href="/services" {...rise(i)} className="group flex gap-4 bg-white/[0.04] p-6 transition-colors hover:bg-white/[0.06]">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-white/[0.09] text-[#d1d5db] transition-colors group-hover:border-[#818cf8]/50 group-hover:text-[#c7d2fe]"><Icon size={18} /></span>
                 <span>
                   <span className="block text-[16px] font-semibold text-[#f3f4f6]">{t}</span>
@@ -116,7 +116,7 @@ export default function Home() {
           </div>
           <ol className="relative mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((s, i) => (
-              <motion.li key={s.n} {...rise(i)} className="relative rounded-[20px] border border-white/[0.09] bg-white p-6 shadow-[var(--cy-shadow)]">
+              <motion.li key={s.n} {...rise(i)} className="relative rounded-[20px] border border-white/[0.09] cy-glass p-6 shadow-[var(--cy-shadow)]">
                 <p className="text-sm font-semibold text-[#a5b4fc]">{s.n}</p>
                 <h3 className="mt-2 text-lg font-semibold text-[#f3f4f6]">{s.t}</h3>
                 <p className="mt-1.5 text-[14.5px] leading-relaxed text-[#9ca3af]">{s.d}</p>
@@ -133,7 +133,7 @@ export default function Home() {
             </p>
             <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {SECURITY.map((s, i) => (
-                <motion.li key={s.t} {...rise(i)} className="rounded-[20px] border border-white/[0.09] bg-white p-6 shadow-[var(--cy-shadow)]">
+                <motion.li key={s.t} {...rise(i)} className="rounded-[20px] border border-white/[0.09] cy-glass p-6 shadow-[var(--cy-shadow)]">
                   <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-md border border-white/[0.09] text-[#d1d5db]"><ShieldCheck size={18} /></span>
                   <h4 className="text-[16px] font-semibold text-[#f3f4f6]">{s.t}</h4>
                   <p className="mt-1.5 text-[14.5px] leading-relaxed text-[#9ca3af]">{s.d}</p>
@@ -156,7 +156,7 @@ export default function Home() {
           </div>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {USE_CASES.map(({ icon: Icon, t, d, href }, i) => (
-              <motion.a key={t} href={href} {...rise(i)} className="group block rounded-[20px] border border-white/[0.09] bg-white p-6 shadow-[var(--cy-shadow)] transition-colors hover:border-white/20">
+              <motion.a key={t} href={href} {...rise(i)} className="group block rounded-[20px] border border-white/[0.09] cy-glass p-6 shadow-[var(--cy-shadow)] transition-colors hover:border-white/20">
                 <span className="mb-5 flex h-10 w-10 items-center justify-center rounded-md border border-white/[0.09] text-[#d1d5db]"><Icon size={18} /></span>
                 <h3 className="text-[16px] font-semibold text-[#f3f4f6]">{t}</h3>
                 <p className="mt-1.5 text-[14.5px] leading-relaxed text-[#9ca3af]">{d}</p>

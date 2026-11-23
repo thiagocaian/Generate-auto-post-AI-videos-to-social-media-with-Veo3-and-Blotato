@@ -89,4 +89,4 @@ export function CtaBand({
   );
 }
 
-export const CARD_CLS = "rounded-[20px] border border-white/[0.09] bg-white p-6 shadow-[var(--cy-shadow)]";
+export const CARD_CLS = "rounded-[20px] border border-white/[0.09] bg-white/[0.04] p-6 shadow-[var(--cy-shadow)]";

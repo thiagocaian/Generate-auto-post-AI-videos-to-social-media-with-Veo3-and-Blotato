@@ -87,7 +87,7 @@ export default function UseCasesPage() {
       <nav aria-label="Office tasks" className="bg-transparent">
         <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-5 py-3 text-[13px]">
           {CASES.map((c) => (
-            <a key={c.id} href={`#${c.id}`} className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/[0.09] bg-white px-3 py-1.5 font-medium text-[#d1d5db] transition-colors hover:border-white/20 hover:bg-[#f3efff] hover:text-white">
+            <a key={c.id} href={`#${c.id}`} className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/[0.09] bg-white/[0.04] px-3 py-1.5 font-medium text-[#d1d5db] transition-colors hover:border-white/20 hover:bg-white/[0.07] hover:text-white">
               <c.icon size={14} />{c.t}
             </a>
           ))}
@@ -96,7 +96,7 @@ export default function UseCasesPage() {
 
       <div className="mx-auto max-w-6xl space-y-6 px-5 py-16 sm:py-20">
         {CASES.map((c) => (
-          <motion.section key={c.id} id={c.id} {...rise} className="scroll-mt-24 overflow-hidden rounded-[24px] border border-white/[0.09] bg-white shadow-[var(--cy-shadow)]">
+          <motion.section key={c.id} id={c.id} {...rise} className="scroll-mt-24 overflow-hidden rounded-[24px] border border-white/[0.09] cy-glass shadow-[var(--cy-shadow)]">
             <div className="flex flex-wrap items-start justify-between gap-4 border-b border-white/[0.09] p-6 sm:p-8">
               <div className="flex gap-4">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-white/[0.09] text-[#d1d5db]"><c.icon size={20} /></span>
@@ -107,27 +107,27 @@ export default function UseCasesPage() {
               </div>
               <p className="text-xs font-medium text-[#9ca3af]">{c.tools}</p>
             </div>
-            <div className="grid gap-px bg-[#e5e7eb] lg:grid-cols-[1fr_1fr_1.1fr]">
-              <div className="bg-white p-6 sm:p-8">
+            <div className="grid gap-px bg-white/[0.08] lg:grid-cols-[1fr_1fr_1.1fr]">
+              <div className="bg-white/[0.04] p-6 sm:p-8">
                 <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#9ca3af]">Today</p>
                 <ul className="space-y-3 text-[15px] text-[#9ca3af]">
-                  {c.before.map((b) => <li key={b} className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300" />{b}</li>)}
+                  {c.before.map((b) => <li key={b} className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-white/25" />{b}</li>)}
                 </ul>
               </div>
-              <div className="bg-white p-6 sm:p-8">
+              <div className="bg-white/[0.04] p-6 sm:p-8">
                 <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#a5b4fc]">With Cytron</p>
                 <ul className="space-y-3 text-[15px] text-[#e5e7eb]">
                   {c.after.map((a) => <li key={a} className="flex gap-3"><Check size={17} className="mt-0.5 shrink-0 text-emerald-400" />{a}</li>)}
                 </ul>
               </div>
-              <div className="bg-[#f7f8fa] p-6 sm:p-8">
+              <div className="bg-white/[0.03] p-6 sm:p-8">
                 <div className="mb-4 flex items-baseline justify-between gap-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9ca3af]">A typical week</p>
                   <p className="text-[11px] font-medium text-[#9ca3af]">Illustrative example</p>
                 </div>
                 <dl className="grid grid-cols-2 gap-3">
                   {c.week.map(([k, v]) => (
-                    <div key={k} className="rounded-lg border border-white/[0.09] bg-white p-3.5">
+                    <div key={k} className="rounded-lg border border-white/[0.09] bg-white/[0.04] p-3.5">
                       <dd className="text-2xl font-semibold tabular-nums tracking-tight text-[#f3f4f6]">{v}</dd>
                       <dt className="mt-0.5 text-[12px] leading-snug text-[#9ca3af]">{k}</dt>
                     </div>
@@ -154,7 +154,7 @@ export default function UseCasesPage() {
           </div>
           <ul className="space-y-3 self-center text-[15px] text-[#d1d5db]">
             {CASE_POINTS.map((t) => (
-              <li key={t} className="flex gap-3 rounded-[20px] border border-white/[0.09] bg-white p-4 shadow-[var(--cy-shadow)]"><Check size={18} className="mt-0.5 shrink-0 text-emerald-400" />{t}</li>
+              <li key={t} className="flex gap-3 rounded-[20px] border border-white/[0.09] cy-glass p-4 shadow-[var(--cy-shadow)]"><Check size={18} className="mt-0.5 shrink-0 text-emerald-400" />{t}</li>
             ))}
           </ul>
         </div>
@@ -174,7 +174,7 @@ export default function UseCasesPage() {
           <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#9ca3af]">Office tasks</p>
           <div className="flex flex-wrap gap-2.5">
             {CASES.map((c) => (
-              <a key={c.id} href={`#${c.id}`} className="rounded-full border border-white/[0.09] bg-white px-4 py-2 text-sm font-medium text-[#d1d5db] transition-colors hover:border-white/20 hover:bg-[#f3efff] hover:text-white">{c.t}</a>
+              <a key={c.id} href={`#${c.id}`} className="rounded-full border border-white/[0.09] bg-white/[0.04] px-4 py-2 text-sm font-medium text-[#d1d5db] transition-colors hover:border-white/20 hover:bg-white/[0.07] hover:text-white">{c.t}</a>
             ))}
           </div>
         </div>

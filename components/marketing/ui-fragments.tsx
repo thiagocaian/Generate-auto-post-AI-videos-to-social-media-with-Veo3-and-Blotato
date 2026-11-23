@@ -9,7 +9,7 @@ export function MissedCallCard() {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-white/[0.09] bg-[#f7f8fa] text-[#d1d5db]">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-white/[0.09] bg-white/[0.03] text-[#d1d5db]">
           <PhoneMissed size={18} />
         </span>
         <div>
@@ -17,7 +17,7 @@ export function MissedCallCard() {
           <p className="text-xs text-[#9ca3af]">Tue 6:42 pm · after hours</p>
         </div>
       </div>
-      <div className="rounded-lg border border-white/[0.09] bg-[#f7f8fa] px-3 py-2.5">
+      <div className="rounded-lg border border-white/[0.09] bg-white/[0.03] px-3 py-2.5">
         <p className="text-[13px] font-semibold text-[#f3f4f6]">New customer</p>
         <p className="mt-0.5 text-xs text-[#9ca3af]">Unknown number · Burleigh Heads</p>
         <p className="mt-2 text-[13px] text-[#d1d5db]">No answer — the team was on a job.</p>
@@ -38,7 +38,7 @@ export function SmsThread({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="max-w-[90%] rounded-lg rounded-tl-sm border border-white/[0.09] bg-[#f7f8fa] px-3 py-2">
+      <div className="max-w-[90%] rounded-lg rounded-tl-sm border border-white/[0.09] bg-white/[0.03] px-3 py-2">
         <p className="text-[11px] font-semibold text-[#9ca3af]">Customer</p>
         <p className="mt-0.5 text-[13px] leading-relaxed text-[#e5e7eb]">Hi, called about a leaking tap, no answer?</p>
       </div>
@@ -47,7 +47,7 @@ export function SmsThread({
           <p className="text-[11px] font-semibold text-white">Auto-reply · 40s later</p>
           <p className="mt-0.5 text-[13px] leading-relaxed">
             {text}
-            {cursor && <span className="ml-0.5 inline-block w-[1px] animate-pulse bg-white align-[-1px]" style={{ height: "0.9em" }} />}
+            {cursor && <span className="ml-0.5 inline-block w-[1px] animate-pulse bg-white/[0.04] align-[-1px]" style={{ height: "0.9em" }} />}
           </p>
         </div>
       )}
@@ -76,7 +76,7 @@ export function BookingCalendar() {
           <div
             key={day.d}
             className={`rounded-md border px-1 py-2 text-center ${
-              day.on ? "border-[#5b5cf6] bg-white" : "border-white/[0.09] bg-[#f7f8fa]"
+              day.on ? "border-[#5b5cf6] bg-white/[0.04]" : "border-white/[0.09] bg-white/[0.03]"
             }`}
           >
             <p className="text-[10px] font-semibold uppercase tracking-wide text-[#9ca3af]">{day.d}</p>
@@ -84,7 +84,7 @@ export function BookingCalendar() {
           </div>
         ))}
       </div>
-      <div className="rounded-lg border border-white/[0.09] bg-[#f7f8fa] px-3 py-2.5">
+      <div className="rounded-lg border border-white/[0.09] bg-white/[0.03] px-3 py-2.5">
         <p className="flex items-center gap-1.5 text-[13px] font-semibold text-[#f3f4f6]">
           <CalendarCheck size={14} className="text-[#a5b4fc]" />
           Thu 9:00 am
@@ -92,7 +92,7 @@ export function BookingCalendar() {
         <p className="mt-0.5 text-xs text-[#9ca3af]">Leaking tap · Burleigh Heads</p>
         <p className="mt-2 text-[12px] font-medium text-emerald-300">Booked ✓ · reminder scheduled</p>
       </div>
-      <div className="rounded-lg border border-white/[0.09] bg-white px-3 py-2">
+      <div className="rounded-lg border border-white/[0.09] bg-white/[0.04] px-3 py-2">
         <p className="text-[11px] font-semibold text-[#9ca3af]">Waitlist</p>
         <p className="mt-0.5 text-[12px] text-[#d1d5db]">Fri 11:00 am · 2 customers offered a cancelled slot</p>
       </div>
@@ -107,7 +107,7 @@ export function ReminderCard() {
         <p className="text-[11px] font-semibold text-white">Reminder · day before</p>
         <p className="mt-0.5 text-[13px] leading-relaxed">See you tomorrow at 9:00 am, Burleigh Heads. Reply C to confirm.</p>
       </div>
-      <div className="max-w-[80%] rounded-lg rounded-tl-sm border border-white/[0.09] bg-[#f7f8fa] px-3 py-2">
+      <div className="max-w-[80%] rounded-lg rounded-tl-sm border border-white/[0.09] bg-white/[0.03] px-3 py-2">
         <p className="text-[11px] font-semibold text-[#9ca3af]">Customer</p>
         <p className="mt-0.5 text-[13px] text-[#e5e7eb]">C</p>
       </div>
@@ -167,7 +167,7 @@ export function ReviewRequest() {
         <p className="text-[11px] font-semibold text-white">After the job</p>
         <p className="mt-0.5 text-[13px] leading-relaxed">Thanks for having us today — if you have a moment, a review helps a lot.</p>
       </div>
-      <div className="max-w-[90%] rounded-lg rounded-tl-sm border border-white/[0.09] bg-[#f7f8fa] px-3 py-2">
+      <div className="max-w-[90%] rounded-lg rounded-tl-sm border border-white/[0.09] bg-white/[0.03] px-3 py-2">
         <p className="text-[11px] font-semibold text-[#9ca3af]">Customer</p>
         <p className="mt-0.5 text-[13px] text-[#e5e7eb]">On time and tidy, thanks.</p>
       </div>
@@ -182,12 +182,12 @@ export function MorningReport() {
   return (
     <div className="flex h-full flex-col gap-3 md:flex-row md:items-stretch md:gap-5">
       <div className="md:w-[42%] md:shrink-0">
-        <div className="rounded-lg rounded-tr-sm border border-white/[0.09] bg-[#f7f8fa] px-3 py-2 md:ml-auto md:max-w-sm">
+        <div className="rounded-lg rounded-tr-sm border border-white/[0.09] bg-white/[0.03] px-3 py-2 md:ml-auto md:max-w-sm">
           <p className="text-[11px] font-semibold text-[#9ca3af]">You · 7:32 am</p>
           <p className="mt-0.5 text-[13px] text-[#e5e7eb]">Who still owes us money?</p>
         </div>
       </div>
-      <div className="min-w-0 flex-1 rounded-lg rounded-tl-sm border border-white/[0.09] bg-[#f7f8fa] px-3 py-2.5">
+      <div className="min-w-0 flex-1 rounded-lg rounded-tl-sm border border-white/[0.09] bg-white/[0.03] px-3 py-2.5">
         <p className="text-[11px] font-semibold text-[#9ca3af]">Assistant · from your Xero</p>
         <p className="mt-0.5 text-[13px] font-medium text-[#f3f4f6]">3 invoices overdue</p>
         <ul className="mt-1.5 space-y-1 text-[12px] text-[#d1d5db]">

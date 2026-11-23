@@ -30,7 +30,7 @@ export default function ContactPage() {
             <ol className="mt-10 space-y-5">
               {NEXT.map(({ icon: Icon, t, d }, i) => (
                 <li key={t} className="flex gap-4">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-white/[0.09] bg-white text-[#d1d5db]"><Icon size={18} /></span>
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-white/[0.09] bg-white/[0.04] text-[#d1d5db]"><Icon size={18} /></span>
                   <div>
                     <p className="text-[15.5px] font-semibold text-[#f3f4f6]"><span className="mr-2 text-[#9ca3af]">{i + 1}.</span>{t}</p>
                     <p className="mt-0.5 text-[14.5px] leading-relaxed text-[#9ca3af]">{d}</p>
@@ -39,7 +39,7 @@ export default function ContactPage() {
               ))}
             </ol>
 
-            <div className="mt-10 rounded-[20px] border border-white/[0.09] bg-white p-6 shadow-[var(--cy-shadow)]">
+            <div className="mt-10 rounded-[20px] border border-white/[0.09] cy-glass p-6 shadow-[var(--cy-shadow)]">
               <p className="mb-4 text-sm font-semibold text-[#f3f4f6]">What you get from the assessment</p>
               <ul className="space-y-2.5 text-[15px] text-[#d1d5db]">
                 {GET.map((g) => <li key={g} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-400" />{g}</li>)}

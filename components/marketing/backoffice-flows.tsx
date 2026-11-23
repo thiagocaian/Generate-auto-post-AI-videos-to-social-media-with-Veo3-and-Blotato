@@ -154,7 +154,7 @@ function FlowRowContent({ flow, on }: { flow: BackofficeFlow; on: boolean }) {
       </span>
       <span
         className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10.5px] font-semibold tabular-nums ${
-          on ? "bg-gradient-to-b from-[#6d6ef8] to-[#5b5cf6] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]" : "bg-slate-900/[0.05] text-[#9ca3af]"
+          on ? "bg-gradient-to-b from-[#6d6ef8] to-[#5b5cf6] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]" : "bg-white/[0.06] text-[#9ca3af]"
         }`}
         aria-hidden
       >
@@ -299,7 +299,7 @@ export default function BackofficeFlows() {
                 role="tabpanel"
                 aria-labelledby={`flow-tab-${flow.id}`}
                 hidden={!on}
-                className="overflow-hidden rounded-[20px] border border-white/[0.09] bg-white shadow-[var(--cy-shadow)]"
+                className="overflow-hidden rounded-[20px] border border-white/[0.09] cy-glass shadow-[var(--cy-shadow)]"
               >
                 <FlowVideo
                   label={videoLabel}

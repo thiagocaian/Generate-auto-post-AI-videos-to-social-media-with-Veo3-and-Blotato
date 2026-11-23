@@ -316,7 +316,7 @@ function NodeCard({
   const isHuman = kind === "human";
   return (
     <div
-      className={`flex items-center gap-2.5 rounded-xl border bg-white px-2.5 py-2.5 ${
+      className={`flex items-center gap-2.5 rounded-xl border bg-white/[0.04] px-2.5 py-2.5 ${
         isHuman
           ? "border-dashed border-white/20"
           : isHub
@@ -342,7 +342,7 @@ function NodeCard({
               ? "bg-emerald-400/10 text-emerald-400"
               : state === "running"
                 ? "bg-[#5b5cf6] text-white"
-                : "bg-[#f7f8fa] text-[#d1d5db]"
+                : "bg-white/[0.03] text-[#d1d5db]"
         }`}
       >
         {state === "done" && !isHub ? <Check size={16} strokeWidth={2.5} /> : <Icon size={16} />}
@@ -470,7 +470,7 @@ function DesktopFlow({ time, reduced }: { time: number; reduced: boolean }) {
         const state = stateAt(node.id, time, reduced);
         const sides = PORTS[node.id];
         const { w, h } = sizeOf(node);
-        const dot = "absolute z-10 h-2 w-2 rounded-full border bg-white";
+        const dot = "absolute z-10 h-2 w-2 rounded-full border bg-white/[0.04]";
         const on = state === "running" || node.kind === "hub" ? "border-[#5b5cf6]" : "border-white/15";
         return (
           <motion.div
@@ -542,7 +542,7 @@ function MobileFlow({ time, reduced, settled }: { time: number; reduced: boolean
                 aria-controls={listId}
                 onClick={() => setClosed((c) => ({ ...c, [slug]: open }))}
                 data-glass-toggle={`b-${slug}`}
-                className={`flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left transition-colors hover:bg-white/40 ${GLASS_FOCUS}`}
+                className={`flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left transition-colors hover:bg-white/[0.07] ${GLASS_FOCUS}`}
               >
                 <span className={`${GLASS_HEADER} flex-1 transition-opacity duration-500 ${groupShown ? "opacity-100" : "opacity-50"}`}>
                   {group.label}
@@ -579,16 +579,16 @@ function MobileFlow({ time, reduced, settled }: { time: number; reduced: boolean
                         <span
                           className={`absolute -left-4 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full ring-[3px] ring-[#0a0a0b]/80 shadow-[0_0_0_1px_rgba(91,92,246,0.15)] transition-colors duration-300 ${
                             isHuman
-                              ? "border border-white/20 bg-white"
+                              ? "border border-white/20 bg-white/[0.04]"
                               : state === "done" || active
                                 ? "bg-[#5b5cf6]"
-                                : "bg-slate-300"
+                                : "bg-white/25"
                           }`}
                           aria-hidden
                         />
                         <div
                           className={`${GLASS_ROW} ${
-                            isHuman ? "border border-dashed border-white/20 bg-white/40" : active ? GLASS_ACTIVE : GLASS_IDLE
+                            isHuman ? "border border-dashed border-white/20 bg-white/[0.05]" : active ? GLASS_ACTIVE : GLASS_IDLE
                           }`}
                         >
                           <span

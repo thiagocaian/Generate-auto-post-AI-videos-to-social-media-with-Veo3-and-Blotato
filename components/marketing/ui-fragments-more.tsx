@@ -8,7 +8,7 @@ import { GLASS_ACTIVE, GLASS_HEADER, GLASS_IDLE, GLASS_ROW, GlassChevron, GlassC
 
 /** More compact UI fragments for the services and how-it-works pages. Same visual language as ui-fragments.tsx. */
 
-const row = "rounded-lg border border-white/[0.09] bg-[#f7f8fa] px-3 py-2.5";
+const row = "rounded-lg border border-white/[0.09] bg-white/[0.03] px-3 py-2.5";
 
 export function LeadCaptured() {
   const fields = [
@@ -21,7 +21,7 @@ export function LeadCaptured() {
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-3">
         <p className="flex items-center gap-2 text-[13px] font-semibold text-[#f3f4f6]">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md border border-white/[0.09] bg-white text-[#d1d5db]"><UserPlus size={14} /></span>
+          <span className="flex h-7 w-7 items-center justify-center rounded-md border border-white/[0.09] bg-white/[0.04] text-[#d1d5db]"><UserPlus size={14} /></span>
           New lead
         </p>
         <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-300">Saved to CRM</span>
@@ -55,7 +55,7 @@ export function HeldForReview() {
       </div>
       <div className="grid grid-cols-2 gap-2">
         <span className="rounded-md bg-[#5b5cf6] px-3 py-2 text-center text-[12px] font-semibold text-white">Approve &amp; send</span>
-        <span className="rounded-md border border-white/[0.09] bg-white px-3 py-2 text-center text-[12px] font-semibold text-[#e5e7eb]">Reply myself</span>
+        <span className="rounded-md border border-white/[0.09] bg-white/[0.04] px-3 py-2 text-center text-[12px] font-semibold text-[#e5e7eb]">Reply myself</span>
       </div>
     </div>
   );
@@ -122,7 +122,7 @@ export function ProcessMap() {
                 {top ? <span className="sr-only"> (picked)</span> : null}
               </span>
               <span
-                className={`shrink-0 rounded-full px-2 py-0.5 text-[11.5px] font-semibold tabular-nums ${top ? "bg-gradient-to-b from-[#6d6ef8] to-[#5b5cf6] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]" : "bg-slate-900/[0.05] text-[#9ca3af]"}`}
+                className={`shrink-0 rounded-full px-2 py-0.5 text-[11.5px] font-semibold tabular-nums ${top ? "bg-gradient-to-b from-[#6d6ef8] to-[#5b5cf6] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]" : "bg-white/[0.06] text-[#9ca3af]"}`}
               >
                 {hours} h / week
               </span>
@@ -148,7 +148,7 @@ export function RulesCard() {
   return (
     <div className="flex flex-col gap-2">
       <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9ca3af]">Rules · written with your team</p>
-      <div className="overflow-hidden rounded-lg border border-white/[0.09] bg-white font-mono text-[12px]">
+      <div className="overflow-hidden rounded-lg border border-white/[0.09] bg-white/[0.04] font-mono text-[12px]">
         {rules.map(([k, v], i) => (
           <div key={i} className={`flex gap-3 px-3 py-2 ${i ? "border-t border-white/[0.09]" : ""}`}>
             <span className={`w-10 shrink-0 font-semibold ${k === "IF" ? "text-[#9ca3af]" : "text-[#a5b4fc]"}`}>{k}</span>
@@ -175,8 +175,8 @@ export function BuildFlow() {
       <ol className="flex flex-col gap-1.5">
         {nodes.map(({ i: Icon, t }, idx) => (
           <li key={t} className="flex items-center gap-3">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-white/[0.09] bg-white text-[#d1d5db]"><Icon size={15} /></span>
-            <span className="flex-1 rounded-md border border-white/[0.09] bg-white px-3 py-1.5 text-[12.5px] font-medium text-[#e5e7eb]">{t}</span>
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-white/[0.09] bg-white/[0.04] text-[#d1d5db]"><Icon size={15} /></span>
+            <span className="flex-1 rounded-md border border-white/[0.09] bg-white/[0.04] px-3 py-1.5 text-[12.5px] font-medium text-[#e5e7eb]">{t}</span>
             <span className="text-[11px] font-semibold text-emerald-300">{idx < 4 ? "Connected" : "Shadow test"}</span>
           </li>
         ))}
@@ -200,7 +200,7 @@ export function RunStatus() {
         <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-300"><span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />All running</span>
       </div>
       {items.map((x) => (
-        <div key={x.t} className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.09] bg-white px-3 py-2">
+        <div key={x.t} className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.09] bg-white/[0.04] px-3 py-2">
           <span className="flex items-center gap-2 text-[12.5px] text-[#e5e7eb]">
             {x.ok ? <Check size={14} className="text-emerald-400" /> : <Clock size={14} className="text-amber-300" />}
             {x.t}
