@@ -91,7 +91,7 @@ export default function PricingPage() {
         <div className="mx-auto max-w-6xl px-5">
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             {PLANS.map((p) => (
-              <div key={p.t} className={`relative flex flex-col rounded-[24px] border cy-glass p-7 shadow-[var(--cy-shadow)] ${p.hot ? "border-[#5b5cf6] ring-1 ring-[#5b5cf6]" : "border-white/[0.09]"}`}>
+              <div key={p.t} className={`relative flex flex-col rounded-[24px] border cy-glass p-7 shadow-[var(--cy-shadow)] ${p.hot ? "border-[#818cf8]/70 ring-1 ring-[#818cf8]/50" : "border-white/[0.09]"}`}>
                 <div className="flex min-h-[26px] items-center justify-between">
                   {p.hot ? (
                     <p className="rounded-full bg-[#6366f1]/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#a5b4fc]">Recommended</p>
@@ -109,7 +109,7 @@ export default function PricingPage() {
                 <ul className="mt-6 flex-1 space-y-2.5 text-[15px] text-[#d1d5db]">
                   {p.f.map((f) => <li key={f} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-400" />{f}</li>)}
                 </ul>
-                <a href="/contact" className={`mt-8 inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${p.hot ? "bg-[#111827] text-white hover:bg-[#1f2937]" : "border border-white/[0.09] bg-white/[0.04] text-[#e5e7eb] hover:border-white/20 hover:bg-white/[0.07]"}`}>
+                <a href="/contact" className={`mt-8 inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${p.hot ? "bg-[#f3f4f6] text-[#0a0a0b] hover:bg-white" : "border border-white/[0.09] bg-white/[0.04] text-[#e5e7eb] hover:border-white/20 hover:bg-white/[0.07]"}`}>
                   {p.cta} <ChevronRight size={16} />
                 </a>
               </div>

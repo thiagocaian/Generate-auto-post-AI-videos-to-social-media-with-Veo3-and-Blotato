@@ -54,7 +54,7 @@ export function HeldForReview() {
         <p className="mt-0.5 text-[12.5px] text-[#e5e7eb]">Customer history · 3 past jobs · last quote $860</p>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <span className="rounded-md bg-[#5b5cf6] px-3 py-2 text-center text-[12px] font-semibold text-white">Approve &amp; send</span>
+        <span className="rounded-md bg-[#4f46e5] px-3 py-2 text-center text-[12px] font-semibold text-white">Approve &amp; send</span>
         <span className="rounded-md border border-white/[0.09] bg-white/[0.04] px-3 py-2 text-center text-[12px] font-semibold text-[#e5e7eb]">Reply myself</span>
       </div>
     </div>

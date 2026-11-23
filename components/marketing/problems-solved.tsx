@@ -82,7 +82,7 @@ export default function ProblemsSolved() {
                   </div>
                   <div className="rounded-[18px] border-[1.5px] border-[#818cf8]/40 bg-[#6366f1]/10 p-4">
                     <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#a5b4fc]">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5b5cf6] text-white"><Check size={12} strokeWidth={2.5} aria-hidden /></span>
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#4f46e5] text-white"><Check size={12} strokeWidth={2.5} aria-hidden /></span>
                       After
                     </p>
                     <p className="mt-2 text-[15px] font-medium leading-relaxed text-[#e5e7eb]">{c.after}</p>

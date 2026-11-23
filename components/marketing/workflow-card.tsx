@@ -119,7 +119,7 @@ export default function WorkflowCard() {
     >
       <div className="mb-3 flex items-center justify-between gap-2 sm:mb-4">
         <div className="flex items-center gap-2 text-[13px] font-semibold text-[#e5e7eb]">
-          <span className="inline-flex h-2 w-2 rounded-full bg-[#5b5cf6]" />
+          <span className="inline-flex h-2 w-2 rounded-full bg-[#4f46e5]" />
           Enquiry to invoice · live
         </div>
         <span className="text-[11px] font-medium tabular-nums text-[#9ca3af]">

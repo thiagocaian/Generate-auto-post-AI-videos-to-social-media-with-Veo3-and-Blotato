@@ -63,7 +63,7 @@ export default function HowPage() {
             {CARE_SCHEDULE.map((c) => (
               <li key={c.area} className="relative flex gap-4">
                 <span className="relative z-10 mt-5 flex h-[31px] w-[31px] shrink-0 items-center justify-center rounded-full border border-white/[0.09] bg-white/[0.04]">
-                  <span className="h-2 w-2 rounded-full bg-[#5b5cf6]" />
+                  <span className="h-2 w-2 rounded-full bg-[#4f46e5]" />
                 </span>
                 <div className="flex-1 rounded-[20px] border border-white/[0.09] cy-glass p-5 shadow-[var(--cy-shadow)]">
                   <div className="flex flex-wrap items-baseline gap-x-3">

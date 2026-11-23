@@ -71,7 +71,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12, duration: 0.4, ease: "easeOut" }}
-            className="mt-8 flex w-full max-w-md items-center rounded-full border border-white/[0.09] cy-glass p-1.5 shadow-[var(--cy-shadow)]"
+            className="mt-8 flex w-full max-w-md items-center rounded-full border border-white/[0.22] cy-glass p-1.5 shadow-[var(--cy-shadow)] focus-within:border-[#a5b4fc]"
           >
             <label htmlFor="hero-email" className="sr-only">
               Work email
@@ -89,7 +89,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             />
             <button
               type="submit"
-              className="shrink-0 rounded-full bg-[#4f46e5] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#4338ca] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4f46e5] sm:px-5 sm:text-sm"
+              className="shrink-0 rounded-full bg-[#4f46e5] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#4338ca] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a5b4fc] sm:px-5 sm:text-sm"
             >
               Free Assessment
             </button>

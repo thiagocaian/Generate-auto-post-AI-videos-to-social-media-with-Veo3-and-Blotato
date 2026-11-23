@@ -102,7 +102,7 @@ function StepList({
                   done
                     ? "bg-emerald-700 text-white"
                     : current
-                      ? "bg-[#5b5cf6] text-white"
+                      ? "bg-[#4f46e5] text-white"
                       : "border border-white/[0.09] bg-white/[0.04] text-[#d1d5db]"
                 }`}
               >
@@ -157,7 +157,7 @@ function DesktopWalkthrough() {
             <div className="relative pl-1">
               <div className="pointer-events-none absolute bottom-3 left-[22px] top-3 w-px bg-white/[0.08]" aria-hidden />
               <motion.div
-                className="pointer-events-none absolute left-[22px] top-3 w-px origin-top bg-[#5b5cf6]"
+                className="pointer-events-none absolute left-[22px] top-3 w-px origin-top bg-[#4f46e5]"
                 style={{ height: lineHeight }}
                 aria-hidden
               />
@@ -199,7 +199,7 @@ function MobileStep({ index }: { index: number }) {
       transition={{ duration: 0.35, ease: "easeOut" }}
     >
       <p className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-[#f3f4f6]">
-        <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#5b5cf6] text-[11px] font-semibold text-white">
+        <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#4f46e5] text-[11px] font-semibold text-white">
           {index + 1}
         </span>
         {s.label}

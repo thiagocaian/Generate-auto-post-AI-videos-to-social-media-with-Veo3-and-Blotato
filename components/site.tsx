@@ -12,13 +12,13 @@ export const LILAC = "#8b8cff";
 export const GRADIENT = "#5b5cf6"; // solid accent — kept so existing style={{ background: GRADIENT }} stays valid
 
 export const CARD = "rounded-[20px] border border-white/[0.09] cy-glass shadow-[var(--cy-shadow)]";
-// Main buttons are near-black (reference style); indigo stays for the accent CTA (BTN_ACCENT) and pills.
+// Dark theme: main buttons are light pills on the dark glass; indigo stays for the accent CTA (BTN_ACCENT) and pills.
 export const BTN_PRIMARY =
-  "inline-flex items-center justify-center gap-2 rounded-full bg-[#111827] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1f2937] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4f46e5]";
+  "inline-flex items-center justify-center gap-2 rounded-full bg-[#f3f4f6] px-5 py-2.5 text-sm font-semibold text-[#0a0a0b] transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a5b4fc]";
 export const BTN_ACCENT =
-  "inline-flex items-center justify-center gap-2 rounded-full bg-[#4f46e5] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#4338ca] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4f46e5]";
+  "inline-flex items-center justify-center gap-2 rounded-full bg-[#4f46e5] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#4338ca] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a5b4fc]";
 export const BTN_SECONDARY =
-  "inline-flex items-center justify-center gap-2 rounded-full border border-white/[0.09] bg-white/[0.04] px-5 py-2.5 text-sm font-semibold text-[#e5e7eb] transition-colors hover:border-white/20 hover:bg-white/[0.07] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4f46e5]";
+  "inline-flex items-center justify-center gap-2 rounded-full border border-white/[0.09] bg-white/[0.04] px-5 py-2.5 text-sm font-semibold text-[#e5e7eb] transition-colors hover:border-white/20 hover:bg-white/[0.07] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a5b4fc]";
 
 export function CytronLogo({ size = 28 }: { size?: number }) {
   return (

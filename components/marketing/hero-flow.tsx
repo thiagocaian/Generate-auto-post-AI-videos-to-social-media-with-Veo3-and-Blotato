@@ -337,11 +337,11 @@ function NodeCard({
       <span
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${
           isHub
-            ? "bg-[#5b5cf6] text-white"
+            ? "bg-[#4f46e5] text-white"
             : state === "done"
               ? "bg-emerald-400/10 text-emerald-400"
               : state === "running"
-                ? "bg-[#5b5cf6] text-white"
+                ? "bg-[#4f46e5] text-white"
                 : "bg-white/[0.03] text-[#d1d5db]"
         }`}
       >
@@ -399,7 +399,7 @@ function DesktopFlow({ time, reduced }: { time: number; reduced: boolean }) {
       <svg width={VIEW_W} height={VIEW_H} className="absolute inset-0" aria-hidden>
         <defs>
           <pattern id="hero-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
-            <circle cx="1.2" cy="1.2" r="0.9" fill="#d1d5db" />
+            <circle cx="1.2" cy="1.2" r="0.9" fill="#3f434b" />
           </pattern>
         </defs>
         <rect width={VIEW_W} height={VIEW_H} fill="url(#hero-dot-grid)" opacity="0.7" />
@@ -418,7 +418,7 @@ function DesktopFlow({ time, reduced }: { time: number; reduced: boolean }) {
               key={edge.id}
               d={d}
               fill="none"
-              stroke={live || consumed ? "#5b5cf6" : "#cbd5e1"}
+              stroke={live || consumed ? "#818cf8" : "#4b5563"}
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={live ? 1.75 : 1.4}
@@ -506,7 +506,7 @@ function TravelDot({ d, t }: { d: string; t: number }) {
   return (
     <>
       <path ref={ref} d={d} fill="none" stroke="none" />
-      {pt && <circle cx={pt.x} cy={pt.y} r="4" fill="#5b5cf6" />}
+      {pt && <circle cx={pt.x} cy={pt.y} r="4" fill="#818cf8" />}
     </>
   );
 }
@@ -581,7 +581,7 @@ function MobileFlow({ time, reduced, settled }: { time: number; reduced: boolean
                             isHuman
                               ? "border border-white/20 bg-white/[0.04]"
                               : state === "done" || active
-                                ? "bg-[#5b5cf6]"
+                                ? "bg-[#4f46e5]"
                                 : "bg-white/25"
                           }`}
                           aria-hidden

@@ -6,7 +6,7 @@ import { track } from "@vercel/analytics";
 import { ArrowRight, Check } from "lucide-react";
 import { AUDIT_CONSENT_TEXT } from "@/lib/inbound/consent";
 
-const inputClass = "w-full rounded-lg border border-white/[0.09] bg-white/[0.04] px-3.5 py-2.5 text-sm text-[#f3f4f6] outline-none transition placeholder:text-[#8b929e] focus:border-[#5b5cf6] focus:ring-2 focus:ring-[#5b5cf6]/15";
+const inputClass = "w-full rounded-lg border border-white/[0.22] bg-white/[0.04] px-3.5 py-2.5 text-sm text-[#f3f4f6] outline-none transition placeholder:text-[#8b929e] focus:border-[#a5b4fc] focus:ring-2 focus:ring-[#818cf8]/40";
 const labelClass = "mb-1.5 block text-xs font-semibold text-[#d1d5db]";
 
 function normaliseWebsite(value: string): string {
@@ -141,7 +141,7 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
                 id="audit-consent"
                 data-testid="audit-consent"
                 type="checkbox"
-                className="mt-1"
+                className="mt-1 accent-[#6366f1]"
                 checked={form.consent}
                 onChange={(event) => setForm((prev) => ({ ...prev, consent: event.target.checked }))}
                 required
@@ -152,7 +152,7 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
               </span>
             </label>
             {error && <p role="alert" aria-live="polite" className="text-sm font-medium text-red-400">{error}</p>}
-            <button type="submit" disabled={status === "loading"} className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#5b5cf6] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#4f46e5] disabled:opacity-60">
+            <button type="submit" disabled={status === "loading"} className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#4f46e5] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#4f46e5] disabled:opacity-60">
               {status === "loading" ? "Sending..." : <>Request a Free Automation Assessment <ArrowRight size={17} /></>}
             </button>
             {preview && <p className="text-center text-xs text-[#9ca3af]">Sketch only — this form does not send a request.</p>}

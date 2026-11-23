@@ -43,7 +43,7 @@ export function SmsThread({
         <p className="mt-0.5 text-[13px] leading-relaxed text-[#e5e7eb]">Hi, called about a leaking tap, no answer?</p>
       </div>
       {(text || cursor) && (
-        <div className="ml-auto max-w-[90%] rounded-lg rounded-tr-sm bg-[#5b5cf6] px-3 py-2 text-white">
+        <div className="ml-auto max-w-[90%] rounded-lg rounded-tr-sm bg-[#4f46e5] px-3 py-2 text-white">
           <p className="text-[11px] font-semibold text-white">Auto-reply · 40s later</p>
           <p className="mt-0.5 text-[13px] leading-relaxed">
             {text}
@@ -103,7 +103,7 @@ export function BookingCalendar() {
 export function ReminderCard() {
   return (
     <div className="flex flex-col gap-2">
-      <div className="ml-auto max-w-[95%] rounded-lg rounded-tr-sm bg-[#5b5cf6] px-3 py-2 text-white">
+      <div className="ml-auto max-w-[95%] rounded-lg rounded-tr-sm bg-[#4f46e5] px-3 py-2 text-white">
         <p className="text-[11px] font-semibold text-white">Reminder · day before</p>
         <p className="mt-0.5 text-[13px] leading-relaxed">See you tomorrow at 9:00 am, Burleigh Heads. Reply C to confirm.</p>
       </div>
@@ -163,7 +163,7 @@ export function QuoteFollowup() {
 export function ReviewRequest() {
   return (
     <div className="flex flex-col gap-2">
-      <div className="ml-auto max-w-[95%] rounded-lg rounded-tr-sm bg-[#5b5cf6] px-3 py-2 text-white">
+      <div className="ml-auto max-w-[95%] rounded-lg rounded-tr-sm bg-[#4f46e5] px-3 py-2 text-white">
         <p className="text-[11px] font-semibold text-white">After the job</p>
         <p className="mt-0.5 text-[13px] leading-relaxed">Thanks for having us today — if you have a moment, a review helps a lot.</p>
       </div>
