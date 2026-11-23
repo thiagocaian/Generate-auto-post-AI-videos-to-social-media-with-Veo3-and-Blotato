@@ -207,27 +207,3 @@
   .lg-tilt { transform: none !important; transition: none; }
   .lg-glare { display: none; }
 }
-
-/* ── Lite glass cards (other pages) ──────────────────────────────────────────
- * Same material as the panels, built to repeat: no backdrop-filter, no filter
- * blur (soft radial-gradient shapes instead), no permanent layer promotion,
- * and drift + sheen pause while the card is off screen (data-inview). */
-.lg-stage[data-fill] { height: 100%; }
-.lg-stage[data-fill] > .lg-tilt,
-.lg-stage[data-fill] .lg-panel,
-.lg-stage[data-fill] .lg-content { height: 100%; }
-
-.lg-stage[data-lite] .lg-tilt { will-change: auto; }
-.lg-stage[data-lite] .lg-blob { filter: none; }
-.lg-stage[data-lite] .lg-blob-1 { background: radial-gradient(closest-side, rgba(99, 102, 241, 0.42), rgba(99, 102, 241, 0)); width: 80%; left: -20%; top: -25%; }
-.lg-stage[data-lite] .lg-blob-2 { background: radial-gradient(closest-side, rgba(167, 139, 250, 0.4), rgba(167, 139, 250, 0)); width: 70%; right: -22%; top: 20%; }
-.lg-stage[data-lite] .lg-blob-3 { background: radial-gradient(closest-side, rgba(103, 232, 249, 0.4), rgba(103, 232, 249, 0)); width: 66%; left: 12%; bottom: -30%; }
-.lg-stage[data-lite] .lg-panel {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  background:
-    radial-gradient(120% 80% at 0% 0%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.28));
-}
-.lg-stage[data-lite][data-inview="false"] .lg-blob,
-.lg-stage[data-lite][data-inview="false"] .lg-panel::after { animation-play-state: paused; }
