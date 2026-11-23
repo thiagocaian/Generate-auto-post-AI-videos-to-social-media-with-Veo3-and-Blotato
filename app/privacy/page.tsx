@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { pageMetadata } from "@/lib/page-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/privacy",
   title: "Privacy Policy — CYTRON",
   description:
     "Privacy Policy for CYTRON, the AI-powered field service management platform by Cytron Pty Ltd.",
-};
+});
 
 export default function PrivacyPolicyPage() {
   return (

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { pageMetadata } from "@/lib/page-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/terms",
   title: "Terms of Service — CYTRON",
   description:
     "Terms of Service for CYTRON, the AI-powered field service management platform by Cytron Pty Ltd.",
-};
+});
 
 export default function TermsOfServicePage() {
   return (

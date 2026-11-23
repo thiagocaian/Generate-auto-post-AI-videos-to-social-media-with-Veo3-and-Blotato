@@ -1,6 +1,13 @@
 import { Suspense } from 'react'
+import type { Metadata } from 'next'
 import { publicSignupEnabled } from '@/lib/auth-flags'
+import { pageMetadata } from '@/lib/page-metadata'
 import { LoginContent } from './login-content'
+
+export const metadata: Metadata = pageMetadata({
+  path: '/login',
+  noindex: true,
+})
 
 export default function LoginPage() {
   return (
