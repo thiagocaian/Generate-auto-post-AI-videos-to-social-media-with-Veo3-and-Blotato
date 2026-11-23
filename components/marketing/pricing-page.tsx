@@ -1,9 +1,11 @@
 "use client";
 
 import React from "react";
+import { useReducedMotion } from "framer-motion";
 import { Check, ChevronRight } from "lucide-react";
 import { Accent, Eyebrow, Heading } from "@/components/site";
 import { CtaBand, PageIntro, PrimaryLink, SecondaryLink } from "@/components/marketing/page-kit";
+import { LiquidGlass } from "@/components/marketing/glass";
 
 const PLANS = [
   {
@@ -78,6 +80,7 @@ const FAQ = [
 ];
 
 export default function PricingPage() {
+  const reduced = useReducedMotion() === true;
   return (
     <div className="bg-white">
       <PageIntro
@@ -90,35 +93,47 @@ export default function PricingPage() {
       <section className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-5">
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {PLANS.map((p) => (
-              <div key={p.t} className={`relative flex flex-col rounded-2xl border bg-white p-7 shadow-sm ${p.hot ? "border-[#5b5cf6] ring-1 ring-[#5b5cf6]" : "border-[#e5e7eb]"}`}>
-                <div className="flex min-h-[26px] items-center justify-between">
-                  {p.hot ? (
-                    <p className="rounded-full bg-[#eef0ff] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4f46e5]">Recommended</p>
-                  ) : (
-                    <span aria-hidden className="h-[26px]" />
-                  )}
+            {PLANS.map((p, i) => (
+              <LiquidGlass
+                key={p.t}
+                reduced={reduced}
+                lite
+                fill
+                className={p.hot ? "ring-2 ring-[#5b5cf6]" : ""}
+                panelClassName="p-7"
+                sheenDelay={`${i * 0.9 + 0.6}s`}
+              >
+                <div className="relative flex h-full flex-col">
+                  <div className="flex min-h-[26px] items-center justify-between">
+                    {p.hot ? (
+                      <p className="rounded-full bg-[#eef0ff] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4f46e5]">Recommended</p>
+                    ) : (
+                      <span aria-hidden className="h-[26px]" />
+                    )}
+                  </div>
+                  <h2 className="mt-4 text-xl font-semibold text-slate-900">{p.t}</h2>
+                  <p className="mt-2 text-[34px] font-semibold tracking-tight text-slate-900">
+                    {p.price}
+                    {p.unit && <span className="text-base font-medium text-slate-600">{p.unit}</span>}
+                  </p>
+                  {"note" in p && p.note && <p className="mt-1 text-sm font-medium text-slate-600">{p.note}</p>}
+                  <p className="mt-3 text-[15px] leading-relaxed text-slate-600">{p.d}</p>
+                  <ul className="mt-6 flex-1 space-y-2.5 text-[15px] text-slate-700">
+                    {p.f.map((f) => <li key={f} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-700" />{f}</li>)}
+                  </ul>
+                  <a href="/contact" className={`mt-8 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors ${p.hot ? "bg-[#5b5cf6] text-white hover:bg-[#4f46e5]" : "border border-[#e5e7eb] bg-white text-slate-800 hover:bg-slate-50"}`}>
+                    {p.cta} <ChevronRight size={16} />
+                  </a>
                 </div>
-                <h2 className="mt-4 text-xl font-semibold text-slate-900">{p.t}</h2>
-                <p className="mt-2 text-[34px] font-semibold tracking-tight text-slate-900">
-                  {p.price}
-                  {p.unit && <span className="text-base font-medium text-slate-600">{p.unit}</span>}
-                </p>
-                {"note" in p && p.note && <p className="mt-1 text-sm font-medium text-slate-600">{p.note}</p>}
-                <p className="mt-3 text-[15px] leading-relaxed text-slate-600">{p.d}</p>
-                <ul className="mt-6 flex-1 space-y-2.5 text-[15px] text-slate-700">
-                  {p.f.map((f) => <li key={f} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-700" />{f}</li>)}
-                </ul>
-                <a href="/contact" className={`mt-8 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors ${p.hot ? "bg-[#5b5cf6] text-white hover:bg-[#4f46e5]" : "border border-[#e5e7eb] bg-white text-slate-800 hover:bg-slate-50"}`}>
-                  {p.cta} <ChevronRight size={16} />
-                </a>
-              </div>
+              </LiquidGlass>
             ))}
           </div>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 rounded-xl border border-[#e5e7eb] bg-[#f7f8fa] px-6 py-5 text-[14.5px] text-slate-700">
-            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Every plan</span>
-            {INCLUDED.map((t) => <span key={t} className="flex items-center gap-2"><Check size={16} className="text-emerald-700" />{t}</span>)}
-          </div>
+          <LiquidGlass reduced={reduced} lite className="mt-8" panelClassName="px-6 py-5" sheenDelay="4s">
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[14.5px] text-slate-700">
+              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Every plan</span>
+              {INCLUDED.map((t) => <span key={t} className="flex items-center gap-2"><Check size={16} className="text-emerald-700" />{t}</span>)}
+            </div>
+          </LiquidGlass>
           <p className="mt-4 text-center text-xs text-slate-600">Prices in AUD, ex GST where applicable. API usage, phone and SMS are subject to included allowances or additional charges.</p>
         </div>
       </section>
@@ -127,16 +142,18 @@ export default function PricingPage() {
         <div className="mx-auto max-w-3xl px-5">
           <Eyebrow>FAQ</Eyebrow>
           <Heading>Questions we hear a lot.</Heading>
-          <div className="mt-10 divide-y divide-[#e5e7eb] rounded-xl border border-[#e5e7eb] bg-white px-6 shadow-sm">
-            {FAQ.map((f) => (
-              <details key={f.q} className="group py-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-semibold text-slate-900">
-                  {f.q}<ChevronRight size={18} className="shrink-0 text-slate-400 transition group-open:rotate-90" />
-                </summary>
-                <p className="mt-3 text-[15px] leading-relaxed text-slate-600">{f.a}</p>
-              </details>
-            ))}
-          </div>
+          <LiquidGlass reduced={reduced} tall className="mt-10" panelClassName="px-6" sheenDelay="1.5s">
+            <div className="divide-y divide-slate-900/[0.08]">
+                {FAQ.map((f) => (
+                  <details key={f.q} className="group py-5">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-semibold text-slate-900">
+                      {f.q}<ChevronRight size={18} className="shrink-0 text-slate-400 transition group-open:rotate-90" />
+                    </summary>
+                    <p className="mt-3 text-[15px] leading-relaxed text-slate-600">{f.a}</p>
+                  </details>
+                ))}
+            </div>
+          </LiquidGlass>
         </div>
       </section>
 
