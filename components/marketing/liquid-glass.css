@@ -1,5 +1,5 @@
 /*
- * Liquid glass material (light theme, Cytron indigo).
+ * Liquid glass material (light theme, Cytron lilac palette: lavender, pink, pale blue).
  * Only used inside the three glass panels; nothing here touches the page background.
  * One real backdrop-filter per panel; inner rows fake the glass with gradients + edges.
  */
@@ -24,7 +24,7 @@
   border-radius: inherit;
   overflow: hidden;
   pointer-events: none;
-  background: linear-gradient(160deg, #f5f6ff 0%, #f8fafc 55%, #f2fbfd 100%);
+  background: linear-gradient(160deg, #f6f1ff 0%, #fbf9ff 55%, #fdf2f9 100%);
 }
 .lg-blob {
   position: absolute;
@@ -37,7 +37,7 @@
   aspect-ratio: 1;
   left: -12%;
   top: -10%;
-  background: rgba(99, 102, 241, 0.34);
+  background: rgba(167, 139, 250, 0.42);
   animation: lg-drift-1 19s ease-in-out infinite alternate;
 }
 .lg-blob-2 {
@@ -45,7 +45,7 @@
   aspect-ratio: 1;
   right: -14%;
   top: 28%;
-  background: rgba(167, 139, 250, 0.3);
+  background: rgba(244, 164, 214, 0.42);
   animation: lg-drift-2 23s ease-in-out infinite alternate;
 }
 .lg-blob-3 {
@@ -53,7 +53,7 @@
   aspect-ratio: 1;
   left: 18%;
   bottom: -18%;
-  background: rgba(103, 232, 249, 0.3);
+  background: rgba(165, 194, 252, 0.42);
   animation: lg-drift-3 17s ease-in-out infinite alternate;
 }
 /* Tall panels (mobile timeline): repeat the shapes down the panel. */
@@ -92,9 +92,9 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.95),
     inset 1px 0 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1px 0 rgba(99, 102, 241, 0.06),
+    inset 0 -1px 0 rgba(139, 92, 246, 0.07),
     0 1px 2px rgba(15, 23, 42, 0.05),
-    0 14px 34px -8px rgba(30, 27, 75, 0.14);
+    0 14px 34px -10px rgba(76, 29, 149, 0.16);
 }
 /* Specular gradient edge: bright top-left, fading bottom-right. */
 .lg-panel::before,
