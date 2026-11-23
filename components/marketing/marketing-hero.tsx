@@ -43,7 +43,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#5b5cf6]"
+            className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#4f46e5]"
           >
             Specialists in repetitive office tasks
           </motion.p>
@@ -100,9 +100,9 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18, duration: 0.4, ease: "easeOut" }}
-            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#5b5cf6] transition-colors hover:text-[#4f46e5]"
+            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#4f46e5] transition-colors hover:text-[#3730a3]"
           >
-            <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[#c7c8f8] text-[#5b5cf6]">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[#c7c8f8] text-[#4f46e5]">
               <Play size={11} fill="currentColor" />
             </span>
             See Cytron in action

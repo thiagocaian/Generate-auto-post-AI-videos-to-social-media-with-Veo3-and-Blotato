@@ -54,10 +54,10 @@ export default function ProblemsSolved() {
           {CARDS.map((c, i) => {
             const Icon = c.icon;
             return (
-              <motion.article key={c.title} {...rise(i)} className="flex flex-col rounded-2xl border border-[#e5e7eb] bg-white p-6 shadow-sm sm:p-7">
+              <motion.article key={c.title} {...rise(i)} className="flex flex-col rounded-[24px] border border-[#e7e7ec] bg-white p-6 shadow-[var(--cy-shadow)] sm:p-7">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#eef0ff] text-[#5b5cf6]">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#eef0ff] text-[#4f46e5]">
                       <Icon size={18} strokeWidth={2} aria-hidden />
                     </span>
                     <div>
@@ -81,7 +81,7 @@ export default function ProblemsSolved() {
                     <p className="mt-2 text-[15px] leading-relaxed text-slate-600">{c.before}</p>
                   </div>
                   <div className="rounded-[18px] border-[1.5px] border-[#c7c8f8] bg-[#f6f6ff] p-4">
-                    <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5b5cf6]">
+                    <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#4f46e5]">
                       <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5b5cf6] text-white"><Check size={12} strokeWidth={2.5} aria-hidden /></span>
                       After
                     </p>

@@ -87,7 +87,7 @@ export default function UseCasesPage() {
       <nav aria-label="Office tasks" className="bg-transparent">
         <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-5 py-3 text-[13px]">
           {CASES.map((c) => (
-            <a key={c.id} href={`#${c.id}`} className="flex shrink-0 items-center gap-1.5 rounded-full border border-[#e5e7eb] px-3 py-1.5 font-medium text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-900">
+            <a key={c.id} href={`#${c.id}`} className="flex shrink-0 items-center gap-1.5 rounded-full border border-[#e7e7ec] bg-white px-3 py-1.5 font-medium text-slate-700 transition-colors hover:border-[#d8ccfb] hover:bg-[#f3efff] hover:text-[#5b21b6]">
               <c.icon size={14} />{c.t}
             </a>
           ))}
@@ -96,7 +96,7 @@ export default function UseCasesPage() {
 
       <div className="mx-auto max-w-6xl space-y-6 px-5 py-16 sm:py-20">
         {CASES.map((c) => (
-          <motion.section key={c.id} id={c.id} {...rise} className="scroll-mt-24 overflow-hidden rounded-2xl border border-[#e5e7eb] bg-white shadow-sm">
+          <motion.section key={c.id} id={c.id} {...rise} className="scroll-mt-24 overflow-hidden rounded-[24px] border border-[#e7e7ec] bg-white shadow-[var(--cy-shadow)]">
             <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[#e5e7eb] p-6 sm:p-8">
               <div className="flex gap-4">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-[#e5e7eb] text-slate-700"><c.icon size={20} /></span>
@@ -115,7 +115,7 @@ export default function UseCasesPage() {
                 </ul>
               </div>
               <div className="bg-white p-6 sm:p-8">
-                <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#5b5cf6]">With Cytron</p>
+                <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#4f46e5]">With Cytron</p>
                 <ul className="space-y-3 text-[15px] text-slate-800">
                   {c.after.map((a) => <li key={a} className="flex gap-3"><Check size={17} className="mt-0.5 shrink-0 text-emerald-700" />{a}</li>)}
                 </ul>
@@ -134,7 +134,7 @@ export default function UseCasesPage() {
                   ))}
                 </dl>
                 {c.more && (
-                  <a href={c.more.href} className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-[#5b5cf6] hover:text-[#4f46e5]">{c.more.label} <ChevronRight size={15} /></a>
+                  <a href={c.more.href} className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-[#4f46e5] hover:text-[#3730a3]">{c.more.label} <ChevronRight size={15} /></a>
                 )}
               </div>
             </div>
@@ -154,7 +154,7 @@ export default function UseCasesPage() {
           </div>
           <ul className="space-y-3 self-center text-[15px] text-slate-700">
             {CASE_POINTS.map((t) => (
-              <li key={t} className="flex gap-3 rounded-xl border border-[#e5e7eb] bg-white p-4 shadow-sm"><Check size={18} className="mt-0.5 shrink-0 text-emerald-700" />{t}</li>
+              <li key={t} className="flex gap-3 rounded-[20px] border border-[#e7e7ec] bg-white p-4 shadow-[var(--cy-shadow)]"><Check size={18} className="mt-0.5 shrink-0 text-emerald-700" />{t}</li>
             ))}
           </ul>
         </div>
@@ -174,7 +174,7 @@ export default function UseCasesPage() {
           <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Office tasks</p>
           <div className="flex flex-wrap gap-2.5">
             {CASES.map((c) => (
-              <a key={c.id} href={`#${c.id}`} className="rounded-md border border-[#e5e7eb] bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-900">{c.t}</a>
+              <a key={c.id} href={`#${c.id}`} className="rounded-full border border-[#e7e7ec] bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-[#d8ccfb] hover:bg-[#f3efff] hover:text-[#5b21b6]">{c.t}</a>
             ))}
           </div>
         </div>

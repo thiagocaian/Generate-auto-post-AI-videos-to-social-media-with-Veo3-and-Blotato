@@ -151,7 +151,7 @@ export function RulesCard() {
       <div className="overflow-hidden rounded-lg border border-[#e5e7eb] bg-white font-mono text-[12px]">
         {rules.map(([k, v], i) => (
           <div key={i} className={`flex gap-3 px-3 py-2 ${i ? "border-t border-[#e5e7eb]" : ""}`}>
-            <span className={`w-10 shrink-0 font-semibold ${k === "IF" ? "text-slate-500" : "text-[#5b5cf6]"}`}>{k}</span>
+            <span className={`w-10 shrink-0 font-semibold ${k === "IF" ? "text-slate-500" : "text-[#4f46e5]"}`}>{k}</span>
             <span className="text-slate-800">{v}</span>
           </div>
         ))}

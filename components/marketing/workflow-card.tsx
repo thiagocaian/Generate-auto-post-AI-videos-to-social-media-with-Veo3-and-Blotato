@@ -114,7 +114,7 @@ export default function WorkflowCard() {
   return (
     <div
       ref={rootRef}
-      className="relative w-full max-w-md rounded-xl border border-[#e5e7eb] bg-white p-4 shadow-sm sm:p-5"
+      className="relative w-full max-w-md rounded-[20px] border border-[#e7e7ec] bg-white p-4 shadow-[var(--cy-shadow)] sm:p-5"
       aria-label="Enquiry to invoice, live demonstration"
     >
       <div className="mb-3 flex items-center justify-between gap-2 sm:mb-4">

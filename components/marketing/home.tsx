@@ -90,10 +90,10 @@ export default function Home() {
             </div>
             <TextLink href="/services">All services</TextLink>
           </div>
-          <div className="mt-10 grid overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#e5e7eb] sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 1 }}>
+          <div className="mt-10 grid overflow-hidden rounded-[20px] border border-[#e7e7ec] bg-[#e7e7ec] shadow-[var(--cy-shadow)] sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 1 }}>
             {SERVICES.map(({ icon: Icon, t, d }, i) => (
               <motion.a key={t} href="/services" {...rise(i)} className="group flex gap-4 bg-white p-6 transition-colors hover:bg-[#fafafb]">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[#e5e7eb] text-slate-700 transition-colors group-hover:border-[#c7c8f8] group-hover:text-[#5b5cf6]"><Icon size={18} /></span>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[#e5e7eb] text-slate-700 transition-colors group-hover:border-[#c7c8f8] group-hover:text-[#4f46e5]"><Icon size={18} /></span>
                 <span>
                   <span className="block text-[16px] font-semibold text-slate-900">{t}</span>
                   <span className="mt-1 block text-[14.5px] leading-relaxed text-slate-600">{d}</span>
@@ -116,15 +116,15 @@ export default function Home() {
           </div>
           <ol className="relative mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((s, i) => (
-              <motion.li key={s.n} {...rise(i)} className="relative rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm">
-                <p className="text-sm font-semibold text-[#5b5cf6]">{s.n}</p>
+              <motion.li key={s.n} {...rise(i)} className="relative rounded-[20px] border border-[#e7e7ec] bg-white p-6 shadow-[var(--cy-shadow)]">
+                <p className="text-sm font-semibold text-[#4f46e5]">{s.n}</p>
                 <h3 className="mt-2 text-lg font-semibold text-slate-900">{s.t}</h3>
                 <p className="mt-1.5 text-[14.5px] leading-relaxed text-slate-600">{s.d}</p>
               </motion.li>
             ))}
           </ol>
           <div className="mt-14 border-t border-[#e5e7eb] pt-12">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5b5cf6]">Secure by design</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#4f46e5]">Secure by design</p>
             <h3 className="mt-3 max-w-2xl text-[22px] font-semibold tracking-tight text-slate-900 sm:text-[26px]">
               Secure by design, built by a team with a cyber security practice.
             </h3>
@@ -133,7 +133,7 @@ export default function Home() {
             </p>
             <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {SECURITY.map((s, i) => (
-                <motion.li key={s.t} {...rise(i)} className="rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm">
+                <motion.li key={s.t} {...rise(i)} className="rounded-[20px] border border-[#e7e7ec] bg-white p-6 shadow-[var(--cy-shadow)]">
                   <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-md border border-[#e5e7eb] text-slate-700"><ShieldCheck size={18} /></span>
                   <h4 className="text-[16px] font-semibold text-slate-900">{s.t}</h4>
                   <p className="mt-1.5 text-[14.5px] leading-relaxed text-slate-600">{s.d}</p>
@@ -156,7 +156,7 @@ export default function Home() {
           </div>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {USE_CASES.map(({ icon: Icon, t, d, href }, i) => (
-              <motion.a key={t} href={href} {...rise(i)} className="group block rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm transition-colors hover:border-slate-300">
+              <motion.a key={t} href={href} {...rise(i)} className="group block rounded-[20px] border border-[#e7e7ec] bg-white p-6 shadow-[var(--cy-shadow)] transition-colors hover:border-slate-300">
                 <span className="mb-5 flex h-10 w-10 items-center justify-center rounded-md border border-[#e5e7eb] text-slate-700"><Icon size={18} /></span>
                 <h3 className="text-[16px] font-semibold text-slate-900">{t}</h3>
                 <p className="mt-1.5 text-[14.5px] leading-relaxed text-slate-600">{d}</p>

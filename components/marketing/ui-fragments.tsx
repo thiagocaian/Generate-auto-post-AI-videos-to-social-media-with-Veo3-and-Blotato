@@ -80,13 +80,13 @@ export function BookingCalendar() {
             }`}
           >
             <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-600">{day.d}</p>
-            <p className={`text-sm font-semibold ${day.on ? "text-[#5b5cf6]" : "text-slate-800"}`}>{day.n}</p>
+            <p className={`text-sm font-semibold ${day.on ? "text-[#4f46e5]" : "text-slate-800"}`}>{day.n}</p>
           </div>
         ))}
       </div>
       <div className="rounded-lg border border-[#e5e7eb] bg-[#f7f8fa] px-3 py-2.5">
         <p className="flex items-center gap-1.5 text-[13px] font-semibold text-slate-900">
-          <CalendarCheck size={14} className="text-[#5b5cf6]" />
+          <CalendarCheck size={14} className="text-[#4f46e5]" />
           Thu 9:00 am
         </p>
         <p className="mt-0.5 text-xs text-slate-600">Leaking tap · Burleigh Heads</p>

@@ -88,7 +88,7 @@ export default function ServicesPage() {
       <nav aria-label="Services on this page" className="bg-transparent">
         <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-5 py-3 text-[13px]">
           {SERVICES.map((s) => (
-            <a key={s.id} href={`#${s.id}`} className="shrink-0 rounded-full border border-[#e5e7eb] px-3 py-1.5 font-medium text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-900">
+            <a key={s.id} href={`#${s.id}`} className="shrink-0 rounded-full border border-[#e7e7ec] bg-white px-3 py-1.5 font-medium text-slate-700 transition-colors hover:border-[#d8ccfb] hover:bg-[#f3efff] hover:text-[#5b21b6]">
               {s.short}
             </a>
           ))}
@@ -101,10 +101,10 @@ export default function ServicesPage() {
             key={s.id}
             id={s.id}
             {...rise}
-            className="grid scroll-mt-24 items-center gap-8 rounded-2xl border border-[#e5e7eb] bg-white p-6 shadow-sm sm:p-8 lg:grid-cols-2 lg:gap-12 lg:p-10"
+            className="grid scroll-mt-24 items-center gap-8 rounded-[24px] border border-[#e7e7ec] bg-white p-6 shadow-[var(--cy-shadow)] sm:p-8 lg:grid-cols-2 lg:gap-12 lg:p-10"
           >
             <div className={i % 2 ? "lg:order-2" : ""}>
-              <p className="text-sm font-semibold text-[#5b5cf6]">{s.k}</p>
+              <p className="text-sm font-semibold text-[#4f46e5]">{s.k}</p>
               <h2 className="mt-2 text-[24px] font-semibold leading-snug tracking-tight text-slate-900 sm:text-[30px]">{s.t}</h2>
               <p className="mt-3 text-[16px] leading-relaxed text-slate-600">{s.d}</p>
               <ul className="mt-6 space-y-2.5 text-[15px] text-slate-700">
@@ -112,7 +112,7 @@ export default function ServicesPage() {
               </ul>
             </div>
             <div className={`rounded-xl border border-[#e5e7eb] bg-[#f7f8fa] p-5 sm:p-7 ${i % 2 ? "lg:order-1" : ""}`}>
-              <div className="mx-auto max-w-sm rounded-xl border border-[#e5e7eb] bg-white p-5 shadow-sm">{s.ui}</div>
+              <div className="mx-auto max-w-sm rounded-[20px] border border-[#e7e7ec] bg-white p-5 shadow-[var(--cy-shadow)]">{s.ui}</div>
             </div>
           </motion.section>
         ))}
@@ -127,7 +127,7 @@ export default function ServicesPage() {
           </div>
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {AGENT_ROLES.map(({ icon: Icon, t, d }, i) => (
-              <div key={t} className="rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm">
+              <div key={t} className="rounded-[20px] border border-[#e7e7ec] bg-white p-6 shadow-[var(--cy-shadow)]">
                 <div className="mb-4 flex items-center justify-between">
                   <div className="flex h-10 w-10 items-center justify-center rounded-md border border-[#e5e7eb] text-slate-700"><Icon size={18} /></div>
                   <span className="text-xs font-semibold text-slate-600">0{i + 1}</span>

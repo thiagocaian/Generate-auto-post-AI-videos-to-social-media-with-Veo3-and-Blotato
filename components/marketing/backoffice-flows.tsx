@@ -299,7 +299,7 @@ export default function BackofficeFlows() {
                 role="tabpanel"
                 aria-labelledby={`flow-tab-${flow.id}`}
                 hidden={!on}
-                className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-white shadow-sm"
+                className="overflow-hidden rounded-[20px] border border-[#e7e7ec] bg-white shadow-[var(--cy-shadow)]"
               >
                 <FlowVideo
                   label={videoLabel}

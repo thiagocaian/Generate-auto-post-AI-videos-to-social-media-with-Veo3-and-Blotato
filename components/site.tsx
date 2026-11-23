@@ -11,11 +11,14 @@ export const ACCENT = "#5b5cf6";
 export const LILAC = "#8b8cff";
 export const GRADIENT = "#5b5cf6"; // solid accent — kept so existing style={{ background: GRADIENT }} stays valid
 
-export const CARD = "rounded-xl border border-[#e5e7eb] bg-white shadow-sm";
+export const CARD = "rounded-[20px] border border-[#e7e7ec] bg-white shadow-[var(--cy-shadow)]";
+// Main buttons are near-black (reference style); indigo stays for the accent CTA (BTN_ACCENT) and pills.
 export const BTN_PRIMARY =
-  "inline-flex items-center justify-center gap-2 rounded-lg bg-[#5b5cf6] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#4f46e5]";
+  "inline-flex items-center justify-center gap-2 rounded-full bg-[#111827] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1f2937] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4f46e5]";
+export const BTN_ACCENT =
+  "inline-flex items-center justify-center gap-2 rounded-full bg-[#4f46e5] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#4338ca] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4f46e5]";
 export const BTN_SECONDARY =
-  "inline-flex items-center justify-center gap-2 rounded-lg border border-[#e5e7eb] bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50";
+  "inline-flex items-center justify-center gap-2 rounded-full border border-[#e7e7ec] bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:border-[#d8ccfb] hover:bg-[#faf7ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4f46e5]";
 
 export function CytronLogo({ size = 28 }: { size?: number }) {
   return (
@@ -45,7 +48,7 @@ export function Heading({ children }: { children: React.ReactNode }) {
 }
 
 export function Accent({ children }: { children: React.ReactNode }) {
-  return <span className="text-[#5b5cf6]">{children}</span>;
+  return <span className="text-[#4f46e5]">{children}</span>;
 }
 
 export function SiteNav() {
@@ -168,10 +171,10 @@ export function SiteNav() {
                     href={href}
                     aria-current={on ? "page" : undefined}
                     onClick={() => setOpen(false)}
-                    className={`flex items-center justify-between rounded-md px-2 py-3 text-[15px] font-medium hover:bg-slate-50 ${on ? "text-[#5b5cf6]" : "text-slate-800"}`}
+                    className={`flex items-center justify-between rounded-md px-2 py-3 text-[15px] font-medium hover:bg-slate-50 ${on ? "text-[#4f46e5]" : "text-slate-800"}`}
                   >
                     {label}
-                    <ChevronRight size={16} className={on ? "text-[#5b5cf6]" : "text-slate-400"} />
+                    <ChevronRight size={16} className={on ? "text-[#4f46e5]" : "text-slate-400"} />
                   </a>
                 );
               })}

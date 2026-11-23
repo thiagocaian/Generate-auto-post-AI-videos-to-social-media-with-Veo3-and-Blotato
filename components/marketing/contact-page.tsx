@@ -19,7 +19,7 @@ export default function ContactPage() {
       <section id="audit" className="border-b border-[#e5e7eb] bg-gradient-to-b from-white to-[#f3f4f7]">
         <div className="mx-auto grid max-w-6xl gap-12 px-5 pb-20 pt-14 sm:pt-20 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#5b5cf6]">Contact · Free Automation Assessment</p>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#4f46e5]">Contact · Free Automation Assessment</p>
             <h1 className="max-w-xl text-[clamp(2.1rem,6.5vw,3.4rem)] font-semibold leading-[1.06] tracking-tight text-slate-900">
               <Accent>One</Accent> call and you&apos;ll know what to automate first.
             </h1>
@@ -39,7 +39,7 @@ export default function ContactPage() {
               ))}
             </ol>
 
-            <div className="mt-10 rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm">
+            <div className="mt-10 rounded-[20px] border border-[#e7e7ec] bg-white p-6 shadow-[var(--cy-shadow)]">
               <p className="mb-4 text-sm font-semibold text-slate-900">What you get from the assessment</p>
               <ul className="space-y-2.5 text-[15px] text-slate-700">
                 {GET.map((g) => <li key={g} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-700" />{g}</li>)}

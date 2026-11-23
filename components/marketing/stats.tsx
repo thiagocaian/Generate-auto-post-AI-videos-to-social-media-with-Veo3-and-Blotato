@@ -62,7 +62,7 @@ export default function StatsSection() {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={inView ? { opacity: 1, y: 0 } : undefined}
             transition={{ delay: reduced ? 0 : i * 0.08, duration: 0.35, ease: "easeOut" }}
-            className="flex flex-col rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm"
+            className="flex flex-col rounded-[20px] border border-[#e7e7ec] bg-white p-6 shadow-[var(--cy-shadow)]"
           >
             <p className="text-4xl font-semibold tracking-tight text-slate-900">
               <CountUp target={s.target} prefix={s.prefix} suffix={s.suffix} start={inView} reduced={reduced} />

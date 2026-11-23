@@ -65,7 +65,7 @@ export default function HowPage() {
                 <span className="relative z-10 mt-5 flex h-[31px] w-[31px] shrink-0 items-center justify-center rounded-full border border-[#e5e7eb] bg-white">
                   <span className="h-2 w-2 rounded-full bg-[#5b5cf6]" />
                 </span>
-                <div className="flex-1 rounded-xl border border-[#e5e7eb] bg-white p-5 shadow-sm">
+                <div className="flex-1 rounded-[20px] border border-[#e7e7ec] bg-white p-5 shadow-[var(--cy-shadow)]">
                   <div className="flex flex-wrap items-baseline gap-x-3">
                     <span className="text-sm font-semibold text-slate-600">{c.time}</span>
                     <span className="font-semibold text-slate-900">{c.area}</span>

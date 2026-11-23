@@ -45,7 +45,7 @@ function StepList({ steps, active, onSelect, clickable }: { steps: ScrollStep[];
 
 function StepCard({ step }: { step: ScrollStep }) {
   return (
-    <div className="flex h-full min-h-[22rem] flex-col rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm sm:p-7">
+    <div className="flex h-full min-h-[22rem] flex-col rounded-[20px] border border-[#e7e7ec] bg-white p-6 shadow-[var(--cy-shadow)] sm:p-7">
       <p className="mb-5 text-sm font-semibold text-slate-800">{step.label}</p>
       <div className="flex flex-1 flex-col justify-center">{step.card}</div>
     </div>
