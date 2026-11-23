@@ -7,7 +7,7 @@ import { TransitionProvider } from "@/components/page-transition";
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <TransitionProvider>
-      <div className="flex min-h-screen flex-col overflow-x-clip bg-[#e9ecf1] text-slate-900">
+      <div className="flex min-h-screen flex-col overflow-x-clip bg-[#e8e8ee] text-slate-900">
         <AnnouncementBar />
         <SiteNav />
         {children}

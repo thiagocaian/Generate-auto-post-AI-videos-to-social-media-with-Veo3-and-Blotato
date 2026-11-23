@@ -58,7 +58,7 @@ export default function WeekMetrics() {
     <section
       ref={ref}
       aria-labelledby="week-metrics-heading"
-      className="border-y border-[#e5e7eb] bg-[#f7f8fa]"
+      className="border-y border-[#e7e7ec] bg-transparent"
     >
       <div className="mx-auto max-w-6xl px-5 py-10 sm:py-12">
         <div className="flex flex-wrap items-end justify-between gap-2">

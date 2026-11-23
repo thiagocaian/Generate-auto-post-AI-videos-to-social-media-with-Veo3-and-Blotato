@@ -160,7 +160,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
           ref.current.style.boxShadow = "none";
         }
       }}
-      className="relative flex flex-1 flex-col bg-white"
+      className="relative flex flex-1 flex-col bg-[#f4f4f7]"
       style={{ transformOrigin: phase === "exit" ? origin : "50% 50vh", backfaceVisibility: "hidden" }}
     >
       {children}

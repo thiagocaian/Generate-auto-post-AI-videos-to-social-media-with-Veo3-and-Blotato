@@ -32,7 +32,7 @@ const PRINCIPLES = [
 
 export default function HowPage() {
   return (
-    <div className="bg-white">
+    <div>
       <PageIntro
         eyebrow="How it works"
         title={<>Assess, design, build, run. <Accent>Live in weeks</Accent>.</>}
@@ -52,7 +52,7 @@ export default function HowPage() {
         }
       />
 
-      <section className="bg-white py-20 sm:py-24">
+      <section className="cy-shell py-20 sm:py-24">
         <div className="mx-auto grid max-w-6xl gap-10 px-5 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <Eyebrow>Once it runs</Eyebrow>
@@ -78,7 +78,7 @@ export default function HowPage() {
         </div>
       </section>
 
-      <section className="bg-[#f7f8fa] py-20 sm:py-24">
+      <section className="bg-transparent py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <Eyebrow>Our principles</Eyebrow>
           <Heading>Automation you can trust with real customers.</Heading>

@@ -116,7 +116,7 @@ function MobileStep({ step, index }: { step: ScrollStep; index: number }) {
 export default function ScrollSteps({ id, label, header, steps }: { id: string; label: string; header: React.ReactNode; steps: ScrollStep[] }) {
   const reduced = useReducedMotion() === true;
   return (
-    <section id={id} aria-label={label} className="bg-[#f7f8fa]">
+    <section id={id} aria-label={label} className="bg-transparent">
       {reduced ? (
         <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
           {header}

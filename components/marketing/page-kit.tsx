@@ -71,7 +71,7 @@ export function CtaBand({
   secondary?: { href: string; label: string };
 }) {
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <section className="bg-transparent py-16 sm:py-20">
       <div className="mx-auto max-w-6xl px-5">
         <div className="flex flex-col items-start justify-between gap-8 rounded-2xl border border-[#e5e7eb] bg-[#f7f8fa] p-8 sm:p-10 lg:flex-row lg:items-center">
           <div className="max-w-2xl">

@@ -77,7 +77,7 @@ export default function ServicesPage() {
   const rise = reduced ? {} : { initial: { opacity: 0, y: 12 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.25 }, transition: { duration: 0.4, ease: "easeOut" as const } };
 
   return (
-    <div className="bg-white">
+    <div>
       <PageIntro
         eyebrow="Services"
         title={<>Six things that <Accent>run on their own</Accent>.</>}
@@ -85,7 +85,7 @@ export default function ServicesPage() {
         actions={<><PrimaryLink href="/contact">Free Automation Assessment</PrimaryLink><SecondaryLink href="/pricing">See pricing</SecondaryLink></>}
       />
 
-      <nav aria-label="Services on this page" className="border-b border-[#e5e7eb] bg-white">
+      <nav aria-label="Services on this page" className="bg-transparent">
         <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-5 py-3 text-[13px]">
           {SERVICES.map((s) => (
             <a key={s.id} href={`#${s.id}`} className="shrink-0 rounded-full border border-[#e5e7eb] px-3 py-1.5 font-medium text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-900">
@@ -118,7 +118,7 @@ export default function ServicesPage() {
         ))}
       </div>
 
-      <section id="agents" className="scroll-mt-20 bg-[#f7f8fa] py-20 sm:py-24">
+      <section id="agents" className="scroll-mt-20 bg-transparent py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <div className="max-w-3xl">
             <Eyebrow>Cytron automation</Eyebrow>

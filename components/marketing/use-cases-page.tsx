@@ -76,7 +76,7 @@ export default function UseCasesPage() {
   const rise = reduced ? {} : { initial: { opacity: 0, y: 12 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.2 }, transition: { duration: 0.4, ease: "easeOut" as const } };
 
   return (
-    <div className="bg-white">
+    <div>
       <PageIntro
         eyebrow="Use cases"
         title={<>Repetitive office work, <Accent>handled</Accent>.</>}
@@ -84,7 +84,7 @@ export default function UseCasesPage() {
         actions={<><PrimaryLink href="/contact">Free Automation Assessment</PrimaryLink><SecondaryLink href="/services">All services</SecondaryLink></>}
       />
 
-      <nav aria-label="Office tasks" className="border-b border-[#e5e7eb] bg-white">
+      <nav aria-label="Office tasks" className="bg-transparent">
         <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-5 py-3 text-[13px]">
           {CASES.map((c) => (
             <a key={c.id} href={`#${c.id}`} className="flex shrink-0 items-center gap-1.5 rounded-full border border-[#e5e7eb] px-3 py-1.5 font-medium text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-900">
@@ -145,7 +145,7 @@ export default function UseCasesPage() {
 
       <StatsSection />
 
-      <section id="case" className="scroll-mt-20 bg-white py-20 sm:py-24">
+      <section id="case" className="scroll-mt-20 cy-shell py-20 sm:py-24">
         <div className="mx-auto grid max-w-6xl gap-10 px-5 lg:grid-cols-2">
           <div>
             <Eyebrow>Case study · Australian online retailer</Eyebrow>
@@ -160,7 +160,7 @@ export default function UseCasesPage() {
         </div>
       </section>
 
-      <section id="week" className="scroll-mt-20 bg-[#f7f8fa] py-20 sm:py-24">
+      <section id="week" className="scroll-mt-20 bg-transparent py-20 sm:py-24">
         <div className="mx-auto max-w-3xl px-5">
           <Eyebrow>A week with Cytron</Eyebrow>
           <Heading>The same week, <Accent>without the admin</Accent>.</Heading>
@@ -169,7 +169,7 @@ export default function UseCasesPage() {
         </div>
       </section>
 
-      <section className="bg-white pt-16">
+      <section className="bg-transparent pt-16">
         <div className="mx-auto max-w-6xl px-5">
           <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Office tasks</p>
           <div className="flex flex-wrap gap-2.5">

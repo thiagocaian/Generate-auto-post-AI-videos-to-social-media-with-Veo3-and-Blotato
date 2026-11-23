@@ -63,12 +63,12 @@ export default function Home() {
     reduced ? {} : { initial: { opacity: 0, y: 8 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.4 }, transition: { delay: i * 0.05, duration: 0.35 } };
 
   return (
-    <div className="bg-white text-slate-900">
+    <div className="text-slate-900">
       <LegacyHashRedirect />
       <MarketingHero />
       <WeekMetrics />
 
-      <section className="border-b border-[#e5e7eb] bg-white py-6">
+      <section className="bg-transparent py-6">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-2 px-5 text-sm text-slate-600">
           <span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Works with</span>
           {TOOLS.map((t) => <span key={t}>{t}</span>)}
@@ -81,7 +81,7 @@ export default function Home() {
       <Walkthrough />
 
       {/* Services summary */}
-      <section className="bg-white py-20 sm:py-24">
+      <section className="cy-shell py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
@@ -105,7 +105,7 @@ export default function Home() {
       </section>
 
       {/* How it works teaser */}
-      <section className="bg-[#f7f8fa] py-20 sm:py-24">
+      <section className="bg-transparent py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
@@ -145,7 +145,7 @@ export default function Home() {
       </section>
 
       {/* Use cases teaser */}
-      <section className="bg-white py-20 sm:py-24">
+      <section className="cy-shell py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
@@ -167,7 +167,7 @@ export default function Home() {
       </section>
 
       {/* Pricing teaser */}
-      <section className="border-y border-[#e5e7eb] bg-[#f7f8fa] py-14">
+      <section className="bg-transparent py-14">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 md:flex-row md:items-center md:justify-between">
           <div>
             <Eyebrow>Pricing</Eyebrow>

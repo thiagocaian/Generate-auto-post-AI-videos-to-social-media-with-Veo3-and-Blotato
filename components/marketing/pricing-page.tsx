@@ -79,7 +79,7 @@ const FAQ = [
 
 export default function PricingPage() {
   return (
-    <div className="bg-white">
+    <div>
       <PageIntro
         eyebrow="Pricing"
         title={<>Office tasks. <Accent>Pay for what works</Accent>.</>}
@@ -87,7 +87,7 @@ export default function PricingPage() {
         actions={<><PrimaryLink href="/contact">Free Automation Assessment</PrimaryLink><SecondaryLink href="#faq">Read the FAQ</SecondaryLink></>}
       />
 
-      <section className="bg-white py-16 sm:py-20">
+      <section className="cy-shell py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-5">
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             {PLANS.map((p) => (
@@ -123,7 +123,7 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section id="faq" className="scroll-mt-20 bg-[#f7f8fa] py-20 sm:py-24">
+      <section id="faq" className="scroll-mt-20 bg-transparent py-20 sm:py-24">
         <div className="mx-auto max-w-3xl px-5">
           <Eyebrow>FAQ</Eyebrow>
           <Heading>Questions we hear a lot.</Heading>

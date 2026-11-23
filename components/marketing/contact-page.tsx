@@ -15,7 +15,7 @@ const GET = ["A map of where your team's hours go", "The top 3 tasks worth autom
 
 export default function ContactPage() {
   return (
-    <div className="bg-white">
+    <div>
       <section id="audit" className="border-b border-[#e5e7eb] bg-gradient-to-b from-white to-[#f3f4f7]">
         <div className="mx-auto grid max-w-6xl gap-12 px-5 pb-20 pt-14 sm:pt-20 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div>

@@ -43,7 +43,7 @@ export default function ProblemsSolved() {
     reduced ? {} : { initial: { opacity: 0, y: 8 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.35 }, transition: { delay: i * 0.05, duration: 0.35 } };
 
   return (
-    <section id="problems-solved" className="bg-[#f7f8fa] py-20 sm:py-24">
+    <section id="problems-solved" className="bg-transparent py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5">
         <Eyebrow>Problems solved</Eyebrow>
         <Heading>Before and after, <Accent>without the busywork</Accent>.</Heading>

@@ -70,7 +70,7 @@ export default function ServicesBento() {
   const inView = useInView(gridRef, { once: true, amount: 0.12 });
 
   return (
-    <section id="services" className="bg-white">
+    <section id="services" className="cy-shell">
       <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
         <Eyebrow>What we automate</Eyebrow>
         <Heading>The work nobody hired you to do.</Heading>
