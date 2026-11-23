@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import HowPage from "@/components/marketing/how-page";
+import { pageMetadata } from "@/lib/page-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/how-it-works",
   title: "How it works — assess, design, build, run | CYTRON",
   description: "Cytron specialises in automating repetitive office tasks. Assess, design, build, run: from a free assessment to automations that run safely, read-only first.",
-  alternates: { canonical: "/how-it-works" },
-};
+});
 
 export default function Page() {
   return <HowPage />;
