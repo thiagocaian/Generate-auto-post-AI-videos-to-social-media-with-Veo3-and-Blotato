@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
+import { LiquidGlass } from "@/components/marketing/glass";
 import { Accent, Eyebrow } from "@/components/site";
 
 const STATS = [
@@ -62,16 +63,20 @@ export default function StatsSection() {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={inView ? { opacity: 1, y: 0 } : undefined}
             transition={{ delay: reduced ? 0 : i * 0.08, duration: 0.35, ease: "easeOut" }}
-            className="flex flex-col rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm"
+            className="h-full"
           >
-            <p className="text-4xl font-semibold tracking-tight text-slate-900">
-              <CountUp target={s.target} prefix={s.prefix} suffix={s.suffix} start={inView} reduced={reduced} />
-            </p>
-            <p className="mt-3 flex-1 text-[15px] leading-relaxed text-slate-700">{s.v}</p>
-            <p className="mt-5 text-xs font-semibold text-slate-800">→ {s.link}</p>
-            <a href={s.url} target="_blank" rel="noopener noreferrer" className="mt-1 text-xs font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline">
-              Source: {s.src}
-            </a>
+            <LiquidGlass reduced={reduced} lite fill panelClassName="p-6" sheenDelay={`${i * 0.9 + 0.7}s`}>
+              <div className="flex h-full flex-col">
+                <p className="text-4xl font-semibold tracking-tight text-slate-900">
+                  <CountUp target={s.target} prefix={s.prefix} suffix={s.suffix} start={inView} reduced={reduced} />
+                </p>
+                <p className="mt-3 flex-1 text-[15px] leading-relaxed text-slate-700">{s.v}</p>
+                <p className="mt-5 text-xs font-semibold text-slate-800">→ {s.link}</p>
+                <a href={s.url} target="_blank" rel="noopener noreferrer" className="mt-1 text-xs font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline">
+                  Source: {s.src}
+                </a>
+              </div>
+            </LiquidGlass>
           </motion.div>
         ))}
       </div>

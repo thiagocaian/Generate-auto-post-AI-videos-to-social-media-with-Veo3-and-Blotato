@@ -50,6 +50,8 @@ export function LiquidGlass({
   tall = false,
   maxTilt = 3,
   sheenDelay,
+  lite = false,
+  fill = false,
   ...rest
 }: {
   children: React.ReactNode;
@@ -59,7 +61,16 @@ export function LiquidGlass({
   tall?: boolean;
   maxTilt?: number;
   sheenDelay?: string;
+  /**
+   * Cheap variant for cards that repeat down a page: no backdrop-filter and no
+   * filter blur (the colour shapes are soft radial gradients), and the drift and
+   * sheen pause while the card is off screen. Same look, same pointer reflection.
+   */
+  lite?: boolean;
+  /** Stretch the glass to the height of its parent (equal-height grid cards). */
+  fill?: boolean;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, "className" | "children">) {
+  const stageRef = useRef<HTMLDivElement>(null);
   const tiltRef = useRef<HTMLDivElement>(null);
   const frame = useRef(0);
   const last = useRef<{ x: number; y: number } | null>(null);
@@ -69,6 +80,17 @@ export function LiquidGlass({
     enabled.current = !reduced && canHoverFine();
     return () => cancelAnimationFrame(frame.current);
   }, [reduced]);
+
+  // Lite cards: only animate while on screen.
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!lite || !el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => {
+      el.dataset.inview = e.isIntersecting ? "true" : "false";
+    }, { rootMargin: "120px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [lite]);
 
   const apply = useCallback(() => {
     frame.current = 0;
@@ -100,7 +122,15 @@ export function LiquidGlass({
   };
 
   return (
-    <div className={`lg-stage ${className}`} onPointerMove={onPointerMove} onPointerLeave={onPointerLeave} {...rest}>
+    <div
+      ref={stageRef}
+      className={`lg-stage ${className}`}
+      data-lite={lite || undefined}
+      data-fill={fill || undefined}
+      onPointerMove={onPointerMove}
+      onPointerLeave={onPointerLeave}
+      {...rest}
+    >
       <div ref={tiltRef} className="lg-tilt" data-hover="false">
         <div className="lg-backdrop" data-tall={tall || undefined} aria-hidden>
           <span className="lg-blob lg-blob-1" />

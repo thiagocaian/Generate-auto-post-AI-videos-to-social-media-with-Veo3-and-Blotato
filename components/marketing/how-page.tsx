@@ -1,11 +1,13 @@
 "use client";
 
 import React from "react";
+import { useReducedMotion } from "framer-motion";
 import { Eye, Lock, MessageSquare, RotateCcw, ShieldCheck, Sparkles } from "lucide-react";
 import { Accent, Eyebrow, Heading } from "@/components/site";
 import ScrollSteps, { type ScrollStep } from "@/components/marketing/scroll-steps";
 import { BuildFlow, ProcessMap, RulesCard, RunStatus } from "@/components/marketing/ui-fragments-more";
 import { CtaBand, PageIntro, PrimaryLink, SecondaryLink } from "@/components/marketing/page-kit";
+import { LiquidGlass } from "@/components/marketing/glass";
 
 const STEPS: ScrollStep[] = [
   { id: "audit", kicker: "Week 1", label: "Assess", detail: "We sit with your team, in person on the Coast or online, and map the tasks that eat the most hours. You get the top three worth automating first.", card: <ProcessMap /> },
@@ -31,6 +33,7 @@ const PRINCIPLES = [
 ];
 
 export default function HowPage() {
+  const reduced = useReducedMotion() === true;
   return (
     <div className="bg-white">
       <PageIntro
@@ -60,18 +63,18 @@ export default function HowPage() {
             <p className="mt-4 text-[15px] leading-relaxed text-slate-600">You choose when each area is checked. If nothing is flagged, everything in that area passed. Example schedule below.</p>
           </div>
           <ol className="relative space-y-3 before:absolute before:bottom-4 before:left-[15px] before:top-4 before:w-px before:bg-[#e5e7eb]">
-            {CARE_SCHEDULE.map((c) => (
+            {CARE_SCHEDULE.map((c, i) => (
               <li key={c.area} className="relative flex gap-4">
                 <span className="relative z-10 mt-5 flex h-[31px] w-[31px] shrink-0 items-center justify-center rounded-full border border-[#e5e7eb] bg-white">
                   <span className="h-2 w-2 rounded-full bg-[#5b5cf6]" />
                 </span>
-                <div className="flex-1 rounded-xl border border-[#e5e7eb] bg-white p-5 shadow-sm">
+                <LiquidGlass reduced={reduced} lite className="flex-1" panelClassName="p-5" sheenDelay={`${i * 0.8 + 0.6}s`}>
                   <div className="flex flex-wrap items-baseline gap-x-3">
                     <span className="text-sm font-semibold text-slate-600">{c.time}</span>
                     <span className="font-semibold text-slate-900">{c.area}</span>
                   </div>
                   <p className="mt-2 text-[14.5px] leading-relaxed text-slate-600">{c.check}</p>
-                </div>
+                </LiquidGlass>
               </li>
             ))}
           </ol>
