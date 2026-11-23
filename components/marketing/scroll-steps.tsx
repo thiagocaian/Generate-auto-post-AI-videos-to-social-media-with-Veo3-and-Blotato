@@ -3,7 +3,6 @@
 import React, { useRef, useState } from "react";
 import { AnimatePresence, motion, useInView, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Check } from "lucide-react";
-import { LiquidGlass } from "@/components/marketing/glass";
 
 /** Generic sticky "advances as you scroll" section (desktop), stacked cards (mobile), static list (reduced motion). */
 
@@ -45,14 +44,11 @@ function StepList({ steps, active, onSelect, clickable }: { steps: ScrollStep[];
 }
 
 function StepCard({ step }: { step: ScrollStep }) {
-  const reduced = useReducedMotion() === true;
   return (
-    <LiquidGlass reduced={reduced} lite fill maxTilt={2} panelClassName="p-6 sm:p-7">
-      <div className="flex h-full min-h-[22rem] flex-col">
-        <p className="mb-5 text-sm font-semibold text-slate-800">{step.label}</p>
-        <div className="flex flex-1 flex-col justify-center">{step.card}</div>
-      </div>
-    </LiquidGlass>
+    <div className="flex h-full min-h-[22rem] flex-col rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm sm:p-7">
+      <p className="mb-5 text-sm font-semibold text-slate-800">{step.label}</p>
+      <div className="flex flex-1 flex-col justify-center">{step.card}</div>
+    </div>
   );
 }
 

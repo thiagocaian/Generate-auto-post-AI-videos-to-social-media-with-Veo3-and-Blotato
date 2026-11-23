@@ -7,7 +7,6 @@ import { Accent, Eyebrow, Heading } from "@/components/site";
 import { BookingCalendar, InvoicePaid, ReminderCard, SmsThread } from "@/components/marketing/ui-fragments";
 import { HeldForReview, LeadCaptured } from "@/components/marketing/ui-fragments-more";
 import { CtaBand, PageIntro, PrimaryLink, SecondaryLink } from "@/components/marketing/page-kit";
-import { LiquidGlass } from "@/components/marketing/glass";
 
 const SERVICES = [
   {
@@ -102,23 +101,19 @@ export default function ServicesPage() {
             key={s.id}
             id={s.id}
             {...rise}
-            className="scroll-mt-24"
+            className="grid scroll-mt-24 items-center gap-8 rounded-2xl border border-[#e5e7eb] bg-white p-6 shadow-sm sm:p-8 lg:grid-cols-2 lg:gap-12 lg:p-10"
           >
-            <LiquidGlass reduced={reduced} lite maxTilt={2} panelClassName="p-6 sm:p-8 lg:p-10" sheenDelay={`${(i % 3) * 1.4 + 0.6}s`}>
-              <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
-                <div className={i % 2 ? "lg:order-2" : ""}>
-                  <p className="text-sm font-semibold text-[#4f46e5]">{s.k}</p>
-                  <h2 className="mt-2 text-[24px] font-semibold leading-snug tracking-tight text-slate-900 sm:text-[30px]">{s.t}</h2>
-                  <p className="mt-3 text-[16px] leading-relaxed text-slate-600">{s.d}</p>
-                  <ul className="mt-6 space-y-2.5 text-[15px] text-slate-700">
-                    {s.points.map((p) => <li key={p} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-700" />{p}</li>)}
-                  </ul>
-                </div>
-                <div className={`rounded-xl border border-white/70 bg-white/45 p-5 sm:p-7 ${i % 2 ? "lg:order-1" : ""}`}>
-                  <div className="mx-auto max-w-sm rounded-xl border border-[#e5e7eb] bg-white p-5 shadow-sm">{s.ui}</div>
-                </div>
-              </div>
-            </LiquidGlass>
+            <div className={i % 2 ? "lg:order-2" : ""}>
+              <p className="text-sm font-semibold text-[#5b5cf6]">{s.k}</p>
+              <h2 className="mt-2 text-[24px] font-semibold leading-snug tracking-tight text-slate-900 sm:text-[30px]">{s.t}</h2>
+              <p className="mt-3 text-[16px] leading-relaxed text-slate-600">{s.d}</p>
+              <ul className="mt-6 space-y-2.5 text-[15px] text-slate-700">
+                {s.points.map((p) => <li key={p} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-700" />{p}</li>)}
+              </ul>
+            </div>
+            <div className={`rounded-xl border border-[#e5e7eb] bg-[#f7f8fa] p-5 sm:p-7 ${i % 2 ? "lg:order-1" : ""}`}>
+              <div className="mx-auto max-w-sm rounded-xl border border-[#e5e7eb] bg-white p-5 shadow-sm">{s.ui}</div>
+            </div>
           </motion.section>
         ))}
       </div>
@@ -132,14 +127,14 @@ export default function ServicesPage() {
           </div>
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {AGENT_ROLES.map(({ icon: Icon, t, d }, i) => (
-              <LiquidGlass key={t} reduced={reduced} lite fill panelClassName="p-6" sheenDelay={`${i * 0.9 + 0.8}s`}>
+              <div key={t} className="rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm">
                 <div className="mb-4 flex items-center justify-between">
                   <div className="flex h-10 w-10 items-center justify-center rounded-md border border-[#e5e7eb] text-slate-700"><Icon size={18} /></div>
                   <span className="text-xs font-semibold text-slate-600">0{i + 1}</span>
                 </div>
                 <h3 className="mb-2 text-lg font-semibold text-slate-900">{t}</h3>
                 <p className="text-[15px] leading-relaxed text-slate-600">{d}</p>
-              </LiquidGlass>
+              </div>
             ))}
           </div>
         </div>

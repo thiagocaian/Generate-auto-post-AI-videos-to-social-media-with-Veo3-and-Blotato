@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { LiquidGlass } from "@/components/marketing/glass";
 import { track } from "@vercel/analytics";
 import { ArrowRight, Check } from "lucide-react";
 import { AUDIT_CONSENT_TEXT } from "@/lib/inbound/consent";
@@ -87,7 +86,7 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
   const trans = reduced ? { duration: 0 } : { duration: 0.28, ease: "easeOut" as const };
 
   return (
-    <LiquidGlass reduced={reduced} maxTilt={0} panelClassName="p-6 sm:p-8" sheenDelay="2s">
+    <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm sm:p-8">
       <AnimatePresence mode="wait">
         {status === "success" ? (
           <motion.div key="done" role="status" aria-live="polite" initial={reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }} className="py-10 text-center">
@@ -149,7 +148,7 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
               />
               <span>
                 {AUDIT_CONSENT_TEXT}{" "}
-                <a href="/privacy" className="font-semibold text-[#4f46e5] underline">Privacy policy</a>
+                <a href="/privacy" className="font-semibold text-[#5b5cf6] underline">Privacy policy</a>
               </span>
             </label>
             {error && <p role="alert" aria-live="polite" className="text-sm font-medium text-red-700">{error}</p>}
@@ -160,6 +159,6 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
           </motion.form>
         )}
       </AnimatePresence>
-    </LiquidGlass>
+    </div>
   );
 }
