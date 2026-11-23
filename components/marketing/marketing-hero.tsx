@@ -6,6 +6,7 @@ import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "fr
 import { Play } from "lucide-react";
 import HeroFlow, { HERO_FLOW_SUMMARY } from "@/components/marketing/hero-flow";
 import HeroConstellation from "@/components/marketing/hero-constellation";
+import SoftShapes from "@/components/marketing/soft-shapes";
 import { useSiteNavigate } from "@/components/page-transition";
 
 export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
@@ -34,8 +35,10 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative overflow-hidden bg-gradient-to-b from-white to-[#f3f4f7]"
+      className="cy-shell cy-aurora relative isolate overflow-hidden"
     >
+      <SoftShapes className="-right-24 -top-28 hidden w-[420px] md:block" />
+      <SoftShapes className="-bottom-24 -left-28 w-[260px] opacity-70" />
       <HeroConstellation reduced={reduced} />
       <div className="relative z-10 mx-auto flex max-w-6xl flex-col xl:min-h-[calc(90vh-4rem)] xl:flex-row xl:items-center">
         <div className="relative z-10 w-full px-5 pb-8 pt-14 md:pb-4 xl:w-[47%] xl:shrink-0 xl:py-16">
@@ -89,7 +92,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             />
             <button
               type="submit"
-              className="shrink-0 rounded-full bg-[#5b5cf6] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#4f46e5] sm:px-5 sm:text-sm"
+              className="shrink-0 rounded-full bg-[#4f46e5] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#4338ca] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4f46e5] sm:px-5 sm:text-sm"
             >
               Free Assessment
             </button>
