@@ -1,6 +1,26 @@
 import { Suspense } from 'react'
+import type { Metadata } from 'next'
 import { publicSignupEnabled } from '@/lib/auth-flags'
 import { LoginContent } from './login-content'
+
+const title = 'Client login — CYTRON'
+const description = 'Sign in to your workspace.'
+
+export const metadata: Metadata = {
+  title,
+  description,
+  alternates: { canonical: 'https://cytronai.com/login' },
+  robots: { index: false, follow: false },
+  openGraph: {
+    title,
+    description,
+    url: 'https://cytronai.com/login',
+  },
+  twitter: {
+    title,
+    description,
+  },
+}
 
 export default function LoginPage() {
   return (
