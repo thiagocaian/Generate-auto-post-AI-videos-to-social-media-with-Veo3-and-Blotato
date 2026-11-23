@@ -1,8 +1,23 @@
+const STATIC_IMAGE_CACHE = 'public, max-age=2592000, stale-while-revalidate=86400'
+// Public pages have no camera or microphone. Logged-in routes that capture
+// video, audio, or a barcode override this after the catch-all header.
+const PUBLIC_PERMISSIONS = 'camera=(), microphone=(), geolocation=()'
+const CAMERA_AND_MIC = 'camera=(self), microphone=(self), geolocation=()'
+const CAMERA_ONLY = 'camera=(self), microphone=(), geolocation=()'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   generateBuildId: () => 'build-' + Date.now(),
   // Retired public pages: send visitors to the home page
   redirects: async () => [
+    // 308 when the request reaches Next. A Vercel domain redirect can 307 www
+    // before this runs; that setting lives in the dashboard, not this repo.
+    {
+      source: '/:path*',
+      has: [{ type: 'host', value: 'www.cytronai.com' }],
+      destination: 'https://cytronai.com/:path*',
+      permanent: true,
+    },
     { source: '/landing', destination: '/', permanent: true },
     { source: '/solutions/:path*', destination: '/', permanent: true },
     // Short links into the multi-page site (temporary while the structure settles)
@@ -35,6 +50,19 @@ const nextConfig = {
           ],
         }]
       : []),
+    // Unfingerprinted marketing images. immutable is reserved for hashed /_next/static files.
+    {
+      source: '/icon.svg',
+      headers: [{ key: 'Cache-Control', value: STATIC_IMAGE_CACHE }],
+    },
+    {
+      source: '/marketing/integrations/:file(.*\\.svg)',
+      headers: [{ key: 'Cache-Control', value: STATIC_IMAGE_CACHE }],
+    },
+    {
+      source: '/backoffice/video/:file(.*-poster\\.webp)',
+      headers: [{ key: 'Cache-Control', value: STATIC_IMAGE_CACHE }],
+    },
     // API routes — no cache
     {
       source: '/api/:path*',
@@ -42,7 +70,8 @@ const nextConfig = {
         { key: 'Cache-Control', value: 'no-store' },
       ],
     },
-    // Security headers on all pages
+    // Security headers on all pages. Permissions-Policy is closed here;
+    // the device routes below overwrite it because later matches win.
     {
       source: '/(.*)',
       headers: [
@@ -50,8 +79,7 @@ const nextConfig = {
         { key: 'X-Frame-Options', value: 'DENY' },
         { key: 'X-XSS-Protection', value: '1; mode=block' },
         { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-        // Allow camera/mic for self (scanner, video recording); block geolocation
-        { key: 'Permissions-Policy', value: 'camera=(self), microphone=(self), geolocation=()' },
+        { key: 'Permissions-Policy', value: PUBLIC_PERMISSIONS },
         {
           key: 'Strict-Transport-Security',
           value: 'max-age=63072000; includeSubDomains; preload',
@@ -60,12 +88,13 @@ const nextConfig = {
           key: 'Content-Security-Policy',
           value: [
             "default-src 'self'",
-            // Next.js inline scripts + Vercel analytics
+            // Next.js inline bootstrap scripts have no nonce hook that stays static.
+            // 'unsafe-inline' stays until that can be done without dynamic rendering.
             "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
             // Supabase, Stripe, external APIs
             "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://backend.blotato.com https://app.ayrshare.com https://api.outstand.so https://*.n8n.cloud",
             "style-src 'self' 'unsafe-inline'",
-            "img-src 'self' data: blob: https: http:",
+            "img-src 'self' data: blob: https:",
             "media-src 'self' blob: https:",
             "font-src 'self' data:",
             "frame-src https://js.stripe.com",
@@ -76,6 +105,19 @@ const nextConfig = {
         },
       ],
     },
+    // Vercel adds Access-Control-Allow-Origin: * on prerendered HTML and public
+    // files unless a route header replaces it. No API route is a public
+    // cross-origin API, so those responses are left without a CORS header.
+    {
+      source: '/((?!api(?:/|$)).*)',
+      headers: [
+        { key: 'Access-Control-Allow-Origin', value: 'https://cytronai.com' },
+      ],
+    },
+    { source: '/marketing', headers: [{ key: 'Permissions-Policy', value: CAMERA_AND_MIC }] },
+    { source: '/operator', headers: [{ key: 'Permissions-Policy', value: CAMERA_ONLY }] },
+    { source: '/warehouse/scan', headers: [{ key: 'Permissions-Policy', value: CAMERA_ONLY }] },
+    { source: '/warehouse/pick', headers: [{ key: 'Permissions-Policy', value: CAMERA_ONLY }] },
   ],
 }
 

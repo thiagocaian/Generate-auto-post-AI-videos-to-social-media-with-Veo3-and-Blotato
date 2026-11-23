@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { pageMetadata } from "@/lib/page-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: "/terms",
   title: "Terms of Service — CYTRON",
   description:
-    "Terms of Service for CYTRON, the AI-powered field service management platform by Cytron Pty Ltd.",
-};
+    "Terms of Service for CYTRON. Automation of repetitive office tasks, a Free Automation Assessment, and monthly plans in AUD, ex GST where applicable.",
+});
 
 export default function TermsOfServicePage() {
   return (
@@ -43,351 +45,398 @@ export default function TermsOfServicePage() {
           Terms of Service
         </h1>
         <p style={{ color: "#6b7280", fontSize: 14, marginBottom: 48 }}>
-          Last updated: 15 April 2026
+          Last updated: 24 November 2026
         </p>
 
-        {/* ───────────────────────────────────────────── */}
+        {/* TODO(Thiago/legal): Confirm Cytron Pty Ltd is the contracting entity and whether it is registered in Queensland. Leave the ABN wording exactly as "ABN pending". Do not insert an ABN. The previous "company registered in Queensland" sentence is not repeated while the ABN is pending. */}
         <Section title="1. Introduction">
           <p>
-            Welcome to CYTRON (&quot;Platform&quot;, &quot;Service&quot;). These
-            Terms of Service (&quot;Terms&quot;) govern your access to and use of
-            the CYTRON platform, website located at{" "}
+            These Terms of Service (&quot;Terms&quot;) govern your use of the
+            CYTRON website at{" "}
             <a href="https://cytronai.com" style={linkStyle}>
               cytronai.com
-            </a>
-            , and any related services provided by Cytron Pty Ltd (ABN pending)
-            (&quot;Company&quot;, &quot;we&quot;, &quot;us&quot;, &quot;our&quot;),
-            a company registered in Queensland, Australia.
+            </a>{" "}
+            and the automation service described on that website
+            (&quot;Service&quot;), provided by Cytron Pty Ltd (ABN pending)
+            (&quot;Company&quot;, &quot;we&quot;, &quot;us&quot;,
+            &quot;our&quot;), of Gold Coast, Queensland, Australia.
           </p>
           <p>
-            By creating an account or using the Platform, you agree to be bound by
-            these Terms. If you do not agree with any part of these Terms, you must
-            not use the Service.
+            By requesting a Free Automation Assessment, engaging a plan, or
+            otherwise using the Service, you agree to these Terms. If you do
+            not agree, do not use the Service.
           </p>
         </Section>
 
         <Section title="2. Eligibility">
           <p>
-            You must be at least 18 years of age and have the legal capacity to
-            enter into a binding agreement to use CYTRON. If you are using the
-            Service on behalf of a business entity, you represent that you have the
-            authority to bind that entity to these Terms.
+            You must be at least 18 years of age and able to enter a binding
+            contract. If you use the Service for a business, you confirm that
+            you have authority to bind that business to these Terms.
           </p>
         </Section>
 
-        <Section title="3. Account Registration">
+        <Section title="3. Engaging Cytron">
           <p>
-            To access the Platform, you must create an account by providing
-            accurate, current, and complete information. You are responsible for
-            maintaining the confidentiality of your login credentials and for all
-            activities that occur under your account.
+            You do not need an account on the website to request an assessment.
+            You must give accurate contact details. If we later give you
+            credentials for a client area, you must keep them confidential and
+            you are responsible for activity under those credentials.
           </p>
           <p>
-            You agree to notify us immediately at{" "}
+            Tell us straight away at{" "}
             <a href="mailto:labofantasma@gmail.com" style={linkStyle}>
               labofantasma@gmail.com
             </a>{" "}
-            if you suspect any unauthorised use of your account.
+            if you believe someone else has used those credentials.
           </p>
+          {/* TODO(Thiago/legal): The public footer still links to a client login for an older application. These Terms describe the current marketing offer only. Decide whether that login stays, and if it stays, give it its own terms. This PR does not change the footer. */}
         </Section>
 
-        <Section title="4. Description of Services">
+        <Section title="4. The Service">
           <p>
-            CYTRON is an AI-powered field service management platform designed for
-            trade professionals including electricians, plumbers, flooring
-            installers, and other tradespeople. The Platform provides:
+            Cytron automates repetitive office tasks for trade, wholesale,
+            e-commerce and warehouse or fulfilment operations. The work is
+            agreed with you. It can include:
           </p>
           <ul style={listStyle}>
-            <li>Job management and scheduling</li>
-            <li>Quoting and invoicing tools</li>
-            <li>AI-generated marketing video creation</li>
-            <li>Social media content posting and management</li>
-            <li>Materials price comparison</li>
-            <li>Business analytics and reporting</li>
+            <li>Replies to missed calls and messages, in your tone</li>
+            <li>Bookings into the calendar or job system you already use</li>
+            <li>Reminders, rescheduling and waitlist follow-up</li>
+            <li>Invoices and payment links, synced to your accounts</li>
+            <li>Lead capture into your CRM, and follow-up tasks</li>
+            <li>
+              Human review, so anything outside the agreed rules is held for a
+              person
+            </li>
+            <li>
+              Related office tasks we agree to automate, such as stock checks,
+              order intake, dispatch paperwork and sales follow-up
+            </li>
           </ul>
           <p>
-            We reserve the right to modify, suspend, or discontinue any feature of
-            the Service at any time, with or without notice.
+            We connect the automation to tools you already use. The public site
+            names Xero, MYOB, Shopify, HubSpot, Google Workspace, Microsoft 365
+            and shipping tools. You do not have to replace those systems.
+          </p>
+          <p>A typical engagement follows the process on the website:</p>
+          <ul style={listStyle}>
+            <li>
+              <strong>Assess.</strong> We map where the hours go. You get the
+              top tasks worth automating first.
+            </li>
+            <li>
+              <strong>Design.</strong> Rules are written the way your team
+              decides, and you approve the rules and the messages.
+            </li>
+            <li>
+              <strong>Build.</strong> The workflow is connected to your tools,
+              then run as a read-only shadow test before it acts.
+            </li>
+            <li>
+              <strong>Run.</strong> It is switched on one step at a time,
+              monitored, and tuned with you.
+            </li>
+          </ul>
+          <p>
+            A first workflow usually goes from assessment to shadow test in a
+            few weeks, depending on access to your systems. That timing is a
+            guide, not a guaranteed date. We may change, pause or withdraw a
+            feature of the Service.
           </p>
         </Section>
 
-        <Section title="5. Free Trial">
+        <Section title="5. Free Automation Assessment">
           <p>
-            CYTRON offers a free trial period of thirty (30) days from the date of
-            account creation. During the trial period, you will have access to the
-            Platform features as described in the applicable plan.
+            The assessment is free and has no obligation. From the details you
+            send, and a conversation with you in person on the Gold Coast or
+            online, we aim to give you:
           </p>
+          <ul style={listStyle}>
+            <li>A map of where your team&apos;s hours go</li>
+            <li>The top three tasks worth automating first</li>
+            <li>A rough estimate of time and cost saved</li>
+            <li>A clear next step</li>
+          </ul>
           <p>
-            At the end of the trial period, your account will require an active
-            paid subscription to continue using the Service. If you do not
-            subscribe, your access to paid features will be suspended. Data
-            associated with your account will be retained for a period of ninety
-            (90) days following the end of the trial, after which it may be
-            deleted.
+            The estimate is rough. It is not a quote, a savings guarantee or
+            professional advice. Sending the form does not start a paid plan
+            and does not take a payment.
           </p>
         </Section>
 
-        <Section title="6. Subscriptions and Billing">
+        <Section title="6. Plans and Fees">
           <p>
-            Paid subscriptions are billed on a recurring basis (monthly or
-            annually) through our payment processor, Stripe. By subscribing, you
-            authorise us to charge your designated payment method at the start of
-            each billing cycle.
+            Paid work starts only when we agree a plan with you. Prices are in
+            Australian dollars (AUD) and are ex GST where applicable. Where GST
+            applies, GST is added on top of the published price.
+          </p>
+          <p>
+            As at the date of these Terms, the Pricing page publishes:
           </p>
           <ul style={listStyle}>
             <li>
-              <strong>Pricing:</strong> All prices are listed in Australian Dollars
-              (AUD) unless otherwise stated and are inclusive of GST where
-              applicable.
+              <strong>Starter:</strong> $349 per month, setup $990. One
+              operational automation, with monitoring.
             </li>
             <li>
-              <strong>Renewals:</strong> Subscriptions renew automatically unless
-              cancelled before the end of the current billing period.
+              <strong>Growth:</strong> $649 per month, setup $1,490. Automation,
+              CRM, leads and follow-up.
             </li>
             <li>
-              <strong>Cancellation:</strong> You may cancel your subscription at
-              any time through your account settings. Cancellation takes effect at
-              the end of the current billing period. No partial refunds are
-              provided for unused portions of a billing period.
+              <strong>Business:</strong> $999 per month, setup $2,490. Multiple
+              processes, integrations and monitoring.
             </li>
             <li>
-              <strong>Price changes:</strong> We may adjust subscription pricing
-              with at least thirty (30) days&apos; notice. Continued use of the
-              Service after a price change constitutes acceptance of the new
-              pricing.
+              <strong>Enterprise:</strong> $1,499 or more per month, with a
+              custom setup.
             </li>
           </ul>
+          <p>
+            API usage, phone and SMS are subject to included allowances or
+            additional charges. The Pricing page at{" "}
+            <Link href="/pricing" style={linkStyle}>
+              cytronai.com/pricing
+            </Link>{" "}
+            is the source of the published prices. If that page is updated, the
+            updated page applies to a new enquiry.
+          </p>
+          <p>
+            The Pricing page states that there is no lock-in, and that your
+            workflows, your data and your accounts stay yours.
+          </p>
+          <p>
+            To stop a paid plan, email{" "}
+            <a href="mailto:labofantasma@gmail.com" style={linkStyle}>
+              labofantasma@gmail.com
+            </a>
+            .
+          </p>
+          {/* TODO(Thiago/legal): Confirm how the $349+ plans and setup fees are invoiced and collected. Stripe in this repo charges older low-priced plans and is not linked from the Pricing page, so these Terms do not say Stripe collects these fees. */}
+          {/* TODO(Thiago/legal): Confirm the cancellation notice period, whether a setup fee or a current month is refundable, and what "no lock-in" means in the contract. Do not add those rules until confirmed. */}
+          {/* TODO(Thiago/legal): The Pricing page does not state the included allowances for API usage, phone and SMS. Do not invent the amounts. */}
+          {/* TODO(Thiago/legal): Confirm whether every supply is subject to GST or only some. The visible wording follows the Pricing page: ex GST where applicable, with GST added on top where it applies. */}
         </Section>
 
         <Section title="7. Acceptable Use">
           <p>You agree not to:</p>
           <ul style={listStyle}>
+            <li>Use the Service to break the law</li>
             <li>
-              Use the Service for any unlawful purpose or in violation of
-              applicable laws
+              Try to access any part of the website, an automation, or our
+              systems without permission
+            </li>
+            <li>Interfere with the Service or with another client&apos;s work</li>
+            <li>Upload or send malicious code</li>
+            <li>
+              Use bots or scrapers on the website without our written consent
             </li>
             <li>
-              Attempt to gain unauthorised access to any part of the Platform or
-              its infrastructure
+              Resell or sublicense the Service without our written consent
             </li>
             <li>
-              Interfere with or disrupt the integrity or performance of the Service
-            </li>
-            <li>
-              Upload or transmit malicious code, viruses, or harmful data
-            </li>
-            <li>
-              Use automated means (bots, scrapers) to access the Service without
-              our written consent
-            </li>
-            <li>
-              Resell, sublicense, or redistribute the Service without authorisation
-            </li>
-            <li>
-              Use the AI features to generate misleading, defamatory, or illegal
-              content
+              Use an automation to send misleading, defamatory or unlawful
+              messages
             </li>
           </ul>
           <p>
-            We reserve the right to suspend or terminate accounts that violate
-            these terms without prior notice.
+            We may suspend the Service where we reasonably believe these rules
+            have been broken.
           </p>
         </Section>
 
-        <Section title="8. AI-Generated Content">
+        <Section title="8. Automation and AI">
           <p>
-            CYTRON uses artificial intelligence to generate marketing videos,
-            suggest content, and assist with various business tasks. You
-            acknowledge and agree that:
+            Rules you can check decide prices, dates and amounts. AI may draft
+            messages in your tone and help with judgment calls. You approve
+            messages before they are used with your customers. Anything outside
+            the rules, including an unclear request or a missing detail, is held
+            for a person, with the reason recorded. You can switch a step off
+            and hand it back to your team.
           </p>
+          <p>You acknowledge that:</p>
           <ul style={listStyle}>
             <li>
-              AI-generated content is provided on an &quot;as is&quot; basis and
-              may contain inaccuracies or errors
+              An automation and any AI draft are provided as an operational
+              aid. They can be wrong.
             </li>
             <li>
-              You are solely responsible for reviewing, editing, and approving all
-              AI-generated content before use or publication
+              You are responsible for the rules and the messages you approve,
+              and for what is sent to your customers after approval
             </li>
             <li>
-              We do not guarantee the accuracy, completeness, or suitability of
-              AI-generated output for any particular purpose
+              We do not guarantee that an automation will be accurate, complete
+              or fit for a purpose you have not agreed with us
             </li>
             <li>
-              AI-generated content should not be relied upon as professional,
-              legal, or financial advice
+              Output is not legal, financial, tax or other professional advice
             </li>
             <li>
-              You are responsible for ensuring that any AI-generated content
-              complies with applicable laws, industry regulations, and third-party
-              rights before publishing
+              The Google Gemini draft of an assessment request is an internal
+              note for Cytron staff. It is not sent to you as our advice.
             </li>
           </ul>
         </Section>
 
-        <Section title="9. Your Content and Data">
+        <Section title="9. Your Information">
           <p>
-            You retain ownership of all data, materials, and content that you
-            upload or input into the Platform (&quot;Your Content&quot;). By using
-            the Service, you grant us a limited, non-exclusive, worldwide licence
-            to process, store, and display Your Content solely for the purpose of
-            providing the Service to you.
-          </p>
-          <p>
-            We will not sell, share, or use Your Content for purposes unrelated to
-            delivering the Service, except as required by law or as described in
-            our{" "}
+            You keep ownership of the business information you provide and of
+            the accounts you hold with your own tools. You give us a limited,
+            non-exclusive licence to host, process and display that information
+            only so we can provide the Service to you, including the internal
+            assessment draft and the team notification described in our{" "}
             <Link href="/privacy" style={linkStyle}>
               Privacy Policy
             </Link>
             .
           </p>
+          <p>
+            We do not sell your information. We do not use it for a purpose
+            unrelated to the Service, except where the law requires it or the
+            Privacy Policy says otherwise.
+          </p>
         </Section>
 
         <Section title="10. Intellectual Property">
           <p>
-            All rights, title, and interest in and to the Platform, including
-            software, design, branding, logos, and documentation, are and remain
-            the exclusive property of Cytron Pty Ltd. These Terms do not grant you
-            any rights to our intellectual property except the limited right to use
-            the Service as permitted herein.
+            The website, our software, our designs, the CYTRON name and our
+            documentation remain the property of Cytron Pty Ltd. These Terms
+            give you a limited right to use the Service during an engagement.
+            They do not transfer our intellectual property to you.
           </p>
           <p>
-            You may not copy, modify, distribute, sell, or lease any part of the
-            Platform or its underlying technology without our prior written
-            consent.
+            You may not copy, modify, sell or lease the Service or its
+            underlying technology except as these Terms allow, or with our
+            prior written consent. Your own workflows, data and accounts stay
+            yours, as stated on the Pricing page.
           </p>
+          {/* TODO(Thiago/legal): Confirm who owns the automation rules and workflow configuration after an engagement ends. The site says "your workflows, your data, your accounts" and also that automations run on Cytron's servers. This draft does not transfer Cytron's software. */}
         </Section>
 
         <Section title="11. Third-Party Services">
           <p>
-            The Platform integrates with third-party services including, but not
-            limited to, Stripe (payments), Supabase (data infrastructure), OpenAI
-            (AI processing), Blotato (social media posting), and Vercel (hosting).
-            Your use of these third-party services is subject to their respective
-            terms and privacy policies.
+            The website uses Supabase to store an assessment request, Google
+            Gemini to draft an internal assessment of the enquiry, Telegram to
+            notify the Cytron team, and Vercel to host the site and measure
+            visits and performance. Your use of those providers is also subject
+            to their terms. What we send them is described in the{" "}
+            <Link href="/privacy" style={linkStyle}>
+              Privacy Policy
+            </Link>
+            .
           </p>
           <p>
-            We are not responsible for the availability, accuracy, or conduct of
-            any third-party service, and we disclaim all liability arising from
-            your use of third-party services accessed through the Platform.
+            An automation may connect to tools you already use. Those tools are
+            your accounts. We are not responsible for a third-party service
+            being unavailable, or for how that provider handles information
+            under your own agreement with them.
           </p>
         </Section>
 
-        <Section title="12. Service Availability">
+        <Section title="12. Availability">
           <p>
-            We strive to maintain high availability of the Platform but do not
-            guarantee uninterrupted or error-free operation. We may perform
-            scheduled maintenance or updates that temporarily affect access to the
-            Service. We are not liable for any downtime, data loss, or
-            interruption caused by factors beyond our reasonable control.
+            We work to keep the Service available. We do not guarantee that it
+            will be uninterrupted or error-free. We may need to maintain or
+            change it. We are not liable for downtime or loss caused by
+            something outside our reasonable control, including a failure of a
+            tool you asked us to connect.
           </p>
         </Section>
 
         <Section title="13. Limitation of Liability">
           <p>
             To the maximum extent permitted by law, Cytron Pty Ltd and its
-            directors, employees, and agents shall not be liable for any indirect,
-            incidental, special, consequential, or punitive damages, including but
-            not limited to loss of profits, revenue, data, or business
-            opportunities, arising out of or related to your use of the Service.
+            directors, employees and agents are not liable for indirect,
+            incidental, special, consequential or punitive loss, including loss
+            of profit, revenue, data or business opportunity, arising out of
+            the Service.
           </p>
           <p>
-            Our total aggregate liability for any claims arising under these Terms
-            shall not exceed the amount you paid to us in the twelve (12) months
-            preceding the event giving rise to the claim.
+            Our total aggregate liability for claims under these Terms is
+            limited to the amount you paid us in the twelve (12) months before
+            the event giving rise to the claim.
           </p>
           <p>
-            Nothing in these Terms excludes or limits liability that cannot be
-            excluded or limited under Australian Consumer Law.
+            Nothing in these Terms excludes or limits liability that the
+            Australian Consumer Law does not allow us to exclude or limit.
+          </p>
+          {/* TODO(Thiago/legal): Confirm the 12-month fees cap is still appropriate. An assessment is free, so the cap can be zero before any invoice is paid. Confirm this is acceptable under the Australian Consumer Law. */}
+        </Section>
+
+        <Section title="14. Indemnity">
+          <p>
+            You agree to indemnify and hold harmless Cytron Pty Ltd, its
+            officers, directors, employees and agents from and against any
+            claims, damages, losses, liabilities and expenses (including
+            reasonable legal fees) arising out of or related to your use of the
+            Service, your breach of these Terms, or your infringement of any
+            third-party rights.
           </p>
         </Section>
 
-        <Section title="14. Indemnification">
+        <Section title="15. Ending the Service">
           <p>
-            You agree to indemnify and hold harmless Cytron Pty Ltd, its officers,
-            directors, employees, and agents from and against any claims, damages,
-            losses, liabilities, and expenses (including reasonable legal fees)
-            arising out of or related to your use of the Service, your violation of
-            these Terms, or your violation of any third-party rights.
-          </p>
-        </Section>
-
-        <Section title="15. Termination">
-          <p>
-            We may suspend or terminate your account and access to the Service at
-            any time, with or without cause, and with or without notice. Grounds
-            for termination include, but are not limited to, breach of these Terms,
-            non-payment, fraudulent activity, or conduct that we reasonably believe
-            is harmful to other users or the Platform.
-          </p>
-          <p>
-            Upon termination, your right to use the Service ceases immediately. We
-            will make commercially reasonable efforts to allow you to export your
-            data for a period of thirty (30) days following termination, after
-            which your data may be permanently deleted.
-          </p>
-          <p>
-            You may terminate your account at any time by contacting us at{" "}
+            You may end an engagement by emailing{" "}
             <a href="mailto:labofantasma@gmail.com" style={linkStyle}>
               labofantasma@gmail.com
-            </a>{" "}
-            or through your account settings.
+            </a>
+            . We may suspend or stop the Service if fees that we have agreed
+            and invoiced are unpaid, if these Terms are broken, or if we
+            reasonably believe the use is unlawful or harmful.
           </p>
+          <p>
+            When an engagement ends, we will tell you what business information
+            of yours we still hold and how you can receive a copy, in line with
+            the Privacy Policy.
+          </p>
+          {/* TODO(Thiago/legal): Set the notice period and how long a client has to take a copy after the engagement ends. The previous 30-day export sentence was tied to account termination and is not restated. */}
         </Section>
 
-        <Section title="16. Modifications to Terms">
+        <Section title="16. Changes to These Terms">
           <p>
-            We reserve the right to update or modify these Terms at any time. We
-            will notify you of material changes by email or by posting a notice on
-            the Platform at least fourteen (14) days before the changes take
-            effect. Your continued use of the Service after the effective date
-            constitutes acceptance of the updated Terms.
+            We may update these Terms. We will give at least fourteen (14)
+            days&apos; notice of a material change by email or by a notice on
+            the website. Using the Service after the effective date means you
+            accept the updated Terms. A change to a price on the Pricing page
+            applies to a new enquiry, as section 6 describes.
           </p>
+          {/* TODO(Thiago/legal): Confirm the 14-day notice is still wanted. It is carried over from the previous terms. The Pricing page does not state a price-change notice period. */}
         </Section>
 
-        <Section title="17. Governing Law and Dispute Resolution">
+        <Section title="17. Governing Law">
           <p>
-            These Terms are governed by and construed in accordance with the laws
-            of Queensland, Australia. Any disputes arising out of or in connection
-            with these Terms shall be subject to the exclusive jurisdiction of the
-            courts of Queensland, Australia.
-          </p>
-          <p>
-            Before initiating any legal proceedings, you agree to attempt to
-            resolve any dispute with us through good-faith negotiation for a period
-            of at least thirty (30) days.
+            These Terms are governed by the laws of Queensland, Australia. The
+            courts of Queensland have exclusive jurisdiction. Before starting
+            proceedings, the parties will try to resolve the dispute by
+            good-faith discussion for at least thirty (30) days.
           </p>
         </Section>
 
         <Section title="18. Severability">
           <p>
-            If any provision of these Terms is found to be invalid, illegal, or
-            unenforceable by a court of competent jurisdiction, the remaining
-            provisions shall continue in full force and effect.
+            If a court finds any part of these Terms invalid or unenforceable,
+            the rest continues in force.
           </p>
         </Section>
 
         <Section title="19. Entire Agreement">
           <p>
-            These Terms, together with our{" "}
+            These Terms and the{" "}
             <Link href="/privacy" style={linkStyle}>
               Privacy Policy
-            </Link>
-            , constitute the entire agreement between you and Cytron Pty Ltd
-            regarding your use of the Service and supersede all prior agreements,
-            understandings, or representations.
+            </Link>{" "}
+            are the entire agreement between you and Cytron Pty Ltd about the
+            Service described on the website, and they replace earlier
+            discussions about that Service.
           </p>
+          {/* TODO(Thiago/legal): Confirm whether a separate proposal or statement of work is required before a paid plan, and which document wins if they differ. Do not add that document to the public terms until confirmed. */}
         </Section>
 
         <Section title="20. Contact Us">
-          <p>
-            If you have any questions about these Terms of Service, please contact
-            us:
-          </p>
+          <p>Questions about these Terms can be sent to:</p>
           <ul style={{ ...listStyle, listStyleType: "none", paddingLeft: 0 }}>
             <li>
-              <strong>Cytron Pty Ltd</strong>
+              <strong>Cytron Pty Ltd (ABN pending)</strong>
             </li>
             <li>Gold Coast, Queensland, Australia</li>
             <li>

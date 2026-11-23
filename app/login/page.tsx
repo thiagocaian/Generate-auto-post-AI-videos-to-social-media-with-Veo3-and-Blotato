@@ -1,6 +1,16 @@
 import { Suspense } from 'react'
+import type { Metadata } from 'next'
 import { publicSignupEnabled } from '@/lib/auth-flags'
+import { pageMetadata } from '@/lib/page-metadata'
 import { LoginContent } from './login-content'
+
+export const metadata: Metadata = pageMetadata({
+  path: '/login',
+  title: 'Client login — CYTRON',
+  description: 'Sign in to your workspace.',
+  noindex: true,
+  follow: false,
+})
 
 export default function LoginPage() {
   return (
