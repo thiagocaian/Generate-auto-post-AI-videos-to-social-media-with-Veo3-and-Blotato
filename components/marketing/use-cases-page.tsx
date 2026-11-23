@@ -7,6 +7,7 @@ import { Accent, Eyebrow, Heading } from "@/components/site";
 import StatsSection from "@/components/marketing/stats";
 import WeekTimeline from "@/components/marketing/week-timeline";
 import { CtaBand, PageIntro, PrimaryLink, SecondaryLink } from "@/components/marketing/page-kit";
+import { LiquidGlass } from "@/components/marketing/glass";
 const CASES: {
   id: string;
   icon: typeof Package;
@@ -95,49 +96,51 @@ export default function UseCasesPage() {
       </nav>
 
       <div className="mx-auto max-w-6xl space-y-6 px-5 py-16 sm:py-20">
-        {CASES.map((c) => (
-          <motion.section key={c.id} id={c.id} {...rise} className="scroll-mt-24 overflow-hidden rounded-2xl border border-[#e5e7eb] bg-white shadow-sm">
-            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[#e5e7eb] p-6 sm:p-8">
-              <div className="flex gap-4">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-[#e5e7eb] text-slate-700"><c.icon size={20} /></span>
-                <div>
-                  <h2 className="text-[22px] font-semibold tracking-tight text-slate-900 sm:text-[26px]">{c.t}</h2>
-                  <p className="mt-1 text-[15.5px] text-slate-600">{c.lead}</p>
+        {CASES.map((c, i) => (
+          <motion.section key={c.id} id={c.id} {...rise} className="scroll-mt-24">
+            <LiquidGlass reduced={reduced} lite maxTilt={1.5} sheenDelay={`${i * 1.1 + 0.6}s`}>
+              <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-900/[0.07] p-6 sm:p-8">
+                <div className="flex gap-4">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-[#e5e7eb] text-slate-700"><c.icon size={20} /></span>
+                  <div>
+                    <h2 className="text-[22px] font-semibold tracking-tight text-slate-900 sm:text-[26px]">{c.t}</h2>
+                    <p className="mt-1 text-[15.5px] text-slate-600">{c.lead}</p>
+                  </div>
+                </div>
+                <p className="text-xs font-medium text-slate-600">{c.tools}</p>
+              </div>
+              <div className="grid gap-px bg-slate-900/[0.07] lg:grid-cols-[1fr_1fr_1.1fr]">
+                <div className="bg-white/55 p-6 sm:p-8">
+                  <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Today</p>
+                  <ul className="space-y-3 text-[15px] text-slate-600">
+                    {c.before.map((b) => <li key={b} className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300" />{b}</li>)}
+                  </ul>
+                </div>
+                <div className="bg-white/55 p-6 sm:p-8">
+                  <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#4f46e5]">With Cytron</p>
+                  <ul className="space-y-3 text-[15px] text-slate-800">
+                    {c.after.map((a) => <li key={a} className="flex gap-3"><Check size={17} className="mt-0.5 shrink-0 text-emerald-700" />{a}</li>)}
+                  </ul>
+                </div>
+                <div className="bg-white/35 p-6 sm:p-8">
+                  <div className="mb-4 flex items-baseline justify-between gap-3">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">A typical week</p>
+                    <p className="text-[11px] font-medium text-slate-600">Illustrative example</p>
+                  </div>
+                  <dl className="grid grid-cols-2 gap-3">
+                    {c.week.map(([k, v]) => (
+                      <div key={k} className="rounded-lg border border-white/80 bg-white/80 p-3.5">
+                        <dd className="text-2xl font-semibold tabular-nums tracking-tight text-slate-900">{v}</dd>
+                        <dt className="mt-0.5 text-[12px] leading-snug text-slate-600">{k}</dt>
+                      </div>
+                    ))}
+                  </dl>
+                  {c.more && (
+                    <a href={c.more.href} className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-[#4f46e5] hover:text-[#4338ca]">{c.more.label} <ChevronRight size={15} /></a>
+                  )}
                 </div>
               </div>
-              <p className="text-xs font-medium text-slate-600">{c.tools}</p>
-            </div>
-            <div className="grid gap-px bg-[#e5e7eb] lg:grid-cols-[1fr_1fr_1.1fr]">
-              <div className="bg-white p-6 sm:p-8">
-                <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Today</p>
-                <ul className="space-y-3 text-[15px] text-slate-600">
-                  {c.before.map((b) => <li key={b} className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300" />{b}</li>)}
-                </ul>
-              </div>
-              <div className="bg-white p-6 sm:p-8">
-                <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#5b5cf6]">With Cytron</p>
-                <ul className="space-y-3 text-[15px] text-slate-800">
-                  {c.after.map((a) => <li key={a} className="flex gap-3"><Check size={17} className="mt-0.5 shrink-0 text-emerald-700" />{a}</li>)}
-                </ul>
-              </div>
-              <div className="bg-[#f7f8fa] p-6 sm:p-8">
-                <div className="mb-4 flex items-baseline justify-between gap-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">A typical week</p>
-                  <p className="text-[11px] font-medium text-slate-600">Illustrative example</p>
-                </div>
-                <dl className="grid grid-cols-2 gap-3">
-                  {c.week.map(([k, v]) => (
-                    <div key={k} className="rounded-lg border border-[#e5e7eb] bg-white p-3.5">
-                      <dd className="text-2xl font-semibold tabular-nums tracking-tight text-slate-900">{v}</dd>
-                      <dt className="mt-0.5 text-[12px] leading-snug text-slate-600">{k}</dt>
-                    </div>
-                  ))}
-                </dl>
-                {c.more && (
-                  <a href={c.more.href} className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-[#5b5cf6] hover:text-[#4f46e5]">{c.more.label} <ChevronRight size={15} /></a>
-                )}
-              </div>
-            </div>
+            </LiquidGlass>
           </motion.section>
         ))}
         <p className="text-xs text-slate-600">Examples of the office work, not client results. Every operation gets its own rules, tone and tools.</p>
@@ -153,8 +156,12 @@ export default function UseCasesPage() {
             <p className="mt-4 leading-relaxed text-slate-600">A growing Australian online store was checking every order by hand each morning before anything could ship. We automated the order checks, the shipping paperwork and a daily summary for the team. Anything unusual now goes to a person first.</p>
           </div>
           <ul className="space-y-3 self-center text-[15px] text-slate-700">
-            {CASE_POINTS.map((t) => (
-              <li key={t} className="flex gap-3 rounded-xl border border-[#e5e7eb] bg-white p-4 shadow-sm"><Check size={18} className="mt-0.5 shrink-0 text-emerald-700" />{t}</li>
+            {CASE_POINTS.map((t, i) => (
+              <li key={t}>
+                <LiquidGlass reduced={reduced} lite panelClassName="p-4" sheenDelay={`${i * 0.7 + 0.5}s`}>
+                  <div className="flex gap-3"><Check size={18} className="mt-0.5 shrink-0 text-emerald-700" />{t}</div>
+                </LiquidGlass>
+              </li>
             ))}
           </ul>
         </div>
