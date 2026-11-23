@@ -95,13 +95,13 @@ export function SiteNav() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-[#e5e7eb] bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85">
+      <header className="sticky top-0 z-50 border-b border-[#e7e7ec] bg-[#f4f4f7]/95 backdrop-blur supports-[backdrop-filter]:bg-[#f4f4f7]/85">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
           <a href="/" className="flex items-center gap-2.5" aria-label="Cytron home">
             <CytronLogo />
             <span className="text-[15px] font-semibold tracking-wide text-slate-900">CYTRON</span>
           </a>
-          <nav className="hidden items-center gap-0.5 text-sm md:flex" aria-label="Primary">
+          <nav className="hidden items-center gap-0.5 rounded-full bg-[#151515] p-1 text-sm md:flex" aria-label="Primary">
             {NAV_LINKS.map(({ label, href }) => {
               const on = active === href;
               return (
@@ -109,13 +109,13 @@ export function SiteNav() {
                   key={href}
                   href={href}
                   aria-current={on ? "page" : undefined}
-                  className={`relative rounded-md px-3 py-1.5 transition-colors ${on ? "font-semibold text-slate-900" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}
+                  className={`relative isolate rounded-full px-3.5 py-1.5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a78bfa] ${on ? "font-semibold text-white" : "text-slate-300 hover:bg-white/[0.08] hover:text-white"}`}
                 >
                   {label}
                   {on && (
                     <motion.span
                       layoutId="nav-active"
-                      className="absolute inset-x-3 -bottom-[17px] h-[2px] rounded-full bg-[#5b5cf6]"
+                      className="absolute inset-0 -z-10 rounded-full bg-white/[0.16]"
                       transition={{ duration: reduced ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
                     />
                   )}
@@ -127,12 +127,12 @@ export function SiteNav() {
             <a href="/login" className="hidden rounded-md px-3 py-1.5 text-sm text-slate-600 transition-colors hover:text-slate-900 lg:inline-flex">
               Client login
             </a>
-            <a href="/contact" onClick={() => track("lead_audit_started")} className={`hidden sm:inline-flex ${BTN_PRIMARY} !px-4 !py-2`}>
+            <a href="/contact" onClick={() => track("lead_audit_started")} className={`hidden sm:inline-flex ${BTN_ACCENT} !px-4 !py-2`}>
               Free Assessment
             </a>
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-[#e5e7eb] bg-white text-slate-800 md:hidden"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e7e7ec] bg-white text-slate-800 md:hidden"
               aria-expanded={open}
               aria-controls="site-menu"
               aria-label={open ? "Close menu" : "Open menu"}
@@ -157,7 +157,7 @@ export function SiteNav() {
             <button type="button" className="absolute inset-0 bg-slate-900/30" aria-label="Close menu" onClick={() => setOpen(false)} />
             <motion.nav
               aria-label="Mobile"
-              className="absolute inset-x-0 top-16 border-b border-[#e5e7eb] bg-white p-4 shadow-sm"
+              className="absolute inset-x-2 top-[4.5rem] rounded-[24px] border border-[#e7e7ec] bg-white p-4 shadow-[var(--cy-shadow)]"
               initial={reduced ? false : { opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={reduced ? undefined : { opacity: 0, y: -8 }}
@@ -197,7 +197,7 @@ export function SiteNav() {
       <AnimatePresence>
         {showBar && !onContact && (
           <motion.div
-            className="fixed inset-x-0 bottom-0 z-40 border-t border-[#e5e7eb] bg-white p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden"
+            className="fixed inset-x-0 bottom-0 z-40 border-t border-[#e7e7ec] bg-[#f4f4f7]/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden"
             initial={reduced ? false : { y: 64, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={reduced ? undefined : { y: 64, opacity: 0 }}
@@ -218,7 +218,7 @@ export function SiteFooter() {
   const col = "mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400";
   const link = "block py-1 text-sm text-slate-300 transition-colors hover:text-white";
   return (
-    <footer className="bg-slate-900 pb-24 text-white md:pb-0">
+    <footer className="mx-2 mb-2 mt-2 rounded-[24px] bg-[#151515] pb-24 text-white sm:mx-4 sm:mb-4 sm:rounded-[32px] md:pb-0">
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2.5"><CytronLogo size={28} /><span className="font-semibold">CYTRON</span></div>
