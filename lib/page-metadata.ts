@@ -8,13 +8,14 @@ const DEFAULT_DESCRIPTION =
   "Cytron specialises in automating repetitive office tasks for Australian trade, wholesale, e-commerce and warehouse operations. Back-office work runs on our own servers, with a free assessment and a read-only pilot first.";
 
 /**
- * Next.js shallow-merges metadata. A child `openGraph` or `alternates`
- * object replaces the root one entirely, so every route that should not
- * inherit the homepage URL sets both its canonical and og:url here.
- * The replacement also drops the file-based `app/opengraph-image` tags
- * (`og:image`, and with a partial object `og:site_name`, `og:type`, and
- * `og:locale`). Restate those and point `og:image` at the same
- * `/opengraph-image` route the homepage uses.
+ * Next.js shallow-merges metadata. A child `openGraph`, `twitter`, or
+ * `alternates` object replaces the root one entirely, so every route that
+ * should not inherit the homepage URL sets its canonical, og:url, and a
+ * full Twitter card here. The replacement also drops the file-based
+ * `app/opengraph-image` tags. Restate `og:site_name`, `og:type`, and
+ * `og:locale`, and point both `og:image` and `twitter:image` at
+ * `/opengraph-image`. The homepage does not use this helper, so its root
+ * Twitter card stays as declared in the root layout.
  */
 export function pageMetadata(opts: {
   path: string;
@@ -39,6 +40,12 @@ export function pageMetadata(opts: {
       title,
       description,
       locale: "en_AU",
+      images: "/opengraph-image",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
       images: "/opengraph-image",
     },
   };
