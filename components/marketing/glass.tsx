@@ -30,7 +30,7 @@ export const GLASS_ACTIVE = "lg-row lg-row-active";
 export const GLASS_IDLE = "lg-row";
 
 export const GLASS_FOCUS =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5b5cf6] focus-visible:ring-offset-2 focus-visible:ring-offset-white";
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#818cf8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0b]";
 
 function canHoverFine() {
   if (typeof window === "undefined" || !window.matchMedia) return false;
