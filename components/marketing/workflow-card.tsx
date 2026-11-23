@@ -114,21 +114,21 @@ export default function WorkflowCard() {
   return (
     <div
       ref={rootRef}
-      className="relative w-full max-w-md rounded-xl border border-[#e5e7eb] bg-white p-4 shadow-sm sm:p-5"
+      className="relative w-full max-w-md rounded-[20px] border border-white/[0.09] cy-glass p-4 shadow-[var(--cy-shadow)] sm:p-5"
       aria-label="Enquiry to invoice, live demonstration"
     >
       <div className="mb-3 flex items-center justify-between gap-2 sm:mb-4">
-        <div className="flex items-center gap-2 text-[13px] font-semibold text-slate-800">
-          <span className="inline-flex h-2 w-2 rounded-full bg-[#5b5cf6]" />
+        <div className="flex items-center gap-2 text-[13px] font-semibold text-[#e5e7eb]">
+          <span className="inline-flex h-2 w-2 rounded-full bg-[#4f46e5]" />
           Enquiry to invoice · live
         </div>
-        <span className="text-[11px] font-medium tabular-nums text-slate-600">
+        <span className="text-[11px] font-medium tabular-nums text-[#9ca3af]">
           {clock}
         </span>
       </div>
 
       <ul className="relative space-y-2">
-        <div className="pointer-events-none absolute bottom-5 left-[18px] top-5 w-[2px] rounded-full bg-slate-200" aria-hidden>
+        <div className="pointer-events-none absolute bottom-5 left-[18px] top-5 w-[2px] rounded-full bg-white/10" aria-hidden>
           <motion.div
             className="w-full rounded-full origin-top"
             style={{ background: paid ? "#059669" : ACCENT }}
@@ -151,23 +151,23 @@ export default function WorkflowCard() {
               <motion.div
                 className={`relative flex items-center gap-3 rounded-lg border px-3 py-1.5 sm:py-2.5 ${
                   done
-                    ? "border-[#e5e7eb] bg-white"
+                    ? "border-white/[0.09] bg-white/[0.04]"
                     : active
-                      ? "border-[#5b5cf6] bg-white"
-                      : "border-transparent bg-[#f7f8fa]"
+                      ? "border-[#5b5cf6] bg-white/[0.04]"
+                      : "border-transparent bg-white/[0.03]"
                 }`}
               >
                 <div
                   className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-md sm:h-9 sm:w-9 ${
-                    done ? "bg-emerald-50 text-emerald-700" : active ? "text-white" : "bg-slate-100 text-slate-500"
+                    done ? "bg-emerald-400/10 text-emerald-400" : active ? "text-white" : "bg-white/[0.06] text-[#9ca3af]"
                   }`}
                   style={active ? { background: ACCENT } : undefined}
                 >
                   {done ? <Check size={17} /> : <Icon size={17} />}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[13px] font-semibold text-slate-900 sm:truncate sm:text-[13.5px]">{s.label}{smsLabel && <span className="font-medium text-slate-600">{smsLabel}</span>}</p>
-                  <p className={`text-[12px] text-slate-600 ${active && i === 1 ? "whitespace-normal" : "truncate"}`}>{detail}</p>
+                  <p className="text-[13px] font-semibold text-[#f3f4f6] sm:truncate sm:text-[13.5px]">{s.label}{smsLabel && <span className="font-medium text-[#9ca3af]">{smsLabel}</span>}</p>
+                  <p className={`text-[12px] text-[#9ca3af] ${active && i === 1 ? "whitespace-normal" : "truncate"}`}>{detail}</p>
                 </div>
               </motion.div>
             </li>
@@ -182,7 +182,7 @@ export default function WorkflowCard() {
               initial={reduced ? false : { opacity: 0, y: 8, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={reduced ? undefined : { opacity: 0 }}
-              className="flex items-center gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-[12.5px] font-medium text-emerald-800"
+              className="flex items-center gap-3 rounded-lg border border-emerald-400/25 bg-emerald-400/10 px-4 py-2.5 text-[12.5px] font-medium text-emerald-300"
             >
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-700 text-white">
                 <Check size={16} strokeWidth={3} />

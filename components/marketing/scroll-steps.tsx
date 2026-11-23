@@ -21,19 +21,19 @@ function StepList({ steps, active, onSelect, clickable }: { steps: ScrollStep[];
               {...(clickable ? { type: "button" as const } : {})}
               onClick={clickable && onSelect ? () => onSelect(i) : undefined}
               aria-current={current ? "step" : undefined}
-              className={`flex w-full gap-3 rounded-lg px-2 py-3 text-left transition-colors ${current ? "bg-white shadow-sm" : "bg-transparent"} ${clickable ? "cursor-pointer hover:bg-white" : ""}`}
+              className={`flex w-full gap-3 rounded-lg px-2 py-3 text-left transition-colors ${current ? "bg-white/[0.04] shadow-[var(--cy-shadow)]" : "bg-transparent"} ${clickable ? "cursor-pointer hover:bg-white/10" : ""}`}
             >
               <span
                 className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] font-semibold ${
-                  done ? "bg-emerald-700 text-white" : current ? "bg-[#5b5cf6] text-white" : "border border-[#e5e7eb] bg-white text-slate-700"
+                  done ? "bg-emerald-700 text-white" : current ? "bg-[#4f46e5] text-white" : "border border-white/[0.09] bg-white/[0.04] text-[#d1d5db]"
                 }`}
               >
                 {done ? <Check size={12} strokeWidth={3} /> : i + 1}
               </span>
               <span className="min-w-0">
-                {s.kicker && <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-600">{s.kicker}</span>}
-                <span className={`block text-[16px] font-semibold ${current || done ? "text-slate-900" : "text-slate-700"}`}>{s.label}</span>
-                <span className="mt-0.5 block text-[13.5px] leading-relaxed text-slate-600">{s.detail}</span>
+                {s.kicker && <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9ca3af]">{s.kicker}</span>}
+                <span className={`block text-[16px] font-semibold ${current || done ? "text-[#f3f4f6]" : "text-[#d1d5db]"}`}>{s.label}</span>
+                <span className="mt-0.5 block text-[13.5px] leading-relaxed text-[#9ca3af]">{s.detail}</span>
               </span>
             </Tag>
           </li>
@@ -45,8 +45,8 @@ function StepList({ steps, active, onSelect, clickable }: { steps: ScrollStep[];
 
 function StepCard({ step }: { step: ScrollStep }) {
   return (
-    <div className="flex h-full min-h-[22rem] flex-col rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm sm:p-7">
-      <p className="mb-5 text-sm font-semibold text-slate-800">{step.label}</p>
+    <div className="flex h-full min-h-[22rem] flex-col rounded-[20px] border border-white/[0.09] cy-glass p-6 shadow-[var(--cy-shadow)] sm:p-7">
+      <p className="mb-5 text-sm font-semibold text-[#e5e7eb]">{step.label}</p>
       <div className="flex flex-1 flex-col justify-center">{step.card}</div>
     </div>
   );
@@ -80,8 +80,8 @@ function Desktop({ steps, header }: { steps: ScrollStep[]; header: React.ReactNo
           <div className="mb-8">{header}</div>
           <div className="grid grid-cols-[0.9fr_1.1fr] items-stretch gap-12">
             <div className="relative pl-1">
-              <div className="pointer-events-none absolute bottom-3 left-[22px] top-3 w-px bg-[#e5e7eb]" aria-hidden />
-              <motion.div className="pointer-events-none absolute left-[22px] top-3 w-px origin-top bg-[#5b5cf6]" style={{ height: lineHeight }} aria-hidden />
+              <div className="pointer-events-none absolute bottom-3 left-[22px] top-3 w-px bg-white/[0.08]" aria-hidden />
+              <motion.div className="pointer-events-none absolute left-[22px] top-3 w-px origin-top bg-[#4f46e5]" style={{ height: lineHeight }} aria-hidden />
               <StepList steps={steps} active={active} onSelect={scrollToStep} clickable />
             </div>
             <div className="relative min-h-[22rem]">
@@ -103,11 +103,11 @@ function MobileStep({ step, index }: { step: ScrollStep; index: number }) {
   const inView = useInView(ref, { amount: 0.3, once: true });
   return (
     <motion.li ref={ref} initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : undefined} transition={{ duration: 0.35, ease: "easeOut" }}>
-      <p className="mb-2 flex items-center gap-2 text-[15px] font-semibold text-slate-900">
-        <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#5b5cf6] text-[11px] font-semibold text-white">{index + 1}</span>
+      <p className="mb-2 flex items-center gap-2 text-[15px] font-semibold text-[#f3f4f6]">
+        <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#4f46e5] text-[11px] font-semibold text-white">{index + 1}</span>
         {step.label}
       </p>
-      <p className="mb-3 text-[13.5px] leading-relaxed text-slate-600">{step.detail}</p>
+      <p className="mb-3 text-[13.5px] leading-relaxed text-[#9ca3af]">{step.detail}</p>
       <StepCard step={step} />
     </motion.li>
   );
@@ -116,7 +116,7 @@ function MobileStep({ step, index }: { step: ScrollStep; index: number }) {
 export default function ScrollSteps({ id, label, header, steps }: { id: string; label: string; header: React.ReactNode; steps: ScrollStep[] }) {
   const reduced = useReducedMotion() === true;
   return (
-    <section id={id} aria-label={label} className="bg-[#f7f8fa]">
+    <section id={id} aria-label={label} className="bg-transparent">
       {reduced ? (
         <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
           {header}

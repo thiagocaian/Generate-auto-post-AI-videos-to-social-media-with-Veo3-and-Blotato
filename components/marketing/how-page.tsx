@@ -32,7 +32,7 @@ const PRINCIPLES = [
 
 export default function HowPage() {
   return (
-    <div className="bg-white">
+    <div>
       <PageIntro
         eyebrow="How it works"
         title={<>Assess, design, build, run. <Accent>Live in weeks</Accent>.</>}
@@ -52,25 +52,25 @@ export default function HowPage() {
         }
       />
 
-      <section className="bg-white py-20 sm:py-24">
+      <section className="cy-shell py-20 sm:py-24">
         <div className="mx-auto grid max-w-6xl gap-10 px-5 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <Eyebrow>Once it runs</Eyebrow>
             <Heading>Every area has its own check, <Accent>at its own time</Accent>.</Heading>
-            <p className="mt-4 text-[15px] leading-relaxed text-slate-600">You choose when each area is checked. If nothing is flagged, everything in that area passed. Example schedule below.</p>
+            <p className="mt-4 text-[15px] leading-relaxed text-[#9ca3af]">You choose when each area is checked. If nothing is flagged, everything in that area passed. Example schedule below.</p>
           </div>
           <ol className="relative space-y-3 before:absolute before:bottom-4 before:left-[15px] before:top-4 before:w-px before:bg-[#e5e7eb]">
             {CARE_SCHEDULE.map((c) => (
               <li key={c.area} className="relative flex gap-4">
-                <span className="relative z-10 mt-5 flex h-[31px] w-[31px] shrink-0 items-center justify-center rounded-full border border-[#e5e7eb] bg-white">
-                  <span className="h-2 w-2 rounded-full bg-[#5b5cf6]" />
+                <span className="relative z-10 mt-5 flex h-[31px] w-[31px] shrink-0 items-center justify-center rounded-full border border-white/[0.09] bg-white/[0.04]">
+                  <span className="h-2 w-2 rounded-full bg-[#4f46e5]" />
                 </span>
-                <div className="flex-1 rounded-xl border border-[#e5e7eb] bg-white p-5 shadow-sm">
+                <div className="flex-1 rounded-[20px] border border-white/[0.09] cy-glass p-5 shadow-[var(--cy-shadow)]">
                   <div className="flex flex-wrap items-baseline gap-x-3">
-                    <span className="text-sm font-semibold text-slate-600">{c.time}</span>
-                    <span className="font-semibold text-slate-900">{c.area}</span>
+                    <span className="text-sm font-semibold text-[#9ca3af]">{c.time}</span>
+                    <span className="font-semibold text-[#f3f4f6]">{c.area}</span>
                   </div>
-                  <p className="mt-2 text-[14.5px] leading-relaxed text-slate-600">{c.check}</p>
+                  <p className="mt-2 text-[14.5px] leading-relaxed text-[#9ca3af]">{c.check}</p>
                 </div>
               </li>
             ))}
@@ -78,15 +78,15 @@ export default function HowPage() {
         </div>
       </section>
 
-      <section className="bg-[#f7f8fa] py-20 sm:py-24">
+      <section className="bg-transparent py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <Eyebrow>Our principles</Eyebrow>
           <Heading>Automation you can trust with real customers.</Heading>
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {PRINCIPLES.map(({ icon: Icon, t, d }) => (
               <div key={t} className="flex gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[#e5e7eb] bg-white text-slate-700"><Icon size={18} /></div>
-                <div><h3 className="mb-1.5 text-lg font-semibold text-slate-900">{t}</h3><p className="text-[15px] leading-relaxed text-slate-600">{d}</p></div>
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-white/[0.09] bg-white/[0.04] text-[#d1d5db]"><Icon size={18} /></div>
+                <div><h3 className="mb-1.5 text-lg font-semibold text-[#f3f4f6]">{t}</h3><p className="text-[15px] leading-relaxed text-[#9ca3af]">{d}</p></div>
               </div>
             ))}
           </div>

@@ -33,7 +33,7 @@ export default function HeroHeading() {
   const reduced = useReducedMotion() === true;
 
   return (
-    <h1 className="max-w-xl text-[28px] font-semibold leading-snug tracking-tight text-slate-900 sm:text-[40px] lg:text-[44px]">
+    <h1 className="max-w-xl text-[28px] font-semibold leading-snug tracking-tight text-[#f3f4f6] sm:text-[40px] lg:text-[44px]">
       <span className="sr-only">Automate the repetitive. Decide what matters.</span>
       <span aria-hidden="true" className="block">
         <span className="block">
@@ -44,14 +44,14 @@ export default function HeroHeading() {
           <Chip
             delay={0.28}
             reduced={reduced}
-            className="rounded-lg rounded-bl-sm border border-[#e5e7eb] bg-[#f7f8fa] px-2 py-1.5 text-slate-700"
+            className="rounded-lg rounded-bl-sm border border-white/[0.09] bg-white/[0.03] px-2 py-1.5 text-[#d1d5db]"
           >
             Sorry we missed you…
           </Chip>
           <Chip
             delay={0.42}
             reduced={reduced}
-            className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1.5 text-emerald-800"
+            className="rounded-md border border-emerald-400/25 bg-emerald-400/10 px-2 py-1.5 text-emerald-300"
           >
             <CalendarCheck size={12} strokeWidth={2.25} />
             Booked ✓
@@ -59,7 +59,7 @@ export default function HeroHeading() {
           <Chip
             delay={0.56}
             reduced={reduced}
-            className="rounded-md border border-[#e5e7eb] bg-white px-2 py-1.5 text-slate-700"
+            className="rounded-md border border-white/[0.09] bg-white/[0.04] px-2 py-1.5 text-[#d1d5db]"
           >
             <Clock size={12} strokeWidth={2.25} />
             40s

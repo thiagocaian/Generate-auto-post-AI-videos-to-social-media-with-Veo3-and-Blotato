@@ -101,7 +101,7 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
 }
 
 const PERSPECTIVE = 1400;
-const SHADOW_ON = "0 24px 70px -20px rgba(15, 23, 42, 0.28)";
+const SHADOW_ON = "0 24px 70px -20px rgba(0, 0, 0, 0.7)";
 const SHADOW_OFF = "0 0px 0px 0px rgba(15, 23, 42, 0)";
 
 const variants3d: Variants = {
@@ -160,7 +160,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
           ref.current.style.boxShadow = "none";
         }
       }}
-      className="relative flex flex-1 flex-col bg-white"
+      className="cy-canvas relative flex flex-1 flex-col"
       style={{ transformOrigin: phase === "exit" ? origin : "50% 50vh", backfaceVisibility: "hidden" }}
     >
       {children}

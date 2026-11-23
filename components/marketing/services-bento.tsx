@@ -70,11 +70,11 @@ export default function ServicesBento() {
   const inView = useInView(gridRef, { once: true, amount: 0.12 });
 
   return (
-    <section id="services" className="bg-white">
+    <section id="services" className="cy-shell">
       <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
         <Eyebrow>What we automate</Eyebrow>
         <Heading>The work nobody hired you to do.</Heading>
-        <p className="mt-4 max-w-2xl leading-relaxed text-slate-600">
+        <p className="mt-4 max-w-2xl leading-relaxed text-[#9ca3af]">
           If a task follows the same steps every day, it can usually run on its own. These are the ones we build most.
         </p>
 
@@ -85,12 +85,12 @@ export default function ServicesBento() {
               initial={reduced ? false : { opacity: 0, y: 10 }}
               animate={reduced || inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
               transition={{ delay: reduced ? 0 : i * 0.07, duration: 0.35, ease: "easeOut" }}
-              className={`${tile.span} flex flex-col overflow-hidden rounded-xl border border-[#e5e7eb] bg-white shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-slate-300 hover:shadow`}
+              className={`${tile.span} flex flex-col overflow-hidden rounded-[20px] border border-white/[0.09] cy-glass shadow-[var(--cy-shadow)] transition-[border-color,box-shadow] duration-200 hover:border-white/20 hover:shadow`}
             >
               <div className={`${tile.aspect} overflow-hidden p-4 sm:p-5`}>{tile.fragment}</div>
-              <div className="border-t border-[#e5e7eb] px-4 py-3 sm:px-5">
-                <h3 className="text-[15px] font-semibold text-slate-900">{tile.title}</h3>
-                <p className="mt-1 hidden text-[13px] leading-relaxed text-slate-600 sm:block">{tile.text}</p>
+              <div className="border-t border-white/[0.09] px-4 py-3 sm:px-5">
+                <h3 className="text-[15px] font-semibold text-[#f3f4f6]">{tile.title}</h3>
+                <p className="mt-1 hidden text-[13px] leading-relaxed text-[#9ca3af] sm:block">{tile.text}</p>
               </div>
             </motion.article>
           ))}
