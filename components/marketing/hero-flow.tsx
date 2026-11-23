@@ -318,12 +318,12 @@ function NodeCard({
     <div
       className={`flex items-center gap-2.5 rounded-xl border bg-white px-2.5 py-2.5 ${
         isHuman
-          ? "border-dashed border-slate-300"
+          ? "border-dashed border-white/20"
           : isHub
-            ? "border-[#c7c8f8]"
+            ? "border-[#818cf8]/40"
             : state === "running"
               ? "border-[#5b5cf6]"
-              : "border-[#e5e7eb]"
+              : "border-white/[0.09]"
       }`}
       style={{
         width: NODE_W,
@@ -339,20 +339,20 @@ function NodeCard({
           isHub
             ? "bg-[#5b5cf6] text-white"
             : state === "done"
-              ? "bg-emerald-50 text-emerald-700"
+              ? "bg-emerald-400/10 text-emerald-400"
               : state === "running"
                 ? "bg-[#5b5cf6] text-white"
-                : "bg-[#f7f8fa] text-slate-700"
+                : "bg-[#f7f8fa] text-[#d1d5db]"
         }`}
       >
         {state === "done" && !isHub ? <Check size={16} strokeWidth={2.5} /> : <Icon size={16} />}
       </span>
       <span className="min-w-0 flex-1">
-        <span className={`block truncate font-semibold tracking-tight text-slate-900 ${isHub ? "text-[13px]" : "text-[12px]"}`}>
+        <span className={`block truncate font-semibold tracking-tight text-[#f3f4f6] ${isHub ? "text-[13px]" : "text-[12px]"}`}>
           {node.title}
         </span>
         <span
-          className={`block leading-tight text-slate-600 ${
+          className={`block leading-tight text-[#9ca3af] ${
             isHub
               ? "whitespace-nowrap text-[12px] tracking-normal"
               : "truncate text-[11px] tracking-tight"
@@ -455,7 +455,7 @@ function DesktopFlow({ time, reduced }: { time: number; reduced: boolean }) {
         return (
           <p
             key={lane.id}
-            className="absolute text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500"
+            className="absolute text-[10px] font-semibold uppercase tracking-[0.14em] text-[#9ca3af]"
             style={{ left: lane.x, top: lane.y, width: lane.w }}
           >
             {lane.label}
@@ -471,7 +471,7 @@ function DesktopFlow({ time, reduced }: { time: number; reduced: boolean }) {
         const sides = PORTS[node.id];
         const { w, h } = sizeOf(node);
         const dot = "absolute z-10 h-2 w-2 rounded-full border bg-white";
-        const on = state === "running" || node.kind === "hub" ? "border-[#5b5cf6]" : "border-[#d1d5db]";
+        const on = state === "running" || node.kind === "hub" ? "border-[#5b5cf6]" : "border-white/15";
         return (
           <motion.div
             key={node.id}
@@ -535,7 +535,7 @@ function MobileFlow({ time, reduced, settled }: { time: number; reduced: boolean
           const open = !closed[slug];
           const groupShown = still || group.nodes.some((node) => visibleAt(node.id, time, false));
           return (
-            <div key={group.label} className={gi ? "mt-1 border-t border-slate-200/60 pt-1" : ""}>
+            <div key={group.label} className={gi ? "mt-1 border-t border-white/10 pt-1" : ""}>
               <button
                 type="button"
                 aria-expanded={open}
@@ -547,10 +547,10 @@ function MobileFlow({ time, reduced, settled }: { time: number; reduced: boolean
                 <span className={`${GLASS_HEADER} flex-1 transition-opacity duration-500 ${groupShown ? "opacity-100" : "opacity-50"}`}>
                   {group.label}
                 </span>
-                <span className="lg-row rounded-full px-1.5 py-0.5 text-[10.5px] font-semibold tabular-nums text-slate-600">
+                <span className="lg-row rounded-full px-1.5 py-0.5 text-[10.5px] font-semibold tabular-nums text-[#9ca3af]">
                   {group.nodes.length}
                 </span>
-                <span aria-hidden className="lg-row flex h-6 w-6 items-center justify-center rounded-full text-slate-500">
+                <span aria-hidden className="lg-row flex h-6 w-6 items-center justify-center rounded-full text-[#9ca3af]">
                   <GlassChevronIcon open={open} reduced={reduced} size={13} />
                 </span>
               </button>
@@ -577,9 +577,9 @@ function MobileFlow({ time, reduced, settled }: { time: number; reduced: boolean
                         transition={reduced ? { duration: 0 } : GLASS_SPRING}
                       >
                         <span
-                          className={`absolute -left-4 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full ring-[3px] ring-white/80 shadow-[0_0_0_1px_rgba(91,92,246,0.15)] transition-colors duration-300 ${
+                          className={`absolute -left-4 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full ring-[3px] ring-[#0a0a0b]/80 shadow-[0_0_0_1px_rgba(91,92,246,0.15)] transition-colors duration-300 ${
                             isHuman
-                              ? "border border-slate-300 bg-white"
+                              ? "border border-white/20 bg-white"
                               : state === "done" || active
                                 ? "bg-[#5b5cf6]"
                                 : "bg-slate-300"
@@ -588,7 +588,7 @@ function MobileFlow({ time, reduced, settled }: { time: number; reduced: boolean
                         />
                         <div
                           className={`${GLASS_ROW} ${
-                            isHuman ? "border border-dashed border-slate-300 bg-white/40" : active ? GLASS_ACTIVE : GLASS_IDLE
+                            isHuman ? "border border-dashed border-white/20 bg-white/40" : active ? GLASS_ACTIVE : GLASS_IDLE
                           }`}
                         >
                           <span
@@ -596,16 +596,16 @@ function MobileFlow({ time, reduced, settled }: { time: number; reduced: boolean
                               isHub || state === "running"
                                 ? "bg-gradient-to-b from-[#6d6ef8] to-[#5b5cf6] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]"
                                 : state === "done"
-                                  ? "lg-row text-emerald-700"
-                                  : "lg-row text-slate-600"
+                                  ? "lg-row text-emerald-400"
+                                  : "lg-row text-[#9ca3af]"
                             }`}
                             aria-hidden
                           >
                             {state === "done" && !isHub ? <Check size={15} strokeWidth={2.5} /> : <Icon size={15} />}
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate text-[13px] font-semibold tracking-tight text-slate-900">{node.title}</span>
-                            <span className="block truncate text-[11.5px] leading-tight text-slate-600">{node.sub}</span>
+                            <span className="block truncate text-[13px] font-semibold tracking-tight text-[#f3f4f6]">{node.title}</span>
+                            <span className="block truncate text-[11.5px] leading-tight text-[#9ca3af]">{node.sub}</span>
                           </span>
                         </div>
                       </motion.li>

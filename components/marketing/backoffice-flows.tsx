@@ -143,18 +143,18 @@ function FlowRowContent({ flow, on }: { flow: BackofficeFlow; on: boolean }) {
     <>
       <span
         className={`lg-row flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-300 ${
-          on ? "text-[#4f46e5]" : "text-slate-600"
+          on ? "text-[#a5b4fc]" : "text-[#9ca3af]"
         }`}
         aria-hidden
       >
         <Icon size={15} />
       </span>
-      <span className={`min-w-0 flex-1 text-[13.5px] leading-snug ${on ? "font-semibold text-slate-900" : "font-medium text-slate-700"}`}>
+      <span className={`min-w-0 flex-1 text-[13.5px] leading-snug ${on ? "font-semibold text-[#f3f4f6]" : "font-medium text-[#d1d5db]"}`}>
         {flow.label}
       </span>
       <span
         className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10.5px] font-semibold tabular-nums ${
-          on ? "bg-gradient-to-b from-[#6d6ef8] to-[#5b5cf6] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]" : "bg-slate-900/[0.05] text-slate-600"
+          on ? "bg-gradient-to-b from-[#6d6ef8] to-[#5b5cf6] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]" : "bg-slate-900/[0.05] text-[#9ca3af]"
         }`}
         aria-hidden
       >
@@ -199,7 +199,7 @@ export default function BackofficeFlows() {
       <div className="mx-auto max-w-6xl px-5">
         <Eyebrow>Back-office workflows</Eyebrow>
         <Heading>Repetitive work, <Accent>handled in the background</Accent>.</Heading>
-        <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-slate-600">
+        <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-[#9ca3af]">
           Cytron automation takes the trigger, runs the steps on our own servers, and holds anything unusual for a person.
         </p>
 
@@ -228,7 +228,7 @@ export default function BackofficeFlows() {
             >
               <span className="sr-only">Back-office workflow: </span>
               <FlowRowContent flow={activeFlow} on />
-              <span aria-hidden className="lg-row flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-600">
+              <span aria-hidden className="lg-row flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[#9ca3af]">
                 <GlassChevronIcon open={menuOpen} reduced={reduced} />
               </span>
             </button>
@@ -299,7 +299,7 @@ export default function BackofficeFlows() {
                 role="tabpanel"
                 aria-labelledby={`flow-tab-${flow.id}`}
                 hidden={!on}
-                className="overflow-hidden rounded-[20px] border border-[#e7e7ec] bg-white shadow-[var(--cy-shadow)]"
+                className="overflow-hidden rounded-[20px] border border-white/[0.09] bg-white shadow-[var(--cy-shadow)]"
               >
                 <FlowVideo
                   label={videoLabel}

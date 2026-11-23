@@ -43,7 +43,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#4f46e5]"
+            className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#a5b4fc]"
           >
             Specialists in repetitive office tasks
           </motion.p>
@@ -51,7 +51,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="text-[clamp(2.25rem,8vw,3rem)] font-semibold leading-[1.05] tracking-tight text-slate-900 lg:text-[clamp(3.5rem,5.2vw,4.75rem)] xl:text-[clamp(3.5rem,4.4vw,4.25rem)]"
+            className="text-[clamp(2.25rem,8vw,3rem)] font-semibold leading-[1.05] tracking-tight text-[#f3f4f6] lg:text-[clamp(3.5rem,5.2vw,4.75rem)] xl:text-[clamp(3.5rem,4.4vw,4.25rem)]"
           >
             Specialists in automating
             <br />
@@ -61,7 +61,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.06, duration: 0.4, ease: "easeOut" }}
-            className="mt-5 max-w-md text-[17px] leading-relaxed text-slate-600 sm:text-lg"
+            className="mt-5 max-w-md text-[17px] leading-relaxed text-[#9ca3af] sm:text-lg"
           >
             Cytron specialises in automating repetitive office tasks for trade, wholesale, e-commerce and warehouse operations — in the background, on our own servers.
           </motion.p>
@@ -71,7 +71,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12, duration: 0.4, ease: "easeOut" }}
-            className="mt-8 flex w-full max-w-md items-center rounded-full border border-[#e5e7eb] bg-white p-1.5 shadow-sm"
+            className="mt-8 flex w-full max-w-md items-center rounded-full border border-white/[0.09] bg-white p-1.5 shadow-sm"
           >
             <label htmlFor="hero-email" className="sr-only">
               Work email
@@ -85,7 +85,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
               placeholder="Enter your work email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="min-w-0 flex-1 bg-transparent px-3.5 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-600 sm:px-4"
+              className="min-w-0 flex-1 bg-transparent px-3.5 py-2.5 text-sm text-[#f3f4f6] outline-none placeholder:text-[#8b929e] sm:px-4"
             />
             <button
               type="submit"
@@ -100,9 +100,9 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18, duration: 0.4, ease: "easeOut" }}
-            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#4f46e5] transition-colors hover:text-[#3730a3]"
+            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#a5b4fc] transition-colors hover:text-[#c7d2fe]"
           >
-            <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[#c7c8f8] text-[#4f46e5]">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[#818cf8]/40 text-[#a5b4fc]">
               <Play size={11} fill="currentColor" />
             </span>
             See Cytron in action

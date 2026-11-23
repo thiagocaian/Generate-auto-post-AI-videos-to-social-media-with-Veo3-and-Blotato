@@ -40,7 +40,7 @@ function MobileConstellation({ reduced }: { reduced: boolean }) {
           <div
             key={anchor.id}
             className={[
-              "hero-constellation-tile hero-constellation-mobile-tile absolute flex items-center justify-center overflow-hidden rounded-xl border border-[#e5e7eb] bg-white/90",
+              "hero-constellation-tile hero-constellation-mobile-tile absolute flex items-center justify-center overflow-hidden rounded-xl border border-white/[0.09] bg-white/90",
               fromBottom ? "hero-constellation-mobile-tile--bottom" : "hero-constellation-mobile-tile--top",
               reduced ? "" : MOBILE_DRIFT_CLASS[i],
             ].join(" ")}
@@ -213,7 +213,7 @@ function DesktopConstellation({ reduced }: { reduced: boolean }) {
           ref={(node) => {
             tileRefs.current[tool.id] = node;
           }}
-          className="hero-constellation-tile absolute left-0 top-0 flex items-center justify-center overflow-hidden rounded-xl border border-[#e5e7eb] bg-white/90"
+          className="hero-constellation-tile absolute left-0 top-0 flex items-center justify-center overflow-hidden rounded-xl border border-white/[0.09] bg-white/90"
           style={{ width: DESKTOP_TILE, height: DESKTOP_TILE, willChange: "transform", visibility: "hidden" }}
         >
           <span className="flex items-center justify-center md:contents">

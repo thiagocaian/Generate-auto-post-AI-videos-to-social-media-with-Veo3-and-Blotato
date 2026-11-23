@@ -11,14 +11,14 @@ export const ACCENT = "#5b5cf6";
 export const LILAC = "#8b8cff";
 export const GRADIENT = "#5b5cf6"; // solid accent — kept so existing style={{ background: GRADIENT }} stays valid
 
-export const CARD = "rounded-[20px] border border-[#e7e7ec] bg-white shadow-[var(--cy-shadow)]";
+export const CARD = "rounded-[20px] border border-white/[0.09] bg-white shadow-[var(--cy-shadow)]";
 // Main buttons are near-black (reference style); indigo stays for the accent CTA (BTN_ACCENT) and pills.
 export const BTN_PRIMARY =
   "inline-flex items-center justify-center gap-2 rounded-full bg-[#111827] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1f2937] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4f46e5]";
 export const BTN_ACCENT =
   "inline-flex items-center justify-center gap-2 rounded-full bg-[#4f46e5] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#4338ca] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4f46e5]";
 export const BTN_SECONDARY =
-  "inline-flex items-center justify-center gap-2 rounded-full border border-[#e7e7ec] bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:border-[#d8ccfb] hover:bg-[#faf7ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4f46e5]";
+  "inline-flex items-center justify-center gap-2 rounded-full border border-white/[0.09] bg-white px-5 py-2.5 text-sm font-semibold text-[#e5e7eb] transition-colors hover:border-white/20 hover:bg-[#faf7ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4f46e5]";
 
 export function CytronLogo({ size = 28 }: { size?: number }) {
   return (
@@ -37,18 +37,18 @@ export const cta = (label: string, href = "/contact", event = "lead_audit_starte
 
 export function Eyebrow({ children, dark = false }: { children: React.ReactNode; dark?: boolean }) {
   return (
-    <p className={`mb-3 text-xs font-semibold uppercase tracking-[0.14em] ${dark ? "text-slate-300" : "text-slate-600"}`}>
+    <p className={`mb-3 text-xs font-semibold uppercase tracking-[0.14em] ${dark ? "text-slate-300" : "text-[#9ca3af]"}`}>
       {children}
     </p>
   );
 }
 
 export function Heading({ children }: { children: React.ReactNode }) {
-  return <h2 className="max-w-3xl text-[28px] font-semibold leading-snug tracking-tight text-slate-900 sm:text-[36px]">{children}</h2>;
+  return <h2 className="max-w-3xl text-[28px] font-semibold leading-snug tracking-tight text-[#f3f4f6] sm:text-[36px]">{children}</h2>;
 }
 
 export function Accent({ children }: { children: React.ReactNode }) {
-  return <span className="text-[#4f46e5]">{children}</span>;
+  return <span className="text-[#a5b4fc]">{children}</span>;
 }
 
 export function SiteNav() {
@@ -95,11 +95,11 @@ export function SiteNav() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-[#e7e7ec] bg-[#f4f4f7]/95 backdrop-blur supports-[backdrop-filter]:bg-[#f4f4f7]/85">
+      <header className="sticky top-0 z-50 border-b border-white/[0.09] bg-[#0a0a0b]/90 backdrop-blur supports-[backdrop-filter]:bg-[#0a0a0b]/75">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
           <a href="/" className="flex items-center gap-2.5" aria-label="Cytron home">
             <CytronLogo />
-            <span className="text-[15px] font-semibold tracking-wide text-slate-900">CYTRON</span>
+            <span className="text-[15px] font-semibold tracking-wide text-[#f3f4f6]">CYTRON</span>
           </a>
           <nav className="hidden items-center gap-0.5 rounded-full bg-[#151515] p-1 text-sm md:flex" aria-label="Primary">
             {NAV_LINKS.map(({ label, href }) => {
@@ -124,7 +124,7 @@ export function SiteNav() {
             })}
           </nav>
           <div className="flex items-center gap-2">
-            <a href="/login" className="hidden rounded-md px-3 py-1.5 text-sm text-slate-600 transition-colors hover:text-slate-900 lg:inline-flex">
+            <a href="/login" className="hidden rounded-md px-3 py-1.5 text-sm text-[#9ca3af] transition-colors hover:text-white lg:inline-flex">
               Client login
             </a>
             <a href="/contact" onClick={() => track("lead_audit_started")} className={`hidden sm:inline-flex ${BTN_ACCENT} !px-4 !py-2`}>
@@ -132,7 +132,7 @@ export function SiteNav() {
             </a>
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e7e7ec] bg-white text-slate-800 md:hidden"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.09] bg-white text-[#e5e7eb] md:hidden"
               aria-expanded={open}
               aria-controls="site-menu"
               aria-label={open ? "Close menu" : "Open menu"}
@@ -157,7 +157,7 @@ export function SiteNav() {
             <button type="button" className="absolute inset-0 bg-slate-900/30" aria-label="Close menu" onClick={() => setOpen(false)} />
             <motion.nav
               aria-label="Mobile"
-              className="absolute inset-x-2 top-[4.5rem] rounded-[24px] border border-[#e7e7ec] bg-white p-4 shadow-[var(--cy-shadow)]"
+              className="absolute inset-x-2 top-[4.5rem] rounded-[24px] border border-white/[0.09] bg-white p-4 shadow-[var(--cy-shadow)]"
               initial={reduced ? false : { opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={reduced ? undefined : { opacity: 0, y: -8 }}
@@ -171,16 +171,16 @@ export function SiteNav() {
                     href={href}
                     aria-current={on ? "page" : undefined}
                     onClick={() => setOpen(false)}
-                    className={`flex items-center justify-between rounded-md px-2 py-3 text-[15px] font-medium hover:bg-slate-50 ${on ? "text-[#4f46e5]" : "text-slate-800"}`}
+                    className={`flex items-center justify-between rounded-md px-2 py-3 text-[15px] font-medium hover:bg-slate-50 ${on ? "text-[#a5b4fc]" : "text-[#e5e7eb]"}`}
                   >
                     {label}
-                    <ChevronRight size={16} className={on ? "text-[#4f46e5]" : "text-slate-400"} />
+                    <ChevronRight size={16} className={on ? "text-[#a5b4fc]" : "text-[#9ca3af]"} />
                   </a>
                 );
               })}
-              <a href="/login" onClick={() => setOpen(false)} className="flex items-center justify-between rounded-md px-2 py-3 text-[15px] font-medium text-slate-600 hover:bg-slate-50">
+              <a href="/login" onClick={() => setOpen(false)} className="flex items-center justify-between rounded-md px-2 py-3 text-[15px] font-medium text-[#9ca3af] hover:bg-slate-50">
                 Client login
-                <ChevronRight size={16} className="text-slate-400" />
+                <ChevronRight size={16} className="text-[#9ca3af]" />
               </a>
               <a
                 href="/contact"
@@ -197,7 +197,7 @@ export function SiteNav() {
       <AnimatePresence>
         {showBar && !onContact && (
           <motion.div
-            className="fixed inset-x-0 bottom-0 z-40 border-t border-[#e7e7ec] bg-[#f4f4f7]/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden"
+            className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[0.09] bg-[#0a0a0b]/90 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden"
             initial={reduced ? false : { y: 64, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={reduced ? undefined : { y: 64, opacity: 0 }}
@@ -215,7 +215,7 @@ export function SiteNav() {
 }
 
 export function SiteFooter() {
-  const col = "mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400";
+  const col = "mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#9ca3af]";
   const link = "block py-1 text-sm text-slate-300 transition-colors hover:text-white";
   return (
     <footer className="mx-2 mb-2 mt-2 rounded-[24px] bg-[#151515] pb-24 text-white sm:mx-4 sm:mb-4 sm:rounded-[32px] md:pb-0">
@@ -244,7 +244,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <p className="mx-auto max-w-6xl px-5 py-6 text-xs text-slate-400">© {new Date().getFullYear()} Cytron · Gold Coast, Queensland, Australia</p>
+        <p className="mx-auto max-w-6xl px-5 py-6 text-xs text-[#9ca3af]">© {new Date().getFullYear()} Cytron · Gold Coast, Queensland, Australia</p>
       </div>
     </footer>
   );

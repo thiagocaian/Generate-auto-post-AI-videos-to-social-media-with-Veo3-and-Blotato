@@ -3,18 +3,30 @@
 @tailwind utilities;
 
 /* ── Cytron lilac surface system ─────────────────────────────
- * Canvas, rounded "shell" panels and soft accent washes.
+ * Dark graphite canvas, mirrored dark-glass "shell" panels, restrained indigo accents.
  * Colour and surface only: layout and copy are unchanged. */
 :root {
-  --cy-canvas: #f4f4f7;
-  --cy-ink: #111827;
-  --cy-ink-2: #6b7280;
-  --cy-line: #e7e7ec;
-  --cy-lilac: #d8b4fe;
-  --cy-lavender: #c4b5fd;
-  --cy-sky: #c7d7fe;
-  --cy-mint: #c6f1de;
-  --cy-shadow: 0 1px 2px rgba(17, 24, 39, 0.03), 0 12px 32px -14px rgba(17, 24, 39, 0.1);
+  --cy-canvas: #0a0a0b;
+  --cy-surface: #111214;
+  --cy-surface-2: #17181b;
+  --cy-ink: #f3f4f6;
+  --cy-ink-2: #9ca3af;
+  --cy-line: rgba(255, 255, 255, 0.09);
+  --cy-accent: #6366f1;
+  --cy-accent-text: #a5b4fc;
+  --cy-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 40px -22px rgba(0, 0, 0, 0.85);
+}
+
+/* Public site is dark: no white flash on overscroll or behind the 3D page transition. */
+html:has(.cy-site),
+body:has(.cy-site) {
+  background-color: #050506 !important;
+  color-scheme: dark;
+}
+.cy-canvas {
+  background:
+    radial-gradient(1100px 520px at 50% -8%, rgba(148, 163, 184, 0.09) 0%, rgba(148, 163, 184, 0) 70%),
+    linear-gradient(180deg, #0c0c0e 0%, #0a0a0b 40%, #09090a 100%);
 }
 
 @layer components {

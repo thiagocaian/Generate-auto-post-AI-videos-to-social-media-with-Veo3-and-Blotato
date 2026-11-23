@@ -76,5 +76,5 @@ export function BrandMark({ id, label }: { id: ConstellationId; label: string })
       <img src={official} alt="" width={26} height={26} className={id === "servicem8" ? "h-full w-full object-cover" : "h-[26px] w-[26px] object-contain"} />
     );
   }
-  return SIMPLE[id] ?? <span className="text-[9px] font-semibold text-slate-600">{label}</span>;
+  return SIMPLE[id] ?? <span className="text-[9px] font-semibold text-[#9ca3af]">{label}</span>;
 }

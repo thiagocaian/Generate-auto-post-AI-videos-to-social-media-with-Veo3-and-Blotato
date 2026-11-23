@@ -6,8 +6,8 @@ import { track } from "@vercel/analytics";
 import { ArrowRight, Check } from "lucide-react";
 import { AUDIT_CONSENT_TEXT } from "@/lib/inbound/consent";
 
-const inputClass = "w-full rounded-lg border border-[#e5e7eb] bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-500 focus:border-[#5b5cf6] focus:ring-2 focus:ring-[#5b5cf6]/15";
-const labelClass = "mb-1.5 block text-xs font-semibold text-slate-700";
+const inputClass = "w-full rounded-lg border border-white/[0.09] bg-white px-3.5 py-2.5 text-sm text-[#f3f4f6] outline-none transition placeholder:text-[#8b929e] focus:border-[#5b5cf6] focus:ring-2 focus:ring-[#5b5cf6]/15";
+const labelClass = "mb-1.5 block text-xs font-semibold text-[#d1d5db]";
 
 function normaliseWebsite(value: string): string {
   const trimmed = value.trim();
@@ -86,7 +86,7 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
   const trans = reduced ? { duration: 0 } : { duration: 0.28, ease: "easeOut" as const };
 
   return (
-    <div className="rounded-[20px] border border-[#e7e7ec] bg-white p-6 shadow-[var(--cy-shadow)] sm:p-8">
+    <div className="rounded-[20px] border border-white/[0.09] bg-white p-6 shadow-[var(--cy-shadow)] sm:p-8">
       <AnimatePresence mode="wait">
         {status === "success" ? (
           <motion.div key="done" role="status" aria-live="polite" initial={reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }} className="py-10 text-center">
@@ -98,14 +98,14 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
             >
               <Check size={30} strokeWidth={3} />
             </motion.div>
-            <h3 data-testid="audit-success" className="mb-2 text-2xl font-semibold text-slate-900">We&apos;ll be in touch</h3>
-            <p className="mx-auto max-w-sm text-sm leading-relaxed text-slate-700">
+            <h3 data-testid="audit-success" className="mb-2 text-2xl font-semibold text-[#f3f4f6]">We&apos;ll be in touch</h3>
+            <p className="mx-auto max-w-sm text-sm leading-relaxed text-[#d1d5db]">
               We received your request and will get back to you shortly.
             </p>
           </motion.div>
         ) : (
           <motion.form key="form" onSubmit={submit} initial={reduced ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={trans} className="relative space-y-5" noValidate>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-600">Free Automation Assessment</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#9ca3af]">Free Automation Assessment</p>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div>
                 <label className={labelClass} htmlFor="audit-name">Your name *</label>
@@ -136,7 +136,7 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
               <label htmlFor="audit-honeypot">Company website</label>
               <input id="audit-honeypot" data-testid="audit-honeypot" name="honeypot" tabIndex={-1} autoComplete="off" value={form.honeypot} onChange={set("honeypot")} />
             </div>
-            <label className="flex items-start gap-3 text-sm leading-relaxed text-slate-700">
+            <label className="flex items-start gap-3 text-sm leading-relaxed text-[#d1d5db]">
               <input
                 id="audit-consent"
                 data-testid="audit-consent"
@@ -148,14 +148,14 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
               />
               <span>
                 {AUDIT_CONSENT_TEXT}{" "}
-                <a href="/privacy" className="font-semibold text-[#4f46e5] underline">Privacy policy</a>
+                <a href="/privacy" className="font-semibold text-[#a5b4fc] underline">Privacy policy</a>
               </span>
             </label>
-            {error && <p role="alert" aria-live="polite" className="text-sm font-medium text-red-700">{error}</p>}
+            {error && <p role="alert" aria-live="polite" className="text-sm font-medium text-red-400">{error}</p>}
             <button type="submit" disabled={status === "loading"} className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#5b5cf6] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#4f46e5] disabled:opacity-60">
               {status === "loading" ? "Sending..." : <>Request a Free Automation Assessment <ArrowRight size={17} /></>}
             </button>
-            {preview && <p className="text-center text-xs text-slate-600">Sketch only — this form does not send a request.</p>}
+            {preview && <p className="text-center text-xs text-[#9ca3af]">Sketch only — this form does not send a request.</p>}
           </motion.form>
         )}
       </AnimatePresence>

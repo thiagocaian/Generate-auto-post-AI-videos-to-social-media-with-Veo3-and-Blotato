@@ -91,35 +91,35 @@ export default function PricingPage() {
         <div className="mx-auto max-w-6xl px-5">
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             {PLANS.map((p) => (
-              <div key={p.t} className={`relative flex flex-col rounded-[24px] border bg-white p-7 shadow-[var(--cy-shadow)] ${p.hot ? "border-[#5b5cf6] ring-1 ring-[#5b5cf6]" : "border-[#e5e7eb]"}`}>
+              <div key={p.t} className={`relative flex flex-col rounded-[24px] border bg-white p-7 shadow-[var(--cy-shadow)] ${p.hot ? "border-[#5b5cf6] ring-1 ring-[#5b5cf6]" : "border-white/[0.09]"}`}>
                 <div className="flex min-h-[26px] items-center justify-between">
                   {p.hot ? (
-                    <p className="rounded-full bg-[#eef0ff] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4f46e5]">Recommended</p>
+                    <p className="rounded-full bg-[#eef0ff] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#a5b4fc]">Recommended</p>
                   ) : (
                     <span aria-hidden className="h-[26px]" />
                   )}
                 </div>
-                <h2 className="mt-4 text-xl font-semibold text-slate-900">{p.t}</h2>
-                <p className="mt-2 text-[34px] font-semibold tracking-tight text-slate-900">
+                <h2 className="mt-4 text-xl font-semibold text-[#f3f4f6]">{p.t}</h2>
+                <p className="mt-2 text-[34px] font-semibold tracking-tight text-[#f3f4f6]">
                   {p.price}
-                  {p.unit && <span className="text-base font-medium text-slate-600">{p.unit}</span>}
+                  {p.unit && <span className="text-base font-medium text-[#9ca3af]">{p.unit}</span>}
                 </p>
-                {"note" in p && p.note && <p className="mt-1 text-sm font-medium text-slate-600">{p.note}</p>}
-                <p className="mt-3 text-[15px] leading-relaxed text-slate-600">{p.d}</p>
-                <ul className="mt-6 flex-1 space-y-2.5 text-[15px] text-slate-700">
-                  {p.f.map((f) => <li key={f} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-700" />{f}</li>)}
+                {"note" in p && p.note && <p className="mt-1 text-sm font-medium text-[#9ca3af]">{p.note}</p>}
+                <p className="mt-3 text-[15px] leading-relaxed text-[#9ca3af]">{p.d}</p>
+                <ul className="mt-6 flex-1 space-y-2.5 text-[15px] text-[#d1d5db]">
+                  {p.f.map((f) => <li key={f} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-400" />{f}</li>)}
                 </ul>
-                <a href="/contact" className={`mt-8 inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${p.hot ? "bg-[#111827] text-white hover:bg-[#1f2937]" : "border border-[#e7e7ec] bg-white text-slate-800 hover:border-[#d8ccfb] hover:bg-[#faf7ff]"}`}>
+                <a href="/contact" className={`mt-8 inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${p.hot ? "bg-[#111827] text-white hover:bg-[#1f2937]" : "border border-white/[0.09] bg-white text-[#e5e7eb] hover:border-white/20 hover:bg-[#faf7ff]"}`}>
                   {p.cta} <ChevronRight size={16} />
                 </a>
               </div>
             ))}
           </div>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 rounded-xl border border-[#e5e7eb] bg-[#f7f8fa] px-6 py-5 text-[14.5px] text-slate-700">
-            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Every plan</span>
-            {INCLUDED.map((t) => <span key={t} className="flex items-center gap-2"><Check size={16} className="text-emerald-700" />{t}</span>)}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 rounded-xl border border-white/[0.09] bg-[#f7f8fa] px-6 py-5 text-[14.5px] text-[#d1d5db]">
+            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9ca3af]">Every plan</span>
+            {INCLUDED.map((t) => <span key={t} className="flex items-center gap-2"><Check size={16} className="text-emerald-400" />{t}</span>)}
           </div>
-          <p className="mt-4 text-center text-xs text-slate-600">Prices in AUD, ex GST where applicable. API usage, phone and SMS are subject to included allowances or additional charges.</p>
+          <p className="mt-4 text-center text-xs text-[#9ca3af]">Prices in AUD, ex GST where applicable. API usage, phone and SMS are subject to included allowances or additional charges.</p>
         </div>
       </section>
 
@@ -127,13 +127,13 @@ export default function PricingPage() {
         <div className="mx-auto max-w-3xl px-5">
           <Eyebrow>FAQ</Eyebrow>
           <Heading>Questions we hear a lot.</Heading>
-          <div className="mt-10 divide-y divide-[#e5e7eb] rounded-[20px] border border-[#e7e7ec] bg-white px-6 shadow-[var(--cy-shadow)]">
+          <div className="mt-10 divide-y divide-white/[0.08] rounded-[20px] border border-white/[0.09] bg-white px-6 shadow-[var(--cy-shadow)]">
             {FAQ.map((f) => (
               <details key={f.q} className="group py-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-semibold text-slate-900">
-                  {f.q}<ChevronRight size={18} className="shrink-0 text-slate-400 transition group-open:rotate-90" />
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-semibold text-[#f3f4f6]">
+                  {f.q}<ChevronRight size={18} className="shrink-0 text-[#9ca3af] transition group-open:rotate-90" />
                 </summary>
-                <p className="mt-3 text-[15px] leading-relaxed text-slate-600">{f.a}</p>
+                <p className="mt-3 text-[15px] leading-relaxed text-[#9ca3af]">{f.a}</p>
               </details>
             ))}
           </div>

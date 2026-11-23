@@ -24,19 +24,19 @@ export default function WeekTimeline() {
         <li key={w.day} className="relative flex gap-4 sm:gap-6">
           <motion.span
             {...fade()}
-            className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[#e5e7eb] bg-white text-[12px] font-semibold text-slate-800"
+            className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-white/[0.09] bg-white text-[12px] font-semibold text-[#e5e7eb]"
           >
             {w.day}
           </motion.span>
           <div className="min-w-0 flex-1 space-y-2 pt-1">
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-600">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#9ca3af]">
               {w.day} · {w.time}
             </p>
             <motion.div
               {...fade(0.1)}
-              className={`max-w-md rounded-lg border border-[#e5e7eb] bg-white px-4 py-3 text-[14.5px] leading-relaxed text-slate-800`}
+              className={`max-w-md rounded-lg border border-white/[0.09] bg-white px-4 py-3 text-[14.5px] leading-relaxed text-[#e5e7eb]`}
             >
-              <span className="mb-0.5 block text-[11px] font-semibold text-slate-600">{w.from}</span>
+              <span className="mb-0.5 block text-[11px] font-semibold text-[#9ca3af]">{w.from}</span>
               {w.msg}
             </motion.div>
             {w.reply && (

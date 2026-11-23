@@ -19,32 +19,32 @@ export default function ContactPage() {
       <section id="audit" className="cy-shell cy-aurora relative isolate overflow-hidden">
         <div className="mx-auto grid max-w-6xl gap-12 px-5 pb-20 pt-14 sm:pt-20 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#4f46e5]">Contact · Free Automation Assessment</p>
-            <h1 className="max-w-xl text-[clamp(2.1rem,6.5vw,3.4rem)] font-semibold leading-[1.06] tracking-tight text-slate-900">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#a5b4fc]">Contact · Free Automation Assessment</p>
+            <h1 className="max-w-xl text-[clamp(2.1rem,6.5vw,3.4rem)] font-semibold leading-[1.06] tracking-tight text-[#f3f4f6]">
               <Accent>One</Accent> call and you&apos;ll know what to automate first.
             </h1>
-            <p className="mt-5 max-w-md text-[17px] leading-relaxed text-slate-600 sm:text-lg">
+            <p className="mt-5 max-w-md text-[17px] leading-relaxed text-[#9ca3af] sm:text-lg">
               Cytron specialises in repetitive office tasks. Tell us which one eats the day — stock, orders, dispatch or invoices. We&apos;ll come back with a clear plan.
             </p>
 
             <ol className="mt-10 space-y-5">
               {NEXT.map(({ icon: Icon, t, d }, i) => (
                 <li key={t} className="flex gap-4">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[#e5e7eb] bg-white text-slate-700"><Icon size={18} /></span>
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-white/[0.09] bg-white text-[#d1d5db]"><Icon size={18} /></span>
                   <div>
-                    <p className="text-[15.5px] font-semibold text-slate-900"><span className="mr-2 text-slate-500">{i + 1}.</span>{t}</p>
-                    <p className="mt-0.5 text-[14.5px] leading-relaxed text-slate-600">{d}</p>
+                    <p className="text-[15.5px] font-semibold text-[#f3f4f6]"><span className="mr-2 text-[#9ca3af]">{i + 1}.</span>{t}</p>
+                    <p className="mt-0.5 text-[14.5px] leading-relaxed text-[#9ca3af]">{d}</p>
                   </div>
                 </li>
               ))}
             </ol>
 
-            <div className="mt-10 rounded-[20px] border border-[#e7e7ec] bg-white p-6 shadow-[var(--cy-shadow)]">
-              <p className="mb-4 text-sm font-semibold text-slate-900">What you get from the assessment</p>
-              <ul className="space-y-2.5 text-[15px] text-slate-700">
-                {GET.map((g) => <li key={g} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-700" />{g}</li>)}
+            <div className="mt-10 rounded-[20px] border border-white/[0.09] bg-white p-6 shadow-[var(--cy-shadow)]">
+              <p className="mb-4 text-sm font-semibold text-[#f3f4f6]">What you get from the assessment</p>
+              <ul className="space-y-2.5 text-[15px] text-[#d1d5db]">
+                {GET.map((g) => <li key={g} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-400" />{g}</li>)}
               </ul>
-              <p className="mt-5 flex items-center gap-2 border-t border-[#e5e7eb] pt-4 text-[13.5px] text-slate-600"><MapPin size={15} /> Gold Coast, Queensland · in person or online</p>
+              <p className="mt-5 flex items-center gap-2 border-t border-white/[0.09] pt-4 text-[13.5px] text-[#9ca3af]"><MapPin size={15} /> Gold Coast, Queensland · in person or online</p>
             </div>
           </div>
           <div className="lg:sticky lg:top-24">
