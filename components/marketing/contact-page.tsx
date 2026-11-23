@@ -1,6 +1,5 @@
 "use client";
 
-import SoftShapes from "@/components/marketing/soft-shapes";
 import React from "react";
 import { CalendarCheck, Check, ClipboardList, MapPin, PhoneCall } from "lucide-react";
 import { Accent } from "@/components/site";
@@ -18,7 +17,6 @@ export default function ContactPage() {
   return (
     <div>
       <section id="audit" className="cy-shell cy-aurora relative isolate overflow-hidden">
-        <SoftShapes className="-right-24 -top-24 hidden w-[380px] lg:block" />
         <div className="mx-auto grid max-w-6xl gap-12 px-5 pb-20 pt-14 sm:pt-20 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div>
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#4f46e5]">Contact · Free Automation Assessment</p>

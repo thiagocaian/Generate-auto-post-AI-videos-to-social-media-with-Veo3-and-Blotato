@@ -1,5 +1,5 @@
 /*
- * Liquid glass material (light theme, Cytron lilac palette: lavender, pink, pale blue).
+ * Liquid glass material (light theme, Cytron lilac palette: lavender, pale blue, silver).
  * Only used inside the three glass panels; nothing here touches the page background.
  * One real backdrop-filter per panel; inner rows fake the glass with gradients + edges.
  */
@@ -45,7 +45,7 @@
   aspect-ratio: 1;
   right: -14%;
   top: 28%;
-  background: rgba(244, 164, 214, 0.42);
+  background: rgba(203, 213, 225, 0.5);
   animation: lg-drift-2 23s ease-in-out infinite alternate;
 }
 .lg-blob-3 {

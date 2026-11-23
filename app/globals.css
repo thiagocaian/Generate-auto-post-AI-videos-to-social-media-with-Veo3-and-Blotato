@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ── Cytron lilac surface system ─────────────────────────────
- * Warm off-white canvas, white rounded "shell" panels, soft lilac/pink accents.
+ * Canvas, rounded "shell" panels and soft accent washes.
  * Colour and surface only: layout and copy are unchanged. */
 :root {
   --cy-canvas: #f4f4f7;
@@ -12,7 +12,6 @@
   --cy-line: #e7e7ec;
   --cy-lilac: #d8b4fe;
   --cy-lavender: #c4b5fd;
-  --cy-pink: #fbcfe8;
   --cy-sky: #c7d7fe;
   --cy-mint: #c6f1de;
   --cy-shadow: 0 1px 2px rgba(17, 24, 39, 0.03), 0 12px 32px -14px rgba(17, 24, 39, 0.1);
@@ -35,11 +34,11 @@
     }
   }
 
-  /* Soft mesh/aurora wash for hero and feature banners: lilac, pink, pale blue, a touch of mint. */
+  /* Soft mesh wash for hero and feature banners (no pink). */
   .cy-aurora {
     background:
       radial-gradient(55% 75% at 88% 8%, rgba(216, 180, 254, 0.5) 0%, rgba(216, 180, 254, 0) 70%),
-      radial-gradient(45% 65% at 100% 85%, rgba(251, 207, 232, 0.55) 0%, rgba(251, 207, 232, 0) 70%),
+      radial-gradient(45% 65% at 100% 85%, rgba(199, 215, 254, 0.45) 0%, rgba(199, 215, 254, 0) 70%),
       radial-gradient(40% 60% at 55% 105%, rgba(199, 215, 254, 0.5) 0%, rgba(199, 215, 254, 0) 70%),
       radial-gradient(35% 55% at 0% 100%, rgba(198, 241, 222, 0.45) 0%, rgba(198, 241, 222, 0) 70%),
       #fcfbff;
@@ -47,37 +46,9 @@
   /* Lavender feature banner (closing call to action). */
   .cy-banner {
     background:
-      radial-gradient(60% 120% at 100% 0%, rgba(251, 207, 232, 0.7) 0%, rgba(251, 207, 232, 0) 65%),
+      radial-gradient(60% 120% at 100% 0%, rgba(199, 215, 254, 0.6) 0%, rgba(199, 215, 254, 0) 65%),
       radial-gradient(50% 100% at 70% 110%, rgba(199, 215, 254, 0.6) 0%, rgba(199, 215, 254, 0) 70%),
       linear-gradient(120deg, #f1eafe 0%, #e9defd 55%, #efe4fb 100%);
-  }
-
-  .cy-shapes {
-    position: absolute;
-    z-index: -1;
-    width: 360px;
-    aspect-ratio: 1;
-    pointer-events: none;
-  }
-  .cy-petal {
-    position: absolute;
-    left: 50%;
-    top: 40%;
-    width: 50%;
-    height: 20%;
-    transform-origin: 0 50%;
-    border-radius: 100% 0;
-    background: linear-gradient(100deg, rgba(196, 181, 253, 0.55) 0%, rgba(216, 180, 254, 0.5) 55%, rgba(251, 207, 232, 0.6) 100%);
-  }
-  .cy-petal-core {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 16%;
-    aspect-ratio: 1;
-    border-radius: 9999px;
-    transform: translate(-50%, -50%);
-    background: linear-gradient(135deg, #ede9fe, #fbcfe8);
   }
 }
 

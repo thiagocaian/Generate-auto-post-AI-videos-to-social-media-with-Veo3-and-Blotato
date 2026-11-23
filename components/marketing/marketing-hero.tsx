@@ -6,7 +6,6 @@ import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "fr
 import { Play } from "lucide-react";
 import HeroFlow, { HERO_FLOW_SUMMARY } from "@/components/marketing/hero-flow";
 import HeroConstellation from "@/components/marketing/hero-constellation";
-import SoftShapes from "@/components/marketing/soft-shapes";
 import { useSiteNavigate } from "@/components/page-transition";
 
 export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
@@ -37,8 +36,6 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
       id="hero"
       className="cy-shell cy-aurora relative isolate overflow-hidden"
     >
-      <SoftShapes className="-right-24 -top-28 hidden w-[420px] md:block" />
-      <SoftShapes className="-bottom-24 -left-28 w-[260px] opacity-70" />
       <HeroConstellation reduced={reduced} />
       <div className="relative z-10 mx-auto flex max-w-6xl flex-col xl:min-h-[calc(90vh-4rem)] xl:flex-row xl:items-center">
         <div className="relative z-10 w-full px-5 pb-8 pt-14 md:pb-4 xl:w-[47%] xl:shrink-0 xl:py-16">

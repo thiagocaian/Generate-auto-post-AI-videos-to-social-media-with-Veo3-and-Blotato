@@ -4,7 +4,6 @@ import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { BTN_PRIMARY, BTN_SECONDARY } from "@/components/site";
-import SoftShapes from "@/components/marketing/soft-shapes";
 
 /** Top block for inner pages: same type scale and soft gradient as the home hero. */
 export function PageIntro({
@@ -24,7 +23,6 @@ export function PageIntro({
   const rise = (d = 0) => (reduced ? {} : { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { delay: d, duration: 0.4, ease: "easeOut" as const } });
   return (
     <section className="cy-shell cy-aurora relative isolate overflow-hidden">
-      <SoftShapes className="-right-24 -top-24 w-[300px] sm:w-[400px]" />
       <div className={`mx-auto grid max-w-6xl gap-12 px-5 pb-16 pt-14 sm:pb-20 sm:pt-20 ${aside ? "lg:grid-cols-[1.1fr_0.9fr] lg:items-center" : ""}`}>
         <div>
           <motion.p {...rise()} className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#4f46e5]">{eyebrow}</motion.p>
@@ -76,7 +74,6 @@ export function CtaBand({
     <section className="bg-transparent py-16 sm:py-20">
       <div className="mx-auto max-w-6xl px-5">
         <div className="cy-banner relative isolate flex flex-col items-start justify-between gap-8 overflow-hidden rounded-[28px] border border-[#e4dcfb] p-8 sm:p-10 lg:flex-row lg:items-center">
-          <SoftShapes className="-right-20 -top-28 w-[280px] opacity-80 sm:-top-32 sm:w-[340px]" />
           <div className="max-w-2xl">
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Free Automation Assessment</p>
             <h2 className="text-[26px] font-semibold leading-snug tracking-tight text-slate-900 sm:text-[32px]">{title}</h2>
