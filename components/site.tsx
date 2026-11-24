@@ -17,11 +17,15 @@ export const BTN_PRIMARY =
 export const BTN_SECONDARY =
   "inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-[#eeedf7] px-5 py-2.5 text-sm font-semibold text-[#0f1222] transition-colors hover:bg-[#e3e1f2]";
 
+/** Cytron mark: white C ring with a diagonal opening and a periwinkle dot on a
+ *  navy rounded tile. Inline SVG traced from the brand PNG so it stays crisp. */
 export function CytronLogo({ size = 28 }: { size?: number }) {
   return (
-    <div className="flex items-center justify-center rounded-md bg-[#3f37a2]" style={{ width: size, height: size }}>
-      <span className="font-bold text-white" style={{ fontSize: size * 0.48 }}>C</span>
-    </div>
+    <svg width={size} height={size} viewBox="0 0 1024 1024" aria-hidden="true" focusable="false" className="block shrink-0">
+      <rect width="1024" height="1024" rx="224" fill="#0B1020" />
+      <path d="M713.1 309.2A280 280 0 1 0 713.1 714.8L611 607.6A132 132 0 1 1 611 416.4Z" fill="#FFFFFF" />
+      <circle cx="725.5" cy="511.5" r="60" fill="#8B8CFF" />
+    </svg>
   );
 }
 
