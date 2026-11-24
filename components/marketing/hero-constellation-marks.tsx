@@ -11,11 +11,13 @@
 import React from "react";
 import type { ConstellationId } from "./hero-constellation-data";
 
+// Served from /public/integrations, not /public/marketing: /marketing is a
+// protected app prefix, so middleware would redirect those URLs to /login.
 const OFFICIAL_SRC: Partial<Record<ConstellationId, string>> = {
-  afterpay: "/marketing/integrations/afterpay.svg",
-  excel: "/marketing/integrations/excel.svg",
-  outlook: "/marketing/integrations/outlook.svg",
-  servicem8: "/marketing/integrations/servicem8.svg",
+  afterpay: "/integrations/afterpay.svg",
+  excel: "/integrations/excel.svg",
+  outlook: "/integrations/outlook.svg",
+  servicem8: "/integrations/servicem8.svg",
 };
 
 function ShippingMark() {
