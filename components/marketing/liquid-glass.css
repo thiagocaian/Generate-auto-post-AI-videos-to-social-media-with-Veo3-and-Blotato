@@ -1,7 +1,8 @@
 /*
- * Liquid glass material (light theme, Cytron indigo).
- * Only used inside the three glass panels; nothing here touches the page background.
- * One real backdrop-filter per panel; inner rows fake the glass with gradients + edges.
+ * Frosted glass (light theme, Cytron Wedge palette).
+ * Tuned to the "Glassy CRM" reference: even 1px edge, modest frost,
+ * no 3D tilt, no drifting colour blobs, no sweeping sheen.
+ * One real backdrop-filter per full panel; lite cards skip the blur.
  */
 
 .lg-stage {
@@ -12,70 +13,27 @@
 .lg-tilt {
   position: relative;
   border-radius: inherit;
-  transform: perspective(1100px) rotateX(var(--lg-rx, 0deg)) rotateY(var(--lg-ry, 0deg));
-  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-  will-change: transform;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* Soft colour shapes behind the glass, clipped to the panel shape. */
+/* Small repeated cards lift 5px on hover, like the reference. Large panels stay still. */
+@media (hover: hover) and (pointer: fine) {
+  .lg-stage[data-lite]:hover .lg-tilt {
+    transform: translateY(-5px);
+  }
+}
+
+/* Empty on purpose: the panel blurs the real page behind it, not painted blobs. */
 .lg-backdrop {
   position: absolute;
   inset: 0;
   border-radius: inherit;
   overflow: hidden;
   pointer-events: none;
-  background: linear-gradient(160deg, #f4f3ff 0%, #f8f7fd 55%, #f1f0fb 100%);
+  background: transparent;
 }
 .lg-blob {
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(36px);
-  will-change: transform;
-}
-.lg-blob-1 {
-  width: 62%;
-  aspect-ratio: 1;
-  left: -12%;
-  top: -10%;
-  background: rgba(71, 63, 178, 0.3);
-  animation: lg-drift-1 19s ease-in-out infinite alternate;
-}
-.lg-blob-2 {
-  width: 54%;
-  aspect-ratio: 1;
-  right: -14%;
-  top: 28%;
-  background: rgba(134, 140, 232, 0.32);
-  animation: lg-drift-2 23s ease-in-out infinite alternate;
-}
-.lg-blob-3 {
-  width: 50%;
-  aspect-ratio: 1;
-  left: 18%;
-  bottom: -18%;
-  background: rgba(196, 190, 245, 0.5);
-  animation: lg-drift-3 17s ease-in-out infinite alternate;
-}
-/* Tall panels (mobile timeline): repeat the shapes down the panel. */
-.lg-backdrop[data-tall="true"] .lg-blob { width: auto; height: 34%; }
-.lg-backdrop[data-tall="true"] .lg-blob-1 { top: -4%; }
-.lg-backdrop[data-tall="true"] .lg-blob-2 { top: 34%; }
-.lg-backdrop[data-tall="true"] .lg-blob-3 { bottom: -4%; }
-
-@keyframes lg-drift-1 {
-  0% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(14%, 10%, 0) scale(1.08); }
-  100% { transform: translate3d(6%, 22%, 0) scale(0.96); }
-}
-@keyframes lg-drift-2 {
-  0% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(-16%, -8%, 0) scale(1.1); }
-  100% { transform: translate3d(-8%, 12%, 0) scale(0.95); }
-}
-@keyframes lg-drift-3 {
-  0% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(12%, -14%, 0) scale(1.06); }
-  100% { transform: translate3d(-10%, -6%, 0) scale(1); }
+  display: none;
 }
 
 /* The glass itself. */
@@ -84,97 +42,42 @@
   isolation: isolate;
   overflow: hidden;
   border-radius: inherit;
-  background:
-    radial-gradient(120% 80% at 0% 0%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.25));
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  backdrop-filter: blur(24px) saturate(160%);
+  background: rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  backdrop-filter: blur(16px) saturate(120%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 1px 0 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1px 0 rgba(63, 55, 162, 0.06),
-    0 1px 2px rgba(15, 23, 42, 0.05),
-    0 14px 34px -8px rgba(30, 27, 75, 0.14);
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 0 0 1px rgba(15, 18, 34, 0.10),
+    0 1px 2px rgba(15, 18, 34, 0.04),
+    0 12px 28px -12px rgba(15, 18, 34, 0.14);
 }
-/* Specular gradient edge: bright top-left, fading bottom-right. */
-.lg-panel::before,
-.lg-row::before,
-.lg-hover-pill::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.55) 35%, rgba(160, 156, 200, 0.22) 75%, rgba(160, 156, 200, 0.32) 100%);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  pointer-events: none;
-  z-index: 3;
-}
-/* Diagonal sheen sweeping across every ~7s. */
-.lg-panel::after {
-  content: "";
-  position: absolute;
-  top: -40%;
-  bottom: -40%;
-  left: 0;
-  width: 32%;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
-  transform: translate3d(-180%, 0, 0) skewX(-20deg);
-  animation: lg-sheen 7s cubic-bezier(0.45, 0, 0.25, 1) infinite;
-  animation-delay: var(--lg-sheen-delay, 1.2s);
-  pointer-events: none;
-  z-index: 2;
-}
-@keyframes lg-sheen {
-  0% { transform: translate3d(-180%, 0, 0) skewX(-20deg); }
-  32% { transform: translate3d(420%, 0, 0) skewX(-20deg); }
-  100% { transform: translate3d(420%, 0, 0) skewX(-20deg); }
-}
+
 .lg-content {
   position: relative;
   z-index: 1;
 }
 
-/* Pointer reflection (desktop only, driven by --lg-mx / --lg-my). */
+/* Pointer glare is unused in this treatment. */
 .lg-glare {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 2;
-  opacity: 0;
-  transition: opacity 0.35s ease;
-  background: radial-gradient(260px circle at var(--lg-mx, 20%) var(--lg-my, 0%), rgba(255, 255, 255, 0.6), rgba(207, 203, 239, 0.16) 45%, rgba(255, 255, 255, 0) 70%);
+  display: none;
 }
-.lg-tilt[data-hover="true"] .lg-glare { opacity: 1; }
 
 /* Inner rows: a second glass layer, no backdrop-filter. */
 .lg-row {
   position: relative;
   isolation: isolate;
-  background:
-    radial-gradient(90% 120% at 0% 0%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 60%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.34));
+  background: rgba(255, 255, 255, 0.55);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 4px 12px -6px rgba(30, 27, 75, 0.1);
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 0 0 1px rgba(15, 18, 34, 0.08),
+    0 1px 2px rgba(15, 18, 34, 0.03);
 }
 .lg-row-active {
-  background:
-    radial-gradient(90% 120% at 0% 0%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 60%),
-    linear-gradient(135deg, rgba(63, 55, 162, 0.16), rgba(134, 140, 232, 0.09));
+  background: rgba(63, 55, 162, 0.10);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    inset 0 -1px 0 rgba(63, 55, 162, 0.12),
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 6px 16px -8px rgba(63, 55, 162, 0.28);
-}
-.lg-row-active::before {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(207, 203, 239, 0.8) 45%, rgba(63, 55, 162, 0.35) 100%);
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 0 0 1px rgba(63, 55, 162, 0.18),
+    0 1px 2px rgba(15, 18, 34, 0.03);
 }
 .lg-row > :not(.lg-hover-pill) {
   position: relative;
@@ -188,46 +91,31 @@
   border-radius: inherit;
   z-index: 0;
   pointer-events: none;
-  background:
-    radial-gradient(80% 140% at 0% 0%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 60%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(226, 223, 250, 0.28));
-  box-shadow: 0 0 0 1px rgba(63, 55, 162, 0.16), 0 8px 20px -8px rgba(30, 27, 75, 0.25), inset 0 1px 0 #fff;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 0 0 1px rgba(63, 55, 162, 0.14);
 }
 
-/* Touch / coarse pointers: no tilt or glare. */
 @media (hover: none), (pointer: coarse) {
-  .lg-tilt { transform: none; transition: none; will-change: auto; }
-  .lg-glare { display: none; }
+  .lg-tilt { transform: none; transition: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lg-blob,
-  .lg-panel::after { animation: none !important; }
-  .lg-panel::after { display: none; }
   .lg-tilt { transform: none !important; transition: none; }
-  .lg-glare { display: none; }
+  .lg-stage[data-lite]:hover .lg-tilt { transform: none; }
 }
 
 /* ── Lite glass cards (other pages) ──────────────────────────────────────────
- * Same material as the panels, built to repeat: no backdrop-filter, no filter
- * blur (soft radial-gradient shapes instead), no permanent layer promotion,
- * and drift + sheen pause while the card is off screen (data-inview). */
+ * Same edge and fill language, built to repeat: no backdrop-filter. */
 .lg-stage[data-fill] { height: 100%; }
 .lg-stage[data-fill] > .lg-tilt,
 .lg-stage[data-fill] .lg-panel,
 .lg-stage[data-fill] .lg-content { height: 100%; }
 
 .lg-stage[data-lite] .lg-tilt { will-change: auto; }
-.lg-stage[data-lite] .lg-blob { filter: none; }
-.lg-stage[data-lite] .lg-blob-1 { background: radial-gradient(closest-side, rgba(71, 63, 178, 0.38), rgba(71, 63, 178, 0)); width: 80%; left: -20%; top: -25%; }
-.lg-stage[data-lite] .lg-blob-2 { background: radial-gradient(closest-side, rgba(134, 140, 232, 0.42), rgba(134, 140, 232, 0)); width: 70%; right: -22%; top: 20%; }
-.lg-stage[data-lite] .lg-blob-3 { background: radial-gradient(closest-side, rgba(196, 190, 245, 0.6), rgba(196, 190, 245, 0)); width: 66%; left: 12%; bottom: -30%; }
 .lg-stage[data-lite] .lg-panel {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  background:
-    radial-gradient(120% 80% at 0% 0%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.28));
+  background: rgba(255, 255, 255, 0.86);
 }
-.lg-stage[data-lite][data-inview="false"] .lg-blob,
-.lg-stage[data-lite][data-inview="false"] .lg-panel::after { animation-play-state: paused; }
