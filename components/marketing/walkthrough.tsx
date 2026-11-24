@@ -38,7 +38,7 @@ function WalkthroughHeader() {
       <Heading>
         From missed call to <Accent>paid invoice</Accent>.
       </Heading>
-      <p className="mt-4 max-w-2xl leading-relaxed text-slate-600">
+      <p className="mt-4 max-w-2xl leading-relaxed text-[#4b5067]">
         One enquiry, handled in the background. Your team only steps in if something is unclear.
       </p>
     </div>
@@ -65,8 +65,8 @@ function StepCard({ index, reduced }: { index: number; reduced: boolean }) {
     );
 
   return (
-    <div className="flex h-full min-h-[22rem] flex-col rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm sm:p-7">
-      <p className="mb-5 text-sm font-semibold text-slate-800">{STEPS[index].label}</p>
+    <div className="flex h-full min-h-[22rem] flex-col rounded-xl border border-[#e7e6f0] bg-white p-6 shadow-sm sm:p-7">
+      <p className="mb-5 text-sm font-semibold text-[#1a1d33]">{STEPS[index].label}</p>
       <div className="flex flex-1 flex-col justify-center">{inner}</div>
     </div>
   );
@@ -103,16 +103,16 @@ function StepList({
                     ? "bg-emerald-700 text-white"
                     : current
                       ? "bg-[#5b5cf6] text-white"
-                      : "border border-[#e5e7eb] bg-white text-slate-700"
+                      : "border border-[#e7e6f0] bg-white text-[#2e3248]"
                 }`}
               >
                 {done ? <Check size={12} strokeWidth={3} /> : i + 1}
               </span>
               <span className="min-w-0">
-                <span className={`block text-[15px] font-semibold ${current || done ? "text-slate-900" : "text-slate-700"}`}>
+                <span className={`block text-[15px] font-semibold ${current || done ? "text-[#0f1222]" : "text-[#2e3248]"}`}>
                   {s.label}
                 </span>
-                <span className="mt-0.5 block text-[13px] leading-relaxed text-slate-600">{s.detail}</span>
+                <span className="mt-0.5 block text-[13px] leading-relaxed text-[#4b5067]">{s.detail}</span>
               </span>
             </Tag>
           </li>
@@ -155,7 +155,7 @@ function DesktopWalkthrough() {
           </div>
           <div className="grid grid-cols-[0.9fr_1.1fr] items-stretch gap-12">
             <div className="relative pl-1">
-              <div className="pointer-events-none absolute bottom-3 left-[22px] top-3 w-px bg-[#e5e7eb]" aria-hidden />
+              <div className="pointer-events-none absolute bottom-3 left-[22px] top-3 w-px bg-[#e7e6f0]" aria-hidden />
               <motion.div
                 className="pointer-events-none absolute left-[22px] top-3 w-px origin-top bg-[#5b5cf6]"
                 style={{ height: lineHeight }}
@@ -198,13 +198,13 @@ function MobileStep({ index }: { index: number }) {
       animate={show ? { opacity: 1, y: 0 } : undefined}
       transition={{ duration: 0.35, ease: "easeOut" }}
     >
-      <p className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-slate-900">
+      <p className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-[#0f1222]">
         <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#5b5cf6] text-[11px] font-semibold text-white">
           {index + 1}
         </span>
         {s.label}
       </p>
-      <p className="mb-3 text-[13px] leading-relaxed text-slate-600">{s.detail}</p>
+      <p className="mb-3 text-[13px] leading-relaxed text-[#4b5067]">{s.detail}</p>
       {show ? <StepCard index={index} reduced={reduced} /> : <div className="h-40" aria-hidden />}
     </motion.li>
   );
@@ -237,7 +237,7 @@ export default function Walkthrough() {
   const reduced = useReducedMotion() === true;
 
   return (
-    <section id="walkthrough" aria-label="From missed call to paid invoice" className="bg-[#f7f8fa]">
+    <section id="walkthrough" aria-label="From missed call to paid invoice" className="bg-[#f6f5ff]">
       {reduced ? (
         <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
           <WalkthroughHeader />

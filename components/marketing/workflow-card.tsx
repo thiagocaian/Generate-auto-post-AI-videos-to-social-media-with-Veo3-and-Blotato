@@ -114,15 +114,15 @@ export default function WorkflowCard() {
   return (
     <div
       ref={rootRef}
-      className="relative w-full max-w-md rounded-xl border border-[#e5e7eb] bg-white p-4 shadow-sm sm:p-5"
+      className="relative w-full max-w-md rounded-xl border border-[#e7e6f0] bg-white p-4 shadow-sm sm:p-5"
       aria-label="Enquiry to invoice, live demonstration"
     >
       <div className="mb-3 flex items-center justify-between gap-2 sm:mb-4">
-        <div className="flex items-center gap-2 text-[13px] font-semibold text-slate-800">
+        <div className="flex items-center gap-2 text-[13px] font-semibold text-[#1a1d33]">
           <span className="inline-flex h-2 w-2 rounded-full bg-[#5b5cf6]" />
           Enquiry to invoice · live
         </div>
-        <span className="text-[11px] font-medium tabular-nums text-slate-600">
+        <span className="text-[11px] font-medium tabular-nums text-[#4b5067]">
           {clock}
         </span>
       </div>
@@ -151,23 +151,23 @@ export default function WorkflowCard() {
               <motion.div
                 className={`relative flex items-center gap-3 rounded-lg border px-3 py-1.5 sm:py-2.5 ${
                   done
-                    ? "border-[#e5e7eb] bg-white"
+                    ? "border-[#e7e6f0] bg-white"
                     : active
                       ? "border-[#5b5cf6] bg-white"
-                      : "border-transparent bg-[#f7f8fa]"
+                      : "border-transparent bg-[#f6f5ff]"
                 }`}
               >
                 <div
                   className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-md sm:h-9 sm:w-9 ${
-                    done ? "bg-emerald-50 text-emerald-700" : active ? "text-white" : "bg-slate-100 text-slate-500"
+                    done ? "bg-emerald-50 text-emerald-700" : active ? "text-white" : "bg-slate-100 text-[#5b6078]"
                   }`}
                   style={active ? { background: ACCENT } : undefined}
                 >
                   {done ? <Check size={17} /> : <Icon size={17} />}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[13px] font-semibold text-slate-900 sm:truncate sm:text-[13.5px]">{s.label}{smsLabel && <span className="font-medium text-slate-600">{smsLabel}</span>}</p>
-                  <p className={`text-[12px] text-slate-600 ${active && i === 1 ? "whitespace-normal" : "truncate"}`}>{detail}</p>
+                  <p className="text-[13px] font-semibold text-[#0f1222] sm:truncate sm:text-[13.5px]">{s.label}{smsLabel && <span className="font-medium text-[#4b5067]">{smsLabel}</span>}</p>
+                  <p className={`text-[12px] text-[#4b5067] ${active && i === 1 ? "whitespace-normal" : "truncate"}`}>{detail}</p>
                 </div>
               </motion.div>
             </li>

@@ -63,14 +63,14 @@ export default function Home() {
     reduced ? {} : { initial: { opacity: 0, y: 8 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.4 }, transition: { delay: i * 0.05, duration: 0.35 } };
 
   return (
-    <div className="bg-white text-slate-900">
+    <div className="bg-white text-[#0f1222]">
       <LegacyHashRedirect />
       <MarketingHero />
       <WeekMetrics />
 
-      <section className="border-b border-[#e5e7eb] bg-white py-6">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-2 px-5 text-sm text-slate-600">
-          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Works with</span>
+      <section className="border-b border-[#e7e6f0] bg-white py-6">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-2 px-5 text-sm text-[#4b5067]">
+          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[#4b5067]">Works with</span>
           {TOOLS.map((t) => <span key={t}>{t}</span>)}
         </div>
       </section>
@@ -90,13 +90,13 @@ export default function Home() {
             </div>
             <TextLink href="/services">All services</TextLink>
           </div>
-          <div className="mt-10 grid overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#e5e7eb] sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 1 }}>
+          <div className="mt-10 grid overflow-hidden rounded-xl border border-[#e7e6f0] bg-[#e7e6f0] sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 1 }}>
             {SERVICES.map(({ icon: Icon, t, d }, i) => (
-              <motion.a key={t} href="/services" {...rise(i)} className="group flex gap-4 bg-white p-6 transition-colors hover:bg-[#fafafb]">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[#e5e7eb] text-slate-700 transition-colors group-hover:border-[#c7c8f8] group-hover:text-[#5b5cf6]"><Icon size={18} /></span>
+              <motion.a key={t} href="/services" {...rise(i)} className="group flex gap-4 bg-white p-6 transition-colors hover:bg-[#f8f7ff]">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[#e7e6f0] text-[#2e3248] transition-colors group-hover:border-[#c7c8f8] group-hover:text-[#5b5cf6]"><Icon size={18} /></span>
                 <span>
-                  <span className="block text-[16px] font-semibold text-slate-900">{t}</span>
-                  <span className="mt-1 block text-[14.5px] leading-relaxed text-slate-600">{d}</span>
+                  <span className="block text-[16px] font-semibold text-[#0f1222]">{t}</span>
+                  <span className="mt-1 block text-[14.5px] leading-relaxed text-[#4b5067]">{d}</span>
                 </span>
               </motion.a>
             ))}
@@ -105,7 +105,7 @@ export default function Home() {
       </section>
 
       {/* How it works teaser */}
-      <section className="bg-[#f7f8fa] py-20 sm:py-24">
+      <section className="bg-[#f6f5ff] py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
@@ -116,27 +116,27 @@ export default function Home() {
           </div>
           <ol className="relative mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((s, i) => (
-              <motion.li key={s.n} {...rise(i)} className="relative rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm">
+              <motion.li key={s.n} {...rise(i)} className="relative rounded-xl border border-[#e7e6f0] bg-white p-6 shadow-sm">
                 <p className="text-sm font-semibold text-[#5b5cf6]">{s.n}</p>
-                <h3 className="mt-2 text-lg font-semibold text-slate-900">{s.t}</h3>
-                <p className="mt-1.5 text-[14.5px] leading-relaxed text-slate-600">{s.d}</p>
+                <h3 className="mt-2 text-lg font-semibold text-[#0f1222]">{s.t}</h3>
+                <p className="mt-1.5 text-[14.5px] leading-relaxed text-[#4b5067]">{s.d}</p>
               </motion.li>
             ))}
           </ol>
-          <div className="mt-14 border-t border-[#e5e7eb] pt-12">
+          <div className="mt-14 border-t border-[#e7e6f0] pt-12">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5b5cf6]">Secure by design</p>
-            <h3 className="mt-3 max-w-2xl text-[22px] font-semibold tracking-tight text-slate-900 sm:text-[26px]">
+            <h3 className="mt-3 max-w-2xl text-[22px] font-semibold tracking-tight text-[#0f1222] sm:text-[26px]">
               Secure by design, built by a team with a cyber security practice.
             </h3>
-            <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-slate-600">
+            <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-[#4b5067]">
               Automations run in the background on our own servers, with a person in the loop when something is off.
             </p>
             <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {SECURITY.map((s, i) => (
-                <motion.li key={s.t} {...rise(i)} className="rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm">
-                  <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-md border border-[#e5e7eb] text-slate-700"><ShieldCheck size={18} /></span>
-                  <h4 className="text-[16px] font-semibold text-slate-900">{s.t}</h4>
-                  <p className="mt-1.5 text-[14.5px] leading-relaxed text-slate-600">{s.d}</p>
+                <motion.li key={s.t} {...rise(i)} className="rounded-xl border border-[#e7e6f0] bg-white p-6 shadow-sm">
+                  <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-md border border-[#e7e6f0] text-[#2e3248]"><ShieldCheck size={18} /></span>
+                  <h4 className="text-[16px] font-semibold text-[#0f1222]">{s.t}</h4>
+                  <p className="mt-1.5 text-[14.5px] leading-relaxed text-[#4b5067]">{s.d}</p>
                 </motion.li>
               ))}
             </ul>
@@ -156,10 +156,10 @@ export default function Home() {
           </div>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {USE_CASES.map(({ icon: Icon, t, d, href }, i) => (
-              <motion.a key={t} href={href} {...rise(i)} className="group block rounded-xl border border-[#e5e7eb] bg-white p-6 shadow-sm transition-colors hover:border-slate-300">
-                <span className="mb-5 flex h-10 w-10 items-center justify-center rounded-md border border-[#e5e7eb] text-slate-700"><Icon size={18} /></span>
-                <h3 className="text-[16px] font-semibold text-slate-900">{t}</h3>
-                <p className="mt-1.5 text-[14.5px] leading-relaxed text-slate-600">{d}</p>
+              <motion.a key={t} href={href} {...rise(i)} className="group block rounded-xl border border-[#e7e6f0] bg-white p-6 shadow-sm transition-colors hover:border-slate-300">
+                <span className="mb-5 flex h-10 w-10 items-center justify-center rounded-md border border-[#e7e6f0] text-[#2e3248]"><Icon size={18} /></span>
+                <h3 className="text-[16px] font-semibold text-[#0f1222]">{t}</h3>
+                <p className="mt-1.5 text-[14.5px] leading-relaxed text-[#4b5067]">{d}</p>
               </motion.a>
             ))}
           </div>
@@ -167,13 +167,13 @@ export default function Home() {
       </section>
 
       {/* Pricing teaser */}
-      <section className="border-y border-[#e5e7eb] bg-[#f7f8fa] py-14">
+      <section className="border-y border-[#e7e6f0] bg-[#f6f5ff] py-14">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 md:flex-row md:items-center md:justify-between">
           <div>
             <Eyebrow>Pricing</Eyebrow>
-            <p className="text-[22px] font-semibold tracking-tight text-slate-900 sm:text-[26px]">Office tasks. Pay for what works.</p>
+            <p className="text-[22px] font-semibold tracking-tight text-[#0f1222] sm:text-[26px]">Office tasks. Pay for what works.</p>
           </div>
-          <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[15px] text-slate-700">
+          <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[15px] text-[#2e3248]">
             {["Starter $349/mo", "Growth $649/mo", "Business $999/mo", "Enterprise $1,499+/mo"].map((t) => (
               <li key={t} className="flex items-center gap-2"><Check size={16} className="text-emerald-700" />{t}</li>
             ))}

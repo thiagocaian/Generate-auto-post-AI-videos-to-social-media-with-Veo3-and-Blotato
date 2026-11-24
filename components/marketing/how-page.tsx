@@ -60,20 +60,20 @@ export default function HowPage() {
           <div>
             <Eyebrow>Once it runs</Eyebrow>
             <Heading>Every area has its own check, <Accent>at its own time</Accent>.</Heading>
-            <p className="mt-4 text-[15px] leading-relaxed text-slate-600">You choose when each area is checked. If nothing is flagged, everything in that area passed. Example schedule below.</p>
+            <p className="mt-4 text-[15px] leading-relaxed text-[#4b5067]">You choose when each area is checked. If nothing is flagged, everything in that area passed. Example schedule below.</p>
           </div>
-          <ol className="relative space-y-3 before:absolute before:bottom-4 before:left-[15px] before:top-4 before:w-px before:bg-[#e5e7eb]">
+          <ol className="relative space-y-3 before:absolute before:bottom-4 before:left-[15px] before:top-4 before:w-px before:bg-[#e7e6f0]">
             {CARE_SCHEDULE.map((c, i) => (
               <li key={c.area} className="relative flex gap-4">
-                <span className="relative z-10 mt-5 flex h-[31px] w-[31px] shrink-0 items-center justify-center rounded-full border border-[#e5e7eb] bg-white">
+                <span className="relative z-10 mt-5 flex h-[31px] w-[31px] shrink-0 items-center justify-center rounded-full border border-[#e7e6f0] bg-white">
                   <span className="h-2 w-2 rounded-full bg-[#5b5cf6]" />
                 </span>
                 <LiquidGlass reduced={reduced} lite className="flex-1" panelClassName="p-5" sheenDelay={`${i * 0.8 + 0.6}s`}>
                   <div className="flex flex-wrap items-baseline gap-x-3">
-                    <span className="text-sm font-semibold text-slate-600">{c.time}</span>
-                    <span className="font-semibold text-slate-900">{c.area}</span>
+                    <span className="text-sm font-semibold text-[#4b5067]">{c.time}</span>
+                    <span className="font-semibold text-[#0f1222]">{c.area}</span>
                   </div>
-                  <p className="mt-2 text-[14.5px] leading-relaxed text-slate-600">{c.check}</p>
+                  <p className="mt-2 text-[14.5px] leading-relaxed text-[#4b5067]">{c.check}</p>
                 </LiquidGlass>
               </li>
             ))}
@@ -81,15 +81,15 @@ export default function HowPage() {
         </div>
       </section>
 
-      <section className="bg-[#f7f8fa] py-20 sm:py-24">
+      <section className="bg-[#f6f5ff] py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <Eyebrow>Our principles</Eyebrow>
           <Heading>Automation you can trust with real customers.</Heading>
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {PRINCIPLES.map(({ icon: Icon, t, d }) => (
               <div key={t} className="flex gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[#e5e7eb] bg-white text-slate-700"><Icon size={18} /></div>
-                <div><h3 className="mb-1.5 text-lg font-semibold text-slate-900">{t}</h3><p className="text-[15px] leading-relaxed text-slate-600">{d}</p></div>
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[#e7e6f0] bg-white text-[#2e3248]"><Icon size={18} /></div>
+                <div><h3 className="mb-1.5 text-lg font-semibold text-[#0f1222]">{t}</h3><p className="text-[15px] leading-relaxed text-[#4b5067]">{d}</p></div>
               </div>
             ))}
           </div>

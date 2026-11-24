@@ -19,24 +19,24 @@ export default function WeekTimeline() {
       : { initial: { opacity: 0, y: 8 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.6 }, transition: { duration: 0.35, delay } };
 
   return (
-    <ol className="relative mt-10 space-y-6 before:absolute before:bottom-2 before:left-[22px] before:top-2 before:w-[2px] before:bg-[#e5e7eb]">
+    <ol className="relative mt-10 space-y-6 before:absolute before:bottom-2 before:left-[22px] before:top-2 before:w-[2px] before:bg-[#e7e6f0]">
       {WEEK.map((w) => (
         <li key={w.day} className="relative flex gap-4 sm:gap-6">
           <motion.span
             {...fade()}
-            className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[#e5e7eb] bg-white text-[12px] font-semibold text-slate-800"
+            className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[#e7e6f0] bg-white text-[12px] font-semibold text-[#1a1d33]"
           >
             {w.day}
           </motion.span>
           <div className="min-w-0 flex-1 space-y-2 pt-1">
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-600">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#4b5067]">
               {w.day} · {w.time}
             </p>
             <motion.div
               {...fade(0.1)}
-              className={`max-w-md rounded-lg border border-[#e5e7eb] bg-white px-4 py-3 text-[14.5px] leading-relaxed text-slate-800`}
+              className={`max-w-md rounded-lg border border-[#e7e6f0] bg-white px-4 py-3 text-[14.5px] leading-relaxed text-[#1a1d33]`}
             >
-              <span className="mb-0.5 block text-[11px] font-semibold text-slate-600">{w.from}</span>
+              <span className="mb-0.5 block text-[11px] font-semibold text-[#4b5067]">{w.from}</span>
               {w.msg}
             </motion.div>
             {w.reply && (

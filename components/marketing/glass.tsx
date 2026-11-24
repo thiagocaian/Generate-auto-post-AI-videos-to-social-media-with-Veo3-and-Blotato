@@ -18,7 +18,7 @@ export const GLASS_EASE: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 export const GLASS_DURATION = 0.45;
 
 /** Small uppercase section header, like MAIN / WORKSPACE in the reference. */
-export const GLASS_HEADER = "text-[10.5px] font-semibold uppercase tracking-[0.14em] text-slate-500";
+export const GLASS_HEADER = "text-[10.5px] font-semibold uppercase tracking-[0.14em] text-[#5b6078]";
 
 /** A row inside a panel. */
 export const GLASS_ROW = "relative flex items-center gap-2.5 rounded-xl px-2.5 py-2 transition-[background,box-shadow] duration-300";
@@ -202,7 +202,7 @@ export function GlassChevron({
       aria-controls={controls}
       aria-label={label}
       onClick={onClick}
-      className={`lg-row flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-600 transition-colors hover:text-[#4f46e5] ${GLASS_FOCUS} ${className}`}
+      className={`lg-row flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[#4b5067] transition-colors hover:text-[#4f46e5] ${GLASS_FOCUS} ${className}`}
       {...rest}
     >
       <GlassChevronIcon open={open} reduced={reduced} />

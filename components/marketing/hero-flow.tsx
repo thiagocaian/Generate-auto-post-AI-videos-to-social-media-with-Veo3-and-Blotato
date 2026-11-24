@@ -323,7 +323,7 @@ function NodeCard({
             ? "border-[#c7c8f8]"
             : state === "running"
               ? "border-[#5b5cf6]"
-              : "border-[#e5e7eb]"
+              : "border-[#e7e6f0]"
       }`}
       style={{
         width: NODE_W,
@@ -342,17 +342,17 @@ function NodeCard({
               ? "bg-emerald-50 text-emerald-700"
               : state === "running"
                 ? "bg-[#5b5cf6] text-white"
-                : "bg-[#f7f8fa] text-slate-700"
+                : "bg-[#f6f5ff] text-[#2e3248]"
         }`}
       >
         {state === "done" && !isHub ? <Check size={16} strokeWidth={2.5} /> : <Icon size={16} />}
       </span>
       <span className="min-w-0 flex-1">
-        <span className={`block truncate font-semibold tracking-tight text-slate-900 ${isHub ? "text-[13px]" : "text-[12px]"}`}>
+        <span className={`block truncate font-semibold tracking-tight text-[#0f1222] ${isHub ? "text-[13px]" : "text-[12px]"}`}>
           {node.title}
         </span>
         <span
-          className={`block leading-tight text-slate-600 ${
+          className={`block leading-tight text-[#4b5067] ${
             isHub
               ? "whitespace-nowrap text-[12px] tracking-normal"
               : "truncate text-[11px] tracking-tight"
@@ -455,7 +455,7 @@ function DesktopFlow({ time, reduced }: { time: number; reduced: boolean }) {
         return (
           <p
             key={lane.id}
-            className="absolute text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500"
+            className="absolute text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5b6078]"
             style={{ left: lane.x, top: lane.y, width: lane.w }}
           >
             {lane.label}
@@ -547,10 +547,10 @@ function MobileFlow({ time, reduced, settled }: { time: number; reduced: boolean
                 <span className={`${GLASS_HEADER} flex-1 transition-opacity duration-500 ${groupShown ? "opacity-100" : "opacity-50"}`}>
                   {group.label}
                 </span>
-                <span className="lg-row rounded-full px-1.5 py-0.5 text-[10.5px] font-semibold tabular-nums text-slate-600">
+                <span className="lg-row rounded-full px-1.5 py-0.5 text-[10.5px] font-semibold tabular-nums text-[#4b5067]">
                   {group.nodes.length}
                 </span>
-                <span aria-hidden className="lg-row flex h-6 w-6 items-center justify-center rounded-full text-slate-500">
+                <span aria-hidden className="lg-row flex h-6 w-6 items-center justify-center rounded-full text-[#5b6078]">
                   <GlassChevronIcon open={open} reduced={reduced} size={13} />
                 </span>
               </button>
@@ -597,15 +597,15 @@ function MobileFlow({ time, reduced, settled }: { time: number; reduced: boolean
                                 ? "bg-gradient-to-b from-[#6d6ef8] to-[#5b5cf6] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]"
                                 : state === "done"
                                   ? "lg-row text-emerald-700"
-                                  : "lg-row text-slate-600"
+                                  : "lg-row text-[#4b5067]"
                             }`}
                             aria-hidden
                           >
                             {state === "done" && !isHub ? <Check size={15} strokeWidth={2.5} /> : <Icon size={15} />}
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate text-[13px] font-semibold tracking-tight text-slate-900">{node.title}</span>
-                            <span className="block truncate text-[11.5px] leading-tight text-slate-600">{node.sub}</span>
+                            <span className="block truncate text-[13px] font-semibold tracking-tight text-[#0f1222]">{node.title}</span>
+                            <span className="block truncate text-[11.5px] leading-tight text-[#4b5067]">{node.sub}</span>
                           </span>
                         </div>
                       </motion.li>

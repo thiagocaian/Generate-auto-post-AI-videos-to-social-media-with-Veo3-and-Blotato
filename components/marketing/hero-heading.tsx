@@ -33,7 +33,7 @@ export default function HeroHeading() {
   const reduced = useReducedMotion() === true;
 
   return (
-    <h1 className="max-w-xl text-[28px] font-semibold leading-snug tracking-tight text-slate-900 sm:text-[40px] lg:text-[44px]">
+    <h1 className="max-w-xl text-[28px] font-semibold leading-snug tracking-tight text-[#0f1222] sm:text-[40px] lg:text-[44px]">
       <span className="sr-only">Automate the repetitive. Decide what matters.</span>
       <span aria-hidden="true" className="block">
         <span className="block">
@@ -44,7 +44,7 @@ export default function HeroHeading() {
           <Chip
             delay={0.28}
             reduced={reduced}
-            className="rounded-lg rounded-bl-sm border border-[#e5e7eb] bg-[#f7f8fa] px-2 py-1.5 text-slate-700"
+            className="rounded-lg rounded-bl-sm border border-[#e7e6f0] bg-[#f6f5ff] px-2 py-1.5 text-[#2e3248]"
           >
             Sorry we missed you…
           </Chip>
@@ -59,7 +59,7 @@ export default function HeroHeading() {
           <Chip
             delay={0.56}
             reduced={reduced}
-            className="rounded-md border border-[#e5e7eb] bg-white px-2 py-1.5 text-slate-700"
+            className="rounded-md border border-[#e7e6f0] bg-white px-2 py-1.5 text-[#2e3248]"
           >
             <Clock size={12} strokeWidth={2.25} />
             40s
