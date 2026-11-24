@@ -99,14 +99,14 @@ export default function PricingPage() {
                 reduced={reduced}
                 lite
                 fill
-                className={p.hot ? "ring-2 ring-[#5b5cf6]" : ""}
+                className={p.hot ? "ring-2 ring-[#3f37a2]" : ""}
                 panelClassName="p-7"
                 sheenDelay={`${i * 0.9 + 0.6}s`}
               >
                 <div className="relative flex h-full flex-col">
                   <div className="flex min-h-[26px] items-center justify-between">
                     {p.hot ? (
-                      <p className="rounded-full bg-[#eef0ff] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4f46e5]">Recommended</p>
+                      <p className="rounded-full bg-[#efedfb] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#3f37a2]">Recommended</p>
                     ) : (
                       <span aria-hidden className="h-[26px]" />
                     )}
@@ -121,7 +121,7 @@ export default function PricingPage() {
                   <ul className="mt-6 flex-1 space-y-2.5 text-[15px] text-[#2e3248]">
                     {p.f.map((f) => <li key={f} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-700" />{f}</li>)}
                   </ul>
-                  <a href="/contact" className={`mt-8 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors ${p.hot ? "bg-[#5b5cf6] text-white hover:bg-[#4f46e5]" : "border border-[#e7e6f0] bg-white text-[#1a1d33] hover:bg-[#f6f5ff]"}`}>
+                  <a href="/contact" className={`mt-8 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors ${p.hot ? "bg-[#3f37a2] text-white hover:bg-[#352e8c]" : "border border-[#e7e6f0] bg-white text-[#1a1d33] hover:bg-[#f6f5ff]"}`}>
                     {p.cta} <ChevronRight size={16} />
                   </a>
                 </div>

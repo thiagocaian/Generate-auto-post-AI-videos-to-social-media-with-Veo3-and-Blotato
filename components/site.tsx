@@ -7,19 +7,19 @@ import { ChevronRight, Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { activeNavHref, NAV_LINKS } from "@/lib/site-routes";
 
-export const ACCENT = "#5b5cf6";
-export const LILAC = "#8b8cff";
-export const GRADIENT = "#5b5cf6"; // solid accent — kept so existing style={{ background: GRADIENT }} stays valid
+export const ACCENT = "#3f37a2";
+export const LILAC = "#8f88d6";
+export const GRADIENT = "#3f37a2"; // solid accent — kept so existing style={{ background: GRADIENT }} stays valid
 
 export const CARD = "rounded-xl border border-[#e7e6f0] bg-white shadow-[0_1px_2px_rgba(15,18,34,0.04),0_10px_28px_-14px_rgba(63,55,162,0.14)]";
 export const BTN_PRIMARY =
-  "inline-flex items-center justify-center gap-2 rounded-lg bg-[#5b5cf6] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#4f46e5]";
+  "inline-flex items-center justify-center gap-2 rounded-lg bg-[#3f37a2] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#352e8c]";
 export const BTN_SECONDARY =
-  "inline-flex items-center justify-center gap-2 rounded-lg border border-[#e7e6f0] bg-white px-5 py-2.5 text-sm font-semibold text-[#1a1d33] transition-colors hover:bg-[#f6f5ff]";
+  "inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-[#eeedf7] px-5 py-2.5 text-sm font-semibold text-[#0f1222] transition-colors hover:bg-[#e3e1f2]";
 
 export function CytronLogo({ size = 28 }: { size?: number }) {
   return (
-    <div className="flex items-center justify-center rounded-md bg-[#5b5cf6]" style={{ width: size, height: size }}>
+    <div className="flex items-center justify-center rounded-md bg-[#3f37a2]" style={{ width: size, height: size }}>
       <span className="font-bold text-white" style={{ fontSize: size * 0.48 }}>C</span>
     </div>
   );
@@ -45,7 +45,7 @@ export function Heading({ children }: { children: React.ReactNode }) {
 }
 
 export function Accent({ children }: { children: React.ReactNode }) {
-  return <span className="text-[#5b5cf6]">{children}</span>;
+  return <span className="text-[#3f37a2]">{children}</span>;
 }
 
 export function SiteNav() {
@@ -112,7 +112,7 @@ export function SiteNav() {
                   {on && (
                     <motion.span
                       layoutId="nav-active"
-                      className="absolute inset-x-3 -bottom-[17px] h-[2px] rounded-full bg-[#5b5cf6]"
+                      className="absolute inset-x-3 -bottom-[17px] h-[2px] rounded-full bg-[#3f37a2]"
                       transition={{ duration: reduced ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
                     />
                   )}
@@ -168,10 +168,10 @@ export function SiteNav() {
                     href={href}
                     aria-current={on ? "page" : undefined}
                     onClick={() => setOpen(false)}
-                    className={`flex items-center justify-between rounded-md px-2 py-3 text-[15px] font-medium hover:bg-[#f6f5ff] ${on ? "text-[#5b5cf6]" : "text-[#1a1d33]"}`}
+                    className={`flex items-center justify-between rounded-md px-2 py-3 text-[15px] font-medium hover:bg-[#f6f5ff] ${on ? "text-[#3f37a2]" : "text-[#1a1d33]"}`}
                   >
                     {label}
-                    <ChevronRight size={16} className={on ? "text-[#5b5cf6]" : "text-slate-400"} />
+                    <ChevronRight size={16} className={on ? "text-[#3f37a2]" : "text-slate-400"} />
                   </a>
                 );
               })}

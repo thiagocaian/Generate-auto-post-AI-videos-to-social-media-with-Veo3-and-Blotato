@@ -57,7 +57,7 @@ export default function ProblemsSolved() {
               <motion.article key={c.title} {...rise(i)} className="flex flex-col rounded-2xl border border-[#e7e6f0] bg-white p-6 shadow-sm sm:p-7">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#eef0ff] text-[#5b5cf6]">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#efedfb] text-[#3f37a2]">
                       <Icon size={18} strokeWidth={2} aria-hidden />
                     </span>
                     <div>
@@ -80,9 +80,9 @@ export default function ProblemsSolved() {
                     </p>
                     <p className="mt-2 text-[15px] leading-relaxed text-[#4b5067]">{c.before}</p>
                   </div>
-                  <div className="rounded-[18px] border-[1.5px] border-[#c7c8f8] bg-[#f6f6ff] p-4">
-                    <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5b5cf6]">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5b5cf6] text-white"><Check size={12} strokeWidth={2.5} aria-hidden /></span>
+                  <div className="rounded-[18px] border-[1.5px] border-[#cfcbef] bg-[#f6f5ff] p-4">
+                    <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#3f37a2]">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#3f37a2] text-white"><Check size={12} strokeWidth={2.5} aria-hidden /></span>
                       After
                     </p>
                     <p className="mt-2 text-[15px] font-medium leading-relaxed text-[#1a1d33]">{c.after}</p>

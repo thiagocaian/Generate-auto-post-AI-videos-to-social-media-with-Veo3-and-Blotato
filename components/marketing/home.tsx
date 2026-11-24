@@ -93,7 +93,7 @@ export default function Home() {
           <div className="mt-10 grid overflow-hidden rounded-xl border border-[#e7e6f0] bg-[#e7e6f0] sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 1 }}>
             {SERVICES.map(({ icon: Icon, t, d }, i) => (
               <motion.a key={t} href="/services" {...rise(i)} className="group flex gap-4 bg-white p-6 transition-colors hover:bg-[#f8f7ff]">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[#e7e6f0] text-[#2e3248] transition-colors group-hover:border-[#c7c8f8] group-hover:text-[#5b5cf6]"><Icon size={18} /></span>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[#e7e6f0] text-[#2e3248] transition-colors group-hover:border-[#cfcbef] group-hover:text-[#3f37a2]"><Icon size={18} /></span>
                 <span>
                   <span className="block text-[16px] font-semibold text-[#0f1222]">{t}</span>
                   <span className="mt-1 block text-[14.5px] leading-relaxed text-[#4b5067]">{d}</span>
@@ -117,14 +117,14 @@ export default function Home() {
           <ol className="relative mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((s, i) => (
               <motion.li key={s.n} {...rise(i)} className="relative rounded-xl border border-[#e7e6f0] bg-white p-6 shadow-sm">
-                <p className="text-sm font-semibold text-[#5b5cf6]">{s.n}</p>
+                <p className="text-sm font-semibold text-[#3f37a2]">{s.n}</p>
                 <h3 className="mt-2 text-lg font-semibold text-[#0f1222]">{s.t}</h3>
                 <p className="mt-1.5 text-[14.5px] leading-relaxed text-[#4b5067]">{s.d}</p>
               </motion.li>
             ))}
           </ol>
           <div className="mt-14 border-t border-[#e7e6f0] pt-12">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#5b5cf6]">Secure by design</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#3f37a2]">Secure by design</p>
             <h3 className="mt-3 max-w-2xl text-[22px] font-semibold tracking-tight text-[#0f1222] sm:text-[26px]">
               Secure by design, built by a team with a cyber security practice.
             </h3>

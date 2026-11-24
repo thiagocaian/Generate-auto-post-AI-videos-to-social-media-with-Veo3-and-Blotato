@@ -43,7 +43,7 @@ export function SmsThread({
         <p className="mt-0.5 text-[13px] leading-relaxed text-[#1a1d33]">Hi, called about a leaking tap, no answer?</p>
       </div>
       {(text || cursor) && (
-        <div className="ml-auto max-w-[90%] rounded-lg rounded-tr-sm bg-[#5b5cf6] px-3 py-2 text-white">
+        <div className="ml-auto max-w-[90%] rounded-lg rounded-tr-sm bg-[#3f37a2] px-3 py-2 text-white">
           <p className="text-[11px] font-semibold text-white">Auto-reply · 40s later</p>
           <p className="mt-0.5 text-[13px] leading-relaxed">
             {text}
@@ -76,17 +76,17 @@ export function BookingCalendar() {
           <div
             key={day.d}
             className={`rounded-md border px-1 py-2 text-center ${
-              day.on ? "border-[#5b5cf6] bg-white" : "border-[#e7e6f0] bg-[#f6f5ff]"
+              day.on ? "border-[#3f37a2] bg-white" : "border-[#e7e6f0] bg-[#f6f5ff]"
             }`}
           >
             <p className="text-[10px] font-semibold uppercase tracking-wide text-[#4b5067]">{day.d}</p>
-            <p className={`text-sm font-semibold ${day.on ? "text-[#5b5cf6]" : "text-[#1a1d33]"}`}>{day.n}</p>
+            <p className={`text-sm font-semibold ${day.on ? "text-[#3f37a2]" : "text-[#1a1d33]"}`}>{day.n}</p>
           </div>
         ))}
       </div>
       <div className="rounded-lg border border-[#e7e6f0] bg-[#f6f5ff] px-3 py-2.5">
         <p className="flex items-center gap-1.5 text-[13px] font-semibold text-[#0f1222]">
-          <CalendarCheck size={14} className="text-[#5b5cf6]" />
+          <CalendarCheck size={14} className="text-[#3f37a2]" />
           Thu 9:00 am
         </p>
         <p className="mt-0.5 text-xs text-[#4b5067]">Leaking tap · Burleigh Heads</p>
@@ -103,7 +103,7 @@ export function BookingCalendar() {
 export function ReminderCard() {
   return (
     <div className="flex flex-col gap-2">
-      <div className="ml-auto max-w-[95%] rounded-lg rounded-tr-sm bg-[#5b5cf6] px-3 py-2 text-white">
+      <div className="ml-auto max-w-[95%] rounded-lg rounded-tr-sm bg-[#3f37a2] px-3 py-2 text-white">
         <p className="text-[11px] font-semibold text-white">Reminder · day before</p>
         <p className="mt-0.5 text-[13px] leading-relaxed">See you tomorrow at 9:00 am, Burleigh Heads. Reply C to confirm.</p>
       </div>
@@ -163,7 +163,7 @@ export function QuoteFollowup() {
 export function ReviewRequest() {
   return (
     <div className="flex flex-col gap-2">
-      <div className="ml-auto max-w-[95%] rounded-lg rounded-tr-sm bg-[#5b5cf6] px-3 py-2 text-white">
+      <div className="ml-auto max-w-[95%] rounded-lg rounded-tr-sm bg-[#3f37a2] px-3 py-2 text-white">
         <p className="text-[11px] font-semibold text-white">After the job</p>
         <p className="mt-0.5 text-[13px] leading-relaxed">Thanks for having us today — if you have a moment, a review helps a lot.</p>
       </div>

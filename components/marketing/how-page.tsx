@@ -66,7 +66,7 @@ export default function HowPage() {
             {CARE_SCHEDULE.map((c, i) => (
               <li key={c.area} className="relative flex gap-4">
                 <span className="relative z-10 mt-5 flex h-[31px] w-[31px] shrink-0 items-center justify-center rounded-full border border-[#e7e6f0] bg-white">
-                  <span className="h-2 w-2 rounded-full bg-[#5b5cf6]" />
+                  <span className="h-2 w-2 rounded-full bg-[#3f37a2]" />
                 </span>
                 <LiquidGlass reduced={reduced} lite className="flex-1" panelClassName="p-5" sheenDelay={`${i * 0.8 + 0.6}s`}>
                   <div className="flex flex-wrap items-baseline gap-x-3">

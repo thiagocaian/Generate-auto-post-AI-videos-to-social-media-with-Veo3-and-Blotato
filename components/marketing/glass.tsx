@@ -30,7 +30,7 @@ export const GLASS_ACTIVE = "lg-row lg-row-active";
 export const GLASS_IDLE = "lg-row";
 
 export const GLASS_FOCUS =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5b5cf6] focus-visible:ring-offset-2 focus-visible:ring-offset-white";
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3f37a2] focus-visible:ring-offset-2 focus-visible:ring-offset-white";
 
 function canHoverFine() {
   if (typeof window === "undefined" || !window.matchMedia) return false;
@@ -202,7 +202,7 @@ export function GlassChevron({
       aria-controls={controls}
       aria-label={label}
       onClick={onClick}
-      className={`lg-row flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[#4b5067] transition-colors hover:text-[#4f46e5] ${GLASS_FOCUS} ${className}`}
+      className={`lg-row flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[#4b5067] transition-colors hover:text-[#352e8c] ${GLASS_FOCUS} ${className}`}
       {...rest}
     >
       <GlassChevronIcon open={open} reduced={reduced} />

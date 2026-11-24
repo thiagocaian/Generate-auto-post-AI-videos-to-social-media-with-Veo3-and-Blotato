@@ -25,7 +25,7 @@ export function PageIntro({
     <section className="border-b border-[#e7e6f0] bg-gradient-to-b from-[#f2f1ff] to-white">
       <div className={`mx-auto grid max-w-6xl gap-12 px-5 pb-16 pt-14 sm:pb-20 sm:pt-20 ${aside ? "lg:grid-cols-[1.1fr_0.9fr] lg:items-center" : ""}`}>
         <div>
-          <motion.p {...rise()} className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#5b5cf6]">{eyebrow}</motion.p>
+          <motion.p {...rise()} className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#3f37a2]">{eyebrow}</motion.p>
           <motion.h1 {...rise(0.03)} className="max-w-3xl text-[clamp(2.1rem,6.5vw,3.6rem)] font-semibold leading-[1.06] tracking-tight text-[#0f1222]">
             {title}
           </motion.h1>
@@ -53,7 +53,7 @@ export function SecondaryLink({ href, children }: { href: string; children: Reac
 
 export function TextLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <a href={href} className="inline-flex items-center gap-1 text-sm font-semibold text-[#5b5cf6] transition-colors hover:text-[#4f46e5]">
+    <a href={href} className="inline-flex items-center gap-1 text-sm font-semibold text-[#3f37a2] transition-colors hover:text-[#352e8c]">
       {children}
       <ChevronRight size={15} />
     </a>

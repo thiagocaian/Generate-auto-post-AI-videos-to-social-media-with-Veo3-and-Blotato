@@ -43,7 +43,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#5b5cf6]"
+            className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#3f37a2]"
           >
             Specialists in repetitive office tasks
           </motion.p>
@@ -89,7 +89,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             />
             <button
               type="submit"
-              className="shrink-0 rounded-full bg-[#5b5cf6] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#4f46e5] sm:px-5 sm:text-sm"
+              className="shrink-0 rounded-full bg-[#3f37a2] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#352e8c] sm:px-5 sm:text-sm"
             >
               Free Assessment
             </button>
@@ -100,9 +100,9 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18, duration: 0.4, ease: "easeOut" }}
-            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#5b5cf6] transition-colors hover:text-[#4f46e5]"
+            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#3f37a2] transition-colors hover:text-[#352e8c]"
           >
-            <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[#c7c8f8] text-[#5b5cf6]">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[#cfcbef] text-[#3f37a2]">
               <Play size={11} fill="currentColor" />
             </span>
             See Cytron in action

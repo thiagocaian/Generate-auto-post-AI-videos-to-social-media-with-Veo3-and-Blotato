@@ -42,7 +42,7 @@ export default function WeekTimeline() {
             {w.reply && (
               <motion.div
                 {...fade(0.5)}
-                className="ml-auto max-w-sm rounded-lg bg-[#5b5cf6] px-4 py-3 text-[14.5px] leading-relaxed text-white sm:ml-12"
+                className="ml-auto max-w-sm rounded-lg bg-[#3f37a2] px-4 py-3 text-[14.5px] leading-relaxed text-white sm:ml-12"
               >
                 <span className="mb-0.5 block text-[11px] font-semibold text-white/85">Auto-reply · 40s later</span>
                 {w.reply}

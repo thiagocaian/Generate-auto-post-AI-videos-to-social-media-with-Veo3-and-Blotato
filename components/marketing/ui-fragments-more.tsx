@@ -54,7 +54,7 @@ export function HeldForReview() {
         <p className="mt-0.5 text-[12.5px] text-[#1a1d33]">Customer history · 3 past jobs · last quote $860</p>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <span className="rounded-md bg-[#5b5cf6] px-3 py-2 text-center text-[12px] font-semibold text-white">Approve &amp; send</span>
+        <span className="rounded-md bg-[#3f37a2] px-3 py-2 text-center text-[12px] font-semibold text-white">Approve &amp; send</span>
         <span className="rounded-md border border-[#e7e6f0] bg-white px-3 py-2 text-center text-[12px] font-semibold text-[#1a1d33]">Reply myself</span>
       </div>
     </div>
@@ -94,13 +94,13 @@ export function ProcessMap() {
             {HOURS_EXAMPLE.map(({ t, icon: Icon, top }) => (
               <span
                 key={t}
-                className={`lg-row flex h-6 w-6 items-center justify-center rounded-full ${top ? "lg-row-active text-[#4f46e5]" : "text-[#5b6078]"}`}
+                className={`lg-row flex h-6 w-6 items-center justify-center rounded-full ${top ? "lg-row-active text-[#3f37a2]" : "text-[#5b6078]"}`}
               >
                 <Icon size={12} />
               </span>
             ))}
           </span>
-          <span className="lg-row lg-row-active whitespace-nowrap rounded-full px-2.5 py-1 text-[12px] font-semibold tabular-nums text-[#4338ca]">
+          <span className="lg-row lg-row-active whitespace-nowrap rounded-full px-2.5 py-1 text-[12px] font-semibold tabular-nums text-[#352e8c]">
             {summary}
           </span>
         </div>
@@ -112,7 +112,7 @@ export function ProcessMap() {
             <li key={t} className={`${GLASS_ROW} ${top ? GLASS_ACTIVE : GLASS_IDLE}`} {...hover.bind(i)}>
               {hover.pill(i, "assess")}
               <span
-                className={`lg-row flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${top ? "text-[#4f46e5]" : "text-[#5b6078]"}`}
+                className={`lg-row flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${top ? "text-[#3f37a2]" : "text-[#5b6078]"}`}
                 aria-hidden
               >
                 <Icon size={14} />
@@ -122,7 +122,7 @@ export function ProcessMap() {
                 {top ? <span className="sr-only"> (picked)</span> : null}
               </span>
               <span
-                className={`shrink-0 rounded-full px-2 py-0.5 text-[11.5px] font-semibold tabular-nums ${top ? "bg-gradient-to-b from-[#6d6ef8] to-[#5b5cf6] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]" : "bg-slate-900/[0.05] text-[#4b5067]"}`}
+                className={`shrink-0 rounded-full px-2 py-0.5 text-[11.5px] font-semibold tabular-nums ${top ? "bg-gradient-to-b from-[#5149b8] to-[#3f37a2] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]" : "bg-slate-900/[0.05] text-[#4b5067]"}`}
               >
                 {hours} h / week
               </span>
@@ -130,7 +130,7 @@ export function ProcessMap() {
           ))}
         </ul>
         <p className="flex items-center gap-2 px-2.5 pb-1.5 pt-2 text-[12px] font-medium text-[#2e3248]">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#5b5cf6]/25 ring-1 ring-[#5b5cf6]/40" aria-hidden />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#3f37a2]/25 ring-1 ring-[#3f37a2]/40" aria-hidden />
           Top 3 picked to automate first
         </p>
       </GlassCollapse>
@@ -151,7 +151,7 @@ export function RulesCard() {
       <div className="overflow-hidden rounded-lg border border-[#e7e6f0] bg-white font-mono text-[12px]">
         {rules.map(([k, v], i) => (
           <div key={i} className={`flex gap-3 px-3 py-2 ${i ? "border-t border-[#e7e6f0]" : ""}`}>
-            <span className={`w-10 shrink-0 font-semibold ${k === "IF" ? "text-[#5b6078]" : "text-[#5b5cf6]"}`}>{k}</span>
+            <span className={`w-10 shrink-0 font-semibold ${k === "IF" ? "text-[#5b6078]" : "text-[#3f37a2]"}`}>{k}</span>
             <span className="text-[#1a1d33]">{v}</span>
           </div>
         ))}

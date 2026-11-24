@@ -320,16 +320,16 @@ function NodeCard({
         isHuman
           ? "border-dashed border-slate-300"
           : isHub
-            ? "border-[#c7c8f8]"
+            ? "border-[#cfcbef]"
             : state === "running"
-              ? "border-[#5b5cf6]"
+              ? "border-[#3f37a2]"
               : "border-[#e7e6f0]"
       }`}
       style={{
         width: NODE_W,
         height: NODE_H,
         boxShadow: isHub
-          ? "0 1px 2px rgba(15,23,42,0.05), 0 10px 24px rgba(91,92,246,0.08)"
+          ? "0 1px 2px rgba(15,23,42,0.05), 0 10px 24px rgba(63,55,162,0.08)"
           : "0 1px 2px rgba(15,23,42,0.05), 0 8px 20px rgba(15,23,42,0.06)",
         ...style,
       }}
@@ -337,11 +337,11 @@ function NodeCard({
       <span
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${
           isHub
-            ? "bg-[#5b5cf6] text-white"
+            ? "bg-[#3f37a2] text-white"
             : state === "done"
               ? "bg-emerald-50 text-emerald-700"
               : state === "running"
-                ? "bg-[#5b5cf6] text-white"
+                ? "bg-[#3f37a2] text-white"
                 : "bg-[#f6f5ff] text-[#2e3248]"
         }`}
       >
@@ -418,7 +418,7 @@ function DesktopFlow({ time, reduced }: { time: number; reduced: boolean }) {
               key={edge.id}
               d={d}
               fill="none"
-              stroke={live || consumed ? "#5b5cf6" : "#cbd5e1"}
+              stroke={live || consumed ? "#3f37a2" : "#cbd5e1"}
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={live ? 1.75 : 1.4}
@@ -471,7 +471,7 @@ function DesktopFlow({ time, reduced }: { time: number; reduced: boolean }) {
         const sides = PORTS[node.id];
         const { w, h } = sizeOf(node);
         const dot = "absolute z-10 h-2 w-2 rounded-full border bg-white";
-        const on = state === "running" || node.kind === "hub" ? "border-[#5b5cf6]" : "border-[#d1d5db]";
+        const on = state === "running" || node.kind === "hub" ? "border-[#3f37a2]" : "border-[#d1d5db]";
         return (
           <motion.div
             key={node.id}
@@ -506,7 +506,7 @@ function TravelDot({ d, t }: { d: string; t: number }) {
   return (
     <>
       <path ref={ref} d={d} fill="none" stroke="none" />
-      {pt && <circle cx={pt.x} cy={pt.y} r="4" fill="#5b5cf6" />}
+      {pt && <circle cx={pt.x} cy={pt.y} r="4" fill="#3f37a2" />}
     </>
   );
 }
@@ -558,7 +558,7 @@ function MobileFlow({ time, reduced, settled }: { time: number; reduced: boolean
               <GlassCollapse open={open} id={listId} reduced={reduced}>
                 <ol className="relative ml-[17px] pb-1.5 pl-4 pt-0.5">
                   <span
-                    className="absolute bottom-4 left-0 top-4 w-px bg-gradient-to-b from-[#5b5cf6]/55 via-[#5b5cf6]/25 to-[#5b5cf6]/5"
+                    className="absolute bottom-4 left-0 top-4 w-px bg-gradient-to-b from-[#3f37a2]/55 via-[#3f37a2]/25 to-[#3f37a2]/5"
                     aria-hidden
                   />
                   {group.nodes.map((node) => {
@@ -577,11 +577,11 @@ function MobileFlow({ time, reduced, settled }: { time: number; reduced: boolean
                         transition={reduced ? { duration: 0 } : GLASS_SPRING}
                       >
                         <span
-                          className={`absolute -left-4 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full ring-[3px] ring-white/80 shadow-[0_0_0_1px_rgba(91,92,246,0.15)] transition-colors duration-300 ${
+                          className={`absolute -left-4 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full ring-[3px] ring-white/80 shadow-[0_0_0_1px_rgba(63,55,162,0.15)] transition-colors duration-300 ${
                             isHuman
                               ? "border border-slate-300 bg-white"
                               : state === "done" || active
-                                ? "bg-[#5b5cf6]"
+                                ? "bg-[#3f37a2]"
                                 : "bg-slate-300"
                           }`}
                           aria-hidden
@@ -594,7 +594,7 @@ function MobileFlow({ time, reduced, settled }: { time: number; reduced: boolean
                           <span
                             className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-300 ${
                               isHub || state === "running"
-                                ? "bg-gradient-to-b from-[#6d6ef8] to-[#5b5cf6] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]"
+                                ? "bg-gradient-to-b from-[#5149b8] to-[#3f37a2] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]"
                                 : state === "done"
                                   ? "lg-row text-emerald-700"
                                   : "lg-row text-[#4b5067]"

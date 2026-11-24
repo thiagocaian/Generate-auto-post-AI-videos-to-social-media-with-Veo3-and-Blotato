@@ -143,7 +143,7 @@ function FlowRowContent({ flow, on }: { flow: BackofficeFlow; on: boolean }) {
     <>
       <span
         className={`lg-row flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-300 ${
-          on ? "text-[#4f46e5]" : "text-[#4b5067]"
+          on ? "text-[#3f37a2]" : "text-[#4b5067]"
         }`}
         aria-hidden
       >
@@ -154,7 +154,7 @@ function FlowRowContent({ flow, on }: { flow: BackofficeFlow; on: boolean }) {
       </span>
       <span
         className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10.5px] font-semibold tabular-nums ${
-          on ? "bg-gradient-to-b from-[#6d6ef8] to-[#5b5cf6] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]" : "bg-slate-900/[0.05] text-[#4b5067]"
+          on ? "bg-gradient-to-b from-[#5149b8] to-[#3f37a2] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]" : "bg-slate-900/[0.05] text-[#4b5067]"
         }`}
         aria-hidden
       >

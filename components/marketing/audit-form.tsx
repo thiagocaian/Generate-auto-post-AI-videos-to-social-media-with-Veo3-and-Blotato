@@ -7,7 +7,7 @@ import { track } from "@vercel/analytics";
 import { ArrowRight, Check } from "lucide-react";
 import { AUDIT_CONSENT_TEXT } from "@/lib/inbound/consent";
 
-const inputClass = "w-full rounded-lg border border-[#e7e6f0] bg-white px-3.5 py-2.5 text-sm text-[#0f1222] outline-none transition placeholder:text-[#5b6078] focus:border-[#5b5cf6] focus:ring-2 focus:ring-[#5b5cf6]/15";
+const inputClass = "w-full rounded-lg border border-[#e7e6f0] bg-white px-3.5 py-2.5 text-sm text-[#0f1222] outline-none transition placeholder:text-[#5b6078] focus:border-[#3f37a2] focus:ring-2 focus:ring-[#3f37a2]/15";
 const labelClass = "mb-1.5 block text-xs font-semibold text-[#2e3248]";
 
 function normaliseWebsite(value: string): string {
@@ -149,11 +149,11 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
               />
               <span>
                 {AUDIT_CONSENT_TEXT}{" "}
-                <a href="/privacy" className="font-semibold text-[#4f46e5] underline">Privacy policy</a>
+                <a href="/privacy" className="font-semibold text-[#3f37a2] underline">Privacy policy</a>
               </span>
             </label>
             {error && <p role="alert" aria-live="polite" className="text-sm font-medium text-red-700">{error}</p>}
-            <button type="submit" disabled={status === "loading"} className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#5b5cf6] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#4f46e5] disabled:opacity-60">
+            <button type="submit" disabled={status === "loading"} className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#3f37a2] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#352e8c] disabled:opacity-60">
               {status === "loading" ? "Sending..." : <>Request a Free Automation Assessment <ArrowRight size={17} /></>}
             </button>
             {preview && <p className="text-center text-xs text-[#4b5067]">Sketch only — this form does not send a request.</p>}

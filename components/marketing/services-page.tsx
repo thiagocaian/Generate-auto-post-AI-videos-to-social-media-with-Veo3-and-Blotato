@@ -107,7 +107,7 @@ export default function ServicesPage() {
             <LiquidGlass reduced={reduced} lite maxTilt={2} panelClassName="p-6 sm:p-8 lg:p-10" sheenDelay={`${(i % 3) * 1.4 + 0.6}s`}>
               <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
                 <div className={i % 2 ? "lg:order-2" : ""}>
-                  <p className="text-sm font-semibold text-[#4f46e5]">{s.k}</p>
+                  <p className="text-sm font-semibold text-[#3f37a2]">{s.k}</p>
                   <h2 className="mt-2 text-[24px] font-semibold leading-snug tracking-tight text-[#0f1222] sm:text-[30px]">{s.t}</h2>
                   <p className="mt-3 text-[16px] leading-relaxed text-[#4b5067]">{s.d}</p>
                   <ul className="mt-6 space-y-2.5 text-[15px] text-[#2e3248]">

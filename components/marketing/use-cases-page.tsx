@@ -117,7 +117,7 @@ export default function UseCasesPage() {
                   </ul>
                 </div>
                 <div className="bg-white/55 p-6 sm:p-8">
-                  <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#4f46e5]">With Cytron</p>
+                  <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#3f37a2]">With Cytron</p>
                   <ul className="space-y-3 text-[15px] text-[#1a1d33]">
                     {c.after.map((a) => <li key={a} className="flex gap-3"><Check size={17} className="mt-0.5 shrink-0 text-emerald-700" />{a}</li>)}
                   </ul>
@@ -136,7 +136,7 @@ export default function UseCasesPage() {
                     ))}
                   </dl>
                   {c.more && (
-                    <a href={c.more.href} className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-[#4f46e5] hover:text-[#4338ca]">{c.more.label} <ChevronRight size={15} /></a>
+                    <a href={c.more.href} className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-[#3f37a2] hover:text-[#352e8c]">{c.more.label} <ChevronRight size={15} /></a>
                   )}
                 </div>
               </div>

@@ -26,7 +26,7 @@ function StepList({ steps, active, onSelect, clickable }: { steps: ScrollStep[];
             >
               <span
                 className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] font-semibold ${
-                  done ? "bg-emerald-700 text-white" : current ? "bg-[#5b5cf6] text-white" : "border border-[#e7e6f0] bg-white text-[#2e3248]"
+                  done ? "bg-emerald-700 text-white" : current ? "bg-[#3f37a2] text-white" : "border border-[#e7e6f0] bg-white text-[#2e3248]"
                 }`}
               >
                 {done ? <Check size={12} strokeWidth={3} /> : i + 1}
@@ -85,7 +85,7 @@ function Desktop({ steps, header }: { steps: ScrollStep[]; header: React.ReactNo
           <div className="grid grid-cols-[0.9fr_1.1fr] items-stretch gap-12">
             <div className="relative pl-1">
               <div className="pointer-events-none absolute bottom-3 left-[22px] top-3 w-px bg-[#e7e6f0]" aria-hidden />
-              <motion.div className="pointer-events-none absolute left-[22px] top-3 w-px origin-top bg-[#5b5cf6]" style={{ height: lineHeight }} aria-hidden />
+              <motion.div className="pointer-events-none absolute left-[22px] top-3 w-px origin-top bg-[#3f37a2]" style={{ height: lineHeight }} aria-hidden />
               <StepList steps={steps} active={active} onSelect={scrollToStep} clickable />
             </div>
             <div className="relative min-h-[22rem]">
@@ -108,7 +108,7 @@ function MobileStep({ step, index }: { step: ScrollStep; index: number }) {
   return (
     <motion.li ref={ref} initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : undefined} transition={{ duration: 0.35, ease: "easeOut" }}>
       <p className="mb-2 flex items-center gap-2 text-[15px] font-semibold text-[#0f1222]">
-        <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#5b5cf6] text-[11px] font-semibold text-white">{index + 1}</span>
+        <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#3f37a2] text-[11px] font-semibold text-white">{index + 1}</span>
         {step.label}
       </p>
       <p className="mb-3 text-[13.5px] leading-relaxed text-[#4b5067]">{step.detail}</p>
