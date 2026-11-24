@@ -99,29 +99,29 @@ export default function PricingPage() {
                 reduced={reduced}
                 lite
                 fill
-                className={p.hot ? "ring-2 ring-[#5b5cf6]" : ""}
+                className={p.hot ? "ring-2 ring-[#3f37a2]" : ""}
                 panelClassName="p-7"
                 sheenDelay={`${i * 0.9 + 0.6}s`}
               >
                 <div className="relative flex h-full flex-col">
                   <div className="flex min-h-[26px] items-center justify-between">
                     {p.hot ? (
-                      <p className="rounded-full bg-[#eef0ff] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4f46e5]">Recommended</p>
+                      <p className="rounded-full bg-[#efedfb] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#3f37a2]">Recommended</p>
                     ) : (
                       <span aria-hidden className="h-[26px]" />
                     )}
                   </div>
-                  <h2 className="mt-4 text-xl font-semibold text-slate-900">{p.t}</h2>
-                  <p className="mt-2 text-[34px] font-semibold tracking-tight text-slate-900">
+                  <h2 className="mt-4 text-xl font-semibold text-[#0f1222]">{p.t}</h2>
+                  <p className="mt-2 text-[34px] font-semibold tracking-tight text-[#0f1222]">
                     {p.price}
-                    {p.unit && <span className="text-base font-medium text-slate-600">{p.unit}</span>}
+                    {p.unit && <span className="text-base font-medium text-[#4b5067]">{p.unit}</span>}
                   </p>
-                  {"note" in p && p.note && <p className="mt-1 text-sm font-medium text-slate-600">{p.note}</p>}
-                  <p className="mt-3 text-[15px] leading-relaxed text-slate-600">{p.d}</p>
-                  <ul className="mt-6 flex-1 space-y-2.5 text-[15px] text-slate-700">
+                  {"note" in p && p.note && <p className="mt-1 text-sm font-medium text-[#4b5067]">{p.note}</p>}
+                  <p className="mt-3 text-[15px] leading-relaxed text-[#4b5067]">{p.d}</p>
+                  <ul className="mt-6 flex-1 space-y-2.5 text-[15px] text-[#2e3248]">
                     {p.f.map((f) => <li key={f} className="flex gap-2.5"><Check size={17} className="mt-0.5 shrink-0 text-emerald-700" />{f}</li>)}
                   </ul>
-                  <a href="/contact" className={`mt-8 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors ${p.hot ? "bg-[#5b5cf6] text-white hover:bg-[#4f46e5]" : "border border-[#e5e7eb] bg-white text-slate-800 hover:bg-slate-50"}`}>
+                  <a href="/contact" className={`mt-8 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors ${p.hot ? "bg-[#3f37a2] text-white hover:bg-[#352e8c]" : "border border-[#e7e6f0] bg-white text-[#1a1d33] hover:bg-[#f6f5ff]"}`}>
                     {p.cta} <ChevronRight size={16} />
                   </a>
                 </div>
@@ -129,16 +129,16 @@ export default function PricingPage() {
             ))}
           </div>
           <LiquidGlass reduced={reduced} lite className="mt-8" panelClassName="px-6 py-5" sheenDelay="4s">
-            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[14.5px] text-slate-700">
-              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Every plan</span>
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[14.5px] text-[#2e3248]">
+              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[#4b5067]">Every plan</span>
               {INCLUDED.map((t) => <span key={t} className="flex items-center gap-2"><Check size={16} className="text-emerald-700" />{t}</span>)}
             </div>
           </LiquidGlass>
-          <p className="mt-4 text-center text-xs text-slate-600">Prices in AUD, ex GST where applicable. API usage, phone and SMS are subject to included allowances or additional charges.</p>
+          <p className="mt-4 text-center text-xs text-[#4b5067]">Prices in AUD, ex GST where applicable. API usage, phone and SMS are subject to included allowances or additional charges.</p>
         </div>
       </section>
 
-      <section id="faq" className="scroll-mt-20 bg-[#f7f8fa] py-20 sm:py-24">
+      <section id="faq" className="scroll-mt-20 bg-[#f2f1ff] py-20 sm:py-24">
         <div className="mx-auto max-w-3xl px-5">
           <Eyebrow>FAQ</Eyebrow>
           <Heading>Questions we hear a lot.</Heading>
@@ -146,10 +146,10 @@ export default function PricingPage() {
             <div className="divide-y divide-slate-900/[0.08]">
                 {FAQ.map((f) => (
                   <details key={f.q} className="group py-5">
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-semibold text-slate-900">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-semibold text-[#0f1222]">
                       {f.q}<ChevronRight size={18} className="shrink-0 text-slate-400 transition group-open:rotate-90" />
                     </summary>
-                    <p className="mt-3 text-[15px] leading-relaxed text-slate-600">{f.a}</p>
+                    <p className="mt-3 text-[15px] leading-relaxed text-[#4b5067]">{f.a}</p>
                   </details>
                 ))}
             </div>

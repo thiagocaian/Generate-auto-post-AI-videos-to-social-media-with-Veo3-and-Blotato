@@ -7,6 +7,7 @@ import { Play } from "lucide-react";
 import HeroFlow, { HERO_FLOW_SUMMARY } from "@/components/marketing/hero-flow";
 import HeroConstellation from "@/components/marketing/hero-constellation";
 import { useSiteNavigate } from "@/components/page-transition";
+import { HERO_WASH } from "@/components/site";
 
 export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
   const reduced = useReducedMotion() === true;
@@ -34,7 +35,8 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative overflow-hidden bg-gradient-to-b from-white to-[#f3f4f7]"
+      className="relative overflow-hidden bg-[#f6f5ff]"
+      style={{ background: HERO_WASH }}
     >
       <HeroConstellation reduced={reduced} />
       <div className="relative z-10 mx-auto flex max-w-6xl flex-col xl:min-h-[calc(90vh-4rem)] xl:flex-row xl:items-center">
@@ -43,7 +45,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#5b5cf6]"
+            className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#3f37a2]"
           >
             Specialists in repetitive office tasks
           </motion.p>
@@ -51,7 +53,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="text-[clamp(2.25rem,8vw,3rem)] font-semibold leading-[1.05] tracking-tight text-slate-900 lg:text-[clamp(3.5rem,5.2vw,4.75rem)] xl:text-[clamp(3.5rem,4.4vw,4.25rem)]"
+            className="text-[clamp(2.25rem,8vw,3rem)] font-semibold leading-[1.05] tracking-tight text-[#0f1222] lg:text-[clamp(3.5rem,5.2vw,4.75rem)] xl:text-[clamp(3.5rem,4.4vw,4.25rem)]"
           >
             Specialists in automating
             <br />
@@ -61,7 +63,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.06, duration: 0.4, ease: "easeOut" }}
-            className="mt-5 max-w-md text-[17px] leading-relaxed text-slate-600 sm:text-lg"
+            className="mt-5 max-w-md text-[17px] leading-relaxed text-[#4b5067] sm:text-lg"
           >
             Cytron specialises in automating repetitive office tasks for trade, wholesale, e-commerce and warehouse operations — in the background, on our own servers.
           </motion.p>
@@ -71,7 +73,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12, duration: 0.4, ease: "easeOut" }}
-            className="mt-8 flex w-full max-w-md items-center rounded-full border border-[#e5e7eb] bg-white p-1.5 shadow-sm"
+            className="mt-8 flex w-full max-w-md items-center rounded-full border border-[#e7e6f0] bg-white p-1.5 shadow-sm"
           >
             <label htmlFor="hero-email" className="sr-only">
               Work email
@@ -85,11 +87,11 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
               placeholder="Enter your work email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="min-w-0 flex-1 bg-transparent px-3.5 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-600 sm:px-4"
+              className="min-w-0 flex-1 bg-transparent px-3.5 py-2.5 text-sm text-[#0f1222] outline-none placeholder:text-[#4b5067] sm:px-4"
             />
             <button
               type="submit"
-              className="shrink-0 rounded-full bg-[#5b5cf6] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#4f46e5] sm:px-5 sm:text-sm"
+              className="shrink-0 rounded-full bg-[#3f37a2] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#352e8c] sm:px-5 sm:text-sm"
             >
               Free Assessment
             </button>
@@ -100,9 +102,9 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18, duration: 0.4, ease: "easeOut" }}
-            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#5b5cf6] transition-colors hover:text-[#4f46e5]"
+            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#3f37a2] transition-colors hover:text-[#352e8c]"
           >
-            <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[#c7c8f8] text-[#5b5cf6]">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[#cfcbef] text-[#3f37a2]">
               <Play size={11} fill="currentColor" />
             </span>
             See Cytron in action

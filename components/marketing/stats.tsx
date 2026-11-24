@@ -47,13 +47,13 @@ export default function StatsSection() {
   const reduced = useReducedMotion() === true;
 
   return (
-    <section id="numbers" ref={ref} className="bg-[#f7f8fa] px-5 py-20 sm:py-24">
+    <section id="numbers" ref={ref} className="bg-[#f2f1ff] px-5 py-20 sm:py-24">
       <div className="mx-auto max-w-6xl">
       <Eyebrow>Why it matters</Eyebrow>
-      <h2 className="max-w-3xl text-[28px] font-semibold leading-snug tracking-tight text-slate-900 sm:text-[36px]">
+      <h2 className="max-w-3xl text-[28px] font-semibold leading-snug tracking-tight text-[#0f1222] sm:text-[36px]">
         Busy operations, <Accent>big expectations</Accent>.
       </h2>
-      <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-slate-700">
+      <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-[#2e3248]">
         Customers expect fast replies and easy payments. Trade, wholesale and fulfilment teams still handle a lot of that by hand. That gap is where automation pays for itself.
       </p>
       <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -67,12 +67,12 @@ export default function StatsSection() {
           >
             <LiquidGlass reduced={reduced} lite fill panelClassName="p-6" sheenDelay={`${i * 0.9 + 0.7}s`}>
               <div className="flex h-full flex-col">
-                <p className="text-4xl font-semibold tracking-tight text-slate-900">
+                <p className="text-4xl font-semibold tracking-tight text-[#0f1222]">
                   <CountUp target={s.target} prefix={s.prefix} suffix={s.suffix} start={inView} reduced={reduced} />
                 </p>
-                <p className="mt-3 flex-1 text-[15px] leading-relaxed text-slate-700">{s.v}</p>
-                <p className="mt-5 text-xs font-semibold text-slate-800">→ {s.link}</p>
-                <a href={s.url} target="_blank" rel="noopener noreferrer" className="mt-1 text-xs font-medium text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline">
+                <p className="mt-3 flex-1 text-[15px] leading-relaxed text-[#2e3248]">{s.v}</p>
+                <p className="mt-5 text-xs font-semibold text-[#1a1d33]">→ {s.link}</p>
+                <a href={s.url} target="_blank" rel="noopener noreferrer" className="mt-1 text-xs font-medium text-[#4b5067] underline-offset-2 hover:text-[#0f1222] hover:underline">
                   Source: {s.src}
                 </a>
               </div>
@@ -80,7 +80,7 @@ export default function StatsSection() {
           </motion.div>
         ))}
       </div>
-      <p className="mt-6 text-sm text-slate-700">On the Coast, health care employment grew 18.5% and construction 12.9% in the year to August 2025 (<a href="https://www.jobsandskills.gov.au/sites/default/files/2025-10/Industry%20Profile%20Gold%20Coast.pdf" target="_blank" rel="noopener noreferrer" className="font-medium text-slate-800 underline underline-offset-2">Jobs and Skills Australia</a>). The office work behind that demand is still repetitive.</p>
+      <p className="mt-6 text-sm text-[#2e3248]">On the Coast, health care employment grew 18.5% and construction 12.9% in the year to August 2025 (<a href="https://www.jobsandskills.gov.au/sites/default/files/2025-10/Industry%20Profile%20Gold%20Coast.pdf" target="_blank" rel="noopener noreferrer" className="font-medium text-[#1a1d33] underline underline-offset-2">Jobs and Skills Australia</a>). The office work behind that demand is still repetitive.</p>
       </div>
     </section>
   );

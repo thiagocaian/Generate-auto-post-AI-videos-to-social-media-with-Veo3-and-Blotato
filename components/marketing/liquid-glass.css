@@ -24,7 +24,7 @@
   border-radius: inherit;
   overflow: hidden;
   pointer-events: none;
-  background: linear-gradient(160deg, #f5f6ff 0%, #f8fafc 55%, #f2fbfd 100%);
+  background: linear-gradient(160deg, #f4f3ff 0%, #f8f7fd 55%, #f1f0fb 100%);
 }
 .lg-blob {
   position: absolute;
@@ -37,7 +37,7 @@
   aspect-ratio: 1;
   left: -12%;
   top: -10%;
-  background: rgba(99, 102, 241, 0.34);
+  background: rgba(71, 63, 178, 0.3);
   animation: lg-drift-1 19s ease-in-out infinite alternate;
 }
 .lg-blob-2 {
@@ -45,7 +45,7 @@
   aspect-ratio: 1;
   right: -14%;
   top: 28%;
-  background: rgba(167, 139, 250, 0.3);
+  background: rgba(134, 140, 232, 0.32);
   animation: lg-drift-2 23s ease-in-out infinite alternate;
 }
 .lg-blob-3 {
@@ -53,7 +53,7 @@
   aspect-ratio: 1;
   left: 18%;
   bottom: -18%;
-  background: rgba(103, 232, 249, 0.3);
+  background: rgba(196, 190, 245, 0.5);
   animation: lg-drift-3 17s ease-in-out infinite alternate;
 }
 /* Tall panels (mobile timeline): repeat the shapes down the panel. */
@@ -92,7 +92,7 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.95),
     inset 1px 0 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1px 0 rgba(99, 102, 241, 0.06),
+    inset 0 -1px 0 rgba(63, 55, 162, 0.06),
     0 1px 2px rgba(15, 23, 42, 0.05),
     0 14px 34px -8px rgba(30, 27, 75, 0.14);
 }
@@ -105,7 +105,7 @@
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.55) 35%, rgba(148, 163, 184, 0.22) 75%, rgba(148, 163, 184, 0.32) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.55) 35%, rgba(160, 156, 200, 0.22) 75%, rgba(160, 156, 200, 0.32) 100%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
@@ -147,7 +147,7 @@
   z-index: 2;
   opacity: 0;
   transition: opacity 0.35s ease;
-  background: radial-gradient(260px circle at var(--lg-mx, 20%) var(--lg-my, 0%), rgba(255, 255, 255, 0.6), rgba(199, 200, 248, 0.16) 45%, rgba(255, 255, 255, 0) 70%);
+  background: radial-gradient(260px circle at var(--lg-mx, 20%) var(--lg-my, 0%), rgba(255, 255, 255, 0.6), rgba(207, 203, 239, 0.16) 45%, rgba(255, 255, 255, 0) 70%);
 }
 .lg-tilt[data-hover="true"] .lg-glare { opacity: 1; }
 
@@ -166,15 +166,15 @@
 .lg-row-active {
   background:
     radial-gradient(90% 120% at 0% 0%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 60%),
-    linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(129, 140, 248, 0.09));
+    linear-gradient(135deg, rgba(63, 55, 162, 0.16), rgba(134, 140, 232, 0.09));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    inset 0 -1px 0 rgba(91, 92, 246, 0.12),
+    inset 0 -1px 0 rgba(63, 55, 162, 0.12),
     0 1px 2px rgba(15, 23, 42, 0.04),
-    0 6px 16px -8px rgba(79, 70, 229, 0.3);
+    0 6px 16px -8px rgba(63, 55, 162, 0.28);
 }
 .lg-row-active::before {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(199, 200, 248, 0.8) 45%, rgba(91, 92, 246, 0.35) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(207, 203, 239, 0.8) 45%, rgba(63, 55, 162, 0.35) 100%);
 }
 .lg-row > :not(.lg-hover-pill) {
   position: relative;
@@ -190,8 +190,8 @@
   pointer-events: none;
   background:
     radial-gradient(80% 140% at 0% 0%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 60%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(224, 228, 255, 0.28));
-  box-shadow: 0 0 0 1px rgba(91, 92, 246, 0.16), 0 8px 20px -8px rgba(30, 27, 75, 0.25), inset 0 1px 0 #fff;
+    linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(226, 223, 250, 0.28));
+  box-shadow: 0 0 0 1px rgba(63, 55, 162, 0.16), 0 8px 20px -8px rgba(30, 27, 75, 0.25), inset 0 1px 0 #fff;
 }
 
 /* Touch / coarse pointers: no tilt or glare. */
@@ -219,9 +219,9 @@
 
 .lg-stage[data-lite] .lg-tilt { will-change: auto; }
 .lg-stage[data-lite] .lg-blob { filter: none; }
-.lg-stage[data-lite] .lg-blob-1 { background: radial-gradient(closest-side, rgba(99, 102, 241, 0.42), rgba(99, 102, 241, 0)); width: 80%; left: -20%; top: -25%; }
-.lg-stage[data-lite] .lg-blob-2 { background: radial-gradient(closest-side, rgba(167, 139, 250, 0.4), rgba(167, 139, 250, 0)); width: 70%; right: -22%; top: 20%; }
-.lg-stage[data-lite] .lg-blob-3 { background: radial-gradient(closest-side, rgba(103, 232, 249, 0.4), rgba(103, 232, 249, 0)); width: 66%; left: 12%; bottom: -30%; }
+.lg-stage[data-lite] .lg-blob-1 { background: radial-gradient(closest-side, rgba(71, 63, 178, 0.38), rgba(71, 63, 178, 0)); width: 80%; left: -20%; top: -25%; }
+.lg-stage[data-lite] .lg-blob-2 { background: radial-gradient(closest-side, rgba(134, 140, 232, 0.42), rgba(134, 140, 232, 0)); width: 70%; right: -22%; top: 20%; }
+.lg-stage[data-lite] .lg-blob-3 { background: radial-gradient(closest-side, rgba(196, 190, 245, 0.6), rgba(196, 190, 245, 0)); width: 66%; left: 12%; bottom: -30%; }
 .lg-stage[data-lite] .lg-panel {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
