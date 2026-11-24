@@ -195,7 +195,7 @@ export default function BackofficeFlows() {
   };
 
   return (
-    <section id="back-office" className="bg-white py-20 sm:py-24">
+    <section id="back-office" className="bg-[#f2f1ff] py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5">
         <Eyebrow>Back-office workflows</Eyebrow>
         <Heading>Repetitive work, <Accent>handled in the background</Accent>.</Heading>

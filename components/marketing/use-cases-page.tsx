@@ -167,7 +167,7 @@ export default function UseCasesPage() {
         </div>
       </section>
 
-      <section id="week" className="scroll-mt-20 bg-[#f6f5ff] py-20 sm:py-24">
+      <section id="week" className="scroll-mt-20 bg-[#f2f1ff] py-20 sm:py-24">
         <div className="mx-auto max-w-3xl px-5">
           <Eyebrow>A week with Cytron</Eyebrow>
           <Heading>The same week, <Accent>without the admin</Accent>.</Heading>

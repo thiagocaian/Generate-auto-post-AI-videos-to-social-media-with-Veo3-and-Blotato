@@ -7,6 +7,7 @@ import { Play } from "lucide-react";
 import HeroFlow, { HERO_FLOW_SUMMARY } from "@/components/marketing/hero-flow";
 import HeroConstellation from "@/components/marketing/hero-constellation";
 import { useSiteNavigate } from "@/components/page-transition";
+import { HERO_WASH } from "@/components/site";
 
 export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
   const reduced = useReducedMotion() === true;
@@ -34,7 +35,8 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative overflow-hidden bg-gradient-to-b from-[#f2f1ff] to-white"
+      className="relative overflow-hidden bg-[#f6f5ff]"
+      style={{ background: HERO_WASH }}
     >
       <HeroConstellation reduced={reduced} />
       <div className="relative z-10 mx-auto flex max-w-6xl flex-col xl:min-h-[calc(90vh-4rem)] xl:flex-row xl:items-center">

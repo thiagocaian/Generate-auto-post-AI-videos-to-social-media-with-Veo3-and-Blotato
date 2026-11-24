@@ -47,7 +47,7 @@ export default function StatsSection() {
   const reduced = useReducedMotion() === true;
 
   return (
-    <section id="numbers" ref={ref} className="bg-[#f6f5ff] px-5 py-20 sm:py-24">
+    <section id="numbers" ref={ref} className="bg-[#f2f1ff] px-5 py-20 sm:py-24">
       <div className="mx-auto max-w-6xl">
       <Eyebrow>Why it matters</Eyebrow>
       <h2 className="max-w-3xl text-[28px] font-semibold leading-snug tracking-tight text-[#0f1222] sm:text-[36px]">

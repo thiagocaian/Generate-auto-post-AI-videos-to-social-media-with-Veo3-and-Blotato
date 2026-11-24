@@ -123,7 +123,7 @@ export default function ServicesPage() {
         ))}
       </div>
 
-      <section id="agents" className="scroll-mt-20 bg-[#f6f5ff] py-20 sm:py-24">
+      <section id="agents" className="scroll-mt-20 bg-[#f2f1ff] py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <div className="max-w-3xl">
             <Eyebrow>Cytron automation</Eyebrow>

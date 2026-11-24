@@ -11,6 +11,15 @@ export const ACCENT = "#3f37a2";
 export const LILAC = "#8f88d6";
 export const GRADIENT = "#3f37a2"; // solid accent — kept so existing style={{ background: GRADIENT }} stays valid
 
+/** Lavender washes sampled from the reference: flat #f6f5ff that deepens to
+ *  periwinkle over a fixed band at the bottom (so it sits behind the hero cards
+ *  at every viewport), with soft uneven patches like the reference. */
+export const HERO_WASH =
+  "radial-gradient(48% 200px at 14% 100%, rgba(176,170,255,0.55), rgba(176,170,255,0)), " +
+  "radial-gradient(42% 180px at 86% 100%, rgba(188,182,255,0.45), rgba(188,182,255,0)), " +
+  "linear-gradient(180deg, #f6f5ff 0%, #f6f5ff calc(100% - 440px), #efeeff calc(100% - 320px), #e2dfff calc(100% - 170px), #d2ceff calc(100% - 60px), #c9c5ff 100%)";
+export const INTRO_WASH =
+  "linear-gradient(180deg, #f6f5ff 0%, #f6f5ff calc(100% - 280px), #eeecff calc(100% - 130px), #e4e1ff 100%)";
 export const CARD = "rounded-xl border border-[#e7e6f0] bg-white shadow-[0_1px_2px_rgba(15,18,34,0.04),0_10px_28px_-14px_rgba(63,55,162,0.14)]";
 export const BTN_PRIMARY =
   "inline-flex items-center justify-center gap-2 rounded-lg bg-[#3f37a2] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#352e8c]";

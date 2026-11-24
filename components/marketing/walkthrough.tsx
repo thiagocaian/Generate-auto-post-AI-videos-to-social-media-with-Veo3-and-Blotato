@@ -237,7 +237,7 @@ export default function Walkthrough() {
   const reduced = useReducedMotion() === true;
 
   return (
-    <section id="walkthrough" aria-label="From missed call to paid invoice" className="bg-[#f6f5ff]">
+    <section id="walkthrough" aria-label="From missed call to paid invoice" className="bg-[#f2f1ff]">
       {reduced ? (
         <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
           <WalkthroughHeader />
