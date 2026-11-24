@@ -212,14 +212,14 @@ export function SiteNav() {
 }
 
 export function SiteFooter() {
-  const col = "mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400";
-  const link = "block py-1 text-sm text-slate-300 transition-colors hover:text-white";
+  const col = "mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#9a9db8]";
+  const link = "block py-1 text-sm text-[#c9cbe0] transition-colors hover:text-white";
   return (
-    <footer className="bg-slate-900 pb-24 text-white md:pb-0">
+    <footer className="bg-[#0f1222] pb-24 text-white md:pb-0">
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2.5"><CytronLogo size={28} /><span className="font-semibold">CYTRON</span></div>
-          <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-300">Specialists in automating repetitive office tasks for trade, wholesale, e-commerce and warehouse operations. Run on our own servers. Gold Coast.</p>
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-[#c9cbe0]">Specialists in automating repetitive office tasks for trade, wholesale, e-commerce and warehouse operations. Run on our own servers. Gold Coast.</p>
           <a href="/contact" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:underline">Free Automation Assessment <ChevronRight size={16} /></a>
         </div>
         <div>
@@ -241,7 +241,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <p className="mx-auto max-w-6xl px-5 py-6 text-xs text-slate-400">© {new Date().getFullYear()} Cytron · Gold Coast, Queensland, Australia</p>
+        <p className="mx-auto max-w-6xl px-5 py-6 text-xs text-[#9a9db8]">© {new Date().getFullYear()} Cytron · Gold Coast, Queensland, Australia</p>
       </div>
     </footer>
   );

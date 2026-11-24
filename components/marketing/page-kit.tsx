@@ -38,17 +38,24 @@ export function PageIntro({
   );
 }
 
-export function PrimaryLink({ href, children }: { href: string; children: React.ReactNode }) {
+// On the deep-indigo CTA band the buttons invert: white with indigo text, and a
+// translucent white secondary.
+const BTN_PRIMARY_ON_DARK =
+  "inline-flex items-center justify-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-[#3f37a2] transition-colors hover:bg-[#eeedf7]";
+const BTN_SECONDARY_ON_DARK =
+  "inline-flex items-center justify-center gap-2 rounded-lg border border-white/25 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/20";
+
+export function PrimaryLink({ href, children, onDark = false }: { href: string; children: React.ReactNode; onDark?: boolean }) {
   return (
-    <a href={href} className={BTN_PRIMARY}>
+    <a href={href} className={onDark ? BTN_PRIMARY_ON_DARK : BTN_PRIMARY}>
       {children}
       <ChevronRight size={16} />
     </a>
   );
 }
 
-export function SecondaryLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return <a href={href} className={BTN_SECONDARY}>{children}</a>;
+export function SecondaryLink({ href, children, onDark = false }: { href: string; children: React.ReactNode; onDark?: boolean }) {
+  return <a href={href} className={onDark ? BTN_SECONDARY_ON_DARK : BTN_SECONDARY}>{children}</a>;
 }
 
 export function TextLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -73,15 +80,15 @@ export function CtaBand({
   return (
     <section className="bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-6xl px-5">
-        <div className="flex flex-col items-start justify-between gap-8 rounded-2xl border border-[#e7e6f0] bg-[#f6f5ff] p-8 sm:p-10 lg:flex-row lg:items-center">
+        <div className="flex flex-col items-start justify-between gap-8 rounded-2xl border border-[#2e2878] bg-[#2e2878] p-8 sm:p-10 lg:flex-row lg:items-center">
           <div className="max-w-2xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-[#4b5067]">Free Automation Assessment</p>
-            <h2 className="text-[26px] font-semibold leading-snug tracking-tight text-[#0f1222] sm:text-[32px]">{title}</h2>
-            <p className="mt-3 text-[16px] leading-relaxed text-[#4b5067]">{text}</p>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-[#c9c5f0]">Free Automation Assessment</p>
+            <h2 className="text-[26px] font-semibold leading-snug tracking-tight text-white sm:text-[32px]">{title}</h2>
+            <p className="mt-3 text-[16px] leading-relaxed text-[#dcd9f5]">{text}</p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-3">
-            <PrimaryLink href="/contact">Free Automation Assessment</PrimaryLink>
-            {secondary && <SecondaryLink href={secondary.href}>{secondary.label}</SecondaryLink>}
+            <PrimaryLink href="/contact" onDark>Free Automation Assessment</PrimaryLink>
+            {secondary && <SecondaryLink href={secondary.href} onDark>{secondary.label}</SecondaryLink>}
           </div>
         </div>
       </div>
