@@ -24,9 +24,9 @@ export function PageIntro({
   return (
     <section className="cytron-page-intro relative overflow-hidden">
       <div className="cytron-hero-bg" aria-hidden="true" />
+      <div className="cytron-page-intro-scrim" aria-hidden="true" />
       <div className={`relative z-10 mx-auto grid max-w-6xl gap-12 px-5 pb-16 pt-14 sm:pb-20 sm:pt-20 ${aside ? "lg:grid-cols-[1.1fr_0.9fr] lg:items-center" : ""}`}>
-        <div className="relative">
-          <div className="cytron-hero-text-scrim" aria-hidden="true" />
+        <div>
           <motion.p {...rise()} className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#E0C6F4]">{eyebrow}</motion.p>
           <motion.h1 {...rise(0.03)} className="max-w-3xl text-[clamp(2.1rem,6.5vw,3.6rem)] font-semibold leading-[1.06] tracking-tight text-white">
             {title}

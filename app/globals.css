@@ -274,9 +274,8 @@ html {
   background-size: 100% 100%;
 }
 
-/* Home hero only: Canva wave artwork. The rest of the marketing site
- * keeps the existing .cytron-page-bg wash. Fallback colour matches the
- * dark left field of the image. */
+/* Canva wave artwork used by the home hero and shared page intros.
+ * Fallback colour matches the dark left field of the image. */
 .cytron-hero-bg {
   position: absolute;
   inset: 0;
@@ -330,6 +329,26 @@ html {
     left: -4rem;
     right: -12%;
   }
+}
+
+
+/* Soft full-height fade behind PageIntro / contact copy. Covers the
+ * whole intro so no hard rectangle cuts across the waves. Home hero
+ * keeps the tighter column scrim above, which leaves the flow art clear. */
+.cytron-page-intro-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    #0A0038 0%,
+    rgba(10, 0, 56, 0.92) 28%,
+    rgba(10, 0, 56, 0.70) 42%,
+    rgba(10, 0, 56, 0.36) 56%,
+    rgba(10, 0, 56, 0.10) 70%,
+    rgba(10, 0, 56, 0) 86%
+  );
 }
 
 /* Accent spans in Canva-toned intros stay light; Accent is still purple on the rest of the page. */

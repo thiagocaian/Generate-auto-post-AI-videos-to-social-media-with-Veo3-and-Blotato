@@ -21,9 +21,9 @@ export default function ContactPage() {
     <div>
       <section id="audit" className="cytron-page-intro relative overflow-hidden">
         <div className="cytron-hero-bg" aria-hidden="true" />
+        <div className="cytron-page-intro-scrim" aria-hidden="true" />
         <div className="relative z-10 mx-auto grid max-w-6xl gap-12 px-5 pb-20 pt-14 sm:pt-20 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-          <div className="relative">
-            <div className="cytron-hero-text-scrim" aria-hidden="true" />
+          <div>
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#E0C6F4]">Contact · Free Automation Assessment</p>
             <h1 className="max-w-xl text-[clamp(2.1rem,6.5vw,3.4rem)] font-semibold leading-[1.06] tracking-tight text-white">
               <Accent>One</Accent> call and you&apos;ll know what to automate first.
