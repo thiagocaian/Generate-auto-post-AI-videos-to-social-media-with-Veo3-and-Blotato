@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { BTN_PRIMARY, BTN_SECONDARY } from "@/components/site";
 
-/** Top block for inner pages: same type scale and soft gradient as the home hero. */
+/** Top block for inner pages: same Canva navy / wave field and light type as the home hero. */
 export function PageIntro({
   eyebrow,
   title,
@@ -22,17 +22,19 @@ export function PageIntro({
   const reduced = useReducedMotion() === true;
   const rise = (d = 0) => (reduced ? {} : { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { delay: d, duration: 0.4, ease: "easeOut" as const } });
   return (
-    <section className="border-b border-[#e7e6f0]">
-      <div className={`mx-auto grid max-w-6xl gap-12 px-5 pb-16 pt-14 sm:pb-20 sm:pt-20 ${aside ? "lg:grid-cols-[1.1fr_0.9fr] lg:items-center" : ""}`}>
-        <div>
-          <motion.p {...rise()} className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#3f37a2]">{eyebrow}</motion.p>
-          <motion.h1 {...rise(0.03)} className="max-w-3xl text-[clamp(2.1rem,6.5vw,3.6rem)] font-semibold leading-[1.06] tracking-tight text-[#0f1222]">
+    <section className="cytron-page-intro relative overflow-hidden">
+      <div className="cytron-hero-bg" aria-hidden="true" />
+      <div className={`relative z-10 mx-auto grid max-w-6xl gap-12 px-5 pb-16 pt-14 sm:pb-20 sm:pt-20 ${aside ? "lg:grid-cols-[1.1fr_0.9fr] lg:items-center" : ""}`}>
+        <div className="relative">
+          <div className="cytron-hero-text-scrim" aria-hidden="true" />
+          <motion.p {...rise()} className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#E0C6F4]">{eyebrow}</motion.p>
+          <motion.h1 {...rise(0.03)} className="max-w-3xl text-[clamp(2.1rem,6.5vw,3.6rem)] font-semibold leading-[1.06] tracking-tight text-white">
             {title}
           </motion.h1>
-          <motion.p {...rise(0.08)} className="mt-5 max-w-2xl text-[17px] leading-relaxed text-[#4b5067] sm:text-lg">{lead}</motion.p>
+          <motion.p {...rise(0.08)} className="mt-5 max-w-2xl text-[17px] leading-relaxed text-[#D9D4F0] sm:text-lg">{lead}</motion.p>
           {actions && <motion.div {...rise(0.12)} className="mt-8 flex flex-wrap items-center gap-3">{actions}</motion.div>}
         </div>
-        {aside && <motion.div {...rise(0.15)}>{aside}</motion.div>}
+        {aside && <motion.div {...rise(0.15)} className="relative z-10">{aside}</motion.div>}
       </div>
     </section>
   );

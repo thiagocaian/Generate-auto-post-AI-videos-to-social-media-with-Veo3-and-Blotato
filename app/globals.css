@@ -331,3 +331,8 @@ html {
     right: -12%;
   }
 }
+
+/* Accent spans in Canva-toned intros stay light; Accent is still purple on the rest of the page. */
+.cytron-page-intro h1 .text-\[\#3f37a2\] {
+  color: #E0C6F4;
+}
