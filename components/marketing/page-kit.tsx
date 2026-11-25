@@ -43,7 +43,7 @@ export function PageIntro({
 // On the deep-indigo CTA band the buttons invert: white with indigo text, and a
 // translucent white secondary.
 const BTN_PRIMARY_ON_DARK =
-  "inline-flex items-center justify-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-[#3f37a2] transition-colors hover:bg-[#eeedf7]";
+  "inline-flex items-center justify-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-[#0A0038] transition-colors hover:bg-[#F9D6F9]";
 const BTN_SECONDARY_ON_DARK =
   "inline-flex items-center justify-center gap-2 rounded-lg border border-white/25 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/20";
 
@@ -60,9 +60,9 @@ export function SecondaryLink({ href, children, onDark = false }: { href: string
   return <a href={href} className={onDark ? BTN_SECONDARY_ON_DARK : BTN_SECONDARY}>{children}</a>;
 }
 
-export function TextLink({ href, children }: { href: string; children: React.ReactNode }) {
+export function TextLink({ href, children, onDark = false }: { href: string; children: React.ReactNode; onDark?: boolean }) {
   return (
-    <a href={href} className="inline-flex items-center gap-1 text-sm font-semibold text-[#3f37a2] transition-colors hover:text-[#352e8c]">
+    <a href={href} className={`inline-flex items-center gap-1 text-sm font-semibold transition-colors ${onDark ? "text-[#E0C6F4] hover:text-white" : "text-[#3f37a2] hover:text-[#352e8c]"}`}>
       {children}
       <ChevronRight size={15} />
     </a>
@@ -82,11 +82,11 @@ export function CtaBand({
   return (
     <section className="bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-6xl px-5">
-        <div className="flex flex-col items-start justify-between gap-8 rounded-2xl border border-[#2e2878] bg-[#2e2878] p-8 sm:p-10 lg:flex-row lg:items-center">
+        <div className="flex flex-col items-start justify-between gap-8 rounded-2xl border border-white/15 bg-[#0A0038] p-8 sm:p-10 lg:flex-row lg:items-center">
           <div className="max-w-2xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-[#c9c5f0]">Free Automation Assessment</p>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-[#E0C6F4]">Free Automation Assessment</p>
             <h2 className="text-[26px] font-semibold leading-snug tracking-tight text-white sm:text-[32px]">{title}</h2>
-            <p className="mt-3 text-[16px] leading-relaxed text-[#dcd9f5]">{text}</p>
+            <p className="mt-3 text-[16px] leading-relaxed text-[#D9D4F0]">{text}</p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-3">
             <PrimaryLink href="/contact" onDark>Free Automation Assessment</PrimaryLink>

@@ -123,12 +123,12 @@ export default function ServicesPage() {
         ))}
       </div>
 
-      <section id="agents" className="scroll-mt-20 bg-[#F0EEF6] py-20 sm:py-24">
+      <section id="agents" className="cytron-band-navy scroll-mt-20 py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <div className="max-w-3xl">
-            <Eyebrow>Cytron automation</Eyebrow>
-            <Heading>Smart automation on our servers, <Accent>for your business</Accent>.</Heading>
-            <p className="mt-5 text-lg leading-relaxed text-[#4b5067]">This isn&apos;t a chatbot. Cytron runs background automation on our own servers, around the clock, keeping every workflow safe and reliable.</p>
+            <Eyebrow dark>Cytron automation</Eyebrow>
+            <Heading dark>Smart automation on our servers, <Accent>for your business</Accent>.</Heading>
+            <p className="mt-5 text-lg leading-relaxed text-[#D9D4F0]">This isn&apos;t a chatbot. Cytron runs background automation on our own servers, around the clock, keeping every workflow safe and reliable.</p>
           </div>
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {AGENT_ROLES.map(({ icon: Icon, t, d }, i) => (

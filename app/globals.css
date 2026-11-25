@@ -209,27 +209,31 @@ html {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  /* Quiet pale field in the Canva navy / violet family. No teal or sky wash. */
-  background-color: #F4F3F9;
+  /* Light lavender field sampled from the Canva waves (#F9D6F9 / #E4B0EA). */
+  background-color: #F9D6F9;
   background-image:
     radial-gradient(ellipse 80% 70% at 100% 0%,
-      rgba(224, 198, 244, 0.28) 0%,
-      rgba(192, 90, 205, 0.08) 38%,
-      rgba(192, 90, 205, 0) 70%),
+      rgba(228, 176, 234, 0.55) 0%,
+      rgba(249, 214, 249, 0.20) 48%,
+      rgba(249, 214, 249, 0) 74%),
     radial-gradient(ellipse 70% 55% at 0% 100%,
-      rgba(10, 0, 56, 0.07) 0%,
+      rgba(10, 0, 56, 0.06) 0%,
       rgba(10, 0, 56, 0) 62%),
-    radial-gradient(ellipse 65% 50% at 100% 100%,
-      rgba(10, 0, 56, 0.08) 0%,
-      rgba(138, 31, 176, 0.06) 42%,
-      rgba(138, 31, 176, 0) 72%),
     linear-gradient(180deg,
-      #F6F5FA 0%,
-      #F3F1F8 42%,
-      #EEEBF6 78%,
-      #E9E6F2 100%);
+      #FBF0FB 0%,
+      #F9D6F9 48%,
+      #F3C8F0 100%);
   background-repeat: no-repeat;
   background-size: 100% 100%;
+}
+
+/* Dark navy band from the Canva field. Use with light type on the band itself;
+ * cards and glass panels inside keep their own dark text. */
+.cytron-band-navy {
+  background-color: #0A0038;
+}
+.cytron-band-navy h2 .text-\[\#3f37a2\] {
+  color: #E0C6F4;
 }
 
 /* Canva wave artwork used by the home hero and shared page intros.

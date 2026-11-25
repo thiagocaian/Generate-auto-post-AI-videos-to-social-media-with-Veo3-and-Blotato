@@ -34,11 +34,11 @@ const SMS = "Sorry we missed you, book a time here";
 function WalkthroughHeader() {
   return (
     <div className="max-w-3xl">
-      <Eyebrow>Enquiry to invoice</Eyebrow>
-      <Heading>
+      <Eyebrow dark>Enquiry to invoice</Eyebrow>
+      <Heading dark>
         From missed call to <Accent>paid invoice</Accent>.
       </Heading>
-      <p className="mt-4 max-w-2xl leading-relaxed text-[#4b5067]">
+      <p className="mt-4 max-w-2xl leading-relaxed text-[#D9D4F0]">
         One enquiry, handled in the background. Your team only steps in if something is unclear.
       </p>
     </div>
@@ -93,7 +93,7 @@ function StepList({
               {...(clickable ? { type: "button" as const } : {})}
               onClick={clickable && onSelect ? () => onSelect(i) : undefined}
               aria-current={current ? "step" : undefined}
-              className={`flex w-full gap-3 rounded-lg px-2 py-2.5 text-left transition-colors ${
+              className={`group flex w-full gap-3 rounded-lg px-2 py-2.5 text-left transition-colors ${
                 current ? "bg-white" : "bg-transparent"
               } ${clickable ? "cursor-pointer hover:bg-white" : ""}`}
             >
@@ -109,10 +109,10 @@ function StepList({
                 {done ? <Check size={12} strokeWidth={3} /> : i + 1}
               </span>
               <span className="min-w-0">
-                <span className={`block text-[15px] font-semibold ${current || done ? "text-[#0f1222]" : "text-[#2e3248]"}`}>
+                <span className={`block text-[15px] font-semibold ${current ? "text-[#0f1222]" : "text-white group-hover:text-[#0f1222]"}`}>
                   {s.label}
                 </span>
-                <span className="mt-0.5 block text-[13px] leading-relaxed text-[#4b5067]">{s.detail}</span>
+                <span className={`mt-0.5 block text-[13px] leading-relaxed ${current ? "text-[#4b5067]" : "text-[#D9D4F0] group-hover:text-[#4b5067]"}`}>{s.detail}</span>
               </span>
             </Tag>
           </li>
@@ -155,9 +155,9 @@ function DesktopWalkthrough() {
           </div>
           <div className="grid grid-cols-[0.9fr_1.1fr] items-stretch gap-12">
             <div className="relative pl-1">
-              <div className="pointer-events-none absolute bottom-3 left-[22px] top-3 w-px bg-[#e7e6f0]" aria-hidden />
+              <div className="pointer-events-none absolute bottom-3 left-[22px] top-3 w-px bg-white/20" aria-hidden />
               <motion.div
-                className="pointer-events-none absolute left-[22px] top-3 w-px origin-top bg-[#3f37a2]"
+                className="pointer-events-none absolute left-[22px] top-3 w-px origin-top bg-[#E0C6F4]"
                 style={{ height: lineHeight }}
                 aria-hidden
               />
@@ -198,13 +198,13 @@ function MobileStep({ index }: { index: number }) {
       animate={show ? { opacity: 1, y: 0 } : undefined}
       transition={{ duration: 0.35, ease: "easeOut" }}
     >
-      <p className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-[#0f1222]">
+      <p className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-white">
         <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#3f37a2] text-[11px] font-semibold text-white">
           {index + 1}
         </span>
         {s.label}
       </p>
-      <p className="mb-3 text-[13px] leading-relaxed text-[#4b5067]">{s.detail}</p>
+      <p className="mb-3 text-[13px] leading-relaxed text-[#D9D4F0]">{s.detail}</p>
       {show ? <StepCard index={index} reduced={reduced} /> : <div className="h-40" aria-hidden />}
     </motion.li>
   );
@@ -237,7 +237,7 @@ export default function Walkthrough() {
   const reduced = useReducedMotion() === true;
 
   return (
-    <section id="walkthrough" aria-label="From missed call to paid invoice" className="bg-[#F0EEF6]">
+    <section id="walkthrough" aria-label="From missed call to paid invoice" className="cytron-band-navy">
       {reduced ? (
         <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
           <WalkthroughHeader />

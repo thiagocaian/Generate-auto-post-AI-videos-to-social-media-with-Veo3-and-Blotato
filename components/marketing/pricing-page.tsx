@@ -138,10 +138,10 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section id="faq" className="scroll-mt-20 bg-[#F0EEF6] py-20 sm:py-24">
+      <section id="faq" className="cytron-band-navy scroll-mt-20 py-20 sm:py-24">
         <div className="mx-auto max-w-3xl px-5">
-          <Eyebrow>FAQ</Eyebrow>
-          <Heading>Questions we hear a lot.</Heading>
+          <Eyebrow dark>FAQ</Eyebrow>
+          <Heading dark>Questions we hear a lot.</Heading>
           <LiquidGlass reduced={reduced} tall className="mt-10" panelClassName="px-6" sheenDelay="1.5s">
             <div className="divide-y divide-slate-900/[0.08]">
                 {FAQ.map((f) => (

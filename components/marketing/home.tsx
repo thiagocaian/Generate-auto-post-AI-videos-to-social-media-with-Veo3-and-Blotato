@@ -105,14 +105,14 @@ export default function Home() {
       </section>
 
       {/* How it works teaser */}
-      <section className="bg-[#F0EEF6] py-20 sm:py-24">
+      <section className="cytron-band-navy py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <Eyebrow>How it works</Eyebrow>
-              <Heading>Safe by design, <Accent>live in weeks</Accent>.</Heading>
+              <Eyebrow dark>How it works</Eyebrow>
+              <Heading dark>Safe by design, <Accent>live in weeks</Accent>.</Heading>
             </div>
-            <TextLink href="/how-it-works">See the process</TextLink>
+            <TextLink href="/how-it-works" onDark>See the process</TextLink>
           </div>
           <ol className="relative mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((s, i) => (
@@ -123,12 +123,12 @@ export default function Home() {
               </motion.li>
             ))}
           </ol>
-          <div className="mt-14 border-t border-[#e7e6f0] pt-12">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#3f37a2]">Secure by design</p>
-            <h3 className="mt-3 max-w-2xl text-[22px] font-semibold tracking-tight text-[#0f1222] sm:text-[26px]">
+          <div className="mt-14 border-t border-white/10 pt-12">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#E0C6F4]">Secure by design</p>
+            <h3 className="mt-3 max-w-2xl text-[22px] font-semibold tracking-tight text-white sm:text-[26px]">
               Secure by design, built by a team with a cyber security practice.
             </h3>
-            <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-[#4b5067]">
+            <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-[#D9D4F0]">
               Automations run in the background on our own servers, with a person in the loop when something is off.
             </p>
             <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -167,18 +167,18 @@ export default function Home() {
       </section>
 
       {/* Pricing teaser */}
-      <section className="border-y border-[#e7e6f0] bg-[#F0EEF6] py-14">
+      <section className="cytron-band-navy border-y border-white/10 py-14">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 md:flex-row md:items-center md:justify-between">
           <div>
-            <Eyebrow>Pricing</Eyebrow>
-            <p className="text-[22px] font-semibold tracking-tight text-[#0f1222] sm:text-[26px]">Office tasks. Pay for what works.</p>
+            <Eyebrow dark>Pricing</Eyebrow>
+            <p className="text-[22px] font-semibold tracking-tight text-white sm:text-[26px]">Office tasks. Pay for what works.</p>
           </div>
-          <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[15px] text-[#2e3248]">
+          <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[15px] text-[#D9D4F0]">
             {["Starter $349/mo", "Growth $649/mo", "Business $999/mo", "Enterprise $1,499+/mo"].map((t) => (
-              <li key={t} className="flex items-center gap-2"><Check size={16} className="text-emerald-700" />{t}</li>
+              <li key={t} className="flex items-center gap-2"><Check size={16} className="text-emerald-400" />{t}</li>
             ))}
           </ul>
-          <TextLink href="/pricing">See pricing</TextLink>
+          <TextLink href="/pricing" onDark>See pricing</TextLink>
         </div>
       </section>
 

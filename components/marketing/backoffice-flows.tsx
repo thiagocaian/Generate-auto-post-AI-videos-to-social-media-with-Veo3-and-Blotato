@@ -195,11 +195,11 @@ export default function BackofficeFlows() {
   };
 
   return (
-    <section id="back-office" className="bg-[#F0EEF6] py-20 sm:py-24">
+    <section id="back-office" className="cytron-band-navy py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5">
-        <Eyebrow>Back-office workflows</Eyebrow>
-        <Heading>Repetitive work, <Accent>handled in the background</Accent>.</Heading>
-        <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-[#4b5067]">
+        <Eyebrow dark>Back-office workflows</Eyebrow>
+        <Heading dark>Repetitive work, <Accent>handled in the background</Accent>.</Heading>
+        <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-[#D9D4F0]">
           Cytron automation takes the trigger, runs the steps on our own servers, and holds anything unusual for a person.
         </p>
 

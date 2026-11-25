@@ -49,8 +49,8 @@ export default function HowPage() {
         steps={STEPS}
         header={
           <div className="max-w-3xl">
-            <Eyebrow>The process</Eyebrow>
-            <Heading>Four steps, <Accent>one at a time</Accent>.</Heading>
+            <Eyebrow dark>The process</Eyebrow>
+            <Heading dark>Four steps, <Accent>one at a time</Accent>.</Heading>
           </div>
         }
       />
@@ -81,15 +81,15 @@ export default function HowPage() {
         </div>
       </section>
 
-      <section className="bg-[#F0EEF6] py-20 sm:py-24">
+      <section className="cytron-band-navy py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
-          <Eyebrow>Our principles</Eyebrow>
-          <Heading>Automation you can trust with real customers.</Heading>
+          <Eyebrow dark>Our principles</Eyebrow>
+          <Heading dark>Automation you can trust with real customers.</Heading>
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {PRINCIPLES.map(({ icon: Icon, t, d }) => (
               <div key={t} className="flex gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[#e7e6f0] bg-white text-[#2e3248]"><Icon size={18} /></div>
-                <div><h3 className="mb-1.5 text-lg font-semibold text-[#0f1222]">{t}</h3><p className="text-[15px] leading-relaxed text-[#4b5067]">{d}</p></div>
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-white/20 bg-white text-[#2e3248]"><Icon size={18} /></div>
+                <div><h3 className="mb-1.5 text-lg font-semibold text-white">{t}</h3><p className="text-[15px] leading-relaxed text-[#D9D4F0]">{d}</p></div>
               </div>
             ))}
           </div>

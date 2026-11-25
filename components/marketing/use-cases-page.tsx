@@ -167,12 +167,12 @@ export default function UseCasesPage() {
         </div>
       </section>
 
-      <section id="week" className="scroll-mt-20 bg-[#F0EEF6] py-20 sm:py-24">
+      <section id="week" className="cytron-band-navy scroll-mt-20 py-20 sm:py-24">
         <div className="mx-auto max-w-3xl px-5">
-          <Eyebrow>A week with Cytron</Eyebrow>
-          <Heading>The same week, <Accent>without the admin</Accent>.</Heading>
+          <Eyebrow dark>A week with Cytron</Eyebrow>
+          <Heading dark>The same week, <Accent>without the admin</Accent>.</Heading>
           <WeekTimeline />
-          <p className="mt-6 text-xs text-[#4b5067]">Illustrative example. Every business gets its own rules, tone and tools.</p>
+          <p className="mt-6 text-xs text-[#D9D4F0]">Illustrative example. Every business gets its own rules, tone and tools.</p>
         </div>
       </section>
 
