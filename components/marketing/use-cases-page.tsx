@@ -74,7 +74,12 @@ const CASE_POINTS = [
 
 export default function UseCasesPage() {
   const reduced = useReducedMotion() === true;
-  const rise = reduced ? {} : { initial: { opacity: 0, y: 12 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.2 }, transition: { duration: 0.4, ease: "easeOut" as const } };
+  const rise = {
+    initial: reduced ? false : { opacity: 0, y: 12 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.2 },
+    transition: reduced ? { duration: 0 } : { duration: 0.4, ease: "easeOut" as const },
+  };
 
   return (
     <div>
@@ -167,12 +172,12 @@ export default function UseCasesPage() {
         </div>
       </section>
 
-      <section id="week" className="scroll-mt-20 bg-[#f2f1ff] py-20 sm:py-24">
+      <section id="week" className="cytron-band-navy scroll-mt-20 py-20 sm:py-24">
         <div className="mx-auto max-w-3xl px-5">
-          <Eyebrow>A week with Cytron</Eyebrow>
-          <Heading>The same week, <Accent>without the admin</Accent>.</Heading>
+          <Eyebrow dark>A week with Cytron</Eyebrow>
+          <Heading dark>The same week, <Accent>without the admin</Accent>.</Heading>
           <WeekTimeline />
-          <p className="mt-6 text-xs text-[#4b5067]">Illustrative example. Every business gets its own rules, tone and tools.</p>
+          <p className="mt-6 text-xs text-[#D9D4F0]">Illustrative example. Every business gets its own rules, tone and tools.</p>
         </div>
       </section>
 

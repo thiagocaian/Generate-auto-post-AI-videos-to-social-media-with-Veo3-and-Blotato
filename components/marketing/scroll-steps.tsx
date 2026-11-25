@@ -22,7 +22,7 @@ function StepList({ steps, active, onSelect, clickable }: { steps: ScrollStep[];
               {...(clickable ? { type: "button" as const } : {})}
               onClick={clickable && onSelect ? () => onSelect(i) : undefined}
               aria-current={current ? "step" : undefined}
-              className={`flex w-full gap-3 rounded-lg px-2 py-3 text-left transition-colors ${current ? "bg-white shadow-sm" : "bg-transparent"} ${clickable ? "cursor-pointer hover:bg-white" : ""}`}
+              className={`group flex w-full gap-3 rounded-lg px-2 py-3 text-left transition-colors ${current ? "bg-white shadow-sm" : "bg-transparent"} ${clickable ? "cursor-pointer hover:bg-white" : ""}`}
             >
               <span
                 className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] font-semibold ${
@@ -32,9 +32,9 @@ function StepList({ steps, active, onSelect, clickable }: { steps: ScrollStep[];
                 {done ? <Check size={12} strokeWidth={3} /> : i + 1}
               </span>
               <span className="min-w-0">
-                {s.kicker && <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#4b5067]">{s.kicker}</span>}
-                <span className={`block text-[16px] font-semibold ${current || done ? "text-[#0f1222]" : "text-[#2e3248]"}`}>{s.label}</span>
-                <span className="mt-0.5 block text-[13.5px] leading-relaxed text-[#4b5067]">{s.detail}</span>
+                {s.kicker && <span className={`block text-[11px] font-semibold uppercase tracking-[0.12em] ${current ? "text-[#4b5067]" : "text-[#D9D4F0] group-hover:text-[#4b5067]"}`}>{s.kicker}</span>}
+                <span className={`block text-[16px] font-semibold ${current ? "text-[#0f1222]" : "text-white group-hover:text-[#0f1222]"}`}>{s.label}</span>
+                <span className={`mt-0.5 block text-[13.5px] leading-relaxed ${current ? "text-[#4b5067]" : "text-[#D9D4F0] group-hover:text-[#4b5067]"}`}>{s.detail}</span>
               </span>
             </Tag>
           </li>
@@ -84,8 +84,8 @@ function Desktop({ steps, header }: { steps: ScrollStep[]; header: React.ReactNo
           <div className="mb-8">{header}</div>
           <div className="grid grid-cols-[0.9fr_1.1fr] items-stretch gap-12">
             <div className="relative pl-1">
-              <div className="pointer-events-none absolute bottom-3 left-[22px] top-3 w-px bg-[#e7e6f0]" aria-hidden />
-              <motion.div className="pointer-events-none absolute left-[22px] top-3 w-px origin-top bg-[#3f37a2]" style={{ height: lineHeight }} aria-hidden />
+              <div className="pointer-events-none absolute bottom-3 left-[22px] top-3 w-px bg-white/20" aria-hidden />
+              <motion.div className="pointer-events-none absolute left-[22px] top-3 w-px origin-top bg-[#E0C6F4]" style={{ height: lineHeight }} aria-hidden />
               <StepList steps={steps} active={active} onSelect={scrollToStep} clickable />
             </div>
             <div className="relative min-h-[22rem]">
@@ -107,11 +107,11 @@ function MobileStep({ step, index }: { step: ScrollStep; index: number }) {
   const inView = useInView(ref, { amount: 0.3, once: true });
   return (
     <motion.li ref={ref} initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : undefined} transition={{ duration: 0.35, ease: "easeOut" }}>
-      <p className="mb-2 flex items-center gap-2 text-[15px] font-semibold text-[#0f1222]">
+      <p className="mb-2 flex items-center gap-2 text-[15px] font-semibold text-white">
         <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#3f37a2] text-[11px] font-semibold text-white">{index + 1}</span>
         {step.label}
       </p>
-      <p className="mb-3 text-[13.5px] leading-relaxed text-[#4b5067]">{step.detail}</p>
+      <p className="mb-3 text-[13.5px] leading-relaxed text-[#D9D4F0]">{step.detail}</p>
       <StepCard step={step} />
     </motion.li>
   );
@@ -120,7 +120,7 @@ function MobileStep({ step, index }: { step: ScrollStep; index: number }) {
 export default function ScrollSteps({ id, label, header, steps }: { id: string; label: string; header: React.ReactNode; steps: ScrollStep[] }) {
   const reduced = useReducedMotion() === true;
   return (
-    <section id={id} aria-label={label} className="bg-[#f2f1ff]">
+    <section id={id} aria-label={label} className="cytron-band-navy">
       {reduced ? (
         <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
           {header}

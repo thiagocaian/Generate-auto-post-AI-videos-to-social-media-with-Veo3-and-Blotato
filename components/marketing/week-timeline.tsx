@@ -14,12 +14,15 @@ const WEEK = [
 export default function WeekTimeline() {
   const reduced = useReducedMotion() === true;
   const fade = (delay = 0) =>
-    reduced
-      ? {}
-      : { initial: { opacity: 0, y: 8 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.6 }, transition: { duration: 0.35, delay } };
+    ({
+      initial: reduced ? false : { opacity: 0, y: 8 },
+      whileInView: { opacity: 1, y: 0 },
+      viewport: { once: true, amount: 0.6 },
+      transition: reduced ? { duration: 0 } : { duration: 0.35, delay },
+    });
 
   return (
-    <ol className="relative mt-10 space-y-6 before:absolute before:bottom-2 before:left-[22px] before:top-2 before:w-[2px] before:bg-[#e7e6f0]">
+    <ol className="relative mt-10 space-y-6 before:absolute before:bottom-2 before:left-[22px] before:top-2 before:w-[2px] before:bg-white/20">
       {WEEK.map((w) => (
         <li key={w.day} className="relative flex gap-4 sm:gap-6">
           <motion.span
@@ -29,7 +32,7 @@ export default function WeekTimeline() {
             {w.day}
           </motion.span>
           <div className="min-w-0 flex-1 space-y-2 pt-1">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[#4b5067]">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#D9D4F0]">
               {w.day} · {w.time}
             </p>
             <motion.div

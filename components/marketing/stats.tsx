@@ -47,13 +47,13 @@ export default function StatsSection() {
   const reduced = useReducedMotion() === true;
 
   return (
-    <section id="numbers" ref={ref} className="bg-[#f2f1ff] px-5 py-20 sm:py-24">
+    <section id="numbers" ref={ref} className="cytron-band-navy px-5 py-20 sm:py-24">
       <div className="mx-auto max-w-6xl">
-      <Eyebrow>Why it matters</Eyebrow>
-      <h2 className="max-w-3xl text-[28px] font-semibold leading-snug tracking-tight text-[#0f1222] sm:text-[36px]">
+      <Eyebrow dark>Why it matters</Eyebrow>
+      <h2 className="max-w-3xl text-[28px] font-semibold leading-snug tracking-tight text-white sm:text-[36px]">
         Busy operations, <Accent>big expectations</Accent>.
       </h2>
-      <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-[#2e3248]">
+      <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-[#D9D4F0]">
         Customers expect fast replies and easy payments. Trade, wholesale and fulfilment teams still handle a lot of that by hand. That gap is where automation pays for itself.
       </p>
       <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -80,7 +80,7 @@ export default function StatsSection() {
           </motion.div>
         ))}
       </div>
-      <p className="mt-6 text-sm text-[#2e3248]">On the Coast, health care employment grew 18.5% and construction 12.9% in the year to August 2025 (<a href="https://www.jobsandskills.gov.au/sites/default/files/2025-10/Industry%20Profile%20Gold%20Coast.pdf" target="_blank" rel="noopener noreferrer" className="font-medium text-[#1a1d33] underline underline-offset-2">Jobs and Skills Australia</a>). The office work behind that demand is still repetitive.</p>
+      <p className="mt-6 text-sm text-[#D9D4F0]">On the Coast, health care employment grew 18.5% and construction 12.9% in the year to August 2025 (<a href="https://www.jobsandskills.gov.au/sites/default/files/2025-10/Industry%20Profile%20Gold%20Coast.pdf" target="_blank" rel="noopener noreferrer" className="font-medium text-white underline underline-offset-2">Jobs and Skills Australia</a>). The office work behind that demand is still repetitive.</p>
       </div>
     </section>
   );

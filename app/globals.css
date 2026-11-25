@@ -209,67 +209,111 @@ html {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-color: #E8E6F8;
+  /* Light lavender field sampled from the Canva waves (#F9D6F9 / #E4B0EA). */
+  background-color: #F9D6F9;
   background-image:
-    /* Lift the left text column so lead copy and the in-page link stay AA. */
-    radial-gradient(ellipse 90% 130% at 8% 46%,
-      rgba(238, 236, 252, 0.94) 0%,
-      rgba(238, 236, 252, 0.70) 36%,
-      rgba(238, 236, 252, 0.38) 58%,
-      rgba(238, 236, 252, 0) 78%),
-    radial-gradient(ellipse 70% 68% at 100% 100%,
-      #192378 0%,
-      rgba(25, 35, 120, 0.80) 16%,
-      rgba(30, 42, 122, 0.40) 36%,
-      rgba(30, 42, 122, 0) 68%),
-    radial-gradient(ellipse 80% 58% at 86% 100%,
-      rgba(6, 57, 102, 0.88) 0%,
-      rgba(11, 63, 102, 0.55) 24%,
-      rgba(29, 80, 97, 0.28) 48%,
-      rgba(29, 80, 97, 0) 72%),
-    radial-gradient(ellipse 95% 58% at 52% 100%,
-      rgba(76, 124, 144, 0.70) 0%,
-      rgba(90, 133, 154, 0.38) 34%,
-      rgba(90, 133, 154, 0) 66%),
-    radial-gradient(ellipse 115% 90% at 0% 100%,
-      #A8D5FE 0%,
-      rgba(168, 212, 245, 0.75) 26%,
-      rgba(147, 189, 221, 0.30) 52%,
-      rgba(147, 189, 221, 0) 80%),
-    radial-gradient(ellipse 65% 75% at 100% 80%,
-      rgba(80, 59, 160, 0.55) 0%,
-      rgba(117, 81, 189, 0.25) 40%,
-      rgba(117, 81, 189, 0) 68%),
-    radial-gradient(ellipse 68% 105% at 100% 44%,
-      rgba(152, 106, 214, 0.72) 0%,
-      rgba(153, 107, 215, 0.40) 26%,
-      rgba(199, 160, 240, 0.18) 50%,
-      rgba(199, 160, 240, 0) 76%),
-    radial-gradient(ellipse 90% 80% at 100% 0%,
-      #F2D1FF 0%,
-      rgba(242, 209, 255, 0.90) 18%,
-      rgba(236, 208, 253, 0.45) 42%,
-      rgba(236, 208, 253, 0) 72%),
-    radial-gradient(ellipse 95% 58% at 48% 0%,
-      #FEEDFF 0%,
-      rgba(243, 230, 250, 0.75) 32%,
-      rgba(243, 230, 250, 0) 70%),
-    radial-gradient(ellipse 100% 80% at 48% 48%,
-      rgba(171, 171, 210, 0.40) 0%,
-      rgba(171, 171, 210, 0) 68%),
-    radial-gradient(ellipse 90% 80% at 8% 50%,
-      rgba(175, 195, 219, 0.70) 0%,
-      rgba(182, 208, 230, 0.35) 40%,
-      rgba(175, 195, 219, 0) 72%),
+    radial-gradient(ellipse 80% 70% at 100% 0%,
+      rgba(228, 176, 234, 0.55) 0%,
+      rgba(249, 214, 249, 0.20) 48%,
+      rgba(249, 214, 249, 0) 74%),
+    radial-gradient(ellipse 70% 55% at 0% 100%,
+      rgba(10, 0, 56, 0.06) 0%,
+      rgba(10, 0, 56, 0) 62%),
     linear-gradient(180deg,
-      #EBECFF 0%,
-      #F3E6FA 8%,
-      #E5E0F6 22%,
-      #D0CDEA 38%,
-      #B7B8D8 55%,
-      #A4B6D0 72%,
-      #7A9BB4 88%,
-      #5A859A 100%);
+      #FBF0FB 0%,
+      #F9D6F9 48%,
+      #F3C8F0 100%);
   background-repeat: no-repeat;
   background-size: 100% 100%;
+}
+
+/* Dark navy band from the Canva field. Use with light type on the band itself;
+ * cards and glass panels inside keep their own dark text. */
+.cytron-band-navy {
+  background-color: #0A0038;
+}
+.cytron-band-navy h2 .text-\[\#3f37a2\] {
+  color: #E0C6F4;
+}
+
+/* Canva wave artwork used by the home hero and shared page intros.
+ * Fallback colour matches the dark left field of the image. */
+.cytron-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #0A0038;
+  background-repeat: no-repeat;
+  background-size: cover;
+  /* Mobile: keep the dark left field behind the stacked text column.
+   * xl (two-column hero): anchor right so the waves sit behind the flow. */
+  background-position: left center;
+  background-image: url("/brand/hero-bg.webp");
+  background-image: -webkit-image-set(
+    url("/brand/hero-bg.avif") type("image/avif"),
+    url("/brand/hero-bg.webp") type("image/webp")
+  );
+  background-image: image-set(
+    url("/brand/hero-bg.avif") type("image/avif"),
+    url("/brand/hero-bg.webp") type("image/webp")
+  );
+}
+
+@media (min-width: 1280px) {
+  .cytron-hero-bg {
+    background-position: right center;
+  }
+}
+
+/* Soft navy wash behind the home hero copy so light type stays AA where
+ * the wave edge crosses the left column. Tight to the text column, so
+ * the artwork behind the flow diagram stays untouched. */
+.cytron-hero-text-scrim {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -1.25rem;
+  right: 8%;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    #0A0038 0%,
+    rgba(10, 0, 56, 0.88) 62%,
+    rgba(10, 0, 56, 0.45) 82%,
+    rgba(10, 0, 56, 0) 100%
+  );
+}
+
+@media (min-width: 1280px) {
+  .cytron-hero-text-scrim {
+    left: -4rem;
+    right: -12%;
+  }
+}
+
+
+/* Soft full-height fade behind PageIntro / contact copy. Covers the
+ * whole intro so no hard rectangle cuts across the waves. Home hero
+ * keeps the tighter column scrim above, which leaves the flow art clear. */
+.cytron-page-intro-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    #0A0038 0%,
+    rgba(10, 0, 56, 0.92) 28%,
+    rgba(10, 0, 56, 0.70) 42%,
+    rgba(10, 0, 56, 0.36) 56%,
+    rgba(10, 0, 56, 0.10) 70%,
+    rgba(10, 0, 56, 0) 86%
+  );
+}
+
+/* Accent spans in Canva-toned intros stay light; Accent is still purple on the rest of the page. */
+.cytron-page-intro h1 .text-\[\#3f37a2\] {
+  color: #E0C6F4;
 }

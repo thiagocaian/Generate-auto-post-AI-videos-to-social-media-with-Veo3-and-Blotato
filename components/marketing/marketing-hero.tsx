@@ -5,7 +5,6 @@ import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { Play } from "lucide-react";
 import HeroFlow, { HERO_FLOW_SUMMARY } from "@/components/marketing/hero-flow";
-import HeroConstellation from "@/components/marketing/hero-constellation";
 import { useSiteNavigate } from "@/components/page-transition";
 
 export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
@@ -36,14 +35,15 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
       id="hero"
       className="relative overflow-hidden"
     >
-      <HeroConstellation reduced={reduced} />
+      <div className="cytron-hero-bg" aria-hidden="true" />
       <div className="relative z-10 mx-auto flex max-w-6xl flex-col xl:min-h-[calc(90vh-4rem)] xl:flex-row xl:items-center">
         <div className="relative z-10 w-full px-5 pb-8 pt-14 md:pb-4 xl:w-[47%] xl:shrink-0 xl:py-16">
+          <div className="cytron-hero-text-scrim" aria-hidden="true" />
           <motion.p
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#3f37a2]"
+            className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#E0C6F4]"
           >
             Specialists in repetitive office tasks
           </motion.p>
@@ -51,7 +51,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="text-[clamp(2.25rem,8vw,3rem)] font-semibold leading-[1.05] tracking-tight text-[#0f1222] lg:text-[clamp(3.5rem,5.2vw,4.75rem)] xl:text-[clamp(3.5rem,4.4vw,4.25rem)]"
+            className="text-[clamp(2.25rem,8vw,3rem)] font-semibold leading-[1.05] tracking-tight text-white lg:text-[clamp(3.5rem,5.2vw,4.75rem)] xl:text-[clamp(3.5rem,4.4vw,4.25rem)]"
           >
             Specialists in automating
             <br />
@@ -61,7 +61,7 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.06, duration: 0.4, ease: "easeOut" }}
-            className="mt-5 max-w-md text-[17px] leading-relaxed text-[#4b5067] sm:text-lg"
+            className="mt-5 max-w-md text-[17px] leading-relaxed text-[#D9D4F0] sm:text-lg"
           >
             Cytron specialises in automating repetitive office tasks for trade, wholesale, e-commerce and warehouse operations — in the background, on our own servers.
           </motion.p>
@@ -100,9 +100,9 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18, duration: 0.4, ease: "easeOut" }}
-            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#3f37a2] transition-colors hover:text-[#352e8c]"
+            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#E0C6F4] transition-colors hover:text-white"
           >
-            <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[#cfcbef] text-[#3f37a2]">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[#E0C6F4]/70 text-[#E0C6F4]">
               <Play size={11} fill="currentColor" />
             </span>
             See Cytron in action

@@ -397,12 +397,6 @@ function DesktopFlow({ time, reduced }: { time: number; reduced: boolean }) {
   return (
     <div className="relative h-full w-full" style={{ width: VIEW_W, height: VIEW_H }}>
       <svg width={VIEW_W} height={VIEW_H} className="absolute inset-0" aria-hidden>
-        <defs>
-          <pattern id="hero-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
-            <circle cx="1.2" cy="1.2" r="0.9" fill="#d1d5db" />
-          </pattern>
-        </defs>
-        <rect width={VIEW_W} height={VIEW_H} fill="url(#hero-dot-grid)" opacity="0.7" />
         {EDGES.map((edge) => {
           const { d } = paths[edge.id];
           const fromVisible = visibleAt(edge.from, time, reduced);
@@ -455,7 +449,9 @@ function DesktopFlow({ time, reduced }: { time: number; reduced: boolean }) {
         return (
           <p
             key={lane.id}
-            className="absolute text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5b6078]"
+            className={`absolute text-[10px] font-semibold uppercase tracking-[0.14em] ${
+              lane.id === "exceptions" ? "text-[#D9D4F0]" : "text-[#5b6078]"
+            }`}
             style={{ left: lane.x, top: lane.y, width: lane.w }}
           >
             {lane.label}
