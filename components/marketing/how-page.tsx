@@ -81,7 +81,7 @@ export default function HowPage() {
         </div>
       </section>
 
-      <section className="bg-[#f2f1ff] py-20 sm:py-24">
+      <section className="bg-[#F0EEF6] py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <Eyebrow>Our principles</Eyebrow>
           <Heading>Automation you can trust with real customers.</Heading>

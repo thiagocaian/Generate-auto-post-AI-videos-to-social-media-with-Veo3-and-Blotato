@@ -138,7 +138,7 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section id="faq" className="scroll-mt-20 bg-[#f2f1ff] py-20 sm:py-24">
+      <section id="faq" className="scroll-mt-20 bg-[#F0EEF6] py-20 sm:py-24">
         <div className="mx-auto max-w-3xl px-5">
           <Eyebrow>FAQ</Eyebrow>
           <Heading>Questions we hear a lot.</Heading>

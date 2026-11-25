@@ -105,7 +105,7 @@ export default function Home() {
       </section>
 
       {/* How it works teaser */}
-      <section className="bg-[#f2f1ff] py-20 sm:py-24">
+      <section className="bg-[#F0EEF6] py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
@@ -167,7 +167,7 @@ export default function Home() {
       </section>
 
       {/* Pricing teaser */}
-      <section className="border-y border-[#e7e6f0] bg-[#f2f1ff] py-14">
+      <section className="border-y border-[#e7e6f0] bg-[#F0EEF6] py-14">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 md:flex-row md:items-center md:justify-between">
           <div>
             <Eyebrow>Pricing</Eyebrow>
