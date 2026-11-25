@@ -1,35 +1,26 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { isProtectedAppPath } from '@/lib/security/protected-routes'
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+  const isLoginPage = pathname === '/login'
+
+  // Gate only real app routes. Unknown public URLs must reach the router so
+  // app/not-found.tsx can answer HTTP 404. /login stays in the matcher so a
+  // signed-in user is still sent to the dashboard.
+  if (!isProtectedAppPath(pathname) && !isLoginPage) {
+    return NextResponse.next({ request: { headers: request.headers } })
+  }
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  // Missing env vars → deny, do not silently allow
+  // Missing env vars → deny protected routes, do not silently allow.
   if (!supabaseUrl || !supabaseKey) {
+    if (isLoginPage) return NextResponse.next({ request: { headers: request.headers } })
     return NextResponse.redirect(new URL('/login', request.url))
-  }
-
-  const isLoginPage = request.nextUrl.pathname === '/login'
-  const isPublicPath =
-    request.nextUrl.pathname.startsWith('/api') ||
-    request.nextUrl.pathname.startsWith('/_next') ||
-    request.nextUrl.pathname.startsWith('/favicon') ||
-    request.nextUrl.pathname.startsWith('/auth/callback') ||
-    request.nextUrl.pathname.startsWith('/images') ||
-    request.nextUrl.pathname === '/forgot-password' ||
-    request.nextUrl.pathname === '/reset-password' ||
-    request.nextUrl.pathname === '/booking' ||
-    request.nextUrl.pathname === '/onboarding' ||
-    request.nextUrl.pathname === '/terms' ||
-    request.nextUrl.pathname === '/privacy' ||
-    ['/trades', '/clinics', '/real-estate', '/hospitality', '/retail', '/professional-services', '/sitemap.xml', '/robots.txt'].includes(request.nextUrl.pathname) ||
-    request.nextUrl.pathname === '/'
-
-  // Skip auth check for public paths (API routes protect themselves)
-  if (isPublicPath) {
-    return NextResponse.next({ request: { headers: request.headers } })
   }
 
   try {
@@ -78,5 +69,41 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    '/login',
+    '/auth/signout',
+    '/auth/signout/:path*',
+    '/admin',
+    '/admin/:path*',
+    '/billing',
+    '/billing/:path*',
+    '/calendar',
+    '/calendar/:path*',
+    '/compliance',
+    '/compliance/:path*',
+    '/dashboard',
+    '/dashboard/:path*',
+    '/email-preview',
+    '/email-preview/:path*',
+    '/field-commander',
+    '/field-commander/:path*',
+    '/invoices',
+    '/invoices/:path*',
+    '/jobs',
+    '/jobs/:path*',
+    '/marketing',
+    '/marketing/:path*',
+    '/materials',
+    '/materials/:path*',
+    '/operator',
+    '/operator/:path*',
+    '/platforms',
+    '/platforms/:path*',
+    '/quotes',
+    '/quotes/:path*',
+    '/reports',
+    '/reports/:path*',
+    '/warehouse',
+    '/warehouse/:path*',
+  ],
 }

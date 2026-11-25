@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
+import { companyRecordFilters, scopedRowMissing } from '@/lib/security/company-scope'
+import { parseUuid } from '@/lib/validation/ids'
+import { parseJobPost } from '@/lib/validation/jobs'
 
 async function getAuthUser() {
   const cookieStore = await cookies()
@@ -30,21 +33,36 @@ function getAdmin() {
   )
 }
 
+function notFound() {
+  return NextResponse.json({ error: 'Not found' }, { status: 404 })
+}
+
+async function requireCompanyId(userId: string): Promise<
+  | { ok: true; admin: ReturnType<typeof getAdmin>; companyId: string }
+  | { ok: false; response: NextResponse }
+> {
+  const admin = getAdmin()
+  const { data: member } = await admin
+    .from('company_members')
+    .select('companies(id)')
+    .eq('user_id', userId)
+    .single()
+
+  const companyId = (member?.companies as { id?: string } | null)?.id
+  if (typeof companyId !== 'string' || companyId.length === 0) {
+    return { ok: false, response: NextResponse.json({ error: 'No company' }, { status: 404 }) }
+  }
+  return { ok: true, admin, companyId }
+}
+
 // GET — list jobs for user's company
 export async function GET(req: NextRequest) {
   const user = await getAuthUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const admin = getAdmin()
-
-  const { data: member } = await admin
-    .from('company_members')
-    .select('companies(id)')
-    .eq('user_id', user.id)
-    .single()
-
-  const companyId = (member?.companies as any)?.id
-  if (!companyId) return NextResponse.json({ error: 'No company' }, { status: 404 })
+  const scope = await requireCompanyId(user.id)
+  if (!scope.ok) return scope.response
+  const { admin, companyId } = scope
 
   // Optional filters from query params
   const { searchParams } = new URL(req.url)
@@ -80,22 +98,29 @@ export async function POST(req: NextRequest) {
   const user = await getAuthUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const admin = getAdmin()
-  const body = await req.json()
+  const raw = await req.json().catch(() => null)
+  const parsed = parseJobPost(raw)
+  if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 })
 
-  const { data: member } = await admin
-    .from('company_members')
-    .select('companies(id)')
-    .eq('user_id', user.id)
-    .single()
-
-  const companyId = (member?.companies as any)?.id
-  if (!companyId) return NextResponse.json({ error: 'No company' }, { status: 404 })
-
-  const action = body.action || 'create'
+  const scope = await requireCompanyId(user.id)
+  if (!scope.ok) return scope.response
+  const { admin, companyId } = scope
+  const command = parsed.data
 
   // ── CREATE ────────────────────────────────────
-  if (action === 'create') {
+  if (command.action === 'create') {
+    if (command.insert.quote_id) {
+      const quoteScope = companyRecordFilters(companyId, command.insert.quote_id)
+      const { data: quote, error: quoteError } = await admin
+        .from('quotes')
+        .select('id')
+        .eq('id', quoteScope.id)
+        .eq('company_id', quoteScope.company_id)
+        .maybeSingle()
+      if (quoteError) return NextResponse.json({ error: quoteError.message }, { status: 500 })
+      if (scopedRowMissing(quote)) return NextResponse.json({ error: 'Quote not found' }, { status: 404 })
+    }
+
     const { count } = await admin
       .from('jobs')
       .select('id', { count: 'exact', head: true })
@@ -107,23 +132,7 @@ export async function POST(req: NextRequest) {
       company_id: companyId,
       user_id: user.id,
       job_number: jobNumber,
-      title: body.title,
-      description: body.description || null,
-      client_name: body.client_name || null,
-      client_email: body.client_email || null,
-      client_phone: body.client_phone || null,
-      site_address: body.site_address || null,
-      status: body.status || 'enquiry',
-      priority: body.priority || 'medium',
-      assigned_to: body.assigned_to || null,
-      quote_id: body.quote_id || null,
-      scheduled_date: body.scheduled_date || null,
-      scheduled_time_start: body.scheduled_time_start || null,
-      scheduled_time_end: body.scheduled_time_end || null,
-      estimated_hours: body.estimated_hours || null,
-      notes: body.notes || null,
-      tags: body.tags || [],
-      total_value: body.total_value || 0,
+      ...command.insert,
     }).select().single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
@@ -131,67 +140,65 @@ export async function POST(req: NextRequest) {
   }
 
   // ── UPDATE STATUS ─────────────────────────────
-  if (action === 'update_status') {
-    const { id, status: newStatus } = body
-
+  if (command.action === 'update_status') {
+    const record = companyRecordFilters(companyId, command.id)
     const { data, error } = await admin
       .from('jobs')
-      .update({ status: newStatus })
-      .eq('id', id)
-      .eq('company_id', companyId)
+      .update({ status: command.status })
+      .eq('id', record.id)
+      .eq('company_id', record.company_id)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (scopedRowMissing(data)) return notFound()
     return NextResponse.json({ success: true, job: data })
   }
 
   // ── UPDATE (general) ──────────────────────────
-  if (action === 'update') {
-    const { id, ...fields } = body
-    delete fields.action
-
+  if (command.action === 'update') {
+    const record = companyRecordFilters(companyId, command.id)
     const { data, error } = await admin
       .from('jobs')
-      .update(fields)
-      .eq('id', id)
-      .eq('company_id', companyId)
+      .update(command.fields)
+      .eq('id', record.id)
+      .eq('company_id', record.company_id)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (scopedRowMissing(data)) return notFound()
     return NextResponse.json({ success: true, job: data })
   }
 
   // ── LINK QUOTE ────────────────────────────────
-  if (action === 'link_quote') {
-    const { id, quote_id } = body
+  const quoteScope = companyRecordFilters(companyId, command.quote_id)
+  const { data: quote, error: quoteError } = await admin
+    .from('quotes')
+    .select('total, client_name, project_name')
+    .eq('id', quoteScope.id)
+    .eq('company_id', quoteScope.company_id)
+    .maybeSingle()
 
-    // Fetch quote to get total value
-    const { data: quote } = await admin
-      .from('quotes')
-      .select('total, client_name, project_name')
-      .eq('id', quote_id)
-      .single()
+  if (quoteError) return NextResponse.json({ error: quoteError.message }, { status: 500 })
+  if (!quote) return NextResponse.json({ error: 'Quote not found' }, { status: 404 })
 
-    const updateFields: any = { quote_id }
-    if (quote?.total) updateFields.total_value = quote.total
-    if (quote?.client_name && !body.keep_client) updateFields.client_name = quote.client_name
-    updateFields.status = 'quoted'
+  const updateFields: Record<string, unknown> = { quote_id: command.quote_id, status: 'quoted' }
+  if (quote.total) updateFields.total_value = quote.total
+  if (quote.client_name && !command.keep_client) updateFields.client_name = quote.client_name
 
-    const { data, error } = await admin
-      .from('jobs')
-      .update(updateFields)
-      .eq('id', id)
-      .eq('company_id', companyId)
-      .select()
-      .single()
+  const jobScope = companyRecordFilters(companyId, command.id)
+  const { data, error } = await admin
+    .from('jobs')
+    .update(updateFields)
+    .eq('id', jobScope.id)
+    .eq('company_id', jobScope.company_id)
+    .select()
+    .maybeSingle()
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ success: true, job: data })
-  }
-
-  return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (scopedRowMissing(data)) return notFound()
+  return NextResponse.json({ success: true, job: data })
 }
 
 // DELETE — remove a job
@@ -199,27 +206,21 @@ export async function DELETE(req: NextRequest) {
   const user = await getAuthUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const admin = getAdmin()
-  const { searchParams } = new URL(req.url)
-  const id = searchParams.get('id')
+  const id = parseUuid(new URL(req.url).searchParams.get('id'))
+  if (!id.ok) return NextResponse.json({ error: id.error }, { status: 400 })
 
-  if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
+  const scope = await requireCompanyId(user.id)
+  if (!scope.ok) return scope.response
 
-  const { data: member } = await admin
-    .from('company_members')
-    .select('companies(id)')
-    .eq('user_id', user.id)
-    .single()
-
-  const companyId = (member?.companies as any)?.id
-  if (!companyId) return NextResponse.json({ error: 'No company' }, { status: 404 })
-
-  const { error } = await admin
+  const record = companyRecordFilters(scope.companyId, id.id)
+  const { data, error } = await scope.admin
     .from('jobs')
     .delete()
-    .eq('id', id)
-    .eq('company_id', companyId)
+    .eq('id', record.id)
+    .eq('company_id', record.company_id)
+    .select('id')
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (scopedRowMissing(data)) return notFound()
   return NextResponse.json({ success: true })
 }

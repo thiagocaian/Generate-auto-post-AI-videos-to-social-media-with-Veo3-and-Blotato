@@ -57,11 +57,11 @@ export default function OnboardingPage() {
         const { supabase } = await import('@/lib/supabase')
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) {
-          router.push('/login?tab=signup')
+          router.push('/login')
           return
         }
       } catch {
-        router.push('/login?tab=signup')
+        router.push('/login')
         return
       }
       setCheckingAuth(false)

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getRequestUser, unauthorized } from '@/lib/auth'
+import { requireClientsAdmin } from '@/lib/clients/access'
 
 const BLOTATO_API = 'https://backend.blotato.com/v2'
 
 export async function POST(req: NextRequest) {
-  const user = await getRequestUser()
-  if (!user) return unauthorized()
+  const auth = await requireClientsAdmin()
+  if (!auth.ok) return auth.response
 
   const body = await req.json()
   const { imageUrl, caption, platforms } = body

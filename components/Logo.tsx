@@ -66,7 +66,7 @@ export function LogoWordmark({ variant = 'dark', size = 'md' }: LogoProps) {
           color: subColor,
           marginTop: 4,
         }}>
-          AI agents running your business.
+          Smart automation running your business.
         </div>
       )}
     </div>

@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requestIp } from '@/lib/rate-limit'
+import { allowAiRate, tooManyRequests } from '@/lib/durable-rate'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import Anthropic from '@anthropic-ai/sdk'
@@ -22,6 +24,7 @@ export async function POST(req: NextRequest) {
   )
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!(await allowAiRate(user.id, requestIp(req.headers)))) return tooManyRequests()
 
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
@@ -84,7 +87,7 @@ Generate 10-15 realistic line items appropriate for a ${projectType} project of 
     const quote = JSON.parse(jsonMatch[0])
     return NextResponse.json({ success: true, quote })
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'AI generation failed'
-    return NextResponse.json({ error: message }, { status: 500 })
+    console.error('[quotes/generate] failed:', err)
+    return NextResponse.json({ error: 'AI generation failed' }, { status: 500 })
   }
 }

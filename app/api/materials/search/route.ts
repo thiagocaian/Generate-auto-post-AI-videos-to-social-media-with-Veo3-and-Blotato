@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requestIp } from '@/lib/rate-limit'
+import { allowAiRate, tooManyRequests } from '@/lib/durable-rate'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { parseMaterialsSearch } from '@/lib/validation/materials'
 
 async function getAuthUser() {
   const cookieStore = await cookies()
@@ -71,17 +74,21 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getAuthUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!(await allowAiRate(user.id, requestIp(req.headers)))) return tooManyRequests()
 
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json({ error: 'OPENAI_API_KEY missing' }, { status: 500 })
     }
 
-    const body = await req.json()
+    const raw = await req.json().catch(() => null)
+    const parsed = parseMaterialsSearch(raw)
+    if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 })
+    const body = parsed.data
     const specialty = body.specialty || 'flooring'
     const ctx = getSpecialtyContext(specialty)
 
     // === PARSE free text into structured list ===
-    if (body.action === 'parse') {
+    if (body.kind === 'parse') {
       const text = await callOpenAI(`Parse this ${ctx.trade} materials list. User is a ${ctx.trade} in Gold Coast AU. Input may be Portuguese or English.
 
 Text: "${body.text}"
@@ -98,11 +105,8 @@ Units: m\u00B2, m linear, unit, box, L, kg, roll. Translate PT to EN (rodape=Ski
 
     // === SEARCH prices across distributors ===
     const { materials, distributors } = body
-    if (!materials?.length || !distributors?.length) {
-      return NextResponse.json({ error: 'Missing materials or distributors' }, { status: 400 })
-    }
 
-    const materialsList = materials.map((m: any) => `- ${m.name}: ${m.qty} ${m.unit}`).join('\n')
+    const materialsList = materials.map(m => `- ${m.name}: ${m.qty} ${m.unit}`).join('\n')
     const distList = distributors.slice(0, 4).map((d: any) => `- ${d.name} (${d.website})`).join('\n')
 
     const aiText = await callOpenAI(`You are a ${ctx.trade} materials price calculator for Gold Coast, QLD, Australia. ${ctx.priceContext}
@@ -124,7 +128,8 @@ Return ONLY valid JSON (no markdown, no backticks):
     }
     return NextResponse.json({ error: 'Could not parse AI response', raw: aiText.substring(0, 300) })
 
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 })
+  } catch (err: unknown) {
+    console.error('[materials/search] failed:', err)
+    return NextResponse.json({ error: 'Search failed. Please try again.' }, { status: 500 })
   }
 }

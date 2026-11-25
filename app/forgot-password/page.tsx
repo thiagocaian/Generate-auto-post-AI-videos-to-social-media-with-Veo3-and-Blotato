@@ -15,6 +15,13 @@ export default function ForgotPasswordPage() {
     setLoading(true)
     setError('')
 
+    const pre = await fetch('/api/auth/attempt', { method: 'POST' })
+    if (pre.status === 429) {
+      setError('Too many attempts. Please try again later.')
+      setLoading(false)
+      return
+    }
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin + '/reset-password',
     })

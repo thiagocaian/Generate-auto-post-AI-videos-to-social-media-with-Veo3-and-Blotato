@@ -124,3 +124,196 @@ html {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 0; }
 ::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+
+@keyframes hero-constellation-tile-in {
+  from { opacity: 0; }
+  to { opacity: 0.84; }
+}
+
+.hero-constellation-tile {
+  animation: hero-constellation-tile-in 600ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-constellation-tile {
+    animation: none;
+  }
+}
+
+/* Mobile hero icons: compositor-only drift. No JS per frame, no vh. */
+@keyframes hero-constellation-drift-top-a {
+  0%, 100% { transform: translate3d(-50%, -50%, 0); }
+  40% { transform: translate3d(calc(-50% + 2px), calc(-50% - 2px), 0); }
+  75% { transform: translate3d(calc(-50% - 2px), calc(-50% + 1px), 0); }
+}
+@keyframes hero-constellation-drift-top-b {
+  0%, 100% { transform: translate3d(-50%, -50%, 0); }
+  35% { transform: translate3d(calc(-50% - 2px), calc(-50% - 1px), 0); }
+  65% { transform: translate3d(calc(-50% + 2px), calc(-50% + 2px), 0); }
+}
+@keyframes hero-constellation-drift-bottom-a {
+  0%, 100% { transform: translate3d(-50%, 50%, 0); }
+  40% { transform: translate3d(calc(-50% + 2px), calc(50% - 2px), 0); }
+  75% { transform: translate3d(calc(-50% - 2px), calc(50% + 1px), 0); }
+}
+@keyframes hero-constellation-drift-bottom-b {
+  0%, 100% { transform: translate3d(-50%, 50%, 0); }
+  35% { transform: translate3d(calc(-50% - 2px), calc(50% - 1px), 0); }
+  65% { transform: translate3d(calc(-50% + 2px), calc(50% + 2px), 0); }
+}
+
+.hero-constellation-mobile-tile--top {
+  transform: translate3d(-50%, -50%, 0);
+}
+.hero-constellation-mobile-tile--bottom {
+  transform: translate3d(-50%, 50%, 0);
+}
+
+.hero-constellation-mobile-tile {
+  will-change: transform;
+}
+
+.hero-constellation-mobile-tile--top-a {
+  animation:
+    hero-constellation-tile-in 600ms ease-out both,
+    hero-constellation-drift-top-a 18s ease-in-out 0.6s infinite;
+}
+.hero-constellation-mobile-tile--top-b {
+  animation:
+    hero-constellation-tile-in 600ms ease-out both,
+    hero-constellation-drift-top-b 21s ease-in-out 0.6s infinite;
+}
+.hero-constellation-mobile-tile--bottom-a {
+  animation:
+    hero-constellation-tile-in 600ms ease-out both,
+    hero-constellation-drift-bottom-a 19s ease-in-out 0.6s infinite;
+}
+.hero-constellation-mobile-tile--bottom-b {
+  animation:
+    hero-constellation-tile-in 600ms ease-out both,
+    hero-constellation-drift-bottom-b 22s ease-in-out 0.6s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-constellation-mobile-tile {
+    animation: none;
+  }
+}
+
+/* Marketing page background: layered CSS recreation of the lilac / sky /
+ * teal / navy wash. Colours sampled from the reference image. Fixed to the
+ * viewport so the composition stays intact on long pages; opaque section
+ * bands keep body text off the darker lower-right. */
+.cytron-page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* Light lavender field sampled from the Canva waves (#F9D6F9 / #E4B0EA). */
+  background-color: #F9D6F9;
+  background-image:
+    radial-gradient(ellipse 80% 70% at 100% 0%,
+      rgba(228, 176, 234, 0.55) 0%,
+      rgba(249, 214, 249, 0.20) 48%,
+      rgba(249, 214, 249, 0) 74%),
+    radial-gradient(ellipse 70% 55% at 0% 100%,
+      rgba(10, 0, 56, 0.06) 0%,
+      rgba(10, 0, 56, 0) 62%),
+    linear-gradient(180deg,
+      #FBF0FB 0%,
+      #F9D6F9 48%,
+      #F3C8F0 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+/* Dark navy band from the Canva field. Use with light type on the band itself;
+ * cards and glass panels inside keep their own dark text. */
+.cytron-band-navy {
+  background-color: #0A0038;
+}
+.cytron-band-navy h2 .text-\[\#3f37a2\] {
+  color: #E0C6F4;
+}
+
+/* Canva wave artwork used by the home hero and shared page intros.
+ * Fallback colour matches the dark left field of the image. */
+.cytron-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #0A0038;
+  background-repeat: no-repeat;
+  background-size: cover;
+  /* Mobile: keep the dark left field behind the stacked text column.
+   * xl (two-column hero): anchor right so the waves sit behind the flow. */
+  background-position: left center;
+  background-image: url("/brand/hero-bg.webp");
+  background-image: -webkit-image-set(
+    url("/brand/hero-bg.avif") type("image/avif"),
+    url("/brand/hero-bg.webp") type("image/webp")
+  );
+  background-image: image-set(
+    url("/brand/hero-bg.avif") type("image/avif"),
+    url("/brand/hero-bg.webp") type("image/webp")
+  );
+}
+
+@media (min-width: 1280px) {
+  .cytron-hero-bg {
+    background-position: right center;
+  }
+}
+
+/* Soft navy wash behind the home hero copy so light type stays AA where
+ * the wave edge crosses the left column. Tight to the text column, so
+ * the artwork behind the flow diagram stays untouched. */
+.cytron-hero-text-scrim {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -1.25rem;
+  right: 8%;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    #0A0038 0%,
+    rgba(10, 0, 56, 0.88) 62%,
+    rgba(10, 0, 56, 0.45) 82%,
+    rgba(10, 0, 56, 0) 100%
+  );
+}
+
+@media (min-width: 1280px) {
+  .cytron-hero-text-scrim {
+    left: -4rem;
+    right: -12%;
+  }
+}
+
+
+/* Soft full-height fade behind PageIntro / contact copy. Covers the
+ * whole intro so no hard rectangle cuts across the waves. Home hero
+ * keeps the tighter column scrim above, which leaves the flow art clear. */
+.cytron-page-intro-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    #0A0038 0%,
+    rgba(10, 0, 56, 0.92) 28%,
+    rgba(10, 0, 56, 0.70) 42%,
+    rgba(10, 0, 56, 0.36) 56%,
+    rgba(10, 0, 56, 0.10) 70%,
+    rgba(10, 0, 56, 0) 86%
+  );
+}
+
+/* Accent spans in Canva-toned intros stay light; Accent is still purple on the rest of the page. */
+.cytron-page-intro h1 .text-\[\#3f37a2\] {
+  color: #E0C6F4;
+}

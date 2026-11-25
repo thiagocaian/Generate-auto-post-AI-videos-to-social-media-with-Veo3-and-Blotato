@@ -1171,7 +1171,7 @@ export default function MarketingPage() {
               <div className="p-5" style={{ background: '#FFFFFF', border: '1px solid #E5E5E5' }}>
                 <h2 className="text-sm font-semibold mb-3" style={{ color: '#000000' }}>Integrations</h2>
                 {[
-                  { label: 'n8n Webhook',  ok: true  },
+                  { label: 'Automation webhook',  ok: true  },
                   { label: 'Kling AI',     ok: true  },
                   { label: 'Blotato API',  ok: true  },
                   { label: 'Instagram',    ok: true  },

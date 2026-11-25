@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getRequestUser, getAdminClient, unauthorized, forbidden } from '@/lib/auth'
-
-// Super admin emails — CYTRON team only, can see ALL companies
-const SUPER_ADMINS = ['labofantasma@gmail.com']
+import { getRequestUser, getAdminClient, unauthorized, forbidden, isCompanyAdminEmail } from '@/lib/auth'
 
 export async function GET(req: NextRequest) {
   const user = await getRequestUser()
   if (!user) return unauthorized()
 
-  const isSuperAdmin = SUPER_ADMINS.includes(user.email ?? '')
+  const isSuperAdmin = isCompanyAdminEmail(user.email)
   const admin = getAdminClient()
 
   if (isSuperAdmin) {
