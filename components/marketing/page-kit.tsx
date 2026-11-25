@@ -20,7 +20,13 @@ export function PageIntro({
   aside?: React.ReactNode;
 }) {
   const reduced = useReducedMotion() === true;
-  const rise = (d = 0) => (reduced ? {} : { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { delay: d, duration: 0.4, ease: "easeOut" as const } });
+  // Always animate to visible. If reduced-motion is detected after the first
+  // paint, dropping the props would leave the intro stuck at opacity 0.
+  const rise = (d = 0) => ({
+    initial: reduced ? false : { opacity: 0, y: 8 },
+    animate: { opacity: 1, y: 0 },
+    transition: reduced ? { duration: 0 } : { delay: d, duration: 0.4, ease: "easeOut" as const },
+  });
   return (
     <section className="cytron-page-intro relative overflow-hidden">
       <div className="cytron-hero-bg" aria-hidden="true" />
