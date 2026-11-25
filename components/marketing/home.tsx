@@ -60,7 +60,12 @@ function LegacyHashRedirect() {
 export default function Home() {
   const reduced = useReducedMotion() === true;
   const rise = (i: number) =>
-    reduced ? {} : { initial: { opacity: 0, y: 8 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.4 }, transition: { delay: i * 0.05, duration: 0.35 } };
+    ({
+      initial: reduced ? false : { opacity: 0, y: 8 },
+      whileInView: { opacity: 1, y: 0 },
+      viewport: { once: true, amount: 0.4 },
+      transition: reduced ? { duration: 0 } : { delay: i * 0.05, duration: 0.35 },
+    });
 
   return (
     <div className="text-[#0f1222]">

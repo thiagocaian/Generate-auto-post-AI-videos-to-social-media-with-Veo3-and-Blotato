@@ -75,7 +75,12 @@ const AGENT_ROLES = [
 
 export default function ServicesPage() {
   const reduced = useReducedMotion() === true;
-  const rise = reduced ? {} : { initial: { opacity: 0, y: 12 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.25 }, transition: { duration: 0.4, ease: "easeOut" as const } };
+  const rise = {
+    initial: reduced ? false : { opacity: 0, y: 12 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.25 },
+    transition: reduced ? { duration: 0 } : { duration: 0.4, ease: "easeOut" as const },
+  };
 
   return (
     <div>

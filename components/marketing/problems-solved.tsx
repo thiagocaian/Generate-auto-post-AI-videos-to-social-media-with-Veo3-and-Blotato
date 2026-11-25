@@ -40,7 +40,12 @@ const CARDS = [
 export default function ProblemsSolved() {
   const reduced = useReducedMotion() === true;
   const rise = (i: number) =>
-    reduced ? {} : { initial: { opacity: 0, y: 8 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.35 }, transition: { delay: i * 0.05, duration: 0.35 } };
+    ({
+      initial: reduced ? false : { opacity: 0, y: 8 },
+      whileInView: { opacity: 1, y: 0 },
+      viewport: { once: true, amount: 0.35 },
+      transition: reduced ? { duration: 0 } : { delay: i * 0.05, duration: 0.35 },
+    });
 
   return (
     <section id="problems-solved" className="bg-white py-20 sm:py-24">
