@@ -3,7 +3,7 @@
 import React from "react";
 import { useReducedMotion } from "framer-motion";
 import { CalendarCheck, Check, ClipboardList, MapPin, PhoneCall } from "lucide-react";
-import { Accent, INTRO_WASH } from "@/components/site";
+import { Accent } from "@/components/site";
 import AuditForm from "@/components/marketing/audit-form";
 import { LiquidGlass } from "@/components/marketing/glass";
 
@@ -18,8 +18,8 @@ const GET = ["A map of where your team's hours go", "The top 3 tasks worth autom
 export default function ContactPage() {
   const reduced = useReducedMotion() === true;
   return (
-    <div className="bg-white">
-      <section id="audit" className="border-b border-[#e7e6f0] bg-[#f6f5ff]" style={{ background: INTRO_WASH }}>
+    <div>
+      <section id="audit" className="border-b border-[#e7e6f0]">
         <div className="mx-auto grid max-w-6xl gap-12 px-5 pb-20 pt-14 sm:pt-20 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div>
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#3f37a2]">Contact · Free Automation Assessment</p>

@@ -3,7 +3,7 @@
 import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
-import { BTN_PRIMARY, BTN_SECONDARY, INTRO_WASH } from "@/components/site";
+import { BTN_PRIMARY, BTN_SECONDARY } from "@/components/site";
 
 /** Top block for inner pages: same type scale and soft gradient as the home hero. */
 export function PageIntro({
@@ -22,7 +22,7 @@ export function PageIntro({
   const reduced = useReducedMotion() === true;
   const rise = (d = 0) => (reduced ? {} : { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { delay: d, duration: 0.4, ease: "easeOut" as const } });
   return (
-    <section className="border-b border-[#e7e6f0] bg-[#f6f5ff]" style={{ background: INTRO_WASH }}>
+    <section className="border-b border-[#e7e6f0]">
       <div className={`mx-auto grid max-w-6xl gap-12 px-5 pb-16 pt-14 sm:pb-20 sm:pt-20 ${aside ? "lg:grid-cols-[1.1fr_0.9fr] lg:items-center" : ""}`}>
         <div>
           <motion.p {...rise()} className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#3f37a2]">{eyebrow}</motion.p>

@@ -35,7 +35,7 @@ const PRINCIPLES = [
 export default function HowPage() {
   const reduced = useReducedMotion() === true;
   return (
-    <div className="bg-white">
+    <div>
       <PageIntro
         eyebrow="How it works"
         title={<>Assess, design, build, run. <Accent>Live in weeks</Accent>.</>}
