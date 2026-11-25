@@ -58,17 +58,17 @@ export default function WeekMetrics() {
     <section
       ref={ref}
       aria-labelledby="week-metrics-heading"
-      className="border-b border-[#e7e6f0] bg-white"
+      className="border-b border-[#e7e6f0] bg-[#0B1020]"
     >
       <div className="mx-auto max-w-6xl px-5 py-10 sm:py-12">
         <div className="flex flex-wrap items-end justify-between gap-2">
           <h2
             id="week-metrics-heading"
-            className="text-[15px] font-semibold tracking-tight text-[#0f1222] sm:text-base"
+            className="text-[15px] font-semibold tracking-tight text-white sm:text-base"
           >
             A typical week for an Australian trade business
           </h2>
-          <p className="text-xs font-medium text-[#4b5067]">Illustrative example</p>
+          <p className="text-xs font-medium text-[#C5C4D8]">Illustrative example</p>
         </div>
         <dl className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-4 sm:gap-8">
           {METRICS.map((m, i) => (
@@ -78,8 +78,8 @@ export default function WeekMetrics() {
               animate={inView ? { opacity: 1, y: 0 } : undefined}
               transition={{ delay: reduced ? 0 : i * 0.07, duration: 0.35, ease: "easeOut" }}
             >
-              <dt className="text-xs font-medium leading-snug text-[#4b5067]">{m.label}</dt>
-              <dd className="mt-1 text-3xl font-semibold tabular-nums tracking-tight text-[#0f1222] sm:text-4xl">
+              <dt className="text-xs font-medium leading-snug text-[#C5C4D8]">{m.label}</dt>
+              <dd className="mt-1 text-3xl font-semibold tabular-nums tracking-tight text-white sm:text-4xl">
                 <CountUp target={m.target} suffix={m.suffix} start={inView} reduced={reduced} />
               </dd>
             </motion.div>
