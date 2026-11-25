@@ -10,6 +10,8 @@ const MARKETING = new Set(PUBLIC_MARKETING_ROUTES);
 
 export default function AppBackground() {
   const pathname = usePathname() || "/";
-  if (MARKETING.has(pathname)) return null;
+  if (MARKETING.has(pathname)) {
+    return <div className="cytron-page-bg" aria-hidden="true" />;
+  }
   return <BackgroundScene fixed opacity={0.25} particleCount={60} />;
 }

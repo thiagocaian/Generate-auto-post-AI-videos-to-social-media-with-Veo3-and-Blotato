@@ -78,7 +78,7 @@ export default function ServicesPage() {
   const rise = reduced ? {} : { initial: { opacity: 0, y: 12 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.25 }, transition: { duration: 0.4, ease: "easeOut" as const } };
 
   return (
-    <div className="bg-white">
+    <div>
       <PageIntro
         eyebrow="Services"
         title={<>Six things that <Accent>run on their own</Accent>.</>}

@@ -82,7 +82,7 @@ const FAQ = [
 export default function PricingPage() {
   const reduced = useReducedMotion() === true;
   return (
-    <div className="bg-white">
+    <div>
       <PageIntro
         eyebrow="Pricing"
         title={<>Office tasks. <Accent>Pay for what works</Accent>.</>}

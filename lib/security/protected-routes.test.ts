@@ -71,6 +71,25 @@ describe("protected app routes", () => {
     }
   });
 
+  it("does not gate files served from public/", () => {
+    const publicRoot = path.join(root, "public");
+    const walk = (dir: string, prefix = ""): string[] => {
+      const out: string[] = [];
+      for (const entry of readdirSync(dir)) {
+        const abs = path.join(dir, entry);
+        const rel = prefix ? `${prefix}/${entry}` : entry;
+        if (statSync(abs).isDirectory()) out.push(...walk(abs, rel));
+        else out.push("/" + rel);
+      }
+      return out;
+    };
+    const files = walk(publicRoot);
+    expect(files.length).toBeGreaterThan(0);
+    for (const pathname of files) {
+      expect(isProtectedAppPath(pathname), pathname).toBe(false);
+    }
+  });
+
   it("keeps the middleware matcher aligned with the protected prefixes", () => {
     const src = readFileSync(path.join(root, "middleware.ts"), "utf8");
     const matcher = src.slice(src.indexOf("export const config"));

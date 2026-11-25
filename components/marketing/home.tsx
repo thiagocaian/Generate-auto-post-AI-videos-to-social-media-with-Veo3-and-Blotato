@@ -63,7 +63,7 @@ export default function Home() {
     reduced ? {} : { initial: { opacity: 0, y: 8 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.4 }, transition: { delay: i * 0.05, duration: 0.35 } };
 
   return (
-    <div className="bg-white text-[#0f1222]">
+    <div className="text-[#0f1222]">
       <LegacyHashRedirect />
       <MarketingHero />
       <WeekMetrics />

@@ -199,3 +199,77 @@ html {
     animation: none;
   }
 }
+
+/* Marketing page background: layered CSS recreation of the lilac / sky /
+ * teal / navy wash. Colours sampled from the reference image. Fixed to the
+ * viewport so the composition stays intact on long pages; opaque section
+ * bands keep body text off the darker lower-right. */
+.cytron-page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #E8E6F8;
+  background-image:
+    /* Lift the left text column so lead copy and the in-page link stay AA. */
+    radial-gradient(ellipse 90% 130% at 8% 46%,
+      rgba(238, 236, 252, 0.94) 0%,
+      rgba(238, 236, 252, 0.70) 36%,
+      rgba(238, 236, 252, 0.38) 58%,
+      rgba(238, 236, 252, 0) 78%),
+    radial-gradient(ellipse 70% 68% at 100% 100%,
+      #192378 0%,
+      rgba(25, 35, 120, 0.80) 16%,
+      rgba(30, 42, 122, 0.40) 36%,
+      rgba(30, 42, 122, 0) 68%),
+    radial-gradient(ellipse 80% 58% at 86% 100%,
+      rgba(6, 57, 102, 0.88) 0%,
+      rgba(11, 63, 102, 0.55) 24%,
+      rgba(29, 80, 97, 0.28) 48%,
+      rgba(29, 80, 97, 0) 72%),
+    radial-gradient(ellipse 95% 58% at 52% 100%,
+      rgba(76, 124, 144, 0.70) 0%,
+      rgba(90, 133, 154, 0.38) 34%,
+      rgba(90, 133, 154, 0) 66%),
+    radial-gradient(ellipse 115% 90% at 0% 100%,
+      #A8D5FE 0%,
+      rgba(168, 212, 245, 0.75) 26%,
+      rgba(147, 189, 221, 0.30) 52%,
+      rgba(147, 189, 221, 0) 80%),
+    radial-gradient(ellipse 65% 75% at 100% 80%,
+      rgba(80, 59, 160, 0.55) 0%,
+      rgba(117, 81, 189, 0.25) 40%,
+      rgba(117, 81, 189, 0) 68%),
+    radial-gradient(ellipse 68% 105% at 100% 44%,
+      rgba(152, 106, 214, 0.72) 0%,
+      rgba(153, 107, 215, 0.40) 26%,
+      rgba(199, 160, 240, 0.18) 50%,
+      rgba(199, 160, 240, 0) 76%),
+    radial-gradient(ellipse 90% 80% at 100% 0%,
+      #F2D1FF 0%,
+      rgba(242, 209, 255, 0.90) 18%,
+      rgba(236, 208, 253, 0.45) 42%,
+      rgba(236, 208, 253, 0) 72%),
+    radial-gradient(ellipse 95% 58% at 48% 0%,
+      #FEEDFF 0%,
+      rgba(243, 230, 250, 0.75) 32%,
+      rgba(243, 230, 250, 0) 70%),
+    radial-gradient(ellipse 100% 80% at 48% 48%,
+      rgba(171, 171, 210, 0.40) 0%,
+      rgba(171, 171, 210, 0) 68%),
+    radial-gradient(ellipse 90% 80% at 8% 50%,
+      rgba(175, 195, 219, 0.70) 0%,
+      rgba(182, 208, 230, 0.35) 40%,
+      rgba(175, 195, 219, 0) 72%),
+    linear-gradient(180deg,
+      #EBECFF 0%,
+      #F3E6FA 8%,
+      #E5E0F6 22%,
+      #D0CDEA 38%,
+      #B7B8D8 55%,
+      #A4B6D0 72%,
+      #7A9BB4 88%,
+      #5A859A 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}

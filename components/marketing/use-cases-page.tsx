@@ -77,7 +77,7 @@ export default function UseCasesPage() {
   const rise = reduced ? {} : { initial: { opacity: 0, y: 12 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.2 }, transition: { duration: 0.4, ease: "easeOut" as const } };
 
   return (
-    <div className="bg-white">
+    <div>
       <PageIntro
         eyebrow="Use cases"
         title={<>Repetitive office work, <Accent>handled</Accent>.</>}
