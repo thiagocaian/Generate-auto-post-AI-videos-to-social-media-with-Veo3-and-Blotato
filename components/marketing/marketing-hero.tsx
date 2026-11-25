@@ -5,7 +5,6 @@ import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { Play } from "lucide-react";
 import HeroFlow, { HERO_FLOW_SUMMARY } from "@/components/marketing/hero-flow";
-import HeroConstellation from "@/components/marketing/hero-constellation";
 import { useSiteNavigate } from "@/components/page-transition";
 
 export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
@@ -37,7 +36,6 @@ export default function MarketingHero({ artSrc }: { artSrc?: string | null }) {
       className="relative overflow-hidden"
     >
       <div className="cytron-hero-bg" aria-hidden="true" />
-      <HeroConstellation reduced={reduced} />
       <div className="relative z-10 mx-auto flex max-w-6xl flex-col xl:min-h-[calc(90vh-4rem)] xl:flex-row xl:items-center">
         <div className="relative z-10 w-full px-5 pb-8 pt-14 md:pb-4 xl:w-[47%] xl:shrink-0 xl:py-16">
           <div className="cytron-hero-text-scrim" aria-hidden="true" />
