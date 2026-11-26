@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, type Transition } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import "./liquid-glass.css";
 
 /**
- * Liquid-glass primitives for the three collapsible panels (how-it-works "Assess"
- * card, mobile hero timeline, back-office flow selector). Light theme, indigo
- * accents, one real backdrop-filter per panel. Material lives in liquid-glass.css.
+ * Frosted-glass primitives for the collapsible panels (how-it-works "Assess"
+ * card, mobile hero timeline, back-office flow selector) and repeated lite cards.
+ * Light theme, Wedge indigo accents, one real backdrop-filter per full panel.
+ * Material lives in liquid-glass.css.
  */
 
 /** Spring used for expand / collapse and the sliding hover pill. */
@@ -38,18 +39,18 @@ function canHoverFine() {
 }
 
 /**
- * Glass panel with blurred colour shapes behind it, a specular edge, a periodic sheen,
- * and (desktop pointer only) a reflection that follows the pointer plus a slight tilt.
- * Pointer work writes CSS variables through a ref, throttled with rAF: no re-renders.
+ * Frosted glass panel: modest blur, even 1px edge, no 3D tilt and no sheen.
+ * `maxTilt` and `sheenDelay` are accepted so existing callers keep compiling;
+ * they no longer change the material.
  */
 export function LiquidGlass({
   children,
   className = "",
   panelClassName = "",
-  reduced,
+  reduced: _reduced,
   tall = false,
-  maxTilt = 3,
-  sheenDelay,
+  maxTilt: _maxTilt = 3,
+  sheenDelay: _sheenDelay,
   lite = false,
   fill = false,
   ...rest
@@ -62,86 +63,27 @@ export function LiquidGlass({
   maxTilt?: number;
   sheenDelay?: string;
   /**
-   * Cheap variant for cards that repeat down a page: no backdrop-filter and no
-   * filter blur (the colour shapes are soft radial gradients), and the drift and
-   * sheen pause while the card is off screen. Same look, same pointer reflection.
+   * Cheap variant for cards that repeat down a page: no backdrop-filter.
+   * Hover lifts the card 5px on fine pointers (see liquid-glass.css).
    */
   lite?: boolean;
   /** Stretch the glass to the height of its parent (equal-height grid cards). */
   fill?: boolean;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, "className" | "children">) {
-  const stageRef = useRef<HTMLDivElement>(null);
-  const tiltRef = useRef<HTMLDivElement>(null);
-  const frame = useRef(0);
-  const last = useRef<{ x: number; y: number } | null>(null);
-  const enabled = useRef(false);
-
-  useEffect(() => {
-    enabled.current = !reduced && canHoverFine();
-    return () => cancelAnimationFrame(frame.current);
-  }, [reduced]);
-
-  // Lite cards: only animate while on screen.
-  useEffect(() => {
-    const el = stageRef.current;
-    if (!lite || !el || typeof IntersectionObserver === "undefined") return;
-    const io = new IntersectionObserver(([e]) => {
-      el.dataset.inview = e.isIntersecting ? "true" : "false";
-    }, { rootMargin: "120px" });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [lite]);
-
-  const apply = useCallback(() => {
-    frame.current = 0;
-    const el = tiltRef.current;
-    const p = last.current;
-    if (!el || !p) return;
-    const r = el.getBoundingClientRect();
-    const px = Math.min(1, Math.max(0, (p.x - r.left) / r.width));
-    const py = Math.min(1, Math.max(0, (p.y - r.top) / r.height));
-    el.style.setProperty("--lg-mx", `${(px * 100).toFixed(1)}%`);
-    el.style.setProperty("--lg-my", `${(py * 100).toFixed(1)}%`);
-    el.style.setProperty("--lg-ry", `${((px - 0.5) * 2 * maxTilt).toFixed(2)}deg`);
-    el.style.setProperty("--lg-rx", `${((0.5 - py) * 2 * maxTilt).toFixed(2)}deg`);
-  }, [maxTilt]);
-
-  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!enabled.current || e.pointerType !== "mouse") return;
-    last.current = { x: e.clientX, y: e.clientY };
-    if (tiltRef.current) tiltRef.current.dataset.hover = "true";
-    if (!frame.current) frame.current = requestAnimationFrame(apply);
-  };
-  const onPointerLeave = () => {
-    const el = tiltRef.current;
-    last.current = null;
-    if (!el) return;
-    el.dataset.hover = "false";
-    el.style.setProperty("--lg-rx", "0deg");
-    el.style.setProperty("--lg-ry", "0deg");
-  };
+  void _reduced;
+  void _maxTilt;
+  void _sheenDelay;
 
   return (
     <div
-      ref={stageRef}
       className={`lg-stage ${className}`}
       data-lite={lite || undefined}
       data-fill={fill || undefined}
-      onPointerMove={onPointerMove}
-      onPointerLeave={onPointerLeave}
       {...rest}
     >
-      <div ref={tiltRef} className="lg-tilt" data-hover="false">
-        <div className="lg-backdrop" data-tall={tall || undefined} aria-hidden>
-          <span className="lg-blob lg-blob-1" />
-          <span className="lg-blob lg-blob-2" />
-          <span className="lg-blob lg-blob-3" />
-        </div>
-        <div
-          className={`lg-panel ${panelClassName}`}
-          style={sheenDelay ? ({ ["--lg-sheen-delay" as string]: sheenDelay } as React.CSSProperties) : undefined}
-        >
-          <span className="lg-glare" aria-hidden />
+      <div className="lg-tilt">
+        <div className="lg-backdrop" data-tall={tall || undefined} aria-hidden />
+        <div className={`lg-panel ${panelClassName}`}>
           <div className="lg-content">{children}</div>
         </div>
       </div>
