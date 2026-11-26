@@ -61,14 +61,15 @@ const nextConfig = {
           value: [
             "default-src 'self'",
             // Next.js inline scripts + Vercel analytics
-            "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
-            // Supabase, Stripe, external APIs
-            "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://backend.blotato.com https://app.ayrshare.com https://api.outstand.so https://*.n8n.cloud",
+            "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://www.googleadservices.com https://www.google.com",
+            // Supabase, Stripe, external APIs, and Google tag collection
+            "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://backend.blotato.com https://app.ayrshare.com https://api.outstand.so https://*.n8n.cloud https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googleadservices.com https://*.doubleclick.net https://*.g.doubleclick.net https://pagead2.googlesyndication.com https://www.google.com",
             "style-src 'self' 'unsafe-inline'",
+            // img-src already allows every https image, including Google beacons
             "img-src 'self' data: blob: https: http:",
             "media-src 'self' blob: https:",
             "font-src 'self' data:",
-            "frame-src https://js.stripe.com",
+            "frame-src https://js.stripe.com https://www.googletagmanager.com",
             "object-src 'none'",
             "base-uri 'self'",
             "form-action 'self'",

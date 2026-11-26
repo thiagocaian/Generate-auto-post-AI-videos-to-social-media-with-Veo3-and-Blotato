@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { LiquidGlass } from "@/components/marketing/glass";
 import { track } from "@vercel/analytics";
+import { isGoogleTagConfigured, readGoogleClickIds, trackLeadAuditSubmitted } from "@/lib/analytics/google";
 import { ArrowRight, Check } from "lucide-react";
 import { AUDIT_CONSENT_TEXT } from "@/lib/inbound/consent";
 
@@ -69,10 +70,13 @@ export default function AuditForm({ preview = false }: { preview?: boolean }) {
           responseProcess: form.responseProcess || undefined,
           consent: true,
           honeypot: form.honeypot,
+          // The lead schema strips these. They are not stored until a follow-up adds columns.
+          ...(isGoogleTagConfigured() ? readGoogleClickIds() : {}),
         }),
       });
       if (res.ok) {
         track("lead_audit_submitted");
+        trackLeadAuditSubmitted({ email: form.email, phone: form.phone });
         setStatus("success");
       } else {
         setError("Something went wrong. Please try again.");
