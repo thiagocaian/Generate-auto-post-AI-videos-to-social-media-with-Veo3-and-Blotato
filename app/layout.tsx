@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import GoogleConsentBanner from "@/components/analytics/google-consent-banner";
 import AppBackground from "@/components/marketing/app-background";
+import { googleTagBootstrapScript, googleTagLoaderId } from "@/lib/analytics/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
@@ -37,6 +40,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const googleLoaderId = googleTagLoaderId();
   return (
     <html lang="en">
       <head>
@@ -48,6 +52,15 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`} style={{ backgroundColor: "#ffffff", color: "#0f172a" }}>
         <AppBackground />
         <div style={{ position: "relative", zIndex: 1 }}>{children}</div>
+        {googleLoaderId ? (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${googleLoaderId}`} strategy="afterInteractive" />
+            <Script id="google-tag" strategy="afterInteractive">
+              {googleTagBootstrapScript()}
+            </Script>
+          </>
+        ) : null}
+        <GoogleConsentBanner />
         <Analytics />
         <SpeedInsights />
       </body>

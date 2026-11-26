@@ -12,6 +12,7 @@ export default defineConfig({
   },
   test: {
     include: [
+      'lib/analytics/**/*.test.ts',
       'lib/security/**/*.test.ts',
       'lib/validation/**/*.test.ts',
       'lib/inbound/**/*.test.ts',
